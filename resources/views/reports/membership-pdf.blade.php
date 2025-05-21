@@ -1,267 +1,244 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Membership Report - {{ now()->format('m/d/Y') }}</title>
     <style>
-        body { 
-            font-family: 'DejaVu Sans', Arial, sans-serif; 
-            margin: 0; 
-            padding: 25px; 
-            color: #333;
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: #2c3e50;
             line-height: 1.5;
+            font-size: 10px;
+            background-color: #fff;
+            margin: 0;
         }
-        
-        .header { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            padding-bottom: 20px; 
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .header h1 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-            font-size: 28px;
-        }
-        
-        .header p {
-            color: #7f8c8d;
-            margin-top: 0;
-            font-size: 14px;
-        }
-        
-        .summary-cards { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 20px; 
-            margin-bottom: 30px; 
-            justify-content: space-between;
-        }
-        
-        .card { 
-            background: #fff;
-            border-radius: 8px; 
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        .header {
             text-align: center;
-            flex: 1;
-            min-width: 180px;
-            border-top: 4px solid #3498db;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ccc;
         }
-        
-        .card.total { border-top-color: #3498db; }
-        .card.active { border-top-color: #2ecc71; }
-        .card.inactive { border-top-color: #e74c3c; }
-        .card.bureaus { border-top-color: #9b59b6; }
-        .card.sections { border-top-color: #f39c12; }
-        
-        .card-title { 
-            font-size: 14px; 
-            color: #7f8c8d; 
-            margin-bottom: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .card-value { 
-            font-size: 28px; 
-            font-weight: bold; 
-            color: #2c3e50;
-        }
-        
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 30px; 
-            font-size: 13px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-        
-        th, td { 
-            padding: 12px 15px; 
-            text-align: left; 
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        th { 
-            background-color: #f8f9fa; 
-            color: #2c3e50;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-        }
-        
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .bureau-header { 
-            background-color: #f8f9fa; 
-            padding: 15px 20px; 
-            margin: 40px 0 15px 0;
-            font-weight: 600;
-            color: #2c3e50;
-            border-left: 4px solid #9b59b6;
-            border-radius: 4px 0 0 4px;
+        .header h1 {
             font-size: 18px;
+            margin: 0;
+            color: #1a1a1a;
         }
-        
-        .section-header { 
-            background-color: #f8f9fa; 
-            padding: 12px 20px; 
-            margin: 25px 0 10px 0;
-            font-weight: 600;
-            color: #2c3e50;
-            border-left: 4px solid #f39c12;
-            border-radius: 4px 0 0 4px;
+        .header .subtitle {
+            font-size: 10px;
+            color: #777;
         }
-        
-        .active { 
-            color: #27ae60;
-            font-weight: 600;
-        }
-        
-        .inactive { 
-            color: #e74c3c;
-            font-weight: 600;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
+        .section-title {
             font-size: 12px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            border-bottom: 1px solid #ddd;
+            margin: 20px 0 10px;
+            padding-bottom: 4px;
+            color: #2c3e50;
         }
-        
+        .summary-cards {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .summary-card {
+            flex: 1 1 18%;
+            background: #f9fafb;
+            border-left: 4px solid #3498db;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .summary-card .title {
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 2px;
+        }
+        .summary-card .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 9px;
+        }
+        th, td {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f3f6f9;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 8px;
+            color: #34495e;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .bureau-row {
+            background-color: #ecf0f1;
+            font-weight: bold;
+        }
+        .section-row td:first-child {
+            padding-left: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 8px;
+            font-weight: 600;
+        }
         .badge-active {
-            background-color: #d5f5e3;
+            background-color: #eafaf1;
             color: #27ae60;
         }
-        
         .badge-inactive {
-            background-color: #fadbd8;
+            background-color: #fdecea;
             color: #e74c3c;
         }
-        
-        .badge-lifetime {
-            background-color: #d6eaf8;
-            color: #2980b9;
+        .text-center {
+            text-align: center;
         }
-        
-        .logo {
-            height: 60px;
-            margin-bottom: 15px;
+        .text-right {
+            text-align: right;
         }
-        
         .footer {
             text-align: center;
-            margin-top: 50px;
-            color: #7f8c8d;
-            font-size: 12px;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 15px;
+            font-size: 8px;
+            color: #aaa;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .page-break {
+            page-break-after: always;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <!-- Replace with your actual logo path -->
-        <!-- <img src="{{ public_path('images/logo.png') }}" class="logo" alt="Organization Logo"> -->
         <h1>Membership Report</h1>
-        <p>Generated on {{ now()->format('F j, Y \a\t g:i A') }}</p>
+        <div class="subtitle">Generated on {{ now()->format('F j, Y g:i A') }}</div>
     </div>
 
-    <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 20px;">Membership Overview</h2>
+    <div class="section-title">Summary Statistics</div>
     <div class="summary-cards">
-        <div class="card total">
-            <div class="card-title">Total Members</div>
-            <div class="card-value">{{ $totalMembers }}</div>
+        <div class="summary-card">
+            <div class="title">Total Members</div>
+            <div class="value">{{ number_format($totalMembers) }}</div>
         </div>
-        <div class="card active">
-            <div class="card-title">Active Members</div>
-            <div class="card-value">{{ $activeMembers }}</div>
+        <div class="summary-card">
+            <div class="title">Active Members</div>
+            <div class="value">{{ number_format($activeMembers) }}</div>
         </div>
-        <div class="card inactive">
-            <div class="card-title">Inactive Members</div>
-            <div class="card-value">{{ $inactiveMembers }}</div>
+        <div class="summary-card">
+            <div class="title">Inactive Members</div>
+            <div class="value">{{ number_format($inactiveMembers) }}</div>
         </div>
-        <div class="card bureaus">
-            <div class="card-title">Total Bureaus</div>
-            <div class="card-value">{{ $totalBureaus }}</div>
+        <div class="summary-card">
+            <div class="title">Total Bureaus</div>
+            <div class="value">{{ number_format($bureaus->count()) }}</div>
         </div>
-        <div class="card sections">
-            <div class="card-title">Total Sections</div>
-            <div class="card-value">{{ $totalSections }}</div>
+        <div class="summary-card">
+            <div class="title">Total Sections</div>
+            <div class="value">{{ number_format($bureaus->sum('sections_count')) }}</div>
         </div>
     </div>
 
-    <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 20px;">Member Directory</h2>
-    @foreach($bureaus as $bureau)
-    <div class="bureau-header">
-        {{ $bureau->bureau_name }} 
-        <span style="font-size: 14px; color: #7f8c8d; font-weight: normal;">
-            ({{ $bureau->members_count }} members, {{ $bureau->sections_count }} sections)
-        </span>
-    </div>
-
-    @foreach($bureau->sections as $section)
-    <div class="section-header">
-        {{ $section->section_name }} 
-        <span style="font-size: 13px; color: #7f8c8d; font-weight: normal;">
-            ({{ $section->members_count }} members)
-        </span>
-    </div>
-
+    <div class="section-title">Membership Distribution</div>
     <table>
         <thead>
             <tr>
-                <th>Full Name</th>
+                <th>Bureau/Section</th>
+                <th class="text-center">Active</th>
+                <th class="text-center">Inactive</th>
+                <th class="text-center">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($bureaus as $bureau)
+            <tr class="bureau-row">
+                <td>{{ $bureau->bureau_name }}</td>
+                <td class="text-center">{{ number_format($bureau->active_members_count) }}</td>
+                <td class="text-center">{{ number_format($bureau->inactive_members_count) }}</td>
+                <td class="text-center">{{ number_format($bureau->total_members_count) }}</td>
+            </tr>
+            @foreach($bureau->sections as $section)
+            <tr class="section-row">
+                <td>{{ $section->section_name }}</td>
+                <td class="text-center">{{ number_format($section->active_members_count) }}</td>
+                <td class="text-center">{{ number_format($section->inactive_members_count) }}</td>
+                <td class="text-center">{{ number_format($section->total_members_count) }}</td>
+            </tr>
+            @endforeach
+            @endforeach
+            <tr class="bureau-row">
+                <td><strong>Grand Total</strong></td>
+                <td class="text-center"><strong>{{ number_format($activeMembers) }}</strong></td>
+                <td class="text-center"><strong>{{ number_format($inactiveMembers) }}</strong></td>
+                <td class="text-center"><strong>{{ number_format($totalMembers) }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <div class="section-title">Member Details ({{ $members->count() }} records)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Rec #</th>
+                <th>Name</th>
                 <th>Callsign</th>
                 <th>Status</th>
                 <th>Validity</th>
                 <th>Membership Type</th>
+                <th>Bureau</th>
+                <th>Section</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($members->where('section_id', $section->id) as $member)
+            @foreach($members as $member)
             <tr>
-                <td>{{ $member->last_name }}, {{ $member->first_name }} {{ $member->middle_name ? $member->middle_name[0].'.' : '' }} {{ $member->suffix ?? '' }}</td>
-                <td>{{ $member->license_number ?? 'Unlicensed' }}</td>
-                <td>
-                    <span class="status-badge badge-{{ $member->status === 'active' ? 'active' : 'inactive' }}">
+                <td>{{ $member->rec_number }}</td>
+                <td>{{ $member->last_name }}, {{ $member->first_name }} {{ $member->middle_name ? $member->middle_name[0].'.' : '' }}</td>
+                <td>{{ $member->license_number ?? '-' }}</td>
+                <td class="text-center">
+                    <span class="badge badge-{{ $member->status }}">
                         {{ ucfirst($member->status) }}
                     </span>
                 </td>
                 <td>
                     @if($member->is_lifetime_member)
-                        <span class="status-badge badge-lifetime">Lifetime</span>
+                        Lifetime
                     @elseif($member->membership_end)
                         {{ \Carbon\Carbon::parse($member->membership_end)->format('m/d/Y') }}
                     @else
-                        N/A
+                        -
                     @endif
                 </td>
-                <td>{{ $member->membershipType->type_name ?? 'N/A' }}</td>
+                <td>{{ $member->membershipType->type_name ?? '-' }}</td>
+                <td>{{ $member->section->bureau->bureau_name ?? '-' }}</td>
+                <td>{{ $member->section->section_name ?? '-' }}</td>
             </tr>
-            @empty
-            <tr>
-                <td colspan="5" style="text-align: center; color: #7f8c8d; padding: 20px;">No members in this section</td>
-            </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
-    @endforeach
-    @endforeach
-    
+
     <div class="footer">
-        <p>Confidential Report - Generated by {{ config('app.name') }}</p>
-        <p>Page 1 of 1</p>
+        {{ config('app.name') }} | Page {PAGENO} of {nbpg} | Generated on {{ now()->format('M j, Y g:i A') }}
     </div>
 </body>
 </html>

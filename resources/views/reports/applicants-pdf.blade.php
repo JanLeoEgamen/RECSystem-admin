@@ -4,237 +4,162 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Applicant Report - {{ now()->format('m/d/Y') }}</title>
     <style>
-        body { 
-            font-family: 'DejaVu Sans', Arial, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            color: #333;
-            line-height: 1.4;
+        @page {
+            size: A4;
+            margin: 1cm;
         }
-        
-        .header { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            padding-bottom: 20px; 
-            border-bottom: 1px solid #e0e0e0;
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: #2c3e50;
+            line-height: 1.5;
+            font-size: 10px;
+            background-color: #fff;
+            margin: 0;
         }
-        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ccc;
+        }
         .header h1 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-            font-size: 28px;
+            font-size: 18px;
+            margin: 0;
+            color: #1a1a1a;
         }
-        
-        .header p {
-            color: #7f8c8d;
-            margin-top: 0;
-            font-size: 14px;
+        .header .subtitle {
+            font-size: 10px;
+            color: #777;
         }
-        
-        .summary-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 20px; 
-            margin-bottom: 30px; 
-        }
-        
-        .summary-card { 
-            background: #fff;
-            border-radius: 8px; 
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            border-top: 4px solid #3498db;
-        }
-        
-        .summary-card.approved { border-top-color: #2ecc71; }
-        .summary-card.pending { border-top-color: #f39c12; }
-        .summary-card.rejected { border-top-color: #e74c3c; }
-        
-        .summary-card-title { 
-            font-size: 14px; 
-            color: #7f8c8d; 
-            margin-bottom: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .summary-card-value { 
-            font-size: 28px; 
-            font-weight: bold; 
-            color: #2c3e50;
-        }
-        
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 20px; 
-            margin-bottom: 40px; 
-        }
-        
-        .stats-card { 
-            background: #fff;
-            border-radius: 8px; 
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-        
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 40px; 
-            page-break-inside: avoid; 
-            font-size: 13px;
-        }
-        
-        th, td { 
-            padding: 12px 15px; 
-            text-align: left; 
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        th { 
-            background-color: #f8f9fa; 
-            color: #2c3e50;
-            font-weight: 600;
-            text-transform: uppercase;
+        .section-title {
             font-size: 12px;
-            letter-spacing: 0.5px;
-        }
-        
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .section-title { 
-            background-color: #f8f9fa; 
-            padding: 12px 20px; 
-            margin: 30px 0 15px 0; 
             font-weight: 600;
+            border-bottom: 1px solid #ddd;
+            margin: 20px 0 10px;
+            padding-bottom: 4px;
             color: #2c3e50;
+        }
+        .summary-cards {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .summary-card {
+            flex: 1 1 18%;
+            background: #f9fafb;
             border-left: 4px solid #3498db;
-            border-radius: 4px 0 0 4px;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
+        .summary-card.approved { border-left-color: #2ecc71; }
+        .summary-card.pending { border-left-color: #f39c12; }
+        .summary-card.rejected { border-left-color: #e74c3c; }
         
-        .page-break { 
-            page-break-after: always; 
+        .summary-card .title {
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 2px;
         }
-        
-        .logo {
-            height: 60px;
+        .summary-card .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 15px;
+            font-size: 9px;
         }
-        
+        th, td {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f3f6f9;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 8px;
+            color: #34495e;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
         .badge {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 8px;
             font-weight: 600;
         }
-        
         .badge-approved {
-            background-color: #d5f5e3;
+            background-color: #eafaf1;
             color: #27ae60;
         }
-        
         .badge-pending {
             background-color: #fdebd0;
             color: #f39c12;
         }
-        
         .badge-rejected {
             background-color: #fadbd8;
             color: #e74c3c;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .footer {
+            text-align: center;
+            font-size: 8px;
+            color: #aaa;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        .empty-row {
+            color: #777;
+            text-align: center;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <!-- Replace with your actual logo path -->
-        <!-- <img src="{{ public_path('images/logo.png') }}" class="logo" alt="Organization Logo"> -->
         <h1>Applicant Report</h1>
-        <p>Generated on {{ now()->format('F j, Y \a\t g:i A') }}</p>
+        <div class="subtitle">Generated on {{ now()->format('F j, Y g:i A') }}</div>
     </div>
 
-    <!-- Summary Section -->
-    <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 20px;">Summary Overview</h2>
-    <div class="summary-grid">
+    <div class="section-title">Summary Overview</div>
+    <div class="summary-cards">
         <div class="summary-card">
-            <div class="summary-card-title">Total Applicants</div>
-            <div class="summary-card-value">{{ $totalApplicants }}</div>
+            <div class="title">Total Applicants</div>
+            <div class="value">{{ number_format($totalApplicants) }}</div>
         </div>
         <div class="summary-card approved">
-            <div class="summary-card-title">Approved</div>
-            <div class="summary-card-value">{{ $approvedApplicants }}</div>
+            <div class="title">Approved</div>
+            <div class="value">{{ number_format($approvedApplicants) }}</div>
         </div>
         <div class="summary-card pending">
-            <div class="summary-card-title">Pending</div>
-            <div class="summary-card-value">{{ $pendingApplicants }}</div>
+            <div class="title">Pending</div>
+            <div class="value">{{ number_format($pendingApplicants) }}</div>
         </div>
         <div class="summary-card rejected">
-            <div class="summary-card-title">Rejected</div>
-            <div class="summary-card-value">{{ $rejectedApplicants }}</div>
-        </div>
-    </div>
-
-    <!-- Demographics Section -->
-    <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 20px;">Demographics</h2>
-    
-    <h3 style="color: #2c3e50; margin: 25px 0 15px 0; font-size: 16px;">Gender Distribution</h3>
-    <div class="stats-grid">
-        <div class="stats-card">
-            <div class="summary-card-title">Male</div>
-            <div class="summary-card-value">{{ $genderCounts['Male'] ?? 0 }}</div>
-        </div>
-        <div class="stats-card">
-            <div class="summary-card-title">Female</div>
-            <div class="summary-card-value">{{ $genderCounts['Female'] ?? 0 }}</div>
-        </div>
-        <div class="stats-card">
-            <div class="summary-card-title">Other</div>
-            <div class="summary-card-value">{{ $genderCounts['other'] ?? 0 }}</div>
-        </div>
-    </div>
-
-    <h3 style="color: #2c3e50; margin: 25px 0 15px 0; font-size: 16px;">Age Statistics</h3>
-    <div class="stats-grid">
-        <div class="stats-card">
-            <div class="summary-card-title">Youngest</div>
-            <div class="summary-card-value">
-                @if($youngest)
-                    {{ \Carbon\Carbon::parse($youngest->birthdate)->age }} years
-                @else
-                    N/A
-                @endif
-            </div>
-        </div>
-        <div class="stats-card">
-            <div class="summary-card-title">Oldest</div>
-            <div class="summary-card-value">
-                @if($oldest)
-                    {{ \Carbon\Carbon::parse($oldest->birthdate)->age }} years
-                @else
-                    N/A
-                @endif
-            </div>
-        </div>
-        <div class="stats-card">
-            <div class="summary-card-title">Average Age</div>
-            <div class="summary-card-value">
-                @if($averageAge)
-                    {{ round($averageAge) }} years
-                @else
-                    N/A
-                @endif
-            </div>
+            <div class="title">Rejected</div>
+            <div class="value">{{ number_format($rejectedApplicants) }}</div>
         </div>
     </div>
 
     <!-- Approved Applicants -->
-    <div class="section-title">Approved Applicants ({{ $approvedApplicants }})</div>
+    <div class="section-title">Approved Applicants ({{ number_format($approvedApplicants) }})</div>
     <table>
         <thead>
             <tr>
@@ -251,13 +176,13 @@
         <tbody>
             @forelse($approved as $applicant)
             <tr>
-                <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}</td>
+                <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }}</td>
                 <td>{{ ucfirst($applicant->sex) }}</td>
                 <td>
                     @if($applicant->birthdate)
                         {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
                     @else
-                        N/A
+                        -
                     @endif
                 </td>
                 <td>{{ $applicant->created_at->format('m/d/Y') }}</td>
@@ -265,23 +190,23 @@
                     @if($applicant->member && $applicant->member->created_at)
                         {{ $applicant->member->created_at->format('m/d/Y') }}
                     @else
-                        N/A
+                        -
                     @endif
                 </td>
-                <td>{{ $applicant->member->section->section_name ?? 'N/A' }}</td>
-                <td>{{ $applicant->member->section->bureau->bureau_name ?? 'N/A' }}</td>
-                <td>{{ $applicant->member->membershipType->type_name ?? 'N/A' }}</td>
+                <td>{{ $applicant->member->section->section_name ?? '-' }}</td>
+                <td>{{ $applicant->member->section->bureau->bureau_name ?? '-' }}</td>
+                <td>{{ $applicant->member->membershipType->type_name ?? '-' }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="8" style="text-align: center; color: #7f8c8d; padding: 20px;">No approved applicants found</td>
+                <td colspan="8" class="empty-row">No approved applicants found</td>
             </tr>
             @endforelse
         </tbody>
     </table>
 
     <!-- Pending Applicants -->
-    <div class="section-title">Pending Applicants ({{ $pendingApplicants }})</div>
+    <div class="section-title">Pending Applicants ({{ number_format($pendingApplicants) }})</div>
     <table>
         <thead>
             <tr>
@@ -295,28 +220,28 @@
         <tbody>
             @forelse($pending as $applicant)
             <tr>
-                <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}</td>
+                <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }}</td>
                 <td>{{ ucfirst($applicant->sex) }}</td>
                 <td>
                     @if($applicant->birthdate)
                         {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
                     @else
-                        N/A
+                        -
                     @endif
                 </td>
                 <td>{{ $applicant->created_at->format('m/d/Y') }}</td>
-                <td><span class="badge badge-pending">Pending</span></td>
+                <td class="text-center"><span class="badge badge-pending">Pending</span></td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" style="text-align: center; color: #7f8c8d; padding: 20px;">No pending applicants found</td>
+                <td colspan="5" class="empty-row">No pending applicants found</td>
             </tr>
             @endforelse
         </tbody>
     </table>
 
     <!-- Rejected Applicants -->
-    <div class="section-title">Rejected Applicants ({{ $rejectedApplicants }})</div>
+    <div class="section-title">Rejected Applicants ({{ number_format($rejectedApplicants) }})</div>
     <table>
         <thead>
             <tr>
@@ -331,30 +256,30 @@
         <tbody>
             @forelse($rejected as $applicant)
             <tr>
-                <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}</td>
+                <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }}</td>
                 <td>{{ ucfirst($applicant->sex) }}</td>
                 <td>
                     @if($applicant->birthdate)
                         {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
                     @else
-                        N/A
+                        -
                     @endif
                 </td>
                 <td>{{ $applicant->created_at->format('m/d/Y') }}</td>
                 <td>{{ $applicant->updated_at->format('m/d/Y') }}</td>
-                <td><span class="badge badge-rejected">Rejected</span></td>
+                <td class="text-center"><span class="badge badge-rejected">Rejected</span></td>
             </tr>
             @empty
             <tr>
-                <td colspan="6" style="text-align: center; color: #7f8c8d; padding: 20px;">No rejected applicants found</td>
+                <td colspan="6" class="empty-row">No rejected applicants found</td>
             </tr>
             @endforelse
         </tbody>
     </table>
     
     <!-- Footer -->
-    <div style="text-align: center; margin-top: 50px; color: #7f8c8d; font-size: 12px; border-top: 1px solid #e0e0e0; padding-top: 15px;">
-        <p>Confidential Report - Generated by {{ config('app.name') }}</p>
+    <div class="footer">
+        {{ config('app.name') }} | Page {PAGENO} of {nbpg} | Generated on {{ now()->format('M j, Y g:i A') }}
     </div>
 </body>
 </html>

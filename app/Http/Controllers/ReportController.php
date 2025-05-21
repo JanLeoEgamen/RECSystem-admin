@@ -55,29 +55,41 @@ class ReportController extends Controller implements HasMiddleware
     }
 
     public function membership(Request $request)
-    {
-        // Summary statistics
-        $totalMembers = Member::count();
-        $activeMembers = Member::where('status', 'active')->count();
-        $inactiveMembers = $totalMembers - $activeMembers;
-        $totalBureaus = Bureau::count();
-        $totalSections = Section::count();
+{
+    // Summary statistics
+    $totalMembers = Member::count();
+    $activeMembers = Member::where('status', 'active')->count();
+    $inactiveMembers = $totalMembers - $activeMembers;
+    
+    // Get bureaus with their sections and member counts (active/inactive)
+    $bureaus = Bureau::with(['sections' => function($query) {
+        $query->withCount(['members as active_members_count' => function($q) {
+                $q->where('status', 'active');
+            }])
+            ->withCount(['members as inactive_members_count' => function($q) {
+                $q->where('status', 'inactive');
+            }])
+            ->withCount('members as total_members_count')
+            ->orderBy('section_name');
+    }])
+    ->withCount(['members as active_members_count' => function($q) {
+        $q->where('status', 'active');
+    }])
+    ->withCount(['members as inactive_members_count' => function($q) {
+        $q->where('status', 'inactive');
+    }])
+    ->withCount('members as total_members_count')
+    ->withCount('sections')
+    ->orderBy('bureau_name')
+    ->get();
 
-        // Get bureaus with their sections and member counts
-        $bureaus = Bureau::with(['sections' => function($query) {
-            $query->withCount('members')
-                ->orderBy('section_name');
-        }])->withCount('members', 'sections')
-        ->orderBy('bureau_name')
-        ->get();
+    // Get all members with their relationships for the detailed list
+    $members = Member::with(['section.bureau', 'membershipType'])
+                    ->orderBy('last_name')
+                    ->orderBy('first_name')
+                    ->get();
 
-        // Get all members with their relationships for the detailed list
-        $members = Member::with(['section', 'membershipType'])
-                        ->orderBy('last_name')
-                        ->orderBy('first_name')
-                        ->get();
-
-            // Check if PDF was requested
+    // Check if PDF was requested
     if ($request->has('export') && $request->export === 'pdf') {
         $options = new Options();
         $options->set('isRemoteEnabled', true);
@@ -88,8 +100,6 @@ class ReportController extends Controller implements HasMiddleware
             'totalMembers' => $totalMembers,
             'activeMembers' => $activeMembers,
             'inactiveMembers' => $inactiveMembers,
-            'totalBureaus' => $totalBureaus,
-            'totalSections' => $totalSections,
             'bureaus' => $bureaus,
             'members' => $members,
         ])->render();
@@ -101,16 +111,14 @@ class ReportController extends Controller implements HasMiddleware
         return $dompdf->stream("membership_report_".now()->format('Y-m-d').".pdf");
     }
 
-        return view('reports.membership', [
-            'totalMembers' => $totalMembers,
-            'activeMembers' => $activeMembers,
-            'inactiveMembers' => $inactiveMembers,
-            'totalBureaus' => $totalBureaus,
-            'totalSections' => $totalSections,
-            'bureaus' => $bureaus,
-            'members' => $members,
-        ]);
-    }
+    return view('reports.membership', [
+        'totalMembers' => $totalMembers,
+        'activeMembers' => $activeMembers,
+        'inactiveMembers' => $inactiveMembers,
+        'bureaus' => $bureaus,
+        'members' => $members,
+    ]);
+}
 
     public function applicants(Request $request)
     {
