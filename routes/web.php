@@ -189,8 +189,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/applicants', [ReportController::class, 'applicants'])->name('reports.applicants');
     Route::get('/reports/licenses', [ReportController::class, 'licenses'])->name('reports.licenses');
     
-    //Email
-    Route::get('/emails/send', [EmailController::class, 'create'])->name('emails.create');
+    // Email Templates
+    Route::get('/emails', [EmailController::class, 'index'])->name('emails.index'); 
+    Route::get('/emails/create', [EmailController::class, 'create'])->name('emails.create'); 
+    Route::post('/emails', [EmailController::class, 'store'])->name('emails.store');
+    Route::delete('/emails', [EmailController::class, 'destroy'])->name('emails.destroy'); 
+    Route::get('/emails/{id}/edit', [EmailController::class, 'edit'])->name('emails.edit');
+    Route::put('/emails/{id}', [EmailController::class, 'update'])->name('emails.update');
+    Route::get('/emails/logs', [EmailController::class, 'logs'])->name('emails.logs');
+    Route::delete('/emails/logs/destroy', [EmailController::class, 'destroyLog'])->name('emails.logs.destroy');
+
+    // Email Sending
+    Route::get('/emails/compose', [EmailController::class, 'compose'])->name('emails.compose'); 
     Route::post('/emails/send', [EmailController::class, 'send'])->name('emails.send');
 
     //Address
@@ -266,14 +276,3 @@ require __DIR__.'/auth.php';
         return back()->with('message', 'Verification link sent!');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-
-
-// running a seeder using route
-// Route::get('/run-seeder', function () {
-//     Artisan::call('db:seed', [
-//         '--class' => 'YourSeederClassName', // e.g., UserSeeder
-//         '--force' => true
-//     ]);
-
-//     return 'Seeder executed';
-// });

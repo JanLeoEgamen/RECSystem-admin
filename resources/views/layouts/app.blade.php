@@ -13,6 +13,26 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            .dataTables_length select {
+                padding-right: 10px !important; /* reduce from 25px */
+                padding-left: 10px !important;
+                appearance: none !important;
+                -webkit-appearance: none !important;
+                -moz-appearance: none !important;
+                background-image: url("data:image/svg+xml;charset=US-ASCII,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='6'%20viewBox='0%200%2010%206'%3e%3cpath%20fill='none'%20stroke='%23333'%20stroke-width='1.5'%20d='M1%201l4%204%204-4'/%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: center 14px center; /* moved closer */
+                background-size: 10px 6px; /* slightly bigger arrow */
+                background-color: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                height: 33px;
+                line-height: 1.5;
+                font-size: 1rem;
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -32,10 +52,10 @@
                 {{ $slot }}
             </main>
         </div>
-    </body>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
 
-    @isset($script)
-        {{ $script }}
-    @endisset
+        @isset($script)
+            {{ $script }}
+        @endisset
+    </body>
 </html>
