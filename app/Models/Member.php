@@ -84,4 +84,11 @@ protected $dates = [
         return $this->belongsTo(MembershipType::class);
     }
 
+    public function certificates()
+    {
+        return $this->belongsToMany(Certificate::class)
+                    ->withPivot(['issued_at', 'sent_at', 'pdf_path'])
+                    ->withTimestamps();
+    }
+
 }
