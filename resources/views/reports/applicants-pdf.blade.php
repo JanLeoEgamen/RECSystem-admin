@@ -96,18 +96,6 @@
             font-size: 8px;
             font-weight: 600;
         }
-        .badge-approved {
-            background-color: #eafaf1;
-            color: #27ae60;
-        }
-        .badge-pending {
-            background-color: #fdebd0;
-            color: #f39c12;
-        }
-        .badge-rejected {
-            background-color: #fadbd8;
-            color: #e74c3c;
-        }
         .text-center {
             text-align: center;
         }
@@ -164,8 +152,6 @@
         <thead>
             <tr>
                 <th>Full Name</th>
-                <th>Sex</th>
-                <th>Age</th>
                 <th>Date Applied</th>
                 <th>Date Approved</th>
                 <th>Section</th>
@@ -177,14 +163,6 @@
             @forelse($approved as $applicant)
             <tr>
                 <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }}</td>
-                <td>{{ ucfirst($applicant->sex) }}</td>
-                <td>
-                    @if($applicant->birthdate)
-                        {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
-                    @else
-                        -
-                    @endif
-                </td>
                 <td>{{ $applicant->created_at->format('m/d/Y') }}</td>
                 <td>
                     @if($applicant->member && $applicant->member->created_at)
@@ -199,7 +177,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="empty-row">No approved applicants found</td>
+                <td colspan="6" class="empty-row">No approved applicants found</td>
             </tr>
             @endforelse
         </tbody>
@@ -211,30 +189,18 @@
         <thead>
             <tr>
                 <th>Full Name</th>
-                <th>Sex</th>
-                <th>Age</th>
                 <th>Date Applied</th>
-                <th>Status</th>
             </tr>
         </thead>
         <tbody>
             @forelse($pending as $applicant)
             <tr>
                 <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }}</td>
-                <td>{{ ucfirst($applicant->sex) }}</td>
-                <td>
-                    @if($applicant->birthdate)
-                        {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
-                    @else
-                        -
-                    @endif
-                </td>
                 <td>{{ $applicant->created_at->format('m/d/Y') }}</td>
-                <td class="text-center"><span class="badge badge-pending">Pending</span></td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="empty-row">No pending applicants found</td>
+                <td colspan="2" class="empty-row">No pending applicants found</td>
             </tr>
             @endforelse
         </tbody>
@@ -246,32 +212,20 @@
         <thead>
             <tr>
                 <th>Full Name</th>
-                <th>Sex</th>
-                <th>Age</th>
                 <th>Date Applied</th>
                 <th>Date Rejected</th>
-                <th>Status</th>
             </tr>
         </thead>
         <tbody>
             @forelse($rejected as $applicant)
             <tr>
                 <td>{{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }}</td>
-                <td>{{ ucfirst($applicant->sex) }}</td>
-                <td>
-                    @if($applicant->birthdate)
-                        {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
-                    @else
-                        -
-                    @endif
-                </td>
                 <td>{{ $applicant->created_at->format('m/d/Y') }}</td>
                 <td>{{ $applicant->updated_at->format('m/d/Y') }}</td>
-                <td class="text-center"><span class="badge badge-rejected">Rejected</span></td>
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="empty-row">No rejected applicants found</td>
+                <td colspan="3" class="empty-row">No rejected applicants found</td>
             </tr>
             @endforelse
         </tbody>

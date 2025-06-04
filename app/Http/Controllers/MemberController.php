@@ -183,7 +183,8 @@ public function index(Request $request)
             'status' => 'required|in:Active,Inactive',
 
             // License Information
-            'licence_class' => 'nullable',
+            'license_class' => 'nullable',
+            'callsign' => 'nullable',
             'license_number' => 'nullable',
             'license_expiration_date' => 'nullable|date',
             
@@ -264,8 +265,9 @@ public function index(Request $request)
             'status' => 'required|in:Active,Inactive',
 
             // License Information
-            'licence_class' => 'nullable',
+            'license_class' => 'nullable',
             'license_number' => 'nullable',
+            'callsign' => 'nullable',
             'license_expiration_date' => 'nullable|date',
             
             // Address Information
@@ -343,8 +345,9 @@ public function index(Request $request)
         $member->status = $request->status;
 
         // License Information
-        $member->licence_class = $request->licence_class;
+        $member->license_class = $request->license_class;
         $member->license_number = $request->license_number;
+        $member->callsign = $request->callsign;
         $member->license_expiration_date = $request->license_expiration_date;
 
         // Address Information

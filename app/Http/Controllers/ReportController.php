@@ -128,21 +128,6 @@ class ReportController extends Controller implements HasMiddleware
         $pendingApplicants = Applicant::where('status', 'pending')->count();
         $rejectedApplicants = Applicant::where('status', 'rejected')->count();
 
-        // Gender breakdown
-        $genderCounts = Applicant::selectRaw('sex, count(*) as count')
-            ->groupBy('sex')
-            ->get()
-            ->pluck('count', 'sex');
-
-        // Age statistics
-    $youngest = Applicant::whereNotNull('birthdate')->orderBy('birthdate', 'desc')->first();
-    $oldest = Applicant::whereNotNull('birthdate')->orderBy('birthdate', 'asc')->first();
-    
-    // More accurate age calculation
-    $averageAge = Applicant::whereNotNull('birthdate')
-        ->selectRaw('AVG(DATEDIFF(CURDATE(), birthdate)/365) as avg_age')
-        ->first()->avg_age;
-
         // Get applicants grouped by status
         $approved = Applicant::where('status', 'approved')
             ->with(['member.section.bureau', 'member.membershipType'])
@@ -157,49 +142,40 @@ class ReportController extends Controller implements HasMiddleware
             ->orderBy('created_at', 'desc')
             ->get();
 
-           // PDF Export
-    if ($request->has('export') && $request->export === 'pdf') {
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-        
-        $dompdf = new Dompdf($options);
-        $html = view('reports.applicants-pdf', [
-            'totalApplicants' => $totalApplicants,
-            'approvedApplicants' => $approvedApplicants,
-            'pendingApplicants' => $pendingApplicants,
-            'rejectedApplicants' => $rejectedApplicants,
-            'genderCounts' => $genderCounts,
-            'youngest' => $youngest,
-            'oldest' => $oldest,
-            'averageAge' => $averageAge,
-            'approved' => $approved,
-            'pending' => $pending,
-            'rejected' => $rejected,
-        ])->render();
-        
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        
-        return $dompdf->stream("applicants_report_".now()->format('Y-m-d').".pdf");
-    }
+        // PDF Export
+        if ($request->has('export') && $request->export === 'pdf') {
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            
+            $dompdf = new Dompdf($options);
+            $html = view('reports.applicants-pdf', [
+                'totalApplicants' => $totalApplicants,
+                'approvedApplicants' => $approvedApplicants,
+                'pendingApplicants' => $pendingApplicants,
+                'rejectedApplicants' => $rejectedApplicants,
+                'approved' => $approved,
+                'pending' => $pending,
+                'rejected' => $rejected,
+            ])->render();
+            
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            
+            return $dompdf->stream("applicants_report_".now()->format('Y-m-d').".pdf");
+        }
 
         return view('reports.applicants', [
             'totalApplicants' => $totalApplicants,
             'approvedApplicants' => $approvedApplicants,
             'pendingApplicants' => $pendingApplicants,
             'rejectedApplicants' => $rejectedApplicants,
-            'genderCounts' => $genderCounts,
-            'youngest' => $youngest,
-            'oldest' => $oldest,
-            'averageAge' => $averageAge,
             'approved' => $approved,
             'pending' => $pending,
             'rejected' => $rejected,
         ]);
     }
-
 
 
     public function licenses(Request $request)
@@ -234,8 +210,8 @@ class ReportController extends Controller implements HasMiddleware
                 }
             ])
             ->with(['members' => function($q) {
-                $q->whereNotNull('license_number')
-                ->orderBy('licence_class')
+                // Removed the whereNotNull filter to load ALL members
+                $q->orderBy('licence_class')
                 ->orderBy('last_name')
                 ->orderBy('first_name');
             }])

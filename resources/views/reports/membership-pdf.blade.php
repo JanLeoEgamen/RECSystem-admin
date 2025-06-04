@@ -214,7 +214,7 @@
             <tr>
                 <td>{{ $member->rec_number }}</td>
                 <td>{{ $member->last_name }}, {{ $member->first_name }} {{ $member->middle_name ? $member->middle_name[0].'.' : '' }}</td>
-                <td>{{ $member->license_number ?? '-' }}</td>
+                <td>{{ $member->callsign ?? '-' }}</td>
                 <td class="text-center">
                     <span class="badge badge-{{ $member->status }}">
                         {{ ucfirst($member->status) }}

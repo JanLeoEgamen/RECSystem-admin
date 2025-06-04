@@ -32,7 +32,7 @@
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Applicant Summary</h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Total Applicants -->
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
@@ -93,62 +93,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Gender Breakdown -->
-                    <div class="mb-6">
-                        <h4 class="text-md font-medium text-gray-900 dark:text-white mb-2">Gender Breakdown</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                                <p class="text-sm text-gray-500 dark:text-gray-300">Male</p>
-                                <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">{{ $genderCounts['Male'] ?? 0 }}</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                                <p class="text-sm text-gray-500 dark:text-gray-300">Female</p>
-                                <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">{{ $genderCounts['Female'] ?? 0 }}</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                                <p class="text-sm text-gray-500 dark:text-gray-300">Other</p>
-                                <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">{{ $genderCounts['other'] ?? 0 }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Age Statistics -->
-                    <div>
-                        <h4 class="text-md font-medium text-gray-900 dark:text-white mb-2">Age Statistics</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                                <p class="text-sm text-gray-500 dark:text-gray-300">Youngest</p>
-                                <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                                    @if($youngest)
-                                        {{ \Carbon\Carbon::parse($youngest->birthdate)->age }} years
-                                    @else
-                                        N/A
-                                    @endif
-                                </p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                                <p class="text-sm text-gray-500 dark:text-gray-300">Oldest</p>
-                                <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                                    @if($oldest)
-                                        {{ \Carbon\Carbon::parse($oldest->birthdate)->age }} years
-                                    @else
-                                        N/A
-                                    @endif
-                                </p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                                <p class="text-sm text-gray-500 dark:text-gray-300">Average Age</p>
-                                <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                                    @if($averageAge)
-                                        {{ round($averageAge) }} years
-                                    @else
-                                        N/A
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -162,8 +106,6 @@
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Full Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sex</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Age</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date Applied</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date Approved</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Section</th>
@@ -176,16 +118,6 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
                                         {{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ ucfirst($applicant->sex) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        @if($applicant->birthdate)
-                                            {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
-                                        @else
-                                            N/A
-                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->created_at->format('m/d/Y') }}
@@ -209,7 +141,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                         No approved applicants found
                                     </td>
                                 </tr>
@@ -230,8 +162,6 @@
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Full Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sex</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Age</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date Applied</th>
                                 </tr>
                             </thead>
@@ -242,22 +172,12 @@
                                         {{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ ucfirst($applicant->sex) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        @if($applicant->birthdate)
-                                            {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->created_at->format('m/d/Y') }}
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                         No pending applicants found
                                     </td>
                                 </tr>
@@ -278,8 +198,6 @@
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Full Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sex</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Age</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date Applied</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date Rejected</th>
                                 </tr>
@@ -291,16 +209,6 @@
                                         {{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ ucfirst($applicant->sex) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        @if($applicant->birthdate)
-                                            {{ \Carbon\Carbon::parse($applicant->birthdate)->age }}
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->created_at->format('m/d/Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
@@ -309,7 +217,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                         No rejected applicants found
                                     </td>
                                 </tr>
@@ -321,4 +229,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>w
+</x-app-layout>

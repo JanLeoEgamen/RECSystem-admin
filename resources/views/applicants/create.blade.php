@@ -191,6 +191,13 @@
                                         @enderror
                                     </div>
                                     <div>
+                                        <label for="callsign" class="block text-sm font-medium">Callsign</label>
+                                        <input value="{{ old('callsign') }}" name="callsign" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        @error('callsign')
+                                        <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
                                         <label for="license_expiration_date" class="block text-sm font-medium">Expiration Date</label>
                                         <input value="{{ old('license_expiration_date') }}" name="license_expiration_date" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                         @error('license_expiration_date')

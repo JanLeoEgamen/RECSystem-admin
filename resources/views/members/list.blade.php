@@ -309,23 +309,27 @@
                     alert(message); // Simple alert for demonstration
                 }
                 
-                // Existing delete function
-                function deleteMember(id) {
-                    if (confirm("Are you sure you want to delete?")) {
-                        $.ajax({
-                            url: '{{ route("members.destroy") }}',
-                            type: 'delete',
-                            data: {id: id},
-                            dataType: 'json',
-                            headers: {
-                                'x-csrf-token': '{{ csrf_token() }}'
-                            },
-                            success: function(response) {
-                                table.ajax.reload();
-                            }
-                        });
-                    }
+    $(document).on('click', '[onclick^="deleteMember"]', function() {
+        var id = $(this).attr('onclick').match(/deleteMember\((\d+)\)/)[1];
+        if (confirm("Are you sure you want to delete?")) {
+            $.ajax({
+                url: '{{ route("members.destroy") }}',
+                type: 'delete',
+                data: {id: id},
+                dataType: 'json',
+                headers: {
+                    'x-csrf-token': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    $('#membersTable').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseJSON.message);
                 }
+            });
+        }
+    });
+
             });
         </script>
     </x-slot>

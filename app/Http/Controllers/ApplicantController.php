@@ -247,8 +247,9 @@ class ApplicantController extends Controller implements HasMiddleware
             'membership_start' => 'required|date',
             'membership_end' => 'required_if:is_lifetime_member,0|date|after:membership_start',
             'is_lifetime_member' => 'boolean',
-            'licence_class' => 'nullable',
+            'license_class' => 'nullable',
             'license_number' => 'nullable',
+            'callsign' => 'nullable',
             'license_expiration_date' => 'nullable|date',
         ]);
 
@@ -270,8 +271,9 @@ class ApplicantController extends Controller implements HasMiddleware
         $member->membership_end = $request->is_lifetime_member ? null : $request->membership_end;
         $member->is_lifetime_member = $request->is_lifetime_member ?? false;
         $member->last_renewal_date = now();
-        $member->licence_class = $request->licence_class;
+        $member->license_class = $request->license_class;
         $member->license_number = $request->license_number;
+        $member->callsign = $request->callsign;
         $member->license_expiration_date = $request->license_expiration_date;
         $member->status = "Active";
         $member->applicant_id = $applicant->id;
@@ -309,8 +311,9 @@ class ApplicantController extends Controller implements HasMiddleware
         $applicant->relationship = $request->relationship;
 
         // License Information
-        $applicant->licence_class = $request->licence_class;
+        $applicant->license_class = $request->license_class;
         $applicant->license_number = $request->license_number;
+        $applicant->callsign = $request->callsign;
         $applicant->license_expiration_date = $request->license_expiration_date;
 
         // Address Information

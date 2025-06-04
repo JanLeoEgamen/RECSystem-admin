@@ -268,9 +268,16 @@
                                 <h3 class="text-xl font-semibold mb-4">License Information</h3>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                        <label for="licence_class" class="block text-sm font-medium">License Class</label>
-                                        <input value="{{ old('licence_class', $member->licence_class) }}" name="licence_class" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                        @error('licence_class')
+                                        <label for="license_class" class="block text-sm font-medium">License Class</label>
+                                        <input value="{{ old('license_class', $member->license_class) }}" name="license_class" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        @error('license_class')
+                                        <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label for="callsign" class="block text-sm font-medium">Callsign</label>
+                                        <input value="{{ old('callsign') }}" name="callsign" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        @error('callsign')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>

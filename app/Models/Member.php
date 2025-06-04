@@ -28,9 +28,10 @@ class Member extends Model
         'emergency_contact_number',
         'relationship',
         'rec_number',
-        'licence_class',
+        'license_class', 
         'license_number',
         'license_expiration_date',
+        'callsign',
         'applicant_id',
         'section_id',
         'membership_type_id',
@@ -54,10 +55,16 @@ class Member extends Model
 protected $dates = [
     'birthdate',
     'license_expiration_date',
-    'membership_end', // Add this line
-    'membership_start', // You might want to add this too
-    'last_renewal_date', // And this if needed
+    'membership_end',
+    'membership_start',
+    'last_renewal_date',
+    'created_at',
+    'updated_at',
+    'deleted_at'
 ];
+
+
+
 
     public function user()
     {

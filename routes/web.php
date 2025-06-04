@@ -27,6 +27,7 @@ use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\LicenseController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -226,7 +227,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/certificates/{certificate}/view/{member}', [CertificateController::class, 'viewCertificate'])->name('certificates.view');
     Route::get('/certificates/{id}/view', [CertificateController::class, 'view'])->name('certificates.view');
 
-    
+    // Licenses
+    Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');
+    Route::get('/licenses/unlicensed', [LicenseController::class, 'unlicensed'])->name('licenses.unlicensed');
+    Route::get('/licenses/{id}/edit', [LicenseController::class, 'edit'])->name('licenses.edit');
+    Route::post('/licenses/{id}', [LicenseController::class, 'update'])->name('licenses.update');
+    Route::delete('/licenses', [LicenseController::class, 'destroy'])->name('licenses.destroy');
+    Route::get('/licenses/{id}', [LicenseController::class, 'show'])->name('licenses.show');
+
+
 });
 
 Route::fallback(function () {

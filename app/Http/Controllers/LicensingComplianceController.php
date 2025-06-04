@@ -14,9 +14,9 @@ class LicensingComplianceController extends Controller
         // Card Metrics
         $licensedMembers = Member::whereNotNull('license_number')->count();
         $expiringSoon = Member::whereBetween('license_expiration_date', [now(), now()->addDays(30)])->count();
-        $topLicenseClass = Member::groupBy('licence_class')
+        $topLicenseClass = Member::groupBy('license_class')
             ->orderByDesc(DB::raw('COUNT(*)'))
-            ->pluck('licence_class')
+            ->pluck('license_class')
             ->first();
         
         if ($request->ajax()) {

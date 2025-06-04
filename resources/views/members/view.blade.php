@@ -162,6 +162,10 @@
                                     <p class="mt-1">{{ $member->license_number ?? 'N/A' }}</p>
                                 </div>
                                 <div>
+                                    <p class="text-sm font-medium text-gray-500">Callsign</p>
+                                    <p class="mt-1">{{ $member->callsign ?? 'N/A' }}</p>
+                                </div>
+                                <div>
                                     <p class="text-sm font-medium text-gray-500">Expiration Date</p>
                                     <p class="mt-1">{{ $member->license_expiration_date ? \Carbon\Carbon::parse($member->license_expiration_date)->format('M d, Y') : 'N/A' }}</p>
                                 </div>
