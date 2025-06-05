@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Applicant;
+use App\Models\MembershipType;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,7 +32,11 @@ class AddressController extends Controller
     public function showMemberCreateForm()
     {
         $regions = $this->getRegions();
-        return view('members.create', compact('regions'));
+        $applicants = Applicant::all();
+        $membershipTypes = MembershipType::all();
+        $sections = Section::all();
+
+        return view('members.create', compact('regions', 'applicants', 'membershipTypes', 'sections'));
     }
 
     public function showMemberEditForm($id)
