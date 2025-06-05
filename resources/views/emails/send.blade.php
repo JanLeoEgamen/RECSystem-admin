@@ -26,7 +26,7 @@
                 </div>
             @endif
 
-            @if ($errors->any())
+            @if ($errors->any()))
                 <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg shadow">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
@@ -40,25 +40,52 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Select Member</label>
-                    <select id="member_select" name="member_id" class="w-full border-gray-300 rounded-lg shadow-sm mt-1">
-                        <option value="" disabled selected hidden>Select a member</option>
-                        <option value="all">All Members</option> <!-- Optional all option -->
-                        @foreach ($members as $member)
-                            <option value="{{ $member->id }}">{{ $member->first_name }} {{ $member->last_name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Select Members</label>
+                    <div class="relative mt-1">
+                        <input 
+                            type="text" 
+                            id="member-search" 
+                            placeholder="Search members..." 
+                            class="w-full border-gray-300 rounded-lg shadow-sm"
+                        >
+                        <div class="mt-2 border border-gray-300 rounded-lg shadow-sm max-h-60 overflow-y-auto">
+                            <div class="p-2">
+                                <label class="inline-flex items-center">
+                                    <input 
+                                        type="checkbox" 
+                                        id="select-all-members" 
+                                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    >
+                                    <span class="ml-2">Select All Members</span>
+                                </label>
+                            </div>
+                            <div id="member-checkboxes" class="divide-y divide-gray-200">
+                                @foreach ($members as $member)
+                                    <div class="p-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <label class="inline-flex items-center">
+                                            <input 
+                                                type="checkbox" 
+                                                name="member_ids[]" 
+                                                value="{{ $member->id }}" 
+                                                class="member-checkbox rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            >
+                                            <span class="ml-2">{{ $member->first_name }} {{ $member->last_name }} ({{ $member->email }})</span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="template" class ="block text-sm font-medium text-gray-700 dark:text-gray-200">Choose Template</label>
+                    <label for="template" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Choose Template</label>
                     <select name="template" id="template" class="w-full border-gray-300 rounded-lg shadow-sm mt-1">
                         <option value="" disabled selected hidden>Choose a template</option>
                         <option value="custom">Custom Email</option>
                         @foreach ($templates as $template)
                             <option value="{{ $template->id }}">{{ $template->name }}</option>
                         @endforeach
-                    </select>
                     </select>
                 </div>
 
@@ -93,24 +120,54 @@
     </div>
 
     <x-slot name="script">
-        <!-- CSS and JS for Select2 and validation -->
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
         <script>
             $(document).ready(function () {
-                $('#member_select').select2({
-                    placeholder: "Select a member",
-                    width: '100%',
-                    allowClear: true
+                // Search functionality
+                $('#member-search').on('keyup', function() {
+                    const searchText = $(this).val().toLowerCase();
+                    $('#member-checkboxes div').each(function() {
+                        const memberText = $(this).text().toLowerCase();
+                        $(this).toggle(memberText.includes(searchText));
+                    });
                 });
 
-                $('#template').select2({
-                    placeholder: "Choose a template",
-                    width: '100%',
-                    allowClear: true
+                // Select all functionality
+                $('#select-all-members').change(function() {
+                    const isChecked = $(this).prop('checked');
+                    $('.member-checkbox').prop('checked', isChecked);
+                    
+                    // Add a hidden input for "all" if needed
+                    if (isChecked) {
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'select_all',
+                            value: '1'
+                        }).appendTo('form');
+                    } else {
+                        $('input[name="select_all"]').remove();
+                    }
+                });
+
+                // Uncheck "select all" if any checkbox is unchecked
+                $('#member-checkboxes').on('change', '.member-checkbox', function() {
+                    if (!$(this).prop('checked')) {
+                        $('#select-all-members').prop('checked', false);
+                        $('input[name="select_all"]').remove();
+                    }
+                    
+                    // If all checkboxes are checked manually, check the "select all" box
+                    const allChecked = $('.member-checkbox:checked').length === $('.member-checkbox').length;
+                    $('#select-all-members').prop('checked', allChecked);
+                    if (allChecked) {
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'select_all',
+                            value: '1'
+                        }).appendTo('form');
+                    }
                 });
 
                 function toggleCustomFields() {
@@ -122,17 +179,16 @@
                 }
 
                 $('#template').on('change', toggleCustomFields);
-
-                // Run on load in case of form repopulation
-                toggleCustomFields();
+                toggleCustomFields(); // Run on load
 
                 $('form').on('submit', function (e) {
-                    const member = $('#member_select').val();
+                    const selectedMembers = $('input[name="member_ids[]"]:checked').length;
                     const template = $('#template').val();
+                    const isSelectAll = $('input[name="select_all"]').length > 0;
 
-                    if (!member || !template) {
+                    if ((selectedMembers === 0 && !isSelectAll) || !template) {
                         e.preventDefault();
-                        alert("Please select both a member and a template.");
+                        alert("Please select at least one member and a template.");
                         return;
                     }
 
@@ -147,6 +203,5 @@
                 });
             });
         </script>
-
     </x-slot>
 </x-app-layout>

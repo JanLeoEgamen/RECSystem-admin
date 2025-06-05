@@ -19,12 +19,12 @@
                     <table id="certificatesTable" class="w-full">
                         <thead class="bg-gray-50">
                             <tr class="border-b">
-                                <th class="px-6 py-3 text-left">#</th>
-                                <th class="px-6 py-3 text-left">Title</th>
-                                <th class="px-6 py-3 text-left">Content</th>
-                                <th class="px-6 py-3 text-left">Signatories</th>
-                                <th class="px-6 py-3 text-left">Author</th>
-                                <th class="px-6 py-3 text-left">Created</th>
+                                <th class="px-6 py-3 text-center">#</th>
+                                <th class="px-6 py-3 text-center">Title</th>
+                                <th class="px-6 py-3 text-center">Content</th>
+                                <th class="px-6 py-3 text-center">Signatories</th>
+                                <th class="px-6 py-3 text-center">Author</th>
+                                <th class="px-6 py-3 text-center">Created</th>
                                 <th class="px-6 py-3 text-center">Action</th>
                             </tr>
                         </thead>
@@ -48,13 +48,13 @@
                     serverSide: true,
                     ajax: "{{ route('certificates.index') }}",
                     columns: [
-                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                        { data: 'title', name: 'title' },
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center'},
+                        { data: 'title', name: 'title', className: 'text-center'},
                         { data: 'content', name: 'content' },
-                        { data: 'signatories', name: 'signatories' },
-                        { data: 'author', name: 'user.first_name' },
-                        { data: 'created_at', name: 'created_at' },
-                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                        { data: 'signatories', name: 'signatories', className: 'text-center' },
+                        { data: 'author', name: 'user.first_name', className: 'text-center' },
+                        { data: 'created_at', name: 'created_at', className: 'text-center' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                     ],
                     responsive: true,
                     autoWidth: false,

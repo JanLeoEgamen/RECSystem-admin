@@ -45,10 +45,11 @@ class AddressController extends Controller
         $member = DB::table('members')->where('id', $id)->first();
         $membershipTypes = DB::table('membership_types')->get();
         $sections = DB::table('sections')->get();
-        
-        // You can also load member data here if needed
-        return view('members.edit', compact('regions', 'member', 'membershipTypes', 'sections'));
+        $applicants = DB::table('applicants')->get();
+
+        return view('members.edit', compact('regions', 'member', 'membershipTypes', 'sections', 'applicants'));
     }
+
 
     public function getProvinces($region_code)
     {

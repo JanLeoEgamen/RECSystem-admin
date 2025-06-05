@@ -31,8 +31,18 @@ class EmailController extends Controller
             })
             ->addColumn('action', function ($row) {
                 return '
-                    <a href="'.route('emails.edit', $row->id).'" class="text-blue-500 hover:underline">Edit</a>
-                    <button onclick="deleteEmailTemplate('.$row->id.')" class="text-red-500 hover:underline ml-2">Delete</button>
+                    <div class="flex space-x-2">
+                        <a href="'.route('emails.edit', $row->id).'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="Edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </a>
+                        <button onclick="deleteEmailTemplate('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
                 ';
             })
             ->make(true);
@@ -93,20 +103,24 @@ class EmailController extends Controller
     public function send(Request $request)
     {
         $request->validate([
-            'member_id' => 'required|string',
+            'member_ids' => 'required|array',
+            'member_ids.*' => 'exists:users,id', // validate each member ID exists
             'template' => 'required|string',
             'attachments.*' => 'file|max:10240',
             'custom_subject' => 'required_if:template,custom',
             'custom_message_body' => 'required_if:template,custom',
         ]);
 
-        $members = $request->member_id === 'all'
-            ? User::all()
-            : User::where('id', $request->member_id)->get();
+        // Handle "select all" case if you have that option
+        if (in_array('all', $request->member_ids)) {
+            $members = User::all();
+        } else {
+            $members = User::whereIn('id', $request->member_ids)->get();
+        }
 
         if ($request->template === 'custom') {
             $subject = $request->custom_subject;
-            $messageContent = nl2br(e($request->custom_message_body)); // optional HTML-safe
+            $messageContent = nl2br(e($request->custom_message_body));
         } else {
             $template = EmailTemplate::findOrFail($request->template);
             $subject = $template->name;
@@ -117,10 +131,9 @@ class EmailController extends Controller
             try {
                 $savedAttachments = [];
 
-                // Save attachments to disk first
                 if ($request->hasFile('attachments')) {
                     foreach ($request->file('attachments') as $file) {
-                        $path = $file->store('attachments', 'public'); // stored under storage/app/public/attachments
+                        $path = $file->store('attachments', 'public');
                         $savedAttachments[] = [
                             'name' => $file->getClientOriginalName(),
                             'path' => $path,
@@ -147,7 +160,6 @@ class EmailController extends Controller
                     }
                 });
 
-                // Log the successful email including attachments
                 EmailLog::create([
                     'recipient_email' => $member->email,
                     'recipient_name' => $member->name ?? ($member->first_name . ' ' . $member->last_name),
@@ -158,7 +170,7 @@ class EmailController extends Controller
                     'error_message' => null,
                     'sent_at' => now(),
                     'sent_by' => Auth::id(),
-                    'attachments' => $savedAttachments, // Log the file data
+                    'attachments' => $savedAttachments,
                 ]);
             } catch (\Exception $e) {
                 EmailLog::create([
@@ -171,7 +183,7 @@ class EmailController extends Controller
                     'error_message' => $e->getMessage(),
                     'sent_at' => now(),
                     'sent_by' => Auth::id(),
-                    'attachments' => $savedAttachments ?? null, // store even failed attempts
+                    'attachments' => $savedAttachments ?? null,
                 ]); 
 
                 Log::error('Email failed: ' . $e->getMessage());
@@ -223,7 +235,13 @@ class EmailController extends Controller
                 return $html;
             })
             ->addColumn('action', function ($log) {
-                return '<button onclick="deleteEmailLog('.$log->id.')" class="text-red-600 hover:text-red-900">Delete</button>';
+                return '
+                    <button onclick="deleteEmailLog('.$log->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                ';
             })
             ->rawColumns(['attachments', 'action']) // enable HTML for attachments column
             ->make(true);

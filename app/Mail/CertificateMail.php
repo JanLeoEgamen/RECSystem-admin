@@ -29,7 +29,7 @@ class CertificateMail extends Mailable
     public function build()
     {
         $mail = $this->subject($this->certificate->title)
-            ->markdown('emails.certificate');
+            ->markdown('certificates.certificate');
             
         // For new certificates, use the stored content
         if ($this->filePath === null) {

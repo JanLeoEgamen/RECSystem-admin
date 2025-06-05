@@ -25,9 +25,10 @@ class Certificate extends Model
     public function members()
     {
         return $this->belongsToMany(Member::class, 'certificate_member')
-                    ->withPivot('issued_at', 'sent_at')
+                    ->withPivot('issued_at', 'sent_at', 'pdf_path')
                     ->withTimestamps();
     }
+
 
     protected static function booted()
     {

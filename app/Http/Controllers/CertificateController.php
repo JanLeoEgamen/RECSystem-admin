@@ -32,12 +32,13 @@ class CertificateController extends Controller implements HasMiddleware
     {
         if ($request->ajax()) {
             $data = Certificate::with(['user', 'signatories'])->select('*');
-            
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
                     $buttons = '';
-                    
+
+                    // Edit button
                     if (request()->user()->can('edit certificates')) {
                         $buttons .= '<a href="'.route('certificates.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,6 +47,7 @@ class CertificateController extends Controller implements HasMiddleware
                         </a>';
                     }
 
+                    // Delete button
                     if (request()->user()->can('delete certificates')) {
                         $buttons .= '<a href="javascript:void(0)" onclick="deleteCertificate('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,7 +56,7 @@ class CertificateController extends Controller implements HasMiddleware
                         </a>';
                     }
 
-                    // Preview button
+                    // Preview button (always available)
                     $buttons .= '<a href="'.route('certificates.preview', $row->id).'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="Preview">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -65,7 +67,7 @@ class CertificateController extends Controller implements HasMiddleware
                     return '<div class="flex space-x-2">'.$buttons.'</div>';
                 })
                 ->editColumn('content', function($row) {
-                    return Str::limit(strip_tags($row->content), 50);
+                    return \Illuminate\Support\Str::limit(strip_tags($row->content), 50);
                 })
                 ->addColumn('signatories', function($row) {
                     return $row->signatories->pluck('name')->join(', ');
@@ -79,7 +81,7 @@ class CertificateController extends Controller implements HasMiddleware
                 ->rawColumns(['action', 'content'])
                 ->make(true);
         }
-        
+
         return view('certificates.list');
     }
 
@@ -245,10 +247,28 @@ class CertificateController extends Controller implements HasMiddleware
     }
 
 
-    public function download($id)
+    public function download($certificateId, $memberId)
     {
-        $dompdf = $this->generatePdf($id);
-        return $dompdf->stream("certificate_{$id}.pdf");
+        $certificate = Certificate::with('signatories')->findOrFail($certificateId);
+        $member = Member::findOrFail($memberId);
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new Dompdf($options);
+
+        $html = view('certificates.pdf-template', [
+            'certificate' => $certificate,
+            'member' => $member,  // pass member data for name, etc.
+            'issueDate' => now()->format('F j, Y'),
+        ])->render();
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        return $dompdf->stream("certificate_{$certificateId}_{$memberId}.pdf");
     }
 
     public function send($id)
@@ -265,6 +285,7 @@ class CertificateController extends Controller implements HasMiddleware
         
         return view('certificates.send', compact('certificate', 'members', 'sentMembers'));
     }
+
     public function sendCertificate(Request $request, $id)
     {
         $request->validate([
@@ -296,8 +317,8 @@ class CertificateController extends Controller implements HasMiddleware
             ]);
         }
         
-        return redirect()->route('certificates.send', $id)
-            ->with('success', 'Certificates sent successfully');
+        return back()->with('success', 'Certificates sent successfully');
+
     }
 
 
@@ -306,32 +327,126 @@ class CertificateController extends Controller implements HasMiddleware
     {
         $certificate = Certificate::findOrFail($certificateId);
         $member = Member::findOrFail($memberId);
-        
+
         $latestIssue = $certificate->members()->where('member_id', $memberId)
             ->orderBy('issued_at', 'desc')
             ->first();
-        
+
         if (!$latestIssue) {
             return back()->with('error', 'No certificate found to resend');
         }
-        
+
+        $pdfPath = $latestIssue->pivot->pdf_path ?? null;
+
+        if (!$pdfPath) {
+            return back()->with('error', 'No PDF certificate file found to resend');
+        }
+
         // Get the full path to the PDF file
-        $filePath = Storage::disk('public')->path($latestIssue->pivot->pdf_path);
-        
+        $filePath = Storage::disk('public')->path($pdfPath);
+
         // Send email with attachment
         Mail::to($member->email_address)->send(new CertificateMail(
-            $certificate, 
-            $member, 
-            $latestIssue->pivot->pdf_path,
+            $certificate,
+            $member,
+            $pdfPath,
             $filePath
         ));
-        
-        // Update sent_at timestamp
+
+        // Update sent_at timestamp for this member pivot record
         $certificate->members()->updateExistingPivot($memberId, [
             'sent_at' => now()
         ]);
-        
+
         return back()->with('success', 'Certificate resent successfully');
     }
 
+
+    public function deleteMemberCertificate(Certificate $certificate, Member $member)
+    {
+        try {
+            // Check if the member has this certificate
+            if (!$certificate->members()->where('member_id', $member->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This member does not have this certificate'
+                ], 404);
+            }
+
+            // Get the PDF path before detaching
+            $pdfPath = $certificate->members()
+                ->where('member_id', $member->id)
+                ->first()
+                ->pivot
+                ->pdf_path ?? null;
+
+            // Detach the member
+            $certificate->members()->detach($member->id);
+
+            // Delete the PDF file if it exists
+            if ($pdfPath && Storage::disk('public')->exists($pdfPath)) {
+                Storage::disk('public')->delete($pdfPath);
+            }
+
+            
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Certificate successfully removed from member'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function viewMemberCertificate($certificateId, $memberId)
+    {
+        $certificate = Certificate::with('signatories')->findOrFail($certificateId);
+        $member = Member::findOrFail($memberId);  // assuming your member model is Member
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new Dompdf($options);
+
+        $html = view('certificates.pdf-template', [
+            'certificate' => $certificate,
+            'member' => $member,  // now passing member data to the view
+            'issueDate' => now()->format('F j, Y')
+        ])->render();
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        return $dompdf->stream("certificate_{$certificateId}_member_{$memberId}.pdf", ['Attachment' => false]);
+    }
+
+    public function downloadCertificate($certificateId)
+    {
+        $certificate = Certificate::with('signatories')->findOrFail($certificateId);
+
+        // Use a default member or throw an error if member context is required
+        $html = view('certificates.pdf-template', [
+            'certificate' => $certificate,
+            'member' => null, // or a default member
+            'issueDate' => now()->format('F j, Y'),
+        ])->render();
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        return $dompdf->stream("certificate_{$certificateId}.pdf");
+    }
 }

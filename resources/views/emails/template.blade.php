@@ -126,7 +126,7 @@
         <!-- Main Content -->
         <div class="email-content">
             <h1>{{ $subject }}</h1>
-            <p>Hello {{ $user->first_name }},</p>
+            <p>Hello {{ $user->first_name }} {{ $user->last_name}},</p>
 
             {{-- Main message content --}}
             <div class="message">{!! $messageContent !!}</div>

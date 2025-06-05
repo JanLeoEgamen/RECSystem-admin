@@ -210,21 +210,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-municipalities/{region_code}/{province_code}', [AddressController::class, 'getMunicipalities'])->name('get.municipalities');
     Route::get('/get-barangays/{region_code}/{province_code}/{municipality_code}', [AddressController::class, 'getBarangays'])->name('get.barangays');
 
-
     // Certificates
     Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
     Route::get('/certificates/create', [CertificateController::class, 'create'])->name('certificates.create');
     Route::post('/certificates', [CertificateController::class, 'store'])->name('certificates.store');
     Route::get('/certificates/{id}/edit', [CertificateController::class, 'edit'])->name('certificates.edit');
     Route::put('/certificates/{id}', [CertificateController::class, 'update'])->name('certificates.update');
-    Route::delete('/certificates', [CertificateController::class, 'destroy'])->name('certificates.destroy');
+    Route::delete('/certificates', [CertificateController::class, 'destroy'])->name('certificates.destroy');    
 
     Route::get('/certificates/{id}/preview', [CertificateController::class, 'preview'])->name('certificates.preview');
-    Route::get('/certificates/{id}/download', [CertificateController::class, 'download'])->name('certificates.download');
+    Route::get('/certificates/{certificate}/download/{member}', [CertificateController::class, 'download'])->name('certificates.download');
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'downloadCertificate'])->name('certificates.download-certificate');
     Route::get('/certificates/{id}/send', [CertificateController::class, 'send'])->name('certificates.send');
     Route::post('/certificates/{id}/send', [CertificateController::class, 'sendCertificate'])->name('certificates.send-certificate');
     Route::get('/certificates/{certificate}/resend/{member}', [CertificateController::class, 'resendCertificate'])->name('certificates.resend');
-    Route::get('/certificates/{certificate}/view/{member}', [CertificateController::class, 'viewCertificate'])->name('certificates.view');
+    Route::get('/certificates/{certificate}/member/{member}/view', [CertificateController::class, 'viewMemberCertificate'])->name('certificates.view-member');
     Route::get('/certificates/{id}/view', [CertificateController::class, 'view'])->name('certificates.view');
 
     // Licenses
@@ -235,7 +235,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/licenses', [LicenseController::class, 'destroy'])->name('licenses.destroy');
     Route::get('/licenses/{id}', [LicenseController::class, 'show'])->name('licenses.show');
 
-
+    
+    Route::delete('/certificates/{certificate}/member/{member}', [CertificateController::class, 'deleteMemberCertificate'])->name('certificates.delete-member');
 });
 
 Route::fallback(function () {
