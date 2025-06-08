@@ -28,6 +28,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\LicenseController;
+use App\Http\Controllers\PublicQuizController;
+use App\Http\Controllers\QuizController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -226,6 +228,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/certificates/{certificate}/resend/{member}', [CertificateController::class, 'resendCertificate'])->name('certificates.resend');
     Route::get('/certificates/{certificate}/member/{member}/view', [CertificateController::class, 'viewMemberCertificate'])->name('certificates.view-member');
     Route::get('/certificates/{id}/view', [CertificateController::class, 'view'])->name('certificates.view');
+    Route::delete('/certificates/{certificate}/member/{member}', [CertificateController::class, 'deleteMemberCertificate'])->name('certificates.delete-member');
 
     // Licenses
     Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');
@@ -235,8 +238,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/licenses', [LicenseController::class, 'destroy'])->name('licenses.destroy');
     Route::get('/licenses/{id}', [LicenseController::class, 'show'])->name('licenses.show');
 
+    // Quizzes
+    Route::get('/quizzes', [QuizController::class, 'index'])->name('quizzes.index');
+    Route::get('/quizzes/create', [QuizController::class, 'create'])->name('quizzes.create');
+    Route::post('/quizzes', [QuizController::class, 'store'])->name('quizzes.store');
+    Route::get('/quizzes/{id}/view', [QuizController::class, 'view'])->name('quizzes.view');
+    Route::get('/quizzes/{id}/edit', [QuizController::class, 'edit'])->name('quizzes.edit');
+    Route::put('/quizzes/{id}', [QuizController::class, 'update'])->name('quizzes.update');
+    Route::delete('/quizzes', [QuizController::class, 'destroy'])->name('quizzes.destroy');
+    Route::get('/quizzes/{id}/send', [QuizController::class, 'send'])->name('quizzes.send');
+    Route::post('/quizzes/{id}/send', [QuizController::class, 'sendQuiz'])->name('quizzes.send-quiz');
+    Route::get('/quizzes/{quiz}/resend/{member}', [QuizController::class, 'resendQuiz'])->name('quizzes.resend-quiz');
+    Route::get('/quizzes/{quiz}/results/{member}', [QuizController::class, 'resendResults'])->name('quizzes.resend-results');
+    Route::get('/quizzes/{quiz}/member/{member}/view', [QuizController::class, 'viewAttempt'])->name('quizzes.view-attempt');
+
     
-    Route::delete('/certificates/{certificate}/member/{member}', [CertificateController::class, 'deleteMemberCertificate'])->name('certificates.delete-member');
 });
 
 Route::fallback(function () {
@@ -286,3 +302,7 @@ require __DIR__.'/auth.php';
         return back()->with('message', 'Verification link sent!');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
+    // Public quiz routes
+    Route::get('/quiz/{link}', [PublicQuizController::class, 'show'])->name('quiz.take');
+    Route::post('/quiz/{link}', [PublicQuizController::class, 'submit'])->name('quiz.submit');
+    Route::get('/quiz/results/{attempt}', [PublicQuizController::class, 'results'])->name('quiz.results');

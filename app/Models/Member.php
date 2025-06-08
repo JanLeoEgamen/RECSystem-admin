@@ -98,4 +98,10 @@ protected $dates = [
                     ->withTimestamps();
     }
 
+    public function quizAttempts()
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+
 }
