@@ -32,7 +32,7 @@ class AddressController extends Controller
     public function showMemberCreateForm()
     {
         $regions = $this->getRegions();
-        $applicants = Applicant::all();
+        $applicants = Applicant::where('status', 'Pending')->get();
         $membershipTypes = MembershipType::all();
         $sections = Section::all();
 
