@@ -179,7 +179,7 @@
 
 
             <!-- Email, certificates and quiz -->
-            @canany(['view certificates', 'view quizzes'])
+            @canany(['view certificates', 'view quizzes', 'view emails', 'view surveys'])   
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -200,13 +200,21 @@
                         </x-dropdown-link>
                         @endcan
 
+                        @can('view emails')
                         <x-dropdown-link :href="route('emails.index')">
                             {{ __('Email Management') }}
                         </x-dropdown-link>
+                        @endcan
                         
                         @can('view quizzes')
                         <x-dropdown-link :href="route('quizzes.index')">
                             {{ __('Licensing Reviewer Exam') }}
+                        </x-dropdown-link>
+                        @endcan
+
+                        @can('view surveys')
+                        <x-dropdown-link :href="route('surveys.index')">
+                            {{ __('Survey Management') }}
                         </x-dropdown-link>
                         @endcan
 

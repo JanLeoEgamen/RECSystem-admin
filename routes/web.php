@@ -216,7 +216,7 @@ Route::middleware('auth')->group(function () {
 
     // Certificates
     Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
-    Route::get('/certificates/create', [CertificateController::class, 'create'])->name('certificates.create');
+    Route::get('/certificates/create', [CertificateController::class, 'cre  ate'])->name('certificates.create');
     Route::post('/certificates', [CertificateController::class, 'store'])->name('certificates.store');
     Route::get('/certificates/{id}/edit', [CertificateController::class, 'edit'])->name('certificates.edit');
     Route::put('/certificates/{id}', [CertificateController::class, 'update'])->name('certificates.update');

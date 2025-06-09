@@ -212,7 +212,7 @@ class CertificateController extends Controller implements HasMiddleware
     }
 
 
-    public function generatePdf($certificateId, $memberId = null)
+    private function generatePdf($certificateId, $memberId = null)
     {
         $certificate = Certificate::with('signatories')->findOrFail($certificateId);
         $member = $memberId ? Member::findOrFail($memberId) : null;

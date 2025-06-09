@@ -5,15 +5,19 @@
                 {{ __('Email') }}
             </h2>
             <div class="flex space-x-6">
+                @can('create emails')
                 <a href="{{ route('emails.compose') }}" 
                     class="inline-block px-5 py-2 text-white bg-[#101966] hover:bg-white hover:text-[#101966] border border-white dark:border-[#3E3E3A] dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">
                     Send Email
                 </a>
+                @endcan
 
+                @can('create emails')
                 <a href="{{ route('emails.create') }}" 
                     class="inline-block px-5 py-2 text-white bg-green-600 hover:bg-white hover:text-green-600 border border-white dark:border-[#3E3E3A] dark:hover:bg-black dark:hover:border-green-400 rounded-lg text-xl leading-normal">
                     Create Template
                 </a>
+                @endcan
             </div>
         </div>
     </x-slot>
