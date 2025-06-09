@@ -181,11 +181,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/members/create', [AddressController::class, 'showMemberCreateForm'])->name('members.showMemberCreateForm');
     Route::post('/members', [MemberController::class, 'store'])->name('members.store');
     Route::get('/members/{id}/edit', [AddressController::class, 'showMemberEditForm'])->name('members.edit');
-    Route::post('/members/{id}', [MemberController::class, 'update'])->name('members.update');
+    Route::post('/members/{id}', [MemberController::class, 'update'])->name('members.update');  
     Route::delete('/members', [MemberController::class, 'destroy'])->name('members.destroy');
     Route::get('/members/{id}', [MemberController::class, 'show'])->name('members.show');
     Route::get('/members/{member}/renew', [MemberController::class, 'showRenewalForm'])->name('members.renew.show');
     Route::put('/members/{member}/renew', [MemberController::class, 'processRenewal'])->name('members.renew');
+    Route::get('members/applicants/{id}', [MemberController::class, 'getApplicantData'])->name('members.getApplicantData');
 
     //reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
@@ -254,26 +255,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/quizzes/{quiz}/member/{member}/view', [QuizController::class, 'viewAttempt'])->name('quizzes.view-attempt');
 
 
-// Surveys
-Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
-Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
-Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
-Route::get('/surveys/{id}/view', [SurveyController::class, 'view'])->name('surveys.view');
-Route::get('/surveys/{id}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
-Route::put('/surveys/{id}', [SurveyController::class, 'update'])->name('surveys.update');
-Route::delete('/surveys', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+    // Surveys
+    Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+    Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
+    Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
+    Route::get('/surveys/{id}/view', [SurveyController::class, 'view'])->name('surveys.view');
+    Route::get('/surveys/{id}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
+    Route::put('/surveys/{id}', [SurveyController::class, 'update'])->name('surveys.update');
+    Route::delete('/surveys', [SurveyController::class, 'destroy'])->name('surveys.destroy');
 
-Route::get('/surveys/{id}/send', [SurveyController::class, 'send'])->name('surveys.send');
-Route::post('/surveys/{id}/send', [SurveyController::class, 'sendSurvey'])->name('surveys.send-survey');
-Route::get('/surveys/{survey}/resend/{member}', [SurveyController::class, 'resendSurvey'])->name('surveys.resend');
-Route::get('/surveys/{survey}/resend-results/{member}', [SurveyController::class, 'resendResults'])->name('surveys.resend-results');
-Route::get('/surveys/{survey}/responses', [SurveyController::class, 'responses'])->name('surveys.responses');
-Route::get('/surveys/{survey}/responses/{response}/view', [SurveyController::class, 'viewResponse'])->name('surveys.responses.view');
-Route::delete('/surveys/delete-response', [SurveyController::class, 'deleteResponse'])->name('surveys.delete-response');
+    Route::get('/surveys/{id}/send', [SurveyController::class, 'send'])->name('surveys.send');
+    Route::post('/surveys/{id}/send', [SurveyController::class, 'sendSurvey'])->name('surveys.send-survey');
+    Route::get('/surveys/{survey}/resend/{member}', [SurveyController::class, 'resendSurvey'])->name('surveys.resend');
+    Route::get('/surveys/{survey}/resend-results/{member}', [SurveyController::class, 'resendResults'])->name('surveys.resend-results');
+    Route::get('/surveys/{survey}/responses', [SurveyController::class, 'responses'])->name('surveys.responses');
+    Route::get('/surveys/{survey}/responses/{response}/view', [SurveyController::class, 'viewResponse'])->name('surveys.responses.view');
+    Route::delete('/surveys/delete-response', [SurveyController::class, 'deleteResponse'])->name('surveys.delete-response');
 
-
-
-    
+    Route::get('/survey/{slug}/thank-you', [SurveyController::class, 'thankYou'])
+        ->withoutMiddleware('auth')
+        ->name('survey.thank-you');
 });
 
 Route::fallback(function () {
@@ -325,10 +326,10 @@ require __DIR__.'/auth.php';
 
 
 
-    // Public quiz routes
-    Route::get('/quiz/{link}', [PublicQuizController::class, 'show'])->name('quiz.take');
-    Route::post('/quiz/{link}', [PublicQuizController::class, 'submit'])->name('quiz.submit');
-    Route::get('/quiz/results/{attempt}', [PublicQuizController::class, 'results'])->name('quiz.results');
+// Public quiz routes
+Route::get('/quiz/{link}', [PublicQuizController::class, 'show'])->name('quiz.take');
+Route::post('/quiz/{link}', [PublicQuizController::class, 'submit'])->name('quiz.submit');
+Route::get('/quiz/results/{attempt}', [PublicQuizController::class, 'results'])->name('quiz.results');
 
 
 // Public survey routes
@@ -336,8 +337,3 @@ Route::get('/survey/{slug}', [SurveyController::class, 'showSurvey'])->name('sur
 Route::get('/survey/{slug}/{token}', [SurveyController::class, 'showSurvey'])->name('survey.show.token');
 Route::post('/survey/{slug}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
 Route::post('/survey/{slug}/{token}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit.token');
-Route::get('/survey/{slug}/thank-you', [SurveyController::class, 'thankYou'])->name('survey.thank-you');
-
-Route::get('/test-thank-you', function() {
-    return view('surveys.thank-you', ['survey' => \App\Models\Survey::first()]);
-});

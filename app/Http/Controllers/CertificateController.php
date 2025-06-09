@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendCertificateJob;
 use App\Models\Certificate;
 use App\Models\Member;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CertificateMail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -195,24 +197,12 @@ class CertificateController extends Controller implements HasMiddleware
     public function view($id)
     {
         $certificate = Certificate::with('signatories')->findOrFail($id);
-        
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-        
-        $dompdf = new Dompdf($options);
-        
-        $html = view('certificates.pdf-template', [
+
+        return view('certificates.jcertificate', [
             'certificate' => $certificate,
-            'member' => null, // No member for preview
+            'member' => null,
             'issueDate' => now()->format('F j, Y')
-        ])->render();
-        
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-        
-        return $dompdf->stream("certificate_preview_{$id}.pdf", ['Attachment' => false]);
+        ]);
     }
 
     public function preview($id)
@@ -228,21 +218,31 @@ class CertificateController extends Controller implements HasMiddleware
         $member = $memberId ? Member::findOrFail($memberId) : null;
 
         $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-        
+        $options->set([
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'DejaVu Sans',
+            'dpi' => 150, // Optimal for email attachments
+            'isPhpEnabled' => true,
+            'marginTop' => '0',
+            'marginRight' => '0',
+            'marginBottom' => '0',
+            'marginLeft' => '0',
+            'isHtml5ParserEnabled' => true, 
+        ]);
+
         $dompdf = new Dompdf($options);
-        
-        $html = view('certificates.pdf-template', [
+
+        $html = view('certificates.jcertificate', [
             'certificate' => $certificate,
             'member' => $member,
-            'issueDate' => now()->format('F j, Y')
+            'issueDate' => now()->format('F j, Y'),
         ])->render();
-        
+
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'landscape');
+        $dompdf->set_option('enable_css_page_break', false);
         $dompdf->render();
-        
+
         return $dompdf;
     }
 
@@ -252,23 +252,17 @@ class CertificateController extends Controller implements HasMiddleware
         $certificate = Certificate::with('signatories')->findOrFail($certificateId);
         $member = Member::findOrFail($memberId);
 
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-
-        $dompdf = new Dompdf($options);
-
-        $html = view('certificates.pdf-template', [
+        // Render the HTML content from the 'jcertificate' view
+        $html = view('certificates.jcertificate', [
             'certificate' => $certificate,
-            'member' => $member,  // pass member data for name, etc.
+            'member' => $member,
             'issueDate' => now()->format('F j, Y'),
         ])->render();
 
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-
-        return $dompdf->stream("certificate_{$certificateId}_{$memberId}.pdf");
+        // Return response that forces browser to download the HTML content as a file
+        return response($html)
+            ->header('Content-Type', 'text/html')
+            ->header('Content-Disposition', 'attachment; filename="certificate_' . $certificateId . '_' . $memberId . '.html"');
     }
 
     public function send($id)
@@ -293,34 +287,14 @@ class CertificateController extends Controller implements HasMiddleware
             'members.*' => 'exists:members,id'
         ]);
 
-        $certificate = Certificate::findOrFail($id);
-        $memberIds = $request->input('members', []);
-        
+        $memberIds = $request->input('members');
+
         foreach ($memberIds as $memberId) {
-            $member = Member::findOrFail($memberId);
-            
-            // Generate PDF
-            $dompdf = $this->generatePdf($id, $memberId);
-            $pdfContent = $dompdf->output();
-            
-            // Save PDF to storage (using 'public' disk which points to public/images)
-            $filename = "certificates/{$certificate->id}/member_{$member->id}_".now()->format('YmdHis').'.pdf';
-            Storage::disk('public')->put($filename, $pdfContent);
-            
-            // Send email
-            Mail::to($member->email_address)->send(new CertificateMail($certificate, $member, $filename));
-            
-            // Attach to certificate
-            $certificate->members()->attach($memberId, [
-                'issued_at' => now(),
-                'pdf_path' => $filename
-            ]);
+            SendCertificateJob::dispatch($id, $memberId);
         }
-        
-        return back()->with('success', 'Certificates sent successfully');
 
+        return back()->with('success', 'Certificate sending has been queued and will be processed shortly.');
     }
-
 
 
     public function resendCertificate($certificateId, $memberId)
@@ -328,39 +302,45 @@ class CertificateController extends Controller implements HasMiddleware
         $certificate = Certificate::findOrFail($certificateId);
         $member = Member::findOrFail($memberId);
 
-        $latestIssue = $certificate->members()->where('member_id', $memberId)
-            ->orderBy('issued_at', 'desc')
+        // Find the latest certificate issuance
+        $latestIssue = $certificate->members()
+            ->where('member_id', $memberId)
+            ->latest('issued_at')
             ->first();
 
         if (!$latestIssue) {
-            return back()->with('error', 'No certificate found to resend');
+            // No record exists, generate PDF and attach record
+            $dompdf = $this->generatePdf($certificateId, $memberId);
+            $pdfContent = $dompdf->output();
+
+            $filename = "certificates/{$certificateId}/member_{$memberId}_" . now()->format('YmdHis') . '.pdf';
+            Storage::disk('public')->put($filename, $pdfContent);
+
+            $certificate->members()->attach($memberId, [
+                'issued_at' => now(),
+                'pdf_path' => $filename,
+            ]);
+        } else {
+            $filename = $latestIssue->pivot->pdf_path;
+
+            // Regenerate PDF if file is missing
+            if (!Storage::disk('public')->exists($filename)) {
+                $dompdf = $this->generatePdf($certificateId, $memberId);
+                $pdfContent = $dompdf->output();
+                Storage::disk('public')->put($filename, $pdfContent);
+            }
         }
 
-        $pdfPath = $latestIssue->pivot->pdf_path ?? null;
+        // Dispatch a job to send the certificate email asynchronously (better for retries and responsiveness)
+        SendCertificateJob::dispatch($certificateId, $memberId);
 
-        if (!$pdfPath) {
-            return back()->with('error', 'No PDF certificate file found to resend');
-        }
-
-        // Get the full path to the PDF file
-        $filePath = Storage::disk('public')->path($pdfPath);
-
-        // Send email with attachment
-        Mail::to($member->email_address)->send(new CertificateMail(
-            $certificate,
-            $member,
-            $pdfPath,
-            $filePath
-        ));
-
-        // Update sent_at timestamp for this member pivot record
+        // Update sent_at timestamp now, or inside the job if preferred
         $certificate->members()->updateExistingPivot($memberId, [
-            'sent_at' => now()
+            'sent_at' => now(),
         ]);
 
-        return back()->with('success', 'Certificate resent successfully');
+        return back()->with('success', 'Certificate resend has been queued and will be processed shortly.');
     }
-
 
     public function deleteMemberCertificate(Certificate $certificate, Member $member)
     {
@@ -406,47 +386,24 @@ class CertificateController extends Controller implements HasMiddleware
     public function viewMemberCertificate($certificateId, $memberId)
     {
         $certificate = Certificate::with('signatories')->findOrFail($certificateId);
-        $member = Member::findOrFail($memberId);  // assuming your member model is Member
+        $member = Member::findOrFail($memberId);
 
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-
-        $dompdf = new Dompdf($options);
-
-        $html = view('certificates.pdf-template', [
+        return view('certificates.jcertificate  ', [
             'certificate' => $certificate,
-            'member' => $member,  // now passing member data to the view
-            'issueDate' => now()->format('F j, Y')
-        ])->render();
-
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-
-        return $dompdf->stream("certificate_{$certificateId}_member_{$memberId}.pdf", ['Attachment' => false]);
-    }
-
-    public function downloadCertificate($certificateId)
-    {
-        $certificate = Certificate::with('signatories')->findOrFail($certificateId);
-
-        // Use a default member or throw an error if member context is required
-        $html = view('certificates.pdf-template', [
-            'certificate' => $certificate,
-            'member' => null, // or a default member
+            'member' => $member,
             'issueDate' => now()->format('F j, Y'),
-        ])->render();
-
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-
-        return $dompdf->stream("certificate_{$certificateId}.pdf");
+        ]);
     }
+
+    public function downloadCertificate($certificateId, $memberId = null)
+    {
+        // Pass memberId optionally for personalized PDFs
+        $dompdf = $this->generatePdf($certificateId, $memberId);
+
+        return response($dompdf->output())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="certificate_' . $certificateId . ($memberId ? "_member_{$memberId}" : '') . '.pdf"');
+    }
+
+
 }

@@ -144,19 +144,19 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Region</p>
-                                    <p class="mt-1">{{ $applicant->region }}</p>
+                                    <p class="mt-1">{{ $regionName }}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Province</p>
-                                    <p class="mt-1">{{ $applicant->province }}</p>
+                                    <p class="mt-1">{{ $provinceName }}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Municipality</p>
-                                    <p class="mt-1">{{ $applicant->municipality }}</p>
+                                    <p class="mt-1">{{ $municipalityName }}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Barangay</p>
-                                    <p class="mt-1">{{ $applicant->barangay }}</p>
+                                    <p class="mt-1">{{ $barangayName }}</p>
                                 </div>
                             </div>
                             <div class="mt-4">

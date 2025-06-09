@@ -19,10 +19,10 @@
                     <table id="sectionsTable" class="w-full">
                         <thead class="bg-gray-50">
                             <tr class="border-b">
-                                <th class="px-6 py-3 text-left">#</th>
-                                <th class="px-6 py-3 text-left">Section Name</th>
-                                <th class="px-6 py-3 text-left">Bureau</th>
-                                <th class="px-6 py-3 text-left">Created</th>
+                                <th class="px-6 py-3 text-center">#</th>
+                                <th class="px-6 py-3 text-center">Section Name</th>
+                                <th class="px-6 py-3 text-center">Bureau</th>
+                                <th class="px-6 py-3 text-center">Created</th>
                                 <th class="px-6 py-3 text-center">Action</th>
                             </tr>
                         </thead>
@@ -46,11 +46,11 @@
                     serverSide: true,
                     ajax: "{{ route('sections.index') }}",
                     columns: [
-                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                        { data: 'section_name', name: 'section_name' },
-                        { data: 'bureau_name', name: 'bureau.bureau_name' },
-                        { data: 'created_at', name: 'created_at' },
-                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
+                        { data: 'section_name', name: 'section_name', className: 'text-center' },
+                        { data: 'bureau_name', name: 'bureau.bureau_name', className: 'text-center' },
+                        { data: 'created_at', name: 'created_at', className: 'text-center' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                     ],
                     responsive: true,
                     autoWidth: false,

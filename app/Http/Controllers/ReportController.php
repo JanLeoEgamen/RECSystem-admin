@@ -211,7 +211,7 @@ class ReportController extends Controller implements HasMiddleware
             ])
             ->with(['members' => function($q) {
                 // Removed the whereNotNull filter to load ALL members
-                $q->orderBy('licence_class')
+                $q->orderBy('license_class')
                 ->orderBy('last_name')
                 ->orderBy('first_name');
             }])

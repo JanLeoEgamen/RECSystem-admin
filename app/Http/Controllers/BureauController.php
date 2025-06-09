@@ -47,7 +47,7 @@ class BureauController extends Controller implements HasMiddleware
                         </a>';
                     }
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
+                    return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
                 })
                 ->editColumn('created_at', function($row) {
                     return $row->created_at->format('d M, y');

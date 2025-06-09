@@ -24,7 +24,7 @@ class QuizInvitation extends Mailable
     public function build()
     {
         return $this->subject('Quiz Invitation: ' . $this->quiz->title)
-                    ->markdown('emails.quiz-invitation', [
+                    ->view('emails.quiz-invitation', [ // Use view() instead of markdown()
                         'quiz' => $this->quiz,
                         'member' => $this->member,
                         'url' => route('quiz.take', $this->quiz->link)

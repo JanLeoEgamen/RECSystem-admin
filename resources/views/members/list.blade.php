@@ -145,28 +145,28 @@
                     <table id="membersTable" class="w-full">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr class="border-b">
-                                <th class="px-6 py-3 text-left">#</th>
-                                <th class="px-6 py-3 text-left">First Name</th>
-                                <th class="px-6 py-3 text-left">Middle Name</th>
-                                <th class="px-6 py-3 text-left">Last Name</th>
-                                <th class="px-6 py-3 text-left">Suffix</th>
-                                <th class="px-6 py-3 text-left">Sex</th>
-                                <th class="px-6 py-3 text-left">Birthdate</th>
-                                <th class="px-6 py-3 text-left">Cellphone</th>
-                                <th class="px-6 py-3 text-left">Telephone</th>
-                                <th class="px-6 py-3 text-left">Email</th>
-                                <th class="px-6 py-3 text-left">Record No.</th>
-                                <th class="px-6 py-3 text-left">Membership Type</th>
-                                <th class="px-6 py-3 text-left">Section</th>
-                                <th class="px-6 py-3 text-left">Start Date</th>
-                                <th class="px-6 py-3 text-left">End Date</th>
-                                <th class="px-6 py-3 text-left">Lifetime</th>
-                                <th class="px-6 py-3 text-left">Status</th>
-                                <th class="px-6 py-3 text-left">Street Address</th>
-                                <th class="px-6 py-3 text-left">Region</th>
-                                <th class="px-6 py-3 text-left">Province</th>
-                                <th class="px-6 py-3 text-left">Municipality</th>
-                                <th class="px-6 py-3 text-left">Barangay</th>
+                                <th class="px-6 py-3 text-center">#</th>
+                                <th class="px-6 py-3 text-center">First Name</th>
+                                <th class="px-6 py-3 text-center">Middle Name</th>
+                                <th class="px-6 py-3 text-center">Last Name</th>
+                                <th class="px-6 py-3 text-center">Suffix</th>
+                                <th class="px-6 py-3 text-center">Sex</th>
+                                <th class="px-6 py-3 text-center">Birthdate</th>
+                                <th class="px-6 py-3 text-center">Cellphone</th>
+                                <th class="px-6 py-3 text-center">Telephone</th>
+                                <th class="px-6 py-3 text-center">Email</th>
+                                <th class="px-6 py-3 text-center">Record No.</th>
+                                <th class="px-6 py-3 text-center">Membership Type</th>
+                                <th class="px-6 py-3 text-center">Section</th>
+                                <th class="px-6 py-3 text-center">Start Date</th>
+                                <th class="px-6 py-3 text-center">End Date</th>
+                                <th class="px-6 py-3 text-center">Lifetime</th>
+                                <th class="px-6 py-3 text-center">Status</th>
+                                <th class="px-6 py-3 text-center">Street Address</th>
+                                <th class="px-6 py-3 text-center">Region</th>
+                                <th class="px-6 py-3 text-center">Province</th>
+                                <th class="px-6 py-3 text-center">Municipality</th>
+                                <th class="px-6 py-3 text-center">Barangay</th>
                                 <th class="px-6 py-3 text-center">Action</th>
                             </tr>
                         </thead>
@@ -191,29 +191,29 @@
                     serverSide: true,
                     ajax: "{{ route('members.index') }}",
                     columns: [
-                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                        { data: 'first_name', name: 'first_name' },
-                        { data: 'middle_name', name: 'middle_name' },
-                        { data: 'last_name', name: 'last_name' },
-                        { data: 'suffix', name: 'suffix' },
-                        { data: 'sex', name: 'sex' },
-                        { data: 'birthdate', name: 'birthdate' },
-                        { data: 'cellphone_no', name: 'cellphone_no' },
-                        { data: 'telephone_no', name: 'telephone_no' },
-                        { data: 'email_address', name: 'email_address' },
-                        { data: 'rec_number', name: 'rec_number' },
-                        { data: 'membership_type.type_name', name: 'membershipType.type_name' },
-                        { data: 'section.section_name', name: 'section.section_name' },
-                        { data: 'membership_start', name: 'membership_start' },
-                        { data: 'membership_end', name: 'membership_end' },
-                        { data: 'is_lifetime_member', name: 'is_lifetime_member' },
-                        { data: 'status', name: 'status' }, 
-                        { data: 'street_address', name: 'street_address' },
-                        { data: 'region', name: 'region' },
-                        { data: 'province', name: 'province' },
-                        { data: 'municipality', name: 'municipality' },
-                        { data: 'barangay', name: 'barangay' },
-                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
+                        { data: 'first_name', name: 'first_name', className: 'text-center' },
+                        { data: 'middle_name', name: 'middle_name', className: 'text-center' },
+                        { data: 'last_name', name: 'last_name', className: 'text-center' },
+                        { data: 'suffix', name: 'suffix', className: 'text-center' },
+                        { data: 'sex', name: 'sex', className: 'text-center' },
+                        { data: 'birthdate', name: 'birthdate', className: 'text-center' },
+                        { data: 'cellphone_no', name: 'cellphone_no', className: 'text-center' },
+                        { data: 'telephone_no', name: 'telephone_no', className: 'text-center' },
+                        { data: 'email_address', name: 'email_address', className: 'text-center' },
+                        { data: 'rec_number', name: 'rec_number', className: 'text-center' },
+                        { data: 'membership_type.type_name', name: 'membershipType.type_name', className: 'text-center' },
+                        { data: 'section.section_name', name: 'section.section_name', className: 'text-center' },
+                        { data: 'membership_start', name: 'membership_start', className: 'text-center'},
+                        { data: 'membership_end', name: 'membership_end', className: 'text-center' },
+                        { data: 'is_lifetime_member', name: 'is_lifetime_member', className: 'text-center' },
+                        { data: 'status', name: 'status', className: 'text-center' }, 
+                        { data: 'street_address', name: 'street_address', className: 'text-center' },
+                        { data: 'region', name: 'region', className: 'text-center' },
+                        { data: 'province', name: 'province', className: 'text-center' },
+                        { data: 'municipality', name: 'municipality', className: 'text-center' },
+                        { data: 'barangay', name: 'barangay', className: 'text-center' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                     ],
                     responsive: true,
                     autoWidth: false,

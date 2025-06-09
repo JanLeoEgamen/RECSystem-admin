@@ -47,7 +47,7 @@
                     columns: [
                         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center'},
                         { data: 'title', name: 'title', className: 'text-center'},
-                        { data: 'description', name: 'description' },
+                        { data: 'description', name: 'description', className: 'text-center' },
                         { data: 'author', name: 'user.first_name', className: 'text-center' },
                         { data: 'created_at', name: 'created_at', className: 'text-center' },
                         { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }

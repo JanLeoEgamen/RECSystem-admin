@@ -112,7 +112,7 @@
                 {!! $certificate->content !!}
             </div>
             <div class="signatures">
-                @foreach($certificate->signatories as $signatory)
+                @foreach($certificate->signatories as $signatory)   
                     <div class="signature">
                         <div class="signature-line"></div>
                         <div class="signature-name">{{ $signatory->name }}</div>

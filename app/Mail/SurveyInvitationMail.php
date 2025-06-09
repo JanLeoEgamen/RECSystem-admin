@@ -1,5 +1,5 @@
 <?php
-// app/Mail/SurveyInvitationMail.php
+
 namespace App\Mail;
 
 use App\Models\Survey;
@@ -26,16 +26,18 @@ class SurveyInvitationMail extends Mailable
 
     public function build()
     {
+        $url = route('survey.show', [
+            'slug' => $this->survey->slug,
+            'token' => $this->invitation->token
+        ]);
+
         return $this->subject("Survey Invitation: {$this->survey->title}")
-            ->markdown('emails.survey-invitation', [
-                'survey' => $this->survey,
-                'member' => $this->member,
-                'invitation' => $this->invitation,
-                'url' => route('survey.show', [
-                    'slug' => $this->survey->slug,
-                    'token' => $this->invitation->token
-                ]),
-            ]);
+                    ->view('emails.survey-invitation') // Use your custom HTML Blade
+                    ->with([
+                        'survey' => $this->survey,
+                        'member' => $this->member,
+                        'invitation' => $this->invitation,
+                        'url' => $url,
+                    ]);
     }
 }
-

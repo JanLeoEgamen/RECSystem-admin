@@ -222,28 +222,28 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                                     <div>
                                         <label for="region" class="block text-sm font-medium">Region *</label>
-                                        <input value="{{ old('region', $applicant->region) }}" name="region" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('region', $regionName) }}" name="region" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                                         @error('region')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="province" class="block text-sm font-medium">Province *</label>
-                                        <input value="{{ old('province', $applicant->province) }}" name="province" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('province', $provinceName) }}" name="province" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                                         @error('province')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="municipality" class="block text-sm font-medium">Municipality *</label>
-                                        <input value="{{ old('municipality', $applicant->municipality) }}" name="municipality" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('municipality',  $municipalityName) }}" name="municipality" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                                         @error('municipality')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="barangay" class="block text-sm font-medium">Barangay *</label>
-                                        <input value="{{ old('barangay', $applicant->barangay) }}" name="barangay" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('barangay', $barangayName) }}" name="barangay" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                                         @error('barangay')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror

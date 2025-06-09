@@ -1,6 +1,5 @@
 <?php
 
-// app/Mail/SurveyResultsMail.php
 namespace App\Mail;
 
 use App\Models\Survey;
@@ -28,7 +27,8 @@ class SurveyResultsMail extends Mailable
     public function build()
     {
         return $this->subject("Your Survey Results: {$this->survey->title}")
-            ->markdown('emails.survey-results', [
+            ->view('emails.survey-results') // Switch from markdown to custom view
+            ->with([
                 'survey' => $this->survey,
                 'member' => $this->member,
                 'response' => $this->response,

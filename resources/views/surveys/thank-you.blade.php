@@ -9,11 +9,6 @@
                         </svg>
                         <h2 class="mt-3 text-xl font-medium text-gray-900">Thank You!</h2>
                         <p class="mt-2 text-sm text-gray-500">Your responses have been recorded. We appreciate your time and feedback.</p>
-                        <div class="mt-6">
-                            <a href="{{ url('/') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Return to Home
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>

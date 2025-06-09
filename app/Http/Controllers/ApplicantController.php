@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class ApplicantController extends Controller implements HasMiddleware
@@ -32,7 +33,7 @@ class ApplicantController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('status', 'pending')->select('*');
+            $data = Applicant::where('status', 'Pending')->select('*');
             
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -72,7 +73,7 @@ class ApplicantController extends Controller implements HasMiddleware
                         </a>';
                     }
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
+                    return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
                 })
                 ->addColumn('full_name', function($row) {
                     $name = $row->first_name . ' ' . $row->last_name;
@@ -109,7 +110,19 @@ class ApplicantController extends Controller implements HasMiddleware
     public function show(string $id)
     {
         $applicant = Applicant::findOrFail($id);
-        return view('applicants.view', ['applicant' => $applicant]);
+
+        $regionName = DB::table('ref_psgc_region')->where('psgc_reg_code', $applicant->region)->value('psgc_reg_desc');
+        $provinceName = DB::table('ref_psgc_province')->where('psgc_prov_code', $applicant->province)->value('psgc_prov_desc');
+        $municipalityName = DB::table('ref_psgc_municipality')->where('psgc_munc_code', $applicant->municipality)->value('psgc_munc_desc');
+        $barangayName = DB::table('ref_psgc_barangay')->where('psgc_brgy_code', $applicant->barangay)->value('psgc_brgy_desc');
+
+        return view('applicants.view', [
+            'applicant' => $applicant,
+            'regionName' => $regionName,
+            'provinceName' => $provinceName,
+            'municipalityName' => $municipalityName,
+            'barangayName' => $barangayName,
+        ]);
     }
 
 
@@ -145,7 +158,7 @@ class ApplicantController extends Controller implements HasMiddleware
         }
 
         $applicant = new Applicant();
-        $applicant->status = 'pending';
+        $applicant->status = 'Pending';
         $this->saveApplicantData($applicant, $request);
 
         return redirect()->route('applicants.index')->with('success', 'Applicant added successfully');
@@ -225,11 +238,22 @@ class ApplicantController extends Controller implements HasMiddleware
         $applicant = Applicant::findOrFail($id);
         $membershipTypes = MembershipType::all();
         $sections = Section::all();
+
+        // Get the names from reference tables using the stored codes
+        $regionName = DB::table('ref_psgc_region')->where('psgc_reg_code', $applicant->region)->value('psgc_reg_desc');
+        $provinceName = DB::table('ref_psgc_province')->where('psgc_prov_code', $applicant->province)->value('psgc_prov_desc');
+        $municipalityName = DB::table('ref_psgc_municipality')->where('psgc_munc_code', $applicant->municipality)->value('psgc_munc_desc');
+        $barangayName = DB::table('ref_psgc_barangay')->where('psgc_brgy_code', $applicant->barangay)->value('psgc_brgy_desc');
+
         
         return view('applicants.assess', [
             'applicant' => $applicant,
             'membershipTypes' => $membershipTypes,
-            'sections' => $sections
+            'sections' => $sections,
+            'regionName' => $regionName,
+            'provinceName' => $provinceName,
+            'municipalityName' => $municipalityName,
+            'barangayName' => $barangayName,
         ]);
     }
 
@@ -279,6 +303,9 @@ class ApplicantController extends Controller implements HasMiddleware
         $member->applicant_id = $applicant->id;
         
         $member->save();
+
+        $applicant->status = 'Approved';
+        $applicant->save(); 
 
         return redirect()->route('applicants.index')
                         ->with('success', 'Applicant approved and member created successfully');
@@ -331,7 +358,7 @@ class ApplicantController extends Controller implements HasMiddleware
     public function reject(string $id)
     {
         $applicant = Applicant::findOrFail($id);
-        $applicant->update(['status' => 'rejected']);
+        $applicant->update(['status' => 'Rejected']);
         
         return redirect()->route('applicants.index')
                         ->with('success', 'Applicant has been rejected');
@@ -343,7 +370,7 @@ class ApplicantController extends Controller implements HasMiddleware
     public function rejected(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('status', 'rejected')->select('*');
+            $data = Applicant::where('status', 'Rejected')->select('*');
             
             return DataTables::of($data)
                 ->addIndexColumn()

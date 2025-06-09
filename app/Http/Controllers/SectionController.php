@@ -48,7 +48,7 @@ class SectionController extends Controller implements HasMiddleware
                         </a>';
                     }
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
+                    return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
                 })
                 ->addColumn('bureau_name', function($row) {
                     return $row->bureau->bureau_name ?? 'N/A';

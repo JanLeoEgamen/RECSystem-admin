@@ -32,8 +32,14 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="certificate-preview border-2 border-gray-200 p-8">
-                        <iframe src="{{ route('certificates.view', $certificate->id) }}" width="100%" height="800px" style="border: none;"></iframe>
+                        @include('certificates.jcertificate', [
+                            'certificate' => $certificate,
+                            'member' => null,
+                            'issueDate' => now()->format('F j, Y'),
+                            'embedded' => true
+                        ])
                     </div>
+                </div>
             </div>
         </div>
     </div>

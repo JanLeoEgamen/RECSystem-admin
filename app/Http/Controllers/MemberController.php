@@ -100,7 +100,7 @@ public function index(Request $request)
                     </a>';
                 }
 
-                return '<div class="flex space-x-2">'.$buttons.'</div>';
+                return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
             })
             ->editColumn('membership_start', function($row) {
                 return $row->membership_start ? \Carbon\Carbon::parse($row->membership_start)->format('d M, Y') : '';
@@ -139,7 +139,19 @@ public function index(Request $request)
     public function show(string $id)
     {
         $member = Member::with(['membershipType', 'section'])->findOrFail($id);
-        return view('members.view', ['member' => $member]);
+
+        $regionName = DB::table('ref_psgc_region')->where('psgc_reg_code', $member->region)->value('psgc_reg_desc');
+        $provinceName = DB::table('ref_psgc_province')->where('psgc_prov_code', $member->province)->value('psgc_prov_desc');
+        $municipalityName = DB::table('ref_psgc_municipality')->where('psgc_munc_code', $member->municipality)->value('psgc_munc_desc');
+        $barangayName = DB::table('ref_psgc_barangay')->where('psgc_brgy_code', $member->barangay)->value('psgc_brgy_desc');
+
+        return view('members.view', [
+            'member' => $member,
+            'regionName' => $regionName,
+            'provinceName' => $provinceName,
+            'municipalityName' => $municipalityName,
+            'barangayName' => $barangayName,
+        ]);
     }
 
 
@@ -199,7 +211,7 @@ public function index(Request $request)
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('members.create')->withInput()->withErrors($validator);
+            return redirect()->route('members.showMemberCreateForm')->withInput()->withErrors($validator);
         }
 
         $member = new Member();
@@ -417,62 +429,109 @@ public function index(Request $request)
         return view('members.validity');
     }
 
-public function showRenewalForm(Member $member)
-{
-    return view('members.renew', [
-        'member' => $member,
-        // Calculate default values for the form
-        'default_years' => 1,
-        'default_months' => 0,
-        'default_days' => 0
-    ]);
-}
-
-public function processRenewal(Request $request, Member $member)
-{
-    // Validate request input
-    $validated = $request->validate([
-        'years' => 'required|integer|min:0',
-        'months' => 'required|integer|min:0|max:11',
-        'days' => 'required|integer|min:0|max:31',
-    ]);
-
-
-
-
-    // Cast values to integers to ensure Carbon receives correct types
-    $years = (int) $validated['years'];
-    $months = (int) $validated['months'];
-    $days = (int) $validated['days'];
-
-    // Check if at least one duration is provided
-    $totalDays = ($years * 365) + ($months * 30) + $days;
-    if ($totalDays <= 0) {
-        return redirect()->back()
-            ->with('error', 'Please specify a valid renewal duration.')
-            ->withInput();
+    public function showRenewalForm(Member $member)
+    {
+        return view('members.renew', [
+            'member' => $member,
+            // Calculate default values for the form
+            'default_years' => 1,
+            'default_months' => 0,
+            'default_days' => 0
+        ]);
     }
 
-    // Determine the base start date: future expiration or today
-    $startDate = $member->membership_end && Carbon::parse($member->membership_end)->isFuture()
-        ? Carbon::parse($member->membership_end)
-        : now();
+    public function processRenewal(Request $request, Member $member)
+    {
+        // Validate request input
+        $validated = $request->validate([
+            'years' => 'required|integer|min:0',
+            'months' => 'required|integer|min:0|max:11',
+            'days' => 'required|integer|min:0|max:31',
+        ]);
 
-    // Compute the new expiration date
-    $newExpiration = $startDate->copy()
-        ->addYears($years)
-        ->addMonths($months)
-        ->addDays($days);
 
-    // Update the member record
-    $member->update([
-        'is_lifetime_member' => false,
-        'membership_end' => $newExpiration,
-        'last_renewal_date' => now()
-    ]);
 
-    return redirect()->route('members.index', $member->id)
-        ->with('success', 'Membership successfully renewed until ' . $newExpiration->format('M d, Y'));
-}
+
+        // Cast values to integers to ensure Carbon receives correct types
+        $years = (int) $validated['years'];
+        $months = (int) $validated['months'];
+        $days = (int) $validated['days'];
+
+        // Check if at least one duration is provided
+        $totalDays = ($years * 365) + ($months * 30) + $days;
+        if ($totalDays <= 0) {
+            return redirect()->back()
+                ->with('error', 'Please specify a valid renewal duration.')
+                ->withInput();
+        }
+
+        // Determine the base start date: future expiration or today
+        $startDate = $member->membership_end && Carbon::parse($member->membership_end)->isFuture()
+            ? Carbon::parse($member->membership_end)
+            : now();
+
+        // Compute the new expiration date
+        $newExpiration = $startDate->copy()
+            ->addYears($years)
+            ->addMonths($months)
+            ->addDays($days);
+
+        // Update the member record
+        $member->update([
+            'is_lifetime_member' => false,
+            'membership_end' => $newExpiration,
+            'last_renewal_date' => now()
+        ]);
+
+        return redirect()->route('members.index', $member->id)
+            ->with('success', 'Membership successfully renewed until ' . $newExpiration->format('M d, Y'));
+    }
+
+    public function getApplicantData($id)
+    {
+        $applicant = Applicant::find($id);
+        
+        if (!$applicant) {
+            return response()->json(['error' => 'Applicant not found'], 404);
+        }
+
+        return response()->json([
+            // Personal Info
+            'first_name' => $applicant->first_name,
+            'middle_name' => $applicant->middle_name,
+            'last_name' => $applicant->last_name,
+            'suffix' => $applicant->suffix,
+            'sex' => $applicant->sex,
+            'birthdate' => $applicant->birthdate,
+            'civil_status' => $applicant->civil_status,
+            'citizenship' => $applicant->citizenship,
+            'blood_type' => $applicant->blood_type,
+
+            // Contact
+            'cellphone_no' => $applicant->cellphone_no,
+            'telephone_no' => $applicant->telephone_no,
+            'email_address' => $applicant->email_address,
+
+            // Emergency
+            'emergency_contact' => $applicant->emergency_contact,
+            'emergency_contact_number' => $applicant->emergency_contact_number,
+            'relationship' => $applicant->relationship,
+
+            // License  
+            'license_class' => $applicant->license_class,
+            'license_number' => $applicant->license_number,
+            'callsign' => $applicant->callsign,
+            'license_expiration_date' => $applicant->license_expiration_date,
+
+            // Address
+            'house_building_number_name' => $applicant->house_building_number_name,
+            'street_address' => $applicant->street_address,
+            'zip_code' => $applicant->zip_code,
+            'region' => $applicant->region,
+            'province' => $applicant->province,
+            'municipality' => $applicant->municipality,
+            'barangay' => $applicant->barangay,
+        ]);
+    }
 
 }

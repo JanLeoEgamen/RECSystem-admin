@@ -457,6 +457,56 @@
                 });
             }
         });
+
+        // --- Address Pre-population on Edit ---
+    let selectedRegion = "{{ old('region', $member->region) }}";
+    let selectedProvince = "{{ old('province', $member->province) }}";
+    let selectedMunicipality = "{{ old('municipality', $member->municipality) }}";
+    let selectedBarangay = "{{ old('barangay', $member->barangay) }}";
+
+    if (selectedRegion) {
+        $('#region').val(selectedRegion);
+
+        // Load provinces
+        $.ajax({
+            url: '/get-provinces/' + selectedRegion,
+            type: 'GET',
+            success: function(provinces) {
+                provinces.forEach(function(prov) {
+                    let selected = (prov.psgc_prov_code == selectedProvince) ? 'selected' : '';
+                    $('#province').append('<option value="'+prov.psgc_prov_code+'" '+selected+'>'+prov.psgc_prov_desc+'</option>');
+                });
+
+                if (selectedProvince) {
+                    // Load municipalities
+                    $.ajax({
+                        url: '/get-municipalities/' + selectedRegion + '/' + selectedProvince,
+                        type: 'GET',
+                        success: function(municipalities) {
+                            municipalities.forEach(function(muni) {
+                                let selected = (muni.psgc_munc_code == selectedMunicipality) ? 'selected' : '';
+                                $('#municipality').append('<option value="'+muni.psgc_munc_code+'" '+selected+'>'+muni.psgc_munc_desc+'</option>');
+                            });
+
+                            if (selectedMunicipality) {
+                                // Load barangays
+                                $.ajax({
+                                    url: '/get-barangays/' + selectedRegion + '/' + selectedProvince + '/' + selectedMunicipality,
+                                    type: 'GET',
+                                    success: function(barangays) {
+                                        barangays.forEach(function(brgy) {
+                                            let selected = (brgy.psgc_brgy_code == selectedBarangay) ? 'selected' : '';
+                                            $('#barangay').append('<option value="'+brgy.psgc_brgy_code+'" '+selected+'>'+brgy.psgc_brgy_desc+'</option>');
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
     
     });
     </script>

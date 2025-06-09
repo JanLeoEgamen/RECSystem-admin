@@ -27,7 +27,12 @@
                         </div>
                     </div>
                 @else
-                    <form action="{{ route('survey.submit', ['slug' => $survey->slug, 'token' => $invitation->token ?? null]) }}" method="POST" class="px-4 py-5 sm:p-6">
+                    @if(isset($invitation) && $invitation->token)
+                        <form action="{{ route('survey.submit.token', ['slug' => $survey->slug, 'token' => $invitation->token]) }}" method="POST" class="px-4 py-5 sm:p-6">
+                    @else
+                        <form action="{{ route('survey.submit', ['slug' => $survey->slug]) }}" method="POST" class="px-4 py-5 sm:p-6">
+                    @endif
+
                         @csrf
                         
                         <div class="space-y-6">

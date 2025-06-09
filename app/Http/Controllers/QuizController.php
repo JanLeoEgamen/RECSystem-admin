@@ -74,7 +74,7 @@ class QuizController extends Controller implements HasMiddleware
                         </a>';
                     }
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
+                    return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
                 })
                 ->editColumn('description', function($row) {
                     return Str::limit(strip_tags($row->description), 50);

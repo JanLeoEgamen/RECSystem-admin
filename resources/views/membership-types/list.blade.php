@@ -19,9 +19,9 @@
                     <table id="membershipTypesTable" class="w-full">
                         <thead class="bg-gray-50">
                             <tr class="border-b">
-                                <th class="px-6 py-3 text-left">#</th>
-                                <th class="px-6 py-3 text-left">Type Name</th>
-                                <th class="px-6 py-3 text-left">Created</th>
+                                <th class="px-6 py-3 text-center">#</th>
+                                <th class="px-6 py-3 text-center">Type Name</th>
+                                <th class="px-6 py-3 text-center">Created</th>
                                 <th class="px-6 py-3 text-center">Action</th>
                             </tr>
                         </thead>
@@ -45,10 +45,10 @@
                     serverSide: true,
                     ajax: "{{ route('membership-types.index') }}",
                     columns: [
-                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                        { data: 'type_name', name: 'type_name' },
-                        { data: 'created_at', name: 'created_at' },
-                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
+                        { data: 'type_name', name: 'type_name', className: 'text-center' },
+                        { data: 'created_at', name: 'created_at', className: 'text-center' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
                     ],
                     responsive: true,
                     autoWidth: false,

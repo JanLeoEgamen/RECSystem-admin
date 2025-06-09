@@ -9,6 +9,8 @@ class QuizAttempt extends Model
 {
     use HasFactory;
 
+    protected $dates = ['completed_at'];
+
     protected $fillable = ['quiz_id', 'member_id', 'started_at', 'completed_at', 'score'];
 
     public function quiz()

@@ -25,10 +25,15 @@
                                 <h3 class="text-xl font-semibold mb-4">Applicant Information</h3>
                                 <div>
                                     <label for="applicant_id" class="block text-sm font-medium">Select Applicant *</label>
-                                    <select name="applicant_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <select name="applicant_id" id="applicantSelect" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                         <option value="">Select Applicant</option>
                                         @foreach($applicants as $applicant)
-                                            <option value="{{ $applicant->id }}" {{ old('applicant_id') == $applicant->id ? 'selected' : '' }}>
+                                            <option value="{{ $applicant->id }}" 
+                                                {{ old('applicant_id') == $applicant->id ? 'selected' : '' }}
+                                                data-region="{{ $applicant->region }}"
+                                                data-province="{{ $applicant->province }}"
+                                                data-municipality="{{ $applicant->municipality }}"
+                                                data-barangay="{{ $applicant->barangay }}">
                                                 {{ $applicant->first_name }} {{ $applicant->last_name }} 
                                                 ({{ $applicant->email_address }})
                                             </option>
@@ -46,7 +51,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div>
                                         <label for="first_name" class="block text-sm font-medium">First Name *</label>
-                                        <input value="{{ old('first_name') }}" name="first_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <input value="{{ old('first_name') }}" name="first_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" disabled>
                                         @error('first_name')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -463,6 +468,121 @@
                 });
             }
         });
+
+    // Handle applicant selection change
+    // Handle applicant selection change
+    $('#applicantSelect').on('change', function() {
+        const applicantId = $(this).val();
+        
+        if (applicantId) {
+            // Show loading state
+            $(this).attr('disabled', true);
+            
+            // Fetch applicant data using the correct route
+            $.ajax({
+                url: '/members/applicants/' + applicantId,
+                method: 'GET',
+                success: function(data) {
+                    // Personal Information
+                    $('input[name="first_name"]').val(data.first_name);
+                    $('input[name="middle_name"]').val(data.middle_name);
+                    $('input[name="last_name"]').val(data.last_name);
+                    $('input[name="suffix"]').val(data.suffix);
+                    $('select[name="sex"]').val(data.sex);
+                    $('input[name="birthdate"]').val(data.birthdate);
+                    $('select[name="civil_status"]').val(data.civil_status);
+                    $('input[name="citizenship"]').val(data.citizenship);
+                    $('select[name="blood_type"]').val(data.blood_type);
+                    
+                    // Contact Information
+                    $('input[name="cellphone_no"]').val(data.cellphone_no);
+                    $('input[name="telephone_no"]').val(data.telephone_no);
+                    $('input[name="email_address"]').val(data.email_address);
+                    
+                    // Emergency Contact
+                    $('input[name="emergency_contact"]').val(data.emergency_contact);
+                    $('input[name="emergency_contact_number"]').val(data.emergency_contact_number);
+                    $('input[name="relationship"]').val(data.relationship);
+                    
+                    // License Information
+                    $('input[name="license_class"]').val(data.license_class);
+                    $('input[name="license_number"]').val(data.license_number);
+                    $('input[name="license_expiration_date"]').val(data.license_expiration_date);
+                    
+                    // Address Information
+                    $('input[name="house_building_number_name"]').val(data.house_building_number_name);
+                    $('input[name="street_address"]').val(data.street_address);
+                    $('input[name="zip_code"]').val(data.zip_code);
+                    
+                    // Handle address dropdowns
+                    loadAddressData(data.region, data.province, data.municipality, data.barangay);
+                },
+                error: function(xhr) {
+                    console.error('Error loading applicant data:', xhr.responseText);
+                    alert('Failed to load applicant data. Please try again.');
+                },
+                complete: function() {
+                    $('#applicantSelect').attr('disabled', false);
+                }
+            });
+        } else {
+            // Clear all fields if no applicant is selected
+            clearFormFields();
+        }
+    });
+    
+    function loadAddressData(region, province, municipality, barangay) {
+        // Reset dependent dropdowns first
+        $('#province, #municipality, #barangay').empty().append('<option value="">Select...</option>');
+        
+        if (region) {
+            $('#region').val(region);
+            
+            // Load provinces
+            $.get('/get-provinces/' + region, function(provinces) {
+                provinces.forEach(function(prov) {
+                    const selected = (prov.psgc_prov_code == province) ? 'selected' : '';
+                    $('#province').append(`<option value="${prov.psgc_prov_code}" ${selected}>${prov.psgc_prov_desc}</option>`);
+                });
+                
+                if (province) {
+                    // Load municipalities
+                    $.get(`/get-municipalities/${region}/${province}`, function(municipalities) {
+                        municipalities.forEach(function(muni) {
+                            const selected = (muni.psgc_munc_code == municipality) ? 'selected' : '';
+                            $('#municipality').append(`<option value="${muni.psgc_munc_code}" ${selected}>${muni.psgc_munc_desc}</option>`);
+                        });
+                        
+                        if (municipality) {
+                            // Load barangays
+                            $.get(`/get-barangays/${region}/${province}/${municipality}`, function(barangays) {
+                                barangays.forEach(function(brgy) {
+                                    const selected = (brgy.psgc_brgy_code == barangay) ? 'selected' : '';
+                                    $('#barangay').append(`<option value="${brgy.psgc_brgy_code}" ${selected}>${brgy.psgc_brgy_desc}</option>`);
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+    
+    function clearFormFields() {
+        // Clear all input fields
+        $('input[type="text"], input[type="email"], input[type="date"]').val('');
+        
+        // Clear all select fields
+        $('select').val('');
+        
+        // Clear dynamic dropdowns
+        $('#province, #municipality, #barangay').empty().append('<option value="">Select...</option>');
+    }
+    
+    // Initialize form if an applicant is already selected on page load
+    if ($('#applicantSelect').val()) {
+        $('#applicantSelect').trigger('change');
+    }
     
     });
     </script>

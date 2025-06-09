@@ -27,10 +27,12 @@ class QuizResults extends Mailable
     public function build()
     {
         return $this->subject('Quiz Results: ' . $this->quiz->title)
-                    ->markdown('emails.quiz-results', [
+                    ->view('emails.quiz-results') // Changed to view()
+                    ->with([
                         'quiz' => $this->quiz,
                         'member' => $this->member,
-                        'attempt' => $this->attempt
+                        'attempt' => $this->attempt,
+                        'url' => route('quiz.results', $this->attempt->id)
                     ]);
     }
 }
