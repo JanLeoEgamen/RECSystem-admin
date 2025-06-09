@@ -30,6 +30,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\LicenseController;
 use App\Http\Controllers\PublicQuizController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\SurveyController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -252,6 +253,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/quizzes/{quiz}/results/{member}', [QuizController::class, 'resendResults'])->name('quizzes.resend-results');
     Route::get('/quizzes/{quiz}/member/{member}/view', [QuizController::class, 'viewAttempt'])->name('quizzes.view-attempt');
 
+
+// Surveys
+Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
+Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
+Route::get('/surveys/{id}/view', [SurveyController::class, 'view'])->name('surveys.view');
+Route::get('/surveys/{id}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
+Route::put('/surveys/{id}', [SurveyController::class, 'update'])->name('surveys.update');
+Route::delete('/surveys', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+
+Route::get('/surveys/{id}/send', [SurveyController::class, 'send'])->name('surveys.send');
+Route::post('/surveys/{id}/send', [SurveyController::class, 'sendSurvey'])->name('surveys.send-survey');
+Route::get('/surveys/{survey}/resend/{member}', [SurveyController::class, 'resendSurvey'])->name('surveys.resend');
+Route::get('/surveys/{survey}/resend-results/{member}', [SurveyController::class, 'resendResults'])->name('surveys.resend-results');
+Route::get('/surveys/{survey}/responses', [SurveyController::class, 'responses'])->name('surveys.responses');
+Route::get('/surveys/{survey}/responses/{response}/view', [SurveyController::class, 'viewResponse'])->name('surveys.responses.view');
+Route::delete('/surveys/delete-response', [SurveyController::class, 'deleteResponse'])->name('surveys.delete-response');
+
+
+
     
 });
 
@@ -302,7 +323,21 @@ require __DIR__.'/auth.php';
         return back()->with('message', 'Verification link sent!');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
+
+
     // Public quiz routes
     Route::get('/quiz/{link}', [PublicQuizController::class, 'show'])->name('quiz.take');
     Route::post('/quiz/{link}', [PublicQuizController::class, 'submit'])->name('quiz.submit');
     Route::get('/quiz/results/{attempt}', [PublicQuizController::class, 'results'])->name('quiz.results');
+
+
+// Public survey routes
+Route::get('/survey/{slug}', [SurveyController::class, 'showSurvey'])->name('survey.show');
+Route::get('/survey/{slug}/{token}', [SurveyController::class, 'showSurvey'])->name('survey.show.token');
+Route::post('/survey/{slug}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
+Route::post('/survey/{slug}/{token}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit.token');
+Route::get('/survey/{slug}/thank-you', [SurveyController::class, 'thankYou'])->name('survey.thank-you');
+
+Route::get('/test-thank-you', function() {
+    return view('surveys.thank-you', ['survey' => \App\Models\Survey::first()]);
+});

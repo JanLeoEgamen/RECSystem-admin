@@ -103,5 +103,10 @@ protected $dates = [
         return $this->hasMany(QuizAttempt::class);
     }
 
+        public function surveyInvitations()
+    {
+        return $this->hasMany(SurveyInvitation::class);
+    }
+
 
 }
