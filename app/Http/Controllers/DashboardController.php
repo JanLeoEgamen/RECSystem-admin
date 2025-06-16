@@ -8,9 +8,21 @@ use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class DashboardController extends Controller
+
+class DashboardController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view admin dashboard', only: ['index']),
+
+        ];
+    }
+
     public function index(Request $request)
     {
         $user = $request->user();

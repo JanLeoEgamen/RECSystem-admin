@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('survey_responses', function (Blueprint $table) {
-        $table->unsignedBigInteger('member_id')->nullable()->change();
+        Schema::table('users', function (Blueprint $table) {
+        $table->unsignedBigInteger('member_id')->nullable()->after('id');
+        $table->foreign('member_id')->references('id')->on('members')->onDelete('set null');
         });
     }
 
@@ -21,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('survey_responses', function (Blueprint $table) {
-        $table->unsignedBigInteger('member_id')->nullable(false)->change();
+        Schema::table('users', function (Blueprint $table) {
+        $table->dropForeign(['member_id']);
+        $table->dropColumn('member_id');
         });
     }
 };

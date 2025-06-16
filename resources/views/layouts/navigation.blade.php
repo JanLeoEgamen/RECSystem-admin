@@ -5,17 +5,17 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-20 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
-                </div>
+                    </div>
 
                 <!-- Navigation Links -->
+                @can('view admin dashboard')
                 <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+                @endcan
 
                 <!-- User Management Dropdown -->
                 @canany(['view users', 'view roles', 'view permissions'])
@@ -122,7 +122,7 @@
 
 
             <!-- Membership, Bureau & Section Management -->
-            @canany(['view membership types', 'view bureaus', 'view sections', 'veiw applicants', 'view members'])
+            @canany(['view membership types', 'view bureaus', 'view sections', 'veiw applicants', 'view members', 'view licenses'])
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -164,6 +164,12 @@
                         @can('view members')
                         <x-dropdown-link :href="route('members.index')">
                             {{ __('Members') }}
+                        </x-dropdown-link>
+                        @endcan
+
+                        @can('view licenses')
+                        <x-dropdown-link :href="route('licenses.index')">
+                            {{ __('Licenses') }}
                         </x-dropdown-link>
                         @endcan
 

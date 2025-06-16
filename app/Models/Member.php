@@ -108,5 +108,9 @@ protected $dates = [
         return $this->hasMany(SurveyInvitation::class);
     }
 
+    public function userAsMember()
+    {
+        return $this->hasOne(User::class, 'member_id');
+    }
 
 }

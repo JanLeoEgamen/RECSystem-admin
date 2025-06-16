@@ -26,8 +26,10 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\ApplicantDashboardController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\LicenseController;
+use App\Http\Controllers\MemberDashboardController;
 use App\Http\Controllers\PublicQuizController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SurveyController;
@@ -77,8 +79,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users', [UserController::class, 'destroy'])->name('users.destroy');
 
+    //member portal
+    Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
 
-        //faqs
+    // applicant portal
+    Route::get('/applicant-dashboard', [ApplicantDashboardController::class, 'index'])->name('applicant.dashboard');
+
+    //faqs
     Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
     Route::get('/faqs/create', [FAQController::class, 'create'])->name('faqs.create');
     Route::post('/faqs', [FAQController::class, 'store'])->name('faqs.store');
@@ -275,6 +282,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/survey/{slug}/thank-you', [SurveyController::class, 'thankYou'])
         ->withoutMiddleware('auth')
         ->name('survey.thank-you');
+
+
+    
 });
 
 Route::fallback(function () {
@@ -316,6 +326,7 @@ require __DIR__.'/auth.php';
         return redirect('/login')->with('status', 'Your email has been verified. Please log in.');
     })->middleware(['signed'])->name('verification.verify');
 
+    
 
     
     Route::post('/email/verification-notification', function (Request $request) {

@@ -22,11 +22,13 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var list<string>
      */
     protected $fillable = [
-        'first_name',
         'last_name',
+        'first_name',
         'birthdate',
         'email',
         'password',
+        'member_id',
+
     ];
 
     /**
@@ -106,6 +108,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function members()
     {
         return $this->hasMany(Member::class);
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class, 'member_id');
     }
 
 

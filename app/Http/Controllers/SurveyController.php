@@ -498,7 +498,7 @@ $buttons .= '<a href="'.route('surveys.responses', ['survey' => $row->id]).'" cl
             $invitation->save();
         }
 
-        return redirect()->route('survey.thank-you', ['slug' => $survey->slug]);
+        return redirect()->route('survey.thank-you', $survey->slug);
     }
 
     public function thankYou($slug)
