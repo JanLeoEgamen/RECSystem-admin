@@ -32,6 +32,51 @@
                 line-height: 1.5;
                 font-size: 1rem;
             }
+
+             /* Your existing DataTables styles */
+            .dataTables_length select {
+                padding-right: 10px !important;
+                /* ... other existing styles ... */
+            }
+
+            /* Add the new overlay styles here */
+            body.overflow-hidden {
+                overflow: hidden;
+            }
+
+            #paymentOverlay {
+                transition: opacity 0.3s ease;
+            }
+
+            #paymentOverlay.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            #paymentOverlay:not(.hidden) {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .border-b {
+                margin-bottom: 2rem;
+                padding-bottom: 2rem;
+            }
+
+            /* Add spacing between form fields */
+            .space-y-8 > * + * {
+                margin-top: 2rem;
+            }
+
+            /* Add spacing between grid items */
+            .gap-4 {
+                gap: 1.5rem;
+            }
+
+            /* Add spacing for input fields */
+            input, select {
+                margin-bottom: 0.5rem;
+}
         </style>
     </head>
     <body class="font-sans antialiased">

@@ -48,8 +48,6 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -83,7 +81,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
 
     // applicant portal
-    Route::get('/applicant-dashboard', [ApplicantDashboardController::class, 'index'])->name('applicant.dashboard');
+    Route::middleware(['auth', 'verified'])->group(function () {
+    // Dashboard route
+    Route::get('/applicant-dashboard', [ApplicantDashboardController::class, 'index'])
+        ->name('applicant.dashboard');
+        
+    // Store application route
+    Route::post('/applicant/store', [ApplicantDashboardController::class, 'store'])
+        ->name('applicant.store');
+    });
 
     //faqs
     Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
@@ -260,7 +266,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/quizzes/{quiz}/resend/{member}', [QuizController::class, 'resendQuiz'])->name('quizzes.resend-quiz');
     Route::get('/quizzes/{quiz}/results/{member}', [QuizController::class, 'resendResults'])->name('quizzes.resend-results');
     Route::get('/quizzes/{quiz}/member/{member}/view', [QuizController::class, 'viewAttempt'])->name('quizzes.view-attempt');
-
 
     // Surveys
     Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
