@@ -34,7 +34,11 @@
                             @foreach($renewals as $renewal)
                             <tr class="border-b text-center">
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $renewal->member->user->name }}</td>
+                                <td>
+                                    {{ $renewal->member?->user
+                                        ? $renewal->member->user->first_name . ' ' . $renewal->member->user->last_name
+                                        : 'Unknown Member' }}
+                                </td>
                                 <td>{{ $renewal->reference_number }}</td>
                                 <td>
                                     <a href="{{ Storage::url($renewal->receipt_path) }}" target="_blank" class="text-blue-600 hover:underline">

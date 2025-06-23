@@ -43,7 +43,11 @@
                                         {{ ucfirst($renewal->status) }}
                                     </span>
                                 </td>
-                                <td>{{ $renewal->processor?->first_name ' ' . $row->user->last_name ?? 'System' }}</td>
+                                <td>
+                                    {{ $renewal->processor
+                                        ? $renewal->processor->first_name . ' ' . $renewal->processor->last_name
+                                        : 'System' }}
+                                </td>
                                 <td>{{ $renewal->processed_at?->format('M d, Y h:i A') ?? 'N/A' }}</td>
                                 <td>
                                     <a href="{{ Storage::url($renewal->receipt_path) }}" target="_blank" class="text-blue-600 hover:underline">
