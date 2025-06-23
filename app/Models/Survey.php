@@ -4,13 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Support\Str;
 
 class Survey extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'slug', 'user_id'];
+    protected $fillable = [
+        'title',
+        'description',
+        'is_published',
+        'user_id'
+    ];
 
     public function user()
     {
@@ -27,17 +31,12 @@ class Survey extends Model
         return $this->hasMany(SurveyResponse::class);
     }
 
-    public function invitations()
+    public function members()
     {
-        return $this->hasMany(SurveyInvitation::class);
+        return $this->belongsToMany(Member::class, 'survey_member')
+            ->withTimestamps();
     }
 
-    protected static function boot()
-    {
-        parent::boot();
 
-        static::creating(function ($survey) {
-            $survey->slug = Str::slug($survey->title) . '-' . Str::random(6);
-        });
-    }
+    
 }

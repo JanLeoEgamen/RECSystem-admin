@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,7 +9,10 @@ class SurveyResponse extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['survey_id', 'member_id', 'started_at', 'completed_at', 'score'];
+    protected $fillable = [
+        'survey_id',
+        'member_id'
+    ];
 
     public function survey()
     {

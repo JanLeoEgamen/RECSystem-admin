@@ -9,11 +9,16 @@ class SurveyQuestion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['survey_id', 'question', 'type', 'options', 'is_required', 'order'];
+    protected $fillable = [
+        'survey_id',
+        'question',
+        'type',
+        'options',
+        'order'
+    ];
 
     protected $casts = [
-        'options' => 'array',
-        'is_required' => 'boolean'
+        'options' => 'array'
     ];
 
     public function survey()
@@ -23,6 +28,6 @@ class SurveyQuestion extends Model
 
     public function answers()
     {
-        return $this->hasMany(SurveyAnswer::class);
+    return $this->hasMany(SurveyAnswer::class, 'question_id');
     }
 }

@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class QuizAttempt extends Model
+class QuizResponse extends Model
 {
     use HasFactory;
 
-    protected $dates = ['completed_at'];
-
-    protected $fillable = ['quiz_id', 'member_id', 'started_at', 'completed_at', 'score'];
+    protected $fillable = [
+        'quiz_id',
+        'member_id',
+        'total_score'
+    ];
 
     public function quiz()
     {
@@ -25,6 +27,6 @@ class QuizAttempt extends Model
 
     public function answers()
     {
-    return $this->hasMany(QuizAttemptAnswer::class, 'attempt_id'); // Specify custom foreign key
+    return $this->hasMany(QuizAnswer::class, 'response_id');
     }
 }

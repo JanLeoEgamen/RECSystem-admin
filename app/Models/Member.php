@@ -68,7 +68,7 @@ protected $dates = [
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function applicant()
@@ -98,19 +98,62 @@ protected $dates = [
                     ->withTimestamps();
     }
 
-    public function quizAttempts()
-    {
-        return $this->hasMany(QuizAttempt::class);
-    }
-
-        public function surveyInvitations()
-    {
-        return $this->hasMany(SurveyInvitation::class);
-    }
 
     public function userAsMember()
     {
         return $this->hasOne(User::class, 'member_id');
     }
 
+    public function announcements()
+    {
+        return $this->belongsToMany(Announcement::class)
+            ->withPivot(['is_read', 'read_at'])
+            ->withTimestamps()
+            ->orderBy('created_at', 'desc');
+    }
+    
+    public function surveys()
+    {
+        return $this->belongsToMany(Survey::class, 'survey_member')
+            ->withTimestamps();
+    }
+
+
+    public function surveyResponses()
+    {
+        return $this->hasMany(SurveyResponse::class);
+    }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_registrations')
+            ->withPivot(['status', 'notes'])
+            ->withTimestamps();
+    }
+
+    public function eventRegistrations()
+    {
+        return $this->hasMany(EventRegistration::class);
+    }
+
+    
+
+    public function quizzes()
+    {
+        return $this->belongsToMany(Quiz::class, 'quiz_member')
+            ->withTimestamps();
+    }
+
+    public function quizResponses()
+    {
+        return $this->hasMany(QuizResponse::class);
+    }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class)
+            ->withPivot(['is_viewed', 'viewed_at'])
+            ->withTimestamps()
+            ->orderBy('created_at', 'desc');
+    }
 }

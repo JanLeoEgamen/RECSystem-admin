@@ -12,7 +12,9 @@
                     <!-- Your member dashboard content will go here later -->
                     <p>Welcome to your member dashboard! This area is exclusive for organization members.</p>
                 </div>
-            </div>
-        </div>
+
+  
+
+
     </div>
 </x-app-layout>

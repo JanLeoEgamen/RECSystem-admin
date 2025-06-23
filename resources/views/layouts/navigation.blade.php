@@ -6,7 +6,54 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                         <x-application-logo class="block h-20 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </div>
+                 </div>
+
+
+                <!-- Member Portal Links -->
+                @role('Member')
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.dashboard')" :active="request()->routeIs('member.dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-nav-link>
+                </div>
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.membership-details')" :active="request()->routeIs('member.membership-details')">
+                        {{ __('My Membership Information') }}
+                    </x-nav-link>
+                </div>
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.announcements')" :active="request()->routeIs('member.announcements')">
+                        {{ __('Organization Announcements') }}
+                    </x-nav-link>
+                </div>
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.surveys')" :active="request()->routeIs('member.surveys')">
+                        {{ __('Surveys') }}
+                    </x-nav-link>
+                </div>
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.events')" :active="request()->routeIs('member.events')">
+                        {{ __('Events') }}
+                    </x-nav-link>
+                </div>
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.quizzes')" :active="request()->routeIs('member.quizzes')">
+                        {{ __('Reviewers') }}
+                    </x-nav-link>
+                </div>
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.certificates.index')" :active="request()->routeIs('member.certificates.index')">
+                        {{ __('My Certificates') }}
+                    </x-nav-link>
+                </div>
+                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('member.documents')" :active="request()->routeIs('member.documents')">
+                        {{ __('Documents') }}
+                    </x-nav-link>
+                </div>
+                @endrole
+
+
 
                 <!-- Navigation Links -->
                 @can('view admin dashboard')
@@ -185,7 +232,7 @@
 
 
             <!-- Email, certificates and quiz -->
-            @canany(['view certificates', 'view quizzes', 'view emails', 'view surveys'])   
+            @canany(['view certificates', 'view quizzes', 'view emails', 'view surveys', 'view announcements', 'view events', 'view documents', 'view reviewers'])   
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -224,63 +271,42 @@
                         </x-dropdown-link>
                         @endcan
 
+                        @can('view announcements')
+                        <x-dropdown-link :href="route('announcements.index')">
+                            {{ __('Announcement Management') }}
+                        </x-dropdown-link>
+                        @endcan
+
+                        @can('view events')
+                        <x-dropdown-link :href="route('events.index')">
+                            {{ __('Event Management') }}
+                        </x-dropdown-link>
+                        @endcan
+
+                        @can('view reviewers')
+                        <x-dropdown-link :href="route('quizzes.index')">
+                            {{ __('Reviewer Management') }}
+                        </x-dropdown-link>
+                        @endcan
+
+
+                        @can('view documents')
+                        <x-dropdown-link :href="route('documents.index')">
+                            {{ __('Document Management') }}
+                        </x-dropdown-link>
+                        @endcan
+
+
                     </x-slot> 
                 </x-dropdown>
             </div>
             @endcan
-
-
-
-
-                                    
-                {{-- old nav links 
-                
-                @can('view permissions')
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.index')">
-                        {{ __('Permissions') }}
-                    </x-nav-link>
-                </div>
-                @endcan
-
-                @can('view roles')
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('roles.index')" :active="request()->routeIs('roles.index')">
-                        {{ __('Roles') }}
-                    </x-nav-link>
-                </div>
-                @endcan
-
-                @can('view users')
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                        {{ __('Users') }}
-                    </x-nav-link>
-                </div>
-                @endcan
-                @can('view articles')
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('articles.index')" :active="request()->routeIs('articles.index')">
-                        {{ __('Articles') }}
-                    </x-nav-link>
-                </div>
-                @endcan 
-                                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('faqs.index')" :active="request()->routeIs('users.index')">
-                        {{ __('FAQs') }}
-                    </x-nav-link>
-                </div>
-
-                --}}
-
-
-            </div>
-
-            
+                 
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
+                    
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-xl leading-4 font-medium rounded-md text-white dark:text-gray-400 bg-[#101966] dark:bg-gray-800 hover:text-[#5E6FFB] dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }} ({{ Auth::user()->roles->pluck('name')->implode(', ') }})</div>
@@ -309,6 +335,7 @@
                             </x-dropdown-link>
                         </form>
                     </x-slot>
+
                 </x-dropdown>
             </div>
 
@@ -321,16 +348,17 @@
                     </svg>
                 </button>
             </div>
+
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+        <!-- Responsive Navigation Menu -->
+        <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+            <div class="pt-2 pb-3 space-y-1">
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
@@ -356,5 +384,6 @@
                 </form>
             </div>
         </div>
+
     </div>
 </nav>

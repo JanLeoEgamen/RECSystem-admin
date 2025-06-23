@@ -26,13 +26,19 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ApplicantDashboardController;
 use App\Http\Controllers\CashierApplicantController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LicenseController;
+use App\Http\Controllers\MemberCertificateController;
 use App\Http\Controllers\MemberDashboardController;
+use App\Http\Controllers\MemberQuizController;
 use App\Http\Controllers\PublicQuizController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\SurveyController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
@@ -49,11 +55,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Main dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Member portal
-    Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])
-       ->name('member.dashboard')
-       ->middleware('role:Member');
-
     // Applicant portal
     Route::middleware('role:Applicant')->group(function () {
         Route::get('/application', [ApplicantDashboardController::class, 'index'])->name('applicant.dashboard');
@@ -88,6 +89,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::post('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users', [UserController::class, 'destroy'])->name('users.destroy');
+
+    //member portal
+    Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
+    Route::get('/member/membership-details', [MemberDashboardController::class, 'membershipDetails'])->name('member.membership-details');
+    Route::get('/member/announcements', [MemberDashboardController::class, 'announcements'])->name('member.announcements');
+    Route::get('/member/announcements/{id}', [MemberDashboardController::class, 'viewAnnouncement'])->name('member.view-announcement');    
+    Route::get('/member/surveys', [MemberDashboardController::class, 'surveys'])->name('member.surveys');
+    Route::get('/member/surveys/{id}', [MemberDashboardController::class, 'takeSurvey'])->name('member.take-survey');
+    Route::post('/member/surveys/{id}', [MemberDashboardController::class, 'submitSurvey'])->name('member.submit-survey');
+    Route::get('/member/events', [MemberDashboardController::class, 'events'])->name('member.events');
+    Route::get('/member/events/{id}', [MemberDashboardController::class, 'viewEvent'])->name('member.view-event');
+    Route::post('/member/events/{id}/register', [MemberDashboardController::class, 'registerForEvent'])->name('member.register-event');
+    Route::post('/member/events/{id}/cancel', [MemberDashboardController::class, 'cancelRegistration'])->name('member.cancel-registration');
+    Route::get('/member/quizzes', [MemberQuizController::class, 'quizzes'])->name('member.quizzes');
+    Route::get('/member/take-quiz/{id}', [MemberQuizController::class, 'takeQuiz'])->name('member.take-quiz');
+    Route::post('/member/submit-quiz/{id}', [MemberQuizController::class, 'submitQuiz'])->name('member.submit-quiz');
+    Route::get('/member/quiz-result/{id}', [MemberQuizController::class, 'quizResult'])->name('member.quiz-result');
+    Route::get('/member/certificates', [MemberCertificateController::class, 'index'])->name('member.certificates.index');
+    Route::get('/member/certificates/{certificate}', [MemberCertificateController::class, 'show'])->name('member.certificates.show');
+    Route::get('/member/documents', [MemberDashboardController::class, 'documents'])->name('member.documents');
+    Route::get('/member/documents/{id}', [MemberDashboardController::class, 'viewDocument'])->name('member.view-document');
+    Route::get('/member/documents/{id}/download', [MemberDashboardController::class, 'downloadDocument'])->name('member.download-document');
+
 
     //faqs
     Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
@@ -251,40 +275,58 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/licenses', [LicenseController::class, 'destroy'])->name('licenses.destroy');
     Route::get('/licenses/{id}', [LicenseController::class, 'show'])->name('licenses.show');
 
+
+        // Announcements
+    Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::get('/announcements/create', [AnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
+    Route::get('/announcements/{id}/edit', [AnnouncementController::class, 'edit'])->name('announcements.edit');
+    Route::post('/announcements/{id}', [AnnouncementController::class, 'update'])->name('announcements.update');
+    Route::delete('/announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
+
+    //  Survey 
+    Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+    Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
+    Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
+    Route::get('/surveys/{id}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
+    Route::post('/surveys/{id}', [SurveyController::class, 'update'])->name('surveys.update');
+    Route::delete('/surveys', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+    Route::get('/surveys/{id}/responses', [SurveyController::class, 'responses'])->name('surveys.responses');
+    Route::get('/surveys/{survey}/responses/{response}', [SurveyController::class, 'individualResponse'])->name('surveys.individual-response');
+
+    //events
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::post('/events/{id}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::get('/events/{id}/registrations', [EventController::class, 'registrations'])->name('events.registrations');
+    Route::post('/events/{eventId}/registrations/{registrationId}', [EventController::class, 'updateRegistrationStatus'])->name('events.registrations.update');
+    Route::delete('/events/{eventId}/registrations/{registrationId}', [EventController::class, 'destroyRegistration'])->name('events.registrations.destroy');
+
+
     // Quizzes
     Route::get('/quizzes', [QuizController::class, 'index'])->name('quizzes.index');
     Route::get('/quizzes/create', [QuizController::class, 'create'])->name('quizzes.create');
     Route::post('/quizzes', [QuizController::class, 'store'])->name('quizzes.store');
-    Route::get('/quizzes/{id}/view', [QuizController::class, 'view'])->name('quizzes.view');
     Route::get('/quizzes/{id}/edit', [QuizController::class, 'edit'])->name('quizzes.edit');
     Route::put('/quizzes/{id}', [QuizController::class, 'update'])->name('quizzes.update');
     Route::delete('/quizzes', [QuizController::class, 'destroy'])->name('quizzes.destroy');
-    Route::get('/quizzes/{id}/send', [QuizController::class, 'send'])->name('quizzes.send');
-    Route::post('/quizzes/{id}/send', [QuizController::class, 'sendQuiz'])->name('quizzes.send-quiz');
-    Route::get('/quizzes/{quiz}/resend/{member}', [QuizController::class, 'resendQuiz'])->name('quizzes.resend-quiz');
-    Route::get('/quizzes/{quiz}/results/{member}', [QuizController::class, 'resendResults'])->name('quizzes.resend-results');
-    Route::get('/quizzes/{quiz}/member/{member}/view', [QuizController::class, 'viewAttempt'])->name('quizzes.view-attempt');
+    Route::get('/quizzes/{id}/responses', [QuizController::class, 'responses'])->name('quizzes.responses');
+    Route::get('/quizzes/{quiz}/responses/summary', [QuizController::class, 'summaryResponse'])->name('quizzes.responses.summary');
+    Route::get('/quizzes/{quiz}/responses/{response}', [QuizController::class, 'individualResponse'])->name('quizzes.responses.individual');
 
-    // Surveys
-    Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
-    Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
-    Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
-    Route::get('/surveys/{id}/view', [SurveyController::class, 'view'])->name('surveys.view');
-    Route::get('/surveys/{id}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
-    Route::put('/surveys/{id}', [SurveyController::class, 'update'])->name('surveys.update');
-    Route::delete('/surveys', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+    //documents
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::get('/documents/create', [DocumentController::class, 'create'])->name('documents.create');
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+    Route::get('/documents/{id}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
+    Route::put('/documents/{id}', [DocumentController::class, 'update'])->name('documents.update');
+    Route::delete('/documents', [DocumentController::class, 'destroy'])->name('documents.destroy');
+    Route::get('/documents/{id}/view', [DocumentController::class, 'view'])->name('documents.view');
 
-    Route::get('/surveys/{id}/send', [SurveyController::class, 'send'])->name('surveys.send');
-    Route::post('/surveys/{id}/send', [SurveyController::class, 'sendSurvey'])->name('surveys.send-survey');
-    Route::get('/surveys/{survey}/resend/{member}', [SurveyController::class, 'resendSurvey'])->name('surveys.resend');
-    Route::get('/surveys/{survey}/resend-results/{member}', [SurveyController::class, 'resendResults'])->name('surveys.resend-results');
-    Route::get('/surveys/{survey}/responses', [SurveyController::class, 'responses'])->name('surveys.responses');
-    Route::get('/surveys/{survey}/responses/{response}/view', [SurveyController::class, 'viewResponse'])->name('surveys.responses.view');
-    Route::delete('/surveys/delete-response', [SurveyController::class, 'deleteResponse'])->name('surveys.delete-response');
-
-    Route::get('/survey/{slug}/thank-you', [SurveyController::class, 'thankYou'])
-        ->withoutMiddleware('auth')
-        ->name('survey.thank-you');
 
     //Cashier
     Route::get('/cashier', [CashierApplicantController::class, 'index'])->name('cashier.index');
@@ -300,7 +342,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::fallback(function () {
-    return redirect()->route('dashboard')->with('error', 'Page not found.');
+    if (Auth::check()) {
+        // User is authenticated - redirect based on role
+        if (Auth::user()->hasRole('Member')) {
+            return redirect()->route('member.dashboard')->with('error', 'Page not found.');
+        }
+        
+        if (Auth::user()->hasRole('Applicant')) {
+            return redirect()->route('applicant.dashboard')->with('error', 'Page not found.');
+        }
+        
+        // Default authenticated fallback
+        return redirect()->route('dashboard')->with('error', 'Page not found.');
+    }
+    
+    // Guest fallback
+    return redirect('/')->with('error', 'Page not found.');
 });
 
 
@@ -353,10 +410,3 @@ require __DIR__.'/auth.php';
 Route::get('/quiz/{link}', [PublicQuizController::class, 'show'])->name('quiz.take');
 Route::post('/quiz/{link}', [PublicQuizController::class, 'submit'])->name('quiz.submit');
 Route::get('/quiz/results/{attempt}', [PublicQuizController::class, 'results'])->name('quiz.results');
-
-
-// Public survey routes
-Route::get('/survey/{slug}', [SurveyController::class, 'showSurvey'])->name('survey.show');
-Route::get('/survey/{slug}/{token}', [SurveyController::class, 'showSurvey'])->name('survey.show.token');
-Route::post('/survey/{slug}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit');
-Route::post('/survey/{slug}/{token}/submit', [SurveyController::class, 'submitSurvey'])->name('survey.submit.token');

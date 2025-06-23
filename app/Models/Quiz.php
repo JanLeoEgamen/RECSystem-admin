@@ -4,35 +4,36 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Quiz extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'time_limit', 'link', 'user_id'];
-
-    public function questions()
-    {
-        return $this->hasMany(QuizQuestion::class)->orderBy('order');
-    }
-
-    public function attempts()
-    {
-        return $this->hasMany(QuizAttempt::class);
-    }
+    protected $fillable = [
+        'title',
+        'description',
+        'is_published',
+        'user_id'
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    protected static function boot()
+    public function questions()
     {
-        parent::boot();
+        return $this->hasMany(QuizQuestion::class)->orderBy('order');
+    }
 
-        static::creating(function ($quiz) {
-            $quiz->link = Str::random(32);
-        });
+    public function responses()
+    {
+        return $this->hasMany(QuizResponse::class);
+    }
+
+    public function members()
+    {
+        return $this->belongsToMany(Member::class, 'quiz_member')
+            ->withTimestamps();
     }
 }

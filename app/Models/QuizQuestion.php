@@ -9,7 +9,20 @@ class QuizQuestion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['quiz_id', 'question', 'type', 'points', 'order'];
+    protected $fillable = [
+        'quiz_id',
+        'question',
+        'type',
+        'options',
+        'correct_answers',
+        'order',
+        'points'
+    ];
+
+    protected $casts = [
+        'options' => 'array',
+        'correct_answers' => 'array'
+    ];
 
     public function quiz()
     {
@@ -19,10 +32,5 @@ class QuizQuestion extends Model
     public function answers()
     {
     return $this->hasMany(QuizAnswer::class, 'question_id');
-    }
-
-    public function correctAnswers()
-    {
-    return $this->hasMany(QuizAnswer::class, 'question_id')->where('is_correct', true);
     }
 }

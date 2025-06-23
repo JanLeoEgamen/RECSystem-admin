@@ -207,4 +207,8 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
 
         return response()->json($barangays);
     }
+    
+
+
+
 }
