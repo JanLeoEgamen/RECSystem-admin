@@ -1,12 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
+        <div class="flex justify-between items-center flex-wrap gap-4">
             <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
                 {{ __('Members') }}
             </h2>
-            @can('create members')
-            <a href="{{ route('members.showMemberCreateForm') }}" class="inline-block px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#101966] border border-white border font-medium dark:border-[#3E3E3A] dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">Create</a>
-            @endcan
+
+            <div class="flex items-center flex-wrap gap-4">
+                @can('create members')
+                <a href="{{ route('members.showMemberCreateForm') }}" class="inline-block px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">Create</a>
+                @endcan
+
+                <a href="{{ route('members.active') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+                    Active Members
+                </a>
+                <a href="{{ route('members.inactive') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+                    Inactive Members
+                </a>
+
+            </div>
         </div>
     </x-slot>
 
@@ -309,26 +320,26 @@
                     alert(message); // Simple alert for demonstration
                 }
                 
-    $(document).on('click', '[onclick^="deleteMember"]', function() {
-        var id = $(this).attr('onclick').match(/deleteMember\((\d+)\)/)[1];
-        if (confirm("Are you sure you want to delete?")) {
-            $.ajax({
-                url: '{{ route("members.destroy") }}',
-                type: 'delete',
-                data: {id: id},
-                dataType: 'json',
-                headers: {
-                    'x-csrf-token': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    $('#membersTable').DataTable().ajax.reload();
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
-                }
-            });
-        }
-    });
+                $(document).on('click', '[onclick^="deleteMember"]', function() {
+                    var id = $(this).attr('onclick').match(/deleteMember\((\d+)\)/)[1];
+                    if (confirm("Are you sure you want to delete?")) {
+                        $.ajax({
+                            url: '{{ route("members.destroy") }}',
+                            type: 'delete',
+                            data: {id: id},
+                            dataType: 'json',
+                            headers: {
+                                'x-csrf-token': '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                $('#membersTable').DataTable().ajax.reload();
+                            },
+                            error: function(xhr) {
+                                alert('Error: ' + xhr.responseJSON.message);
+                            }
+                        });
+                    }
+                });
 
             });
         </script>

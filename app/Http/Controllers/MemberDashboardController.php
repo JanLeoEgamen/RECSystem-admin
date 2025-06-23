@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RenewalSubmitted;
 use App\Models\Event;
 use App\Models\Renewal;
 use App\Models\Survey;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class MemberDashboardController extends Controller implements HasMiddleware
 {
@@ -77,7 +79,7 @@ public function index()
         return view('member.renew');
     }
 
-        public function create()
+    public function create()
     {
         $member = Auth::user()->member;
         return view('member.renew', compact('member'));
@@ -88,7 +90,7 @@ public function index()
     {
         $request->validate([
             'reference_number' => 'required|string|max:255|unique:renewals',
-            'receipt' => 'required|image|max:2048', // 2MB max
+            'receipt' => 'required|image|max:2048',
         ]);
 
         $receiptPath = $request->file('receipt')->store('renewals', 'public');
@@ -99,6 +101,11 @@ public function index()
             'receipt_path' => $receiptPath,
             'status' => 'pending',
         ]);
+
+        // Send email using the Mailable class
+        Mail::to(Auth::user()->email)->send(
+            new RenewalSubmitted(Auth::user()->name, $request->reference_number)
+        );
 
         return redirect()->route('member.dashboard')->with('success', 'Renewal request submitted successfully!');
     }

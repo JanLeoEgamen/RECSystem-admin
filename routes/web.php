@@ -218,6 +218,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');
     Route::get('/members/create', [AddressController::class, 'showMemberCreateForm'])->name('members.showMemberCreateForm');
     Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+    Route::get('/members/active', [MemberController::class, 'active'])->name('members.active');
+    Route::get('/members/inactive', [MemberController::class, 'inactive'])->name('members.inactive');
     Route::get('/members/{id}/edit', [AddressController::class, 'showMemberEditForm'])->name('members.edit');
     Route::post('/members/{id}', [MemberController::class, 'update'])->name('members.update');  
     Route::delete('/members', [MemberController::class, 'destroy'])->name('members.destroy');
@@ -225,6 +227,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/members/{member}/renew', [MemberController::class, 'showRenewalForm'])->name('members.renew.show');
     Route::put('/members/{member}/renew', [MemberController::class, 'processRenewal'])->name('members.renew');
     Route::get('members/applicants/{id}', [MemberController::class, 'getApplicantData'])->name('members.getApplicantData');
+
+    Route::post('/members/deactivate', [MemberController::class, 'deactivate'])->name('members.deactivate');
+    Route::post('/members/reactivate', [MemberController::class, 'reactivate'])->name('members.reactivate');
+
 
     //reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

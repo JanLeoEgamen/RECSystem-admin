@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RenewalApproved;
+use App\Mail\RenewalRejected;
 use App\Models\Member;
 use App\Models\Renewal;
 use Illuminate\Http\Request;
@@ -9,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Mail;
 
 class RenewalController extends Controller implements HasMiddleware
 {
@@ -55,13 +58,26 @@ class RenewalController extends Controller implements HasMiddleware
             'processed_at' => now(),
         ]);
 
+        $member = $renewal->member;
+        $user = $member->user;
+
         if ($request->status === 'approved') {
-            // Update member's membership end date (you might want to adjust this logic)
-            $member = $renewal->member;
+            // Update membership
             $member->update([
                 'last_renewal_date' => now(),
-                'membership_end' => now()->addYear(), // or whatever your renewal period is
+                'membership_end' => now()->addYear(),
             ]);
+
+            // Send approval email
+            Mail::to($user->email)->send(
+                new RenewalApproved($user->name, $member->membership_end)
+            );
+
+        } elseif ($request->status === 'rejected') {
+            // Send rejection email
+            Mail::to($user->email)->send(
+                new RenewalRejected($user->name, $request->remarks)
+            );
         }
 
         return redirect()->route('renew.index')->with('success', 'Renewal request processed successfully!');
