@@ -510,40 +510,56 @@
                         <img src="/images/Logo.png" alt="Club Logo" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mb-2">
                         <h3 class="text-xl text-white sm:text-2xl font-extrabold drop-shadow-md">Radio Engineering Circle Inc.</h3>
                     </div>
+
                     @if (Route::has('login'))
                         @auth
-                        <div class="sign-in mb-4">
-                            <a href="{{ url('/dashboard') }}">
-                            <button class="bg-blue-600/90 text-white border-none rounded-full py-2 px-4 sm:py-3 sm:px-6 text-sm sm:text-base cursor-pointer transition-all hover:bg-blue-700 hover:-translate-y-0.5 w-full max-w-[200px] shadow-md">
-                                Dashboard
-                            </button>
-                            </a>
-                        </div>
+                            @php
+                                $user = auth()->user();
+
+                                $applicant = App\Models\Applicant::where('user_id', $user->id)->first();
+                                
+                                if ($user->hasRole('Applicant') && $applicant && $applicant->status === 'Pending') {
+                                    $dashboardLink = route('applicant.thankyou');
+                                } elseif ($user->hasRole('Member')) {
+                                    $dashboardLink = route('member.dashboard');
+                                } else {
+                                    $dashboardLink = url('/dashboard');
+                                }
+                            @endphp
+
+                            <div class="sign-in mb-4">
+                                <a href="{{ $dashboardLink }}">
+                                    <button class="bg-blue-600/90 text-white border-none rounded-full py-2 px-4 sm:py-3 sm:px-6 text-sm sm:text-base cursor-pointer transition-all hover:bg-blue-700 hover:-translate-y-0.5 w-full max-w-[200px] shadow-md">
+                                        Dashboard
+                                    </button>
+                                </a>
+                            </div>
                         @else
-                        <div class="sign-in mb-6">
-                            <a href="{{ route('login') }}">
-                                <button class="btn-17 w-full max-w-[200px] backdrop-blur-sm border border-white/30">
-                                    <span class="text-container">
-                                        <span class="text tracking-wider text-white drop-shadow-md">Login</span>
-                                    </span>
-                                </button>
-                            </a>
-                        </div>
-                        <p class="mb-2 text-sm sm:text-base text-white/90 drop-shadow-sm">Don't have an Account?</p>
-                        <div class="sign-in mb-6">
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}">
+                            <div class="sign-in mb-6">
+                                <a href="{{ route('login') }}">
                                     <button class="btn-17 w-full max-w-[200px] backdrop-blur-sm border border-white/30">
                                         <span class="text-container">
-                                            <span class="text tracking-wider text-white drop-shadow-md">Register</span>
+                                            <span class="text tracking-wider text-white drop-shadow-md">Login</span>
                                         </span>
                                     </button>
                                 </a>
-                            @endif
-                        </div>
+                            </div>
+                            <p class="mb-2 text-sm sm:text-base text-white/90 drop-shadow-sm">Don't have an Account?</p>
+                            <div class="sign-in mb-6">
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}">
+                                        <button class="btn-17 w-full max-w-[200px] backdrop-blur-sm border border-white/30">
+                                            <span class="text-container">
+                                                <span class="text tracking-wider text-white drop-shadow-md">Register</span>
+                                            </span>
+                                        </button>
+                                    </a>
+                                @endif
+                            </div>
                         @endauth
                     @endif
                 </div>
+
                 <!-- New Illustration Container with Frosted Glass Effect -->
                 <div class="bg-white/20 backdrop-blur-sm p-4 sm:p-5 rounded-lg border-2 border-white shadow-lg mt-6">
                     <h4 class="text-base sm:text-lg font-bold text-white mb-4">Explore REC Vision and Mission</h4>
@@ -553,6 +569,7 @@
                     ></iframe>
                 </div>
             </div>
+
         </div>
     </main>
 

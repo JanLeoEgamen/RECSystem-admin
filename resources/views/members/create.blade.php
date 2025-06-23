@@ -18,6 +18,15 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <form action="{{ route('members.store') }}" method="post" enctype="multipart/form-data" id="applicationForm">
+                        @if($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Applicant Selection -->
@@ -51,7 +60,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div>
                                         <label for="first_name" class="block text-sm font-medium">First Name *</label>
-                                        <input value="{{ old('first_name') }}" name="first_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" disabled>
+                                        <input value="{{ old('first_name') }}" name="first_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                         @error('first_name')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -384,6 +393,7 @@
     </div>
 
     <script>
+        
         document.addEventListener('DOMContentLoaded', function() {
             const lifetimeCheckbox = document.getElementById('is_lifetime_member');
             const membershipEndInput = document.querySelector('input[name="membership_end"]');

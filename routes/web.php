@@ -27,6 +27,7 @@ use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ApplicantDashboardController;
+use App\Http\Controllers\CashierApplicantController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\LicenseController;
 use App\Http\Controllers\MemberDashboardController;
@@ -42,13 +43,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome')->middleware('guest'); // Only for guests
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Main dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Member portal
+    Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])
+       ->name('member.dashboard')
+       ->middleware('role:Member');
 
-Route::middleware('auth')->group(function () {
+    // Applicant portal
+    Route::middleware('role:Applicant')->group(function () {
+        Route::get('/application', [ApplicantDashboardController::class, 'index'])->name('applicant.dashboard');
+        Route::post('/application', [ApplicantDashboardController::class, 'store'])->name('applicant.store');
+        Route::get('/application/applicationSent', [ApplicantDashboardController::class, 'applicationSent'])->name('applicant.thankyou');
+    });
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -76,20 +88,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::post('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users', [UserController::class, 'destroy'])->name('users.destroy');
-
-    //member portal
-    Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
-
-    // applicant portal
-    Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard route
-    Route::get('/applicant-dashboard', [ApplicantDashboardController::class, 'index'])
-        ->name('applicant.dashboard');
-        
-    // Store application route
-    Route::post('/applicant/store', [ApplicantDashboardController::class, 'store'])
-        ->name('applicant.store');
-    });
 
     //faqs
     Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
@@ -288,8 +286,17 @@ Route::middleware('auth')->group(function () {
         ->withoutMiddleware('auth')
         ->name('survey.thank-you');
 
+    //Cashier
+    Route::get('/cashier', [CashierApplicantController::class, 'index'])->name('cashier.index');
+    Route::delete('/cashier/{id}', [CashierApplicantController::class, 'destroy'])->name('cashier.destroy');
+    Route::post('/cashier/{id}/verify', [CashierApplicantController::class, 'verify'])->name('cashier.verify');
+    Route::get('/cashier/{id}/assess', [CashierApplicantController::class, 'assess'])->name('cashier.assess');
+    Route::post('/cashier/{id}/reject', [CashierApplicantController::class, 'reject'])->name('cashier.reject');
+    Route::get('/cashier/verified', [CashierApplicantController::class, 'verified'])->name('cashier.verified');
+    Route::get('/cashier/rejected', [CashierApplicantController::class, 'rejected'])->name('cashier.rejected');
+    Route::post('/cashier/{id}/restore', [CashierApplicantController::class, 'restore'])->name('cashier.restore');
 
-    
+
 });
 
 Route::fallback(function () {

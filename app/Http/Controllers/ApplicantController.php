@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ApplicantApprovedMail;
+use App\Mail\ApplicantRejectedMail;
 use App\Models\Applicant;
 use App\Models\Member;
 use App\Models\MembershipType;
 use App\Models\Section;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
 
 class ApplicantController extends Controller implements HasMiddleware
@@ -33,8 +37,8 @@ class ApplicantController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('status', 'Pending')->select('*');
-            
+            $data = Applicant::where('status', 'Pending')->orderby('created_at', 'desc')->select('*');
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
@@ -307,6 +311,20 @@ class ApplicantController extends Controller implements HasMiddleware
         $applicant->status = 'Approved';
         $applicant->save(); 
 
+        $user = User::where('email', $applicant->email_address)->first();
+
+        if ($user) {
+            if (!$user->hasRole('Member')) {
+                $user->assignRole('Member');
+            }
+
+            if ($user->hasRole('Applicant')) {
+                $user->removeRole('Applicant');
+            }
+        }
+
+        Mail::to($applicant->email_address)->send(new ApplicantApprovedMail($member));
+
         return redirect()->route('applicants.index')
                         ->with('success', 'Applicant approved and member created successfully');
     }
@@ -359,6 +377,8 @@ class ApplicantController extends Controller implements HasMiddleware
     {
         $applicant = Applicant::findOrFail($id);
         $applicant->update(['status' => 'Rejected']);
+
+        Mail::to($applicant->email_address)->send(new ApplicantRejectedMail($applicant));
         
         return redirect()->route('applicants.index')
                         ->with('success', 'Applicant has been rejected');
@@ -370,8 +390,8 @@ class ApplicantController extends Controller implements HasMiddleware
     public function rejected(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('status', 'Rejected')->select('*');
-            
+            $data = Applicant::where('status', 'Rejected')->orderBy('created_at', 'desc')->select('*');
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
@@ -419,8 +439,8 @@ class ApplicantController extends Controller implements HasMiddleware
     public function approved(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('status', 'approved')->select('*');
-            
+            $data = Applicant::where('status', 'approved')->orderBy('created_at', 'desc')->select('*');
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){

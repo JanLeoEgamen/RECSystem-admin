@@ -17,6 +17,19 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    @if($applicant->payment_status !== 'verified')
+                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
+                            <p class="font-bold">Payment Not Verified</p>
+                            <p>You cannot approve this applicant until their payment status is verified.</p>
+                        </div>
+                    @endif
+                    @if($applicant->payment_status === 'verified')
+                        <div id="applicant-payment_status" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+                            <p class="font-bold">Payment Verified</p>
+                            <p>This applicant has successfully completed their payment.</p>
+                        </div>
+                    @endif
+
                     <form action="{{ route('applicants.approve', $applicant->id) }}" method="post">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -325,23 +338,25 @@
                             </div>
                         </div>
 
-                <div class="mt-6 flex flex-wrap gap-3">
-                    <!-- Approve Button -->
-                    <button type="submit" class="flex items-center px-4 py-2 text-sm text-green-600 hover:text-white hover:bg-green-600 rounded-md transition-colors duration-200 border border-green-100 hover:border-green-600 font-medium">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Approve & Create Member
-                    </button>
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <!-- Approve Button -->
+                                <button type="submit" 
+                                        class="flex items-center px-4 py-2 text-sm text-green-600 hover:text-white hover:bg-green-600 rounded-md transition-colors duration-200 border border-green-100 hover:border-green-600 font-medium"
+                                        @if($applicant->payment_status !== 'verified') disabled @endif>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Approve & Create Member
+                                </button>
 
-                    <!-- Reject Button -->
-                    <button type="button" id="rejectButton" class="flex items-center px-4 py-2 text-sm text-red-600 hover:text-white hover:bg-red-600 rounded-md transition-colors duration-200 border border-red-100 hover:border-red-600 font-medium">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Reject Applicant
-                    </button>
-                </div>
+                            <!-- Reject Button -->
+                            <button type="button" id="rejectButton" class="flex items-center px-4 py-2 text-sm text-red-600 hover:text-white hover:bg-red-600 rounded-md transition-colors duration-200 border border-red-100 hover:border-red-600 font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Reject Applicant
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

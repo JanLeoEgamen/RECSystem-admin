@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Applicant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -25,22 +27,28 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
-        
-    // Redirect based on role
-    if ($request->user()->hasRole('Member')) {
-        return redirect()->intended(route('member.dashboard', absolute: false));
+
+        $user = $request->user();
+
+        if ($user->hasRole('Member')) {
+            return redirect()->route('member.dashboard');
+        }
+
+        if ($user->hasRole('Applicant')) {
+            // ✅ Check the applicant's status (not user's)
+            $applicant = Applicant::where('user_id', $user->id)->first();
+
+            if ($applicant && $applicant->status === 'Pending') {
+                return redirect()->route('applicant.thankyou');
+            }
+            return redirect()->route('applicant.dashboard');
+        }
+
+        return redirect()->route('dashboard');
     }
 
-    if ($request->user()->hasRole('Applicant')) {
-        return redirect()->intended(route('applicant.dashboard', absolute: false));
-    }
 
-
-
-        return redirect()->intended(route('dashboard', absolute: false));
-    }
 
     /**
      * Destroy an authenticated session.

@@ -266,6 +266,33 @@
                                     @enderror
                                 </div>
                             </div>
+                            <!-- Payment -->
+                            <div class="col-span-2">
+                                <h3 class="text-xl font-semibold mb-4">Payment</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="transaction_reference" class="block text-sm font-medium">Transaction Reference Number *</label>
+                                        <input value="{{ old('transaction_reference') }}" name="transaction_reference" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        @error('transaction_reference')
+                                        <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label for="amount" class="block text-sm font-medium">Amount *</label>
+                                        <input value="{{ old('amount') }}" name="amount" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        @error('amount')
+                                        <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label for="receipt_image" class="block text-sm font-medium">Upload GCash Receipt *</label>
+                                        <input type="file" name="receipt_image" accept="image/*" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        @error('receipt_image')
+                                        <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-6">

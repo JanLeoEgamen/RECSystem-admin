@@ -15,8 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'approved.applicant' => \App\Http\Middleware\EnsureApplicantIsApproved::class,
         ]);
-
+        
+        // ✅ Add as global middleware (runs on every request)
+        $middleware->web(append: [
+            \App\Http\Middleware\RedirectPendingApplicants::class, // Now runs AFTER auth
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

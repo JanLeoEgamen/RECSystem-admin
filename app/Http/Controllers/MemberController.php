@@ -59,7 +59,7 @@ public function index(Request $request)
                 
                 // Filter members by these section IDs
                 $query->whereIn('section_id', $allSectionIds);
-            })
+            })->orderBy('id', 'desc')
             ->select('*');
             
         return DataTables::of($data)
@@ -215,6 +215,7 @@ public function index(Request $request)
         }
 
         $member = new Member();
+        $member->status = 'Active'; // Default status for new members
         $this->saveMemberData($member, $request);
 
         return redirect()->route('members.index')->with('success', 'Member added successfully');
@@ -307,18 +308,20 @@ public function index(Request $request)
     public function destroy(Request $request)
     {
         $id = $request->id;
-        $member = Member::findOrFail($id);
+        $member = Member::find($id);
 
-        if ($member == null) {
+        if (!$member) {
             session()->flash('error', 'Member not found.');
             return response()->json(['status' => false]);
         }
 
-        $member->delete();
+        $member->status = 'Inactive';
+        $member->save();
 
-        session()->flash('success', 'Member deleted successfully.');
+        session()->flash('success', 'Member status set to inactive successfully.');
         return response()->json(['status' => true]);
     }
+
 
     /**
      * Save member data (shared between store and update)
