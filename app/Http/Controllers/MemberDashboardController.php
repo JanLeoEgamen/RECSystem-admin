@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Renewal;
 use App\Models\Survey;
 use App\Models\SurveyAnswer;
 use App\Models\SurveyResponse;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class MemberDashboardController extends Controller implements HasMiddleware
 {
@@ -23,12 +25,21 @@ class MemberDashboardController extends Controller implements HasMiddleware
     }
 
 
-    public function index()
-    {
-        return view('member.dashboard');
+public function index()
+{
+    $member = auth()->user()->member;
+    
+    // Check if membership is expired
+    if (!$member->is_lifetime_member && $member->membership_end && now()->gt($member->membership_end)) {
+        return redirect()->route('member.renew');
     }
+    
+    return view('member.dashboard', [
+        'isMembershipNearExpiry' => $this->isMembershipNearExpiry($member)
+    ]);
+}
 
-        public function membershipDetails()
+    public function membershipDetails()
     {
         // Get the authenticated user's member record
             $member = auth()->user()->member;
@@ -47,6 +58,53 @@ class MemberDashboardController extends Controller implements HasMiddleware
             'barangayName'
         ));
     }
+
+
+    // Add this helper method to the controller
+    private function isMembershipNearExpiry($member)
+    {
+        if ($member->is_lifetime_member || !$member->membership_end) {
+            return false;
+        }
+        
+        $expiryDate = \Carbon\Carbon::parse($member->membership_end);
+        return now()->diffInDays($expiryDate) <= 30; // 30 days threshold
+    }
+
+    // Add this method for the renew page
+    public function renew()
+    {
+        return view('member.renew');
+    }
+
+        public function create()
+    {
+        $member = Auth::user()->member;
+        return view('member.renew', compact('member'));
+    }
+
+    // Store renewal request
+    public function store(Request $request)
+    {
+        $request->validate([
+            'reference_number' => 'required|string|max:255|unique:renewals',
+            'receipt' => 'required|image|max:2048', // 2MB max
+        ]);
+
+        $receiptPath = $request->file('receipt')->store('renewals', 'public');
+
+        Renewal::create([
+            'member_id' => Auth::user()->member->id,
+            'reference_number' => $request->reference_number,
+            'receipt_path' => $receiptPath,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('member.dashboard')->with('success', 'Renewal request submitted successfully!');
+    }
+
+
+
 
     public function announcements()
     {

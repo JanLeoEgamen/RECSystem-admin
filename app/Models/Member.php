@@ -156,4 +156,27 @@ protected $dates = [
             ->withTimestamps()
             ->orderBy('created_at', 'desc');
     }
+
+    public function isExpired()
+    {
+        if ($this->is_lifetime_member) {
+            return false;
+        }
+        
+        if (!$this->membership_end) {
+            return false;
+        }
+        
+        return now()->gt($this->membership_end);
+    }
+
+    public function renewals()
+    {
+        return $this->hasMany(Renewal::class);
+    }
+
+    public function latestRenewal()
+    {
+        return $this->hasOne(Renewal::class)->latestOfMany();
+    }
 }

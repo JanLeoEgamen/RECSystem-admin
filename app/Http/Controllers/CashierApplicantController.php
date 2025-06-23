@@ -17,9 +17,9 @@ class CashierApplicantController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new RouteMiddleware('permission:view applicants', only: ['index']),
-            new RouteMiddleware('permission:verify applicants', only: ['verify']),
-            new RouteMiddleware('permission:delete applicants', only: ['destroy']),
+            new RouteMiddleware('permission:view payements', only: ['index']),
+            new RouteMiddleware('permission:verify payments', only: ['verify']),
+            new RouteMiddleware('permission:delete payments', only: ['destroy']),
         ];
     }
 

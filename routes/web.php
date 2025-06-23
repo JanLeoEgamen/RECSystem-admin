@@ -38,6 +38,7 @@ use App\Http\Controllers\MemberDashboardController;
 use App\Http\Controllers\MemberQuizController;
 use App\Http\Controllers\PublicQuizController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\RenewalController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\SurveyController;
 use App\Models\User;
@@ -111,6 +112,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/member/documents', [MemberDashboardController::class, 'documents'])->name('member.documents');
     Route::get('/member/documents/{id}', [MemberDashboardController::class, 'viewDocument'])->name('member.view-document');
     Route::get('/member/documents/{id}/download', [MemberDashboardController::class, 'downloadDocument'])->name('member.download-document');
+    Route::get('/member/renew', [MemberDashboardController::class, 'create'])->name('member.renew');
+    Route::post('/member/renew', [MemberDashboardController::class, 'store'])->name('renew.store');
 
 
     //faqs
@@ -337,6 +340,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cashier/verified', [CashierApplicantController::class, 'verified'])->name('cashier.verified');
     Route::get('/cashier/rejected', [CashierApplicantController::class, 'rejected'])->name('cashier.rejected');
     Route::post('/cashier/{id}/restore', [CashierApplicantController::class, 'restore'])->name('cashier.restore');
+
+    //renewal
+    Route::get('/renew/list', [RenewalController::class, 'index'])->name('renew.index');
+    Route::get('/renew/{renewal}/assess', [RenewalController::class, 'edit'])->name('renew.edit');
+    Route::put('/renew/{renewal}', [RenewalController::class, 'update'])->name('renew.update');
+    Route::get('/renew/history', [RenewalController::class, 'history'])->name('renew.history');
 
 
 });
