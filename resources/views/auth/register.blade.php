@@ -407,7 +407,7 @@
                         {{ __('Already registered?') }}
                     </a>
 
-                    <button type="submit" class="btn-17 backdrop-blur-sm border border-white/30">
+                    <button dusk="register-button" type="submit" class="btn-17 backdrop-blur-sm border border-white/30">
                         <span class="text-container">
                             <span class="text tracking-wider">{{ __('Register') }}</span>
                         </span>

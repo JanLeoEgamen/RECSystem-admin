@@ -301,6 +301,7 @@
                     <div class="relative">
                         <x-text-input 
                             id="password" 
+                            dusk="password-input"
                             class="block mt-1 w-full px-4 py-3 bg-white/20 backdrop-blur-sm text-white placeholder-white/50 rounded-lg border-white/30 focus:border-white focus:ring-white pr-12"
                             type="password"
                             name="password"
@@ -309,6 +310,7 @@
                             placeholder="••••••••"
                         />
                         <button type="button" 
+                                dusk="password-toggle"
                                 class="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-white/50 hover:text-white"
                                 onclick="togglePasswordVisibility()"
                                 aria-label="Toggle password visibility">
@@ -352,7 +354,7 @@
                         <span>Return Home</span>
                     </a>
                     
-                    <button type="submit" class="btn-17 backdrop-blur-sm border border-white/30" style="width: 150px; padding: 0.6rem 0;">
+                    <button dusk="login-button" type="submit" class="btn-17 backdrop-blur-sm border border-white/30" style="width: 150px; padding: 0.6rem 0;">
                         <span class="text-container">
                             <span class="text tracking-wider">{{ __('Log in') }}</span>
                         </span>

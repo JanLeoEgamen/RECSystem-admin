@@ -425,3 +425,9 @@ require __DIR__.'/auth.php';
 Route::get('/quiz/{link}', [PublicQuizController::class, 'show'])->name('quiz.take');
 Route::post('/quiz/{link}', [PublicQuizController::class, 'submit'])->name('quiz.submit');
 Route::get('/quiz/results/{attempt}', [PublicQuizController::class, 'results'])->name('quiz.results');
+
+if (app()->environment('local', 'testing')) {
+    Route::get('/test-login', function () {
+        return view('auth.login');
+    });
+}

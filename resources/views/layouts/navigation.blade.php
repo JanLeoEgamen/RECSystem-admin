@@ -11,49 +11,33 @@
 
                 <!-- Member Portal Links -->
                 @role('Member')
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.dashboard')" :active="request()->routeIs('member.dashboard')">
+                <div class="hidden sm:flex sm:space-x-4 sm:items-center sm:ms-10">
+                    <x-nav-link :href="route('member.dashboard')" :active="request()->routeIs('member.dashboard')" class="text-sm whitespace-nowrap">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                </div>
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.membership-details')" :active="request()->routeIs('member.membership-details')">
-                        {{ __('My Membership Information') }}
+                    <x-nav-link :href="route('member.membership-details')" :active="request()->routeIs('member.membership-details')" class="text-sm whitespace-nowrap">
+                        {{ __('My Membership') }}
                     </x-nav-link>
-                </div>
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.announcements')" :active="request()->routeIs('member.announcements')">
-                        {{ __('Organization Announcements') }}
+                    <x-nav-link :href="route('member.announcements')" :active="request()->routeIs('member.announcements')" class="text-sm whitespace-nowrap">
+                        {{ __('Announcements') }}
                     </x-nav-link>
-                </div>
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.surveys')" :active="request()->routeIs('member.surveys')">
+                    <x-nav-link :href="route('member.surveys')" :active="request()->routeIs('member.surveys')" class="text-sm whitespace-nowrap">
                         {{ __('Surveys') }}
                     </x-nav-link>
-                </div>
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.events')" :active="request()->routeIs('member.events')">
+                    <x-nav-link :href="route('member.events')" :active="request()->routeIs('member.events')" class="text-sm whitespace-nowrap">
                         {{ __('Events') }}
                     </x-nav-link>
-                </div>
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.quizzes')" :active="request()->routeIs('member.quizzes')">
+                    <x-nav-link :href="route('member.quizzes')" :active="request()->routeIs('member.quizzes')" class="text-sm whitespace-nowrap">
                         {{ __('Reviewers') }}
                     </x-nav-link>
-                </div>
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.certificates.index')" :active="request()->routeIs('member.certificates.index')">
-                        {{ __('My Certificates') }}
+                    <x-nav-link :href="route('member.certificates.index')" :active="request()->routeIs('member.certificates.index')" class="text-sm whitespace-nowrap">
+                        {{ __('Certificates') }}
                     </x-nav-link>
-                </div>
-                <div class="bg-[#101966] dark:bg-gray-800 hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('member.documents')" :active="request()->routeIs('member.documents')">
+                    <x-nav-link :href="route('member.documents')" :active="request()->routeIs('member.documents')" class="text-sm whitespace-nowrap">
                         {{ __('Documents') }}
                     </x-nav-link>
                 </div>
                 @endrole
-
-
 
                 <!-- Navigation Links -->
                 @can('view admin dashboard')

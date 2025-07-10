@@ -10,10 +10,10 @@
                 <a href="{{ route('members.showMemberCreateForm') }}" class="inline-block px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">Create</a>
                 @endcan
 
-                <a href="{{ route('members.active') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+                <a href="{{ route('members.active') }}" dusk="go-to-active" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
                     Active Members
                 </a>
-                <a href="{{ route('members.inactive') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+                <a href="{{ route('members.inactive') }}" dusk="go-to-inactive" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
                     Inactive Members
                 </a>
 

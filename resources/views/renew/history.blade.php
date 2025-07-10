@@ -18,6 +18,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                
                 <div class="p-6">
                     <table id="historyTable" class="w-full">
                         <thead class="bg-gray-50 dark:bg-gray-700">
@@ -44,8 +45,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    {{ $renewal->processor
-                                        ? $renewal->processor->first_name . ' ' . $renewal->processor->last_name
+                                    {{ $renewal->processor 
+                                        ? $renewal->processor->first_name . ' ' . $renewal->processor->last_name 
                                         : 'System' }}
                                 </td>
                                 <td>{{ $renewal->processed_at?->format('M d, Y h:i A') ?? 'N/A' }}</td>
