@@ -1,15 +1,15 @@
- @can('view admin dashboard')
+@can('view admin dashboard')
 <nav x-show="sidebarOpen || window.innerWidth > 768"
      :class="{
-         'fixed md:static': true,
+         'fixed': true,
          'hidden md:block': !sidebarOpen && window.innerWidth <= 768,
          'w-16': !sidebarOpen && window.innerWidth > 768,
          'w-64': sidebarOpen || window.innerWidth <= 768
      }"
      @mouseenter="if(window.innerWidth > 768 && !sidebarOpen) sidebarOpen = true"
      @mouseleave="if(window.innerWidth > 768 && sidebarOpen) sidebarOpen = false"
-     class="bg-[#101966] dark:bg-gray-800 text-white fixed left-0 top-20 flex flex-col"
-     style="background-color: #132080; height: calc(100vh - 4rem); box-shadow: 8px 0 15px -5px rgba(0, 0, 0, 0.7);"
+     class="bg-[#101966] text-white left-0 top-16 flex flex-col z-30"
+     style="height: calc(100vh - var(--topbar-height)); box-shadow: 8px 0 15px -5px rgba(0, 0, 0, 0.7);"
      x-data="{
          activeDropdown: null,
          toggleDropdown(dropdownName) {
