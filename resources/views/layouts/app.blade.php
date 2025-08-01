@@ -13,6 +13,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
+
+        body {
+    overflow-x: hidden;
+}
+
+
         .topbar {
             position: fixed;
             top: 0;
@@ -79,12 +85,13 @@
         }
 
         .main-content {
-            margin-left: 16rem;
-            margin-right: 0;
-            transition: all 0.3s ease;
-            padding-top: 6rem;
-            width: calc(100% - 16rem);
-        }
+    margin-left: 16rem;
+    margin-right: 0;
+    transition: all 0.3s ease;
+    padding-top: 6rem;
+    width: calc(100% - 16rem);
+    min-height: calc(100vh - 4rem); /* Account for topbar */
+}
 
         .main-content-collapsed {
             margin-left: 5rem;
@@ -189,7 +196,9 @@
             }
 
             footer {
+                margin-top: auto;
                 position: relative;
+                width: 100%;
             }
 
             .main-content {
@@ -215,6 +224,7 @@
                 margin-right: 0;
                 width: 100%;
                 padding-top: 6rem;
+                min-height: calc(100vh - 4rem - 6rem);
             }
             
             .header-content {
@@ -310,22 +320,20 @@ class="flex flex-col flex-grow">
         @include('layouts.right-sidebar')
 
         <main class="flex-grow transition-all duration-300 ease-in-out main-content" :class="mainContentClass">
-    <div class="header-container">
-        @isset($header)
-            <header class="w-full">
-                <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
-                    {{ $header }}
-                </div>
-            </header>
-        @endisset
-    </div>
+            <div class="header-container">
+                @isset($header)
+                    <header class="w-full">
+                        <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
+            </div>
 
-    <div class="p-6">
-        {{ $slot }}
-    </div>
-</main>
-
-
+            <div class="p-6 min-h-[calc(100vh-4rem-6rem)]"> <!-- Adjusted height calculation -->
+                {{ $slot }}
+            </div>
+        </main>
         @include('layouts.footer')
     </div>
     
