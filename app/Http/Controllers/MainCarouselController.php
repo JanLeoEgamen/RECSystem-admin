@@ -73,7 +73,7 @@ class MainCarouselController extends Controller implements HasMiddleware
                     'title' => $carousel->title,
                     'content' => Str::limit($carousel->content, 50),
                     'image' => $carousel->image 
-                        ? '<img src="'.asset('storage/'.$carousel->image).'" alt="Carousel Image" class="h-20 w-20 object-cover">'
+                        ? '<img src="'.asset('images/'.$carousel->image).'" alt="Carousel Image" class="h-20 w-20 object-cover">'
                         : 'No Image',
                     'author' => $carousel->user->first_name . ' ' . $carousel->user->last_name,
                     'status' => $carousel->status 

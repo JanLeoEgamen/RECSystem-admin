@@ -36,7 +36,6 @@
                                     <option value="event_name_asc">Event Name (A-Z)</option>
                                     <option value="event_name_desc">Event Name (Z-A)</option>
                                     <option value="event_date_asc">Event Date (Oldest First)</option>
-                                    <option value="event_date_desc">Event Date (Newest First)</option>
                                     <option value="status_desc">Status (Active First)</option>
                                     <option value="status_asc">Status (Inactive First)</option>
                                     <option value="created_asc">Created (Oldest First)</option>
@@ -135,9 +134,11 @@
 
                 function fetchEventAnnouncements(page = 1, search = '', perPage = $('#perPage').val()) {
                     const sortValue = $('#sortBy').val() || 'created_desc';
-                    const [column, direction] = sortValue.split('_');
+                    const lastUnderscore = sortValue.lastIndexOf('_');
+                    const column = sortValue.substring(0, lastUnderscore);
+                    const direction = sortValue.substring(lastUnderscore + 1);
                     const sortParams = `&sort=${column}&direction=${direction}`;
-                    
+
                     $.ajax({
                         url: `{{ route('event-announcements.index') }}?page=${page}&search=${search}&perPage=${perPage}${sortParams}`,
                         type: 'GET',
@@ -150,6 +151,7 @@
                         }
                     });
                 }
+
 
                 function renderEventAnnouncements(announcements, startIndex) {
                     let tbody = $('#eventAnnouncementsTable tbody');
@@ -203,7 +205,6 @@
                 function renderPagination(data) {
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
 
-                    // First and Previous buttons
                     if (data.current_page > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
@@ -216,20 +217,17 @@
                             </button>`;
                     }
 
-                    // Page numbers - always show current page and adjacent pages
                     const totalPages = data.last_page;
                     const currentPage = data.current_page;
-                    const pagesToShow = 3; // Show 3 pages around current
+                    const pagesToShow = 3;
 
                     let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
                     let endPage = Math.min(totalPages, startPage + pagesToShow - 1);
 
-                    // Adjust if we're at the beginning or end
                     if (endPage - startPage + 1 < pagesToShow) {
                         startPage = Math.max(1, endPage - pagesToShow + 1);
                     }
 
-                    // Always show page 1 if not already shown
                     if (startPage > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
@@ -241,7 +239,6 @@
                         }
                     }
 
-                    // Show page numbers
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
@@ -250,7 +247,6 @@
                             </button>`;
                     }
 
-                    // Always show last page if not already shown
                     if (endPage < totalPages) {
                         if (endPage < totalPages - 1) {
                             paginationHtml += `<span class="px-2">...</span>`;
@@ -262,7 +258,6 @@
                             </button>`;
                     }
 
-                    // Next and Last buttons
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"

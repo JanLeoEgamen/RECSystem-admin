@@ -76,7 +76,7 @@ class ArticleController extends Controller implements HasMiddleware
                     'id' => $article->id,
                     'title' => $article->title,
                     'image_url' => $article->image 
-                        ? asset('storage/'.$article->image)
+                        ? asset('images/'.$article->image)
                         : null,
                     'author' => $article->author,
                     'uploaded_by' => $article->user->first_name . ' ' . $article->user->last_name,

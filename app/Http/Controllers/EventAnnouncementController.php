@@ -23,81 +23,82 @@ class EventAnnouncementController extends Controller implements HasMiddleware
     }
 
     public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $query = EventAnnouncement::with('user');
+{
+    if ($request->ajax()) {
+        $query = EventAnnouncement::with('user');
 
-            if ($request->has('search') && $request->search != '') {
-                $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    $q->where('event_name', 'like', "%$search%")
-                      ->orWhere('caption', 'like', "%$search%")
-                      ->orWhere('year', 'like', "%$search%")
-                      ->orWhereHas('user', function($q) use ($search) {
-                          $q->where('first_name', 'like', "%$search%")
-                            ->orWhere('last_name', 'like', "%$search%");
-                      });
-                });
-            }
-
-            if ($request->has('sort') && $request->has('direction')) {
-                $sort = $request->sort;
-                $direction = $request->direction;
-                
-                switch ($sort) {
-                    case 'event_name':
-                        $query->orderBy('event_name', $direction);
-                        break;
-                        
-                    case 'event_date':
-                        $query->orderBy('event_date', $direction);
-                        break;
-                        
-                    case 'status':
-                        $query->orderBy('status', $direction === 'asc' ? 'asc' : 'desc');
-                        break;
-                        
-                    case 'created_at':
-                        $query->orderBy('created_at', $direction);
-                        break;
-                        
-                    default:
-                        $query->orderBy('created_at', 'desc');
-                        break;
-                }
-            } else {
-                $query->orderBy('created_at', 'desc');
-            }
-
-            $perPage = $request->input('perPage', 10);
-            $announcements = $query->paginate($perPage);
-
-            $transformedAnnouncements = $announcements->getCollection()->map(function ($announcement) {
-                return [
-                    'id' => $announcement->id,
-                    'event_name' => $announcement->event_name,
-                    'event_date' => Carbon::parse($announcement->event_date)->format('M d, Y'),
-                    'image_url' => $announcement->image 
-                        ? asset('storage/'.$announcement->image)
-                        : null,
-                    'author' => $announcement->user->first_name . ' ' . $announcement->user->last_name,
-                    'status' => $announcement->status ? 'Active' : 'Inactive',
-                    'created_at' => $announcement->created_at->format('d M, Y'),
-                ];
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('event_name', 'like', "%$search%")
+                  ->orWhere('caption', 'like', "%$search%")
+                  ->orWhere('year', 'like', "%$search%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('first_name', 'like', "%$search%")
+                        ->orWhere('last_name', 'like', "%$search%");
+                  });
             });
-
-            return response()->json([
-                'data' => $transformedAnnouncements,
-                'current_page' => $announcements->currentPage(),
-                'last_page' => $announcements->lastPage(),
-                'from' => $announcements->firstItem(),
-                'to' => $announcements->lastItem(),
-                'total' => $announcements->total(),
-            ]);
         }
 
-        return view('event-announcements.list');
+        if ($request->has('sort') && $request->has('direction')) {
+            $sort = $request->sort;
+            $direction = $request->direction;
+            
+            switch ($sort) {
+                case 'event_name':
+                    $query->orderBy('event_name', $direction);
+                    break;
+                    
+                case 'event_date':
+                    $query->orderByRaw('STR_TO_DATE(event_date, "%Y-%m-%d") ' . $direction);
+                    break;
+
+                    
+                case 'status':
+                    $query->orderBy('status', $direction === 'asc' ? 'asc' : 'desc');
+                    break;
+                    
+                case 'created':
+                    $query->orderBy('created_at', $direction);
+                    break;
+                    
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $perPage = $request->input('perPage', 10);
+        $announcements = $query->paginate($perPage);
+
+        $transformedAnnouncements = $announcements->getCollection()->map(function ($announcement) {
+            return [
+                'id' => $announcement->id,
+                'event_name' => $announcement->event_name,
+                'event_date' => Carbon::parse($announcement->event_date)->format('M d, Y'),
+                'image_url' => $announcement->image 
+                    ? asset('images/'.$announcement->image)
+                    : null,
+                'author' => $announcement->user->first_name . ' ' . $announcement->user->last_name,
+                'status' => $announcement->status ? 'Active' : 'Inactive',
+                'created_at' => $announcement->created_at->format('d M, Y'),
+            ];
+        });
+
+        return response()->json([
+            'data' => $transformedAnnouncements,
+            'current_page' => $announcements->currentPage(),
+            'last_page' => $announcements->lastPage(),
+            'from' => $announcements->firstItem(),
+            'to' => $announcements->lastItem(),
+            'total' => $announcements->total(),
+        ]);
     }
+
+    return view('event-announcements.list');
+}
 
     public function create()
     {
