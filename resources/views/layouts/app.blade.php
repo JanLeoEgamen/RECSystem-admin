@@ -12,263 +12,275 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <style>
+<style>
+    :root {
+        --topbar-height: 4rem;
+        --sidebar-width: 16rem;
+        --sidebar-collapsed-width: 5rem;
+        --right-sidebar-width: 16rem;
+        --right-sidebar-collapsed-width: 5rem;
+    }
 
-        body {
-    overflow-x: hidden;
-}
+    body {
+        overflow-x: hidden;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
+    .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        height: var(--topbar-height);
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-        .topbar {
+    .topbar-center-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .sidebar {
+        width: var(--sidebar-width);
+        transition: all 0.3s ease;
+        box-shadow: 8px 0 15px -5px rgba(0, 0, 0, 0.2);
+        position: fixed;
+        top: var(--topbar-height);
+        bottom: 0;
+        z-index: 30;
+        background-color: #132080;
+        height: calc(100vh - var(--topbar-height));
+    }
+
+    .sidebar-collapsed {
+        width: var(--sidebar-collapsed-width);
+        overflow: hidden;
+    }
+
+    .right-sidebar {
+        width: var(--right-sidebar-width);
+        transition: all 0.3s ease;
+        box-shadow: -8px 0 15px -5px rgba(0, 0, 0, 0.2);
+        position: fixed;
+        right: 0;
+        top: var(--topbar-height);
+        bottom: 0;
+        z-index: 30;
+    }
+
+    .right-sidebar-collapsed {
+        width: var(--right-sidebar-collapsed-width);
+    }
+
+    .header-container {
+        z-index: 25;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .header-content {
+        transition: all 0.3s ease;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 1.5rem 1rem;
+        max-width: 85%;
+        background-color: #5e6ffb;
+        border-radius: 0.5rem;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+        margin-left: var(--sidebar-width);
+        margin-right: 0;
+        transition: all 0.3s ease;
+        padding-top: 6rem;
+        width: calc(100% - var(--sidebar-width));
+        min-height: calc(100vh - var(--topbar-height));
+        position: relative;
+    }
+
+    .main-content-collapsed {
+        margin-left: var(--sidebar-collapsed-width);
+        width: calc(100% - var(--sidebar-collapsed-width));
+    }
+
+    .main-content-right-expanded {
+        margin-right: var(--right-sidebar-width);
+        width: calc(100% - var(--sidebar-width) - var(--right-sidebar-width));
+    }
+
+    .main-content-right-collapsed {
+        margin-right: var(--right-sidebar-collapsed-width);
+        width: calc(100% - var(--sidebar-width) - var(--right-sidebar-collapsed-width));
+    }
+
+    .main-content-both-expanded {
+        margin-left: var(--sidebar-width);
+        margin-right: var(--right-sidebar-width);
+        width: calc(100% - var(--sidebar-width) - var(--right-sidebar-width));
+    }
+
+    .main-content-left-collapsed-right-expanded {
+        margin-left: var(--sidebar-collapsed-width);
+        margin-right: var(--right-sidebar-width);
+        width: calc(100% - var(--sidebar-collapsed-width) - var(--right-sidebar-width));
+    }
+
+    .main-content-left-expanded-right-collapsed {
+        margin-left: var(--sidebar-width);
+        margin-right: var(--right-sidebar-collapsed-width);
+        width: calc(100% - var(--sidebar-width) - var(--right-sidebar-collapsed-width));
+    }
+
+    .main-content-both-collapsed {
+        margin-left: var(--sidebar-collapsed-width);
+        margin-right: var(--right-sidebar-collapsed-width);
+        width: calc(100% - var(--sidebar-collapsed-width) - var(--right-sidebar-collapsed-width));
+    }
+
+    /* Navigation Links */
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link.active {
+        background-color: #5e6ffb;
+    }
+
+    /* Footer Styles */
+    footer {
+        margin-top: auto;
+        position: relative;
+        width: 100%;
+        padding: 1.5rem;
+        background: white;
+        z-index: 20;
+    }
+
+    /* Table Styles */
+    .table-row-hover:hover {
+        background-color: #3142CE !important;
+        color: white !important;
+    }
+    
+    .table-row-hover:hover a,
+    .table-row-hover:hover button {
+        color: white !important;
+    }
+    
+    .assignments-cell {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+    }
+    
+    .assignments-cell:hover::after {
+        content: attr(data-full-text);
+        position: absolute;
+        left: 0;
+        top: 100%;
+        z-index: 100;
+        background: white;
+        color: black;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        white-space: normal;
+        width: 300px;
+        max-height: 200px;
+        overflow: auto;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-open {
+            transform: translateX(0);
+        }
+        
+        .sidebar-collapsed {
+            width: 0;
+            transform: translateX(-100%);
+        }
+        
+        .main-content,
+        .main-content-collapsed,
+        .main-content-right-expanded,
+        .main-content-right-collapsed,
+        .main-content-both-expanded,
+        .main-content-left-collapsed-right-expanded,
+        .main-content-left-expanded-right-collapsed,
+        .main-content-both-collapsed {
+            margin-left: 0;
+            margin-right: 0;
+            width: 100%;
+            padding-top: 6rem;
+            min-height: calc(100vh - var(--topbar-height) - 6rem);
+        }
+        
+        .header-content {
+            max-width: 95%;
+            padding: 1rem;
+        }
+        
+        .sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            z-index: 40;
-            height: 4rem;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .topbar-center-content {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-shrink: 0;
-        }
-
-        .sidebar {
-            width: 16rem;
-            transition: all 0.3s ease;
-            box-shadow: 8px 0 15px -5px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            top: 4rem;
             bottom: 0;
-            z-index: 30;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 35;
+            display: none;
         }
-
-        .sidebar-collapsed {
-            width: 5rem;
-            overflow: hidden;
+        
+        .sidebar-overlay-active {
+            display: block;
         }
+    }
 
-        .right-sidebar {
-            width: 16rem;
-            transition: all 0.3s ease;
-            box-shadow: -8px 0 15px -5px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            right: 0;
-            top: 4rem;
-            bottom: 0;
-            z-index: 30;
-        }
-
-        .right-sidebar-collapsed {
-            width: 5rem;
-        }
-
-        .header-container {
-            z-index: 25;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 2rem;
-        }
-
-        .header-content {
-            transition: all 0.3s ease;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 1.5rem 1rem;
-            max-width: 85%;
-            background-color: #5e6ffb;
-            border-radius: 0.5rem;
-        }
-
+    /* Intermediate Breakpoint for 1440px and similar screens */
+    @media (min-width: 769px) and (max-width: 1440px) {
         .main-content {
-    margin-left: 16rem;
-    margin-right: 0;
-    transition: all 0.3s ease;
-    padding-top: 6rem;
-    width: calc(100% - 16rem);
-    min-height: calc(100vh - 4rem); /* Account for topbar */
-}
-
-        .main-content-collapsed {
-            margin-left: 5rem;
-            width: calc(100% - 5rem);
+            min-height: calc(100vh - var(--topbar-height) - 6rem);
         }
-
-        .main-content-right-expanded {
-            margin-right: 16rem;
-            width: calc(100% - 16rem);
-        }
-
-        .main-content-right-collapsed {
-            margin-right: 5rem;
-            width: calc(100% - 5rem);
-        }
-
+        
         .main-content-both-expanded {
-            margin-left: 16rem;
-            margin-right: 16rem;
-            width: calc(100% - 32rem);
+            min-height: calc(100vh - var(--topbar-height) - 6rem);
         }
-
+        
+        .main-content-left-expanded-right-collapsed,
         .main-content-left-collapsed-right-expanded {
-            margin-left: 5rem;
-            margin-right: 16rem;
-            width: calc(100% - 21rem);
+            min-height: calc(100vh - var(--topbar-height) - 6rem);
         }
-
-        .main-content-left-expanded-right-collapsed {
-            margin-left: 16rem;
-            margin-right: 5rem;
-            width: calc(100% - 21rem);
-        }
-
+        
         .main-content-both-collapsed {
-            margin-left: 5rem;
-            margin-right: 5rem;
-            width: calc(100% - 10rem);
+            min-height: calc(100vh - var(--topbar-height) - 6rem);
         }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
-        }
-
-        .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-link.active {
-            background-color: #5e6ffb;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar-open {
-                transform: translateX(0);
-            }
-            
-            .main-content-collapsed {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .sidebar-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(0,0,0,0.5);
-                z-index: 35;
-                display: none;
-            }
-            
-            .sidebar-overlay-active {
-                display: block;
-            }
-
-            .main-content {
-                min-height: calc(100vh - 80px - 150px);
-            }
-            
-            footer {
-                padding: 1.5rem 1rem;
-            }
-            
-            footer .flex-col {
-                align-items: flex-start;
-            }
-            
-            footer .flex-wrap {
-                justify-content: flex-start;
-                gap: 1rem;
-            }
-
-            footer {
-                margin-top: auto;
-                position: relative;
-                width: 100%;
-            }
-
-            .main-content {
-                min-height: calc(100vh - 80px - 120px); 
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar-collapsed {
-                width: 0;
-                transform: translateX(-100%);
-            }
-            
-            .main-content,
-            .main-content-collapsed,
-            .main-content-right-expanded,
-            .main-content-right-collapsed,
-            .main-content-both-expanded,
-            .main-content-left-collapsed-right-expanded,
-            .main-content-left-expanded-right-collapsed,
-            .main-content-both-collapsed {
-                margin-left: 0;
-                margin-right: 0;
-                width: 100%;
-                padding-top: 6rem;
-                min-height: calc(100vh - 4rem - 6rem);
-            }
-            
-            .header-content {
-                max-width: 95%;
-                padding: 1rem;
-            }
-        }
-
-        .table-row-hover:hover {
-        background-color: #3142CE !important;
-        color: white !important;
-        }
-        
-        .table-row-hover:hover a,
-        .table-row-hover:hover button {
-            color: white !important;
-        }
-        
-        .assignments-cell {
-            max-width: 200px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            position: relative;
-        }
-        
-        .assignments-cell:hover::after {
-            content: attr(data-full-text);
-            position: absolute;
-            left: 0;
-            top: 100%;
-            z-index: 100;
-            background: white;
-            color: black;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            white-space: normal;
-            width: 300px;
-            max-height: 200px;
-            overflow: auto;
-        }
-    </style>
+    }
+</style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased bg-white">
 
@@ -320,20 +332,20 @@ class="flex flex-col flex-grow">
         @include('layouts.right-sidebar')
 
         <main class="flex-grow transition-all duration-300 ease-in-out main-content" :class="mainContentClass">
-            <div class="header-container">
-                @isset($header)
-                    <header class="w-full">
-                        <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
-                            {{ $header }}
-                        </div>
-                    </header>
-                @endisset
-            </div>
+    <div class="header-container">
+        @isset($header)
+            <header class="w-full">
+                <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
+                    {{ $header }}
+                </div>
+            </header>
+        @endisset
+    </div>
 
-            <div class="p-6 min-h-[calc(100vh-4rem-6rem)]"> <!-- Adjusted height calculation -->
-                {{ $slot }}
-            </div>
-        </main>
+    <div class="p-6 min-h-[calc(100vh-4rem-6rem)] pb-20"> <!-- Added pb-20 for footer space -->
+        {{ $slot }}
+    </div>
+</main>
         @include('layouts.footer')
     </div>
     
