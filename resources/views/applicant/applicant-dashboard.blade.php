@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </section>
   
   <!-- Application Form -->
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen py-8 transition-colors duration-300">
+  <div class="bg-white dark:bg-gray-900 min-h-screen py-8 transition-colors duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Form Container -->
         <div class="flex-1 bg-white dark:bg-gray-900 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
@@ -151,33 +151,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="text" id="citizenship" name="citizenship" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200" 
                         placeholder="e.g. Filipino">
                     </div>
-                </div>
-    
-                <!-- Checkboxes -->
-                <div class="mt-4">
-                    <div class="flex flex-col space-y-4">
-                        <!-- Student Checkbox -->
-                        <div class="relative flex items-start">
-                            <div class="flex items-center h-5">
-                                <input id="isStudent" name="isStudent" type="checkbox" 
-                                       class="focus:ring-blue-500 h-6 w-6 text-blue-600 border-gray-300 rounded transition-colors duration-300 dark:bg-gray-700 dark:border-gray-600">
-                            </div>
-                            <div class="ml-3 text-sm">
-                                <label for="isStudent" class="font-medium text-gray-700 dark:text-gray-300">Applying as a student?</label>
-                                <p class="text-gray-500 dark:text-gray-400">Check this if you're currently enrolled in an educational institution.</p>
-                            </div>
+
+                    <!-- Student and Professional License Checkboxes - Vertical Stack -->
+                    <div class="space-y-2 mt-4">  <!-- Using space-y-2 for vertical spacing -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="isStudent" name="isStudent" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="isStudent" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I am applying as a student</label>
                         </div>
-                
-                        <!-- License Checkbox -->
-                        <div class="relative flex items-start">
-                            <div class="flex items-center h-5">
-                                <input id="hasLicense" name="hasLicense" type="checkbox" 
-                                       class="focus:ring-blue-500 h-6 w-6 text-blue-600 border-gray-300 rounded transition-colors duration-300 dark:bg-gray-700 dark:border-gray-600">
-                            </div>
-                            <div class="ml-3 text-sm">
-                                <label for="hasLicense" class="font-medium text-gray-700 dark:text-gray-300">Do you have a professional license?</label>
-                                <p class="text-gray-500 dark:text-gray-400">Check this if you hold a valid professional license.</p>
-                            </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="hasLicense" name="hasLicense" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="hasLicense" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I have a professional license</label>
                         </div>
                     </div>
                 </div>

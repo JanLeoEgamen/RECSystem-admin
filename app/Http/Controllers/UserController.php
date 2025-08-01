@@ -17,12 +17,11 @@ class UserController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return[
+        return [
             new Middleware('permission:view users', only: ['index']),
-            new Middleware('permission:edit users', only: ['edit']),    
+            new Middleware('permission:edit users', only: ['edit']),
             new Middleware('permission:create users', only: ['create']),
             new Middleware('permission:delete users', only: ['destroy']),
-        
         ];
     }
 
@@ -32,77 +31,87 @@ class UserController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::with(['roles', 'assignedBureaus', 'assignedSections'])->select('*');
-            
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $buttons = '';
-                    
-                    if (request()->user()->can('edit users')) {
-                        $buttons .= '<a href="'.route('users.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+            $query = User::with(['roles', 'assignedBureaus', 'assignedSections']);
 
-                    if (request()->user()->can('delete users')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="deleteUser('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </a>';
-                    }
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                      ->orWhere('last_name', 'like', "%$search%")
+                      ->orWhere('email', 'like', "%$search%");
+                });
+            }
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
-                })
-                ->addColumn('name', function($row) {
-                    return $row->first_name . ' ' . $row->last_name;
-                })
-                ->addColumn('roles', function($row) {
-                    return $row->roles->pluck('name')->implode(', ');
-                })
-                ->addColumn('assignments', function($row) {
-                    $assignments = [];
-                    
-                    // Get bureau assignments
-                    foreach ($row->assignedBureaus as $bureau) {
-                        $assignments[] = 'Bureau: ' . $bureau->bureau_name;
-                    }
-                    
-                    // Get section assignments
-                    foreach ($row->assignedSections as $section) {
-                        $assignments[] = 'Section: ' . $section->section_name . ' (' . $section->bureau->bureau_name . ')';
-                    }
-                    
-                    return implode('<br>', $assignments) ?: 'No assignments';
-                })
-                ->editColumn('created_at', function($row) {
-                    return $row->created_at->format('d M, y');
-                })
-                ->rawColumns(['action', 'assignments'])
-                ->make(true);
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'name':
+                        $query->orderBy('first_name', $direction)
+                              ->orderBy('last_name', $direction);
+                        break;
+                        
+                    case 'email':
+                        $query->orderBy('email', $direction);
+                        break;
+                        
+                    case 'created_at':
+                        $query->orderBy('created_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $users = $query->paginate($perPage);
+
+            $transformedUsers = $users->getCollection()->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                    'email' => $user->email,
+                    'roles' => $user->roles->pluck('name')->implode(', '),
+                    'assignments' => collect([
+                        ...$user->assignedBureaus->map(fn($b) => 'Bureau: ' . $b->bureau_name),
+                        ...$user->assignedSections->map(fn($s) => 'Section: ' . $s->section_name . ' (' . $s->bureau->bureau_name . ')'),
+                    ])->implode('<br>'),
+                    'created' => $user->created_at->format('d M, Y'),
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedUsers,
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'from' => $users->firstItem(),
+                'to' => $users->lastItem(),
+                'total' => $users->total(),
+            ]);
         }
-        
-        return view('users.list');
 
+        return view('users.list');
     }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-    $roles = Role::orderBy('name', 'ASC')->get();
-    $bureaus = Bureau::orderBy('bureau_name', 'ASC')->get();
-    $sections = Section::with('bureau')->orderBy('section_name', 'ASC')->get();
-    
-    return view('users.create', [
-        'roles' => $roles,
-        'bureaus' => $bureaus,
-        'sections' => $sections
-    ]);
-
+        $roles = Role::orderBy('name', 'ASC')->get();
+        $bureaus = Bureau::orderBy('bureau_name', 'ASC')->get();
+        $sections = Section::with('bureau')->orderBy('section_name', 'ASC')->get();
+        
+        return view('users.create', [
+            'roles' => $roles,
+            'bureaus' => $bureaus,
+            'sections' => $sections
+        ]);
     }
 
     /**
@@ -110,8 +119,7 @@ class UserController extends Controller implements HasMiddleware
      */
     public function store(Request $request)
     {
-
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',
             'email' => 'required|email|unique:users,email',
@@ -119,7 +127,7 @@ class UserController extends Controller implements HasMiddleware
             'confirm_password' => 'required',
         ]);
         
-        if($validator->fails()){
+        if ($validator->fails()) {
             return redirect()->route('users.create')->withInput()->withErrors($validator);
         }
         
@@ -133,7 +141,6 @@ class UserController extends Controller implements HasMiddleware
 
         $user->syncRoles($request->role);
 
-            // Assign bureaus and sections
         if ($request->has('bureaus')) {
             $bureauAssignments = [];
             foreach ($request->bureaus as $bureauId) {
@@ -151,31 +158,27 @@ class UserController extends Controller implements HasMiddleware
             $user->assignedSections()->sync($sectionAssignments);
         }
 
-
         return redirect()->route('users.index')->with('success', 'User added successfully');
-
     }
-
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    { 
-    $user = User::findOrFail($id);
-    $roles = Role::orderBy('name', 'ASC')->get();
-    $bureaus = Bureau::orderBy('bureau_name', 'ASC')->get();
-    $sections = Section::with('bureau')->orderBy('section_name', 'ASC')->get();
-
-    $hasRoles = $user->roles->pluck('id');
-    
-    return view('users.edit', [
-        'user' => $user,
-        'roles' => $roles,
-        'hasRoles' => $hasRoles,
-        'bureaus' => $bureaus,
-        'sections' => $sections
-    ]);
+    {
+        $user = User::findOrFail($id);
+        $roles = Role::orderBy('name', 'ASC')->get();
+        $bureaus = Bureau::orderBy('bureau_name', 'ASC')->get();
+        $sections = Section::with('bureau')->orderBy('section_name', 'ASC')->get();
+        $hasRoles = $user->roles->pluck('id');
+        
+        return view('users.edit', [
+            'user' => $user,
+            'roles' => $roles,
+            'hasRoles' => $hasRoles,
+            'bureaus' => $bureaus,
+            'sections' => $sections
+        ]);
     }
 
     /**
@@ -185,14 +188,13 @@ class UserController extends Controller implements HasMiddleware
     {
         $user = User::findOrFail($id);
 
-
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',
             'email' => 'required|email|unique:users,email,'.$id.',id'
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return redirect()->route('users.edit', $id)->withInput()->withErrors($validator);
         }
         
@@ -204,7 +206,6 @@ class UserController extends Controller implements HasMiddleware
 
         $user->syncRoles($request->role);
 
-            // Update bureau and section assignments
         $bureauAssignments = [];
         if ($request->has('bureaus')) {
             foreach ($request->bureaus as $bureauId) {
@@ -222,10 +223,7 @@ class UserController extends Controller implements HasMiddleware
         }
         $user->assignedSections()->sync($sectionAssignments);
 
-
         return redirect()->route('users.index')->with('success', 'User updated successfully');
-
-        
     }
 
     /**
@@ -236,11 +234,10 @@ class UserController extends Controller implements HasMiddleware
         $id = $request->id;
         $user = User::findOrFail($id);
 
-        if($user == null) {
+        if ($user == null) {
             session()->flash('error', 'User not found.');
             return response()->json([
                 'status' => false
-
             ]);
         }
 
@@ -249,11 +246,6 @@ class UserController extends Controller implements HasMiddleware
         session()->flash('success', 'User deleted successfully.');
         return response()->json([
             'status' => true
-
         ]);
-
     }
-
-
-    
 }

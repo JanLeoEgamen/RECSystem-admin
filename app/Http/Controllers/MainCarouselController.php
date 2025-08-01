@@ -8,7 +8,6 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 
 class MainCarouselController extends Controller implements HasMiddleware
@@ -26,57 +25,77 @@ class MainCarouselController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = MainCarousel::with('user')->select('*');
-            
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $buttons = '';
-                    
-                    if (request()->user()->can('edit main carousels')) {
-                        $buttons .= '<a href="'.route('main-carousels.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+            $query = MainCarousel::with('user');
 
-                    if (request()->user()->can('delete main carousels')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="deleteMainCarousel('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </a>';
-                    }
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%$search%")
+                        ->orWhere('content', 'like', "%$search%")
+                        ->orWhereHas('user', function($q) use ($search) {
+                            $q->where('first_name', 'like', "%$search%")
+                                ->orWhere('last_name', 'like', "%$search%");
+                        });
+                });
+            }
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
-                })
-                ->editColumn('content', function($row) {
-                    return Str::limit($row->content, 50);
-                })
-                ->editColumn('image', function($row) {
-                    if ($row->image) {
-                        return '<img src="'.asset('images/'.$row->image).'" alt="Carousel Image" class="h-20 w-20 object-cover">';
-                    }
-                    return 'No Image';
-                })
-                ->addColumn('author', function($row) {
-                    return $row->user->first_name . ' ' . $row->user->last_name;
-                })
-                ->editColumn('status', function($row) {
-                    return $row->status 
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'title':
+                        $query->orderBy('title', $direction);
+                        break;
+                        
+                    case 'status':
+                        $query->orderBy('status', $direction);
+                        break;
+                        
+                    case 'created_at':
+                        $query->orderBy('created_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $carousels = $query->paginate($perPage);
+
+            $transformedCarousels = $carousels->getCollection()->map(function ($carousel) {
+                return [
+                    'id' => $carousel->id,
+                    'title' => $carousel->title,
+                    'content' => Str::limit($carousel->content, 50),
+                    'image' => $carousel->image 
+                        ? '<img src="'.asset('storage/'.$carousel->image).'" alt="Carousel Image" class="h-20 w-20 object-cover">'
+                        : 'No Image',
+                    'author' => $carousel->user->first_name . ' ' . $carousel->user->last_name,
+                    'status' => $carousel->status 
                         ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Active</span>'
-                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Inactive</span>';
-                })
-                ->editColumn('created_at', function($row) {
-                    return $row->created_at->format('d M, y');
-                })
-                ->rawColumns(['action', 'status', 'image'])
-                ->make(true);
+                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Inactive</span>',
+                    'created_at' => $carousel->created_at->format('d M, Y'),
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedCarousels,
+                'current_page' => $carousels->currentPage(),
+                'last_page' => $carousels->lastPage(),
+                'from' => $carousels->firstItem(),
+                'to' => $carousels->lastItem(),
+                'total' => $carousels->total(),
+            ]);
         }
-        
+
         return view('main-carousels.list');
     }
+
     public function create()
     {
         return view('main-carousels.create');
@@ -139,7 +158,6 @@ class MainCarouselController extends Controller implements HasMiddleware
         $mainCarousel->status = $request->status ?? $mainCarousel->status;
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($mainCarousel->image) {
                 Storage::disk('public')->delete($mainCarousel->image);
             }
@@ -165,7 +183,6 @@ class MainCarouselController extends Controller implements HasMiddleware
             ]);
         }
 
-        // Delete image if exists
         if ($mainCarousel->image) {
             Storage::disk('public')->delete($mainCarousel->image);
         }

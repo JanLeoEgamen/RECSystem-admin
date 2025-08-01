@@ -1,106 +1,337 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <style>
-            .dataTables_length select {
-                padding-right: 10px !important; /* reduce from 25px */
-                padding-left: 10px !important;
-                appearance: none !important;
-                -webkit-appearance: none !important;
-                -moz-appearance: none !important;
-                background-image: url("data:image/svg+xml;charset=US-ASCII,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='6'%20viewBox='0%200%2010%206'%3e%3cpath%20fill='none'%20stroke='%23333'%20stroke-width='1.5'%20d='M1%201l4%204%204-4'/%3e%3c/svg%3e");
-                background-repeat: no-repeat;
-                background-position: center 14px center; /* moved closer */
-                background-size: 10px 6px; /* slightly bigger arrow */
-                background-color: white;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                height: 33px;
-                line-height: 1.5;
-                font-size: 1rem;
+    <style>
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+            height: 4rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .topbar-center-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar {
+            width: 16rem;
+            transition: all 0.3s ease;
+            box-shadow: 8px 0 15px -5px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 4rem;
+            bottom: 0;
+            z-index: 30;
+        }
+
+        .sidebar-collapsed {
+            width: 5rem;
+            overflow: hidden;
+        }
+
+        .right-sidebar {
+            width: 16rem;
+            transition: all 0.3s ease;
+            box-shadow: -8px 0 15px -5px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            right: 0;
+            top: 4rem;
+            bottom: 0;
+            z-index: 30;
+        }
+
+        .right-sidebar-collapsed {
+            width: 5rem;
+        }
+
+        .header-container {
+            z-index: 25;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .header-content {
+            transition: all 0.3s ease;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1.5rem 1rem;
+            max-width: 85%;
+            background-color: #5e6ffb;
+            border-radius: 0.5rem;
+        }
+
+        .main-content {
+            margin-left: 16rem;
+            margin-right: 0;
+            transition: all 0.3s ease;
+            padding-top: 6rem;
+            width: calc(100% - 16rem);
+        }
+
+        .main-content-collapsed {
+            margin-left: 5rem;
+            width: calc(100% - 5rem);
+        }
+
+        .main-content-right-expanded {
+            margin-right: 16rem;
+            width: calc(100% - 16rem);
+        }
+
+        .main-content-right-collapsed {
+            margin-right: 5rem;
+            width: calc(100% - 5rem);
+        }
+
+        .main-content-both-expanded {
+            margin-left: 16rem;
+            margin-right: 16rem;
+            width: calc(100% - 32rem);
+        }
+
+        .main-content-left-collapsed-right-expanded {
+            margin-left: 5rem;
+            margin-right: 16rem;
+            width: calc(100% - 21rem);
+        }
+
+        .main-content-left-expanded-right-collapsed {
+            margin-left: 16rem;
+            margin-right: 5rem;
+            width: calc(100% - 21rem);
+        }
+
+        .main-content-both-collapsed {
+            margin-left: 5rem;
+            margin-right: 5rem;
+            width: calc(100% - 10rem);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: #5e6ffb;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar-open {
+                transform: translateX(0);
+            }
+            
+            .main-content-collapsed {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 35;
+                display: none;
+            }
+            
+            .sidebar-overlay-active {
+                display: block;
             }
 
-             /* Your existing DataTables styles */
-            .dataTables_length select {
-                padding-right: 10px !important;
-                /* ... other existing styles ... */
+            .main-content {
+                min-height: calc(100vh - 80px - 150px);
+            }
+            
+            footer {
+                padding: 1.5rem 1rem;
+            }
+            
+            footer .flex-col {
+                align-items: flex-start;
+            }
+            
+            footer .flex-wrap {
+                justify-content: flex-start;
+                gap: 1rem;
             }
 
-            /* Add the new overlay styles here */
-            body.overflow-hidden {
-                overflow: hidden;
+            footer {
+                position: relative;
             }
 
-            #paymentOverlay {
-                transition: opacity 0.3s ease;
+            .main-content {
+                min-height: calc(100vh - 80px - 120px); 
             }
+        }
 
-            #paymentOverlay.hidden {
-                opacity: 0;
-                pointer-events: none;
+        @media (max-width: 768px) {
+            .sidebar-collapsed {
+                width: 0;
+                transform: translateX(-100%);
             }
-
-            #paymentOverlay:not(.hidden) {
-                opacity: 1;
-                pointer-events: auto;
+            
+            .main-content,
+            .main-content-collapsed,
+            .main-content-right-expanded,
+            .main-content-right-collapsed,
+            .main-content-both-expanded,
+            .main-content-left-collapsed-right-expanded,
+            .main-content-left-expanded-right-collapsed,
+            .main-content-both-collapsed {
+                margin-left: 0;
+                margin-right: 0;
+                width: 100%;
+                padding-top: 6rem;
             }
-
-            .border-b {
-                margin-bottom: 2rem;
-                padding-bottom: 2rem;
+            
+            .header-content {
+                max-width: 95%;
+                padding: 1rem;
             }
+        }
 
-            /* Add spacing between form fields */
-            .space-y-8 > * + * {
-                margin-top: 2rem;
+        .table-row-hover:hover {
+        background-color: #3142CE !important;
+        color: white !important;
+        }
+        
+        .table-row-hover:hover a,
+        .table-row-hover:hover button {
+            color: white !important;
+        }
+        
+        .assignments-cell {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+        }
+        
+        .assignments-cell:hover::after {
+            content: attr(data-full-text);
+            position: absolute;
+            left: 0;
+            top: 100%;
+            z-index: 100;
+            background: white;
+            color: black;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            white-space: normal;
+            width: 300px;
+            max-height: 200px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased bg-white">
+
+    <div x-data="{ 
+        sidebarOpen: window.innerWidth > 768,
+        rightSidebarOpen: false,
+        currentRouteName: '{{ request()->route()->getName() }}',
+        get mainContentClass() {
+            if (window.innerWidth <= 768) {
+                return this.sidebarOpen ? 'main-content-collapsed' : '';
             }
-
-            /* Add spacing between grid items */
-            .gap-4 {
-                gap: 1.5rem;
+            if (!this.sidebarOpen && !this.rightSidebarOpen) return 'main-content-both-collapsed';
+            if (!this.sidebarOpen && this.rightSidebarOpen) return 'main-content-left-collapsed-right-expanded';
+            if (this.sidebarOpen && !this.rightSidebarOpen) return 'main-content-left-expanded-right-collapsed';
+            return 'main-content-both-expanded';
+        },
+        get headerWidth() {
+            if (window.innerWidth <= 768) return 'w-full px-4';
+            return 'max-w-[85%] px-6';
+        },
+        toggleSidebar(sidebar) {
+            if (sidebar === 'left') {
+                this.sidebarOpen = !this.sidebarOpen;
+                if (this.sidebarOpen && window.innerWidth <= 768) {
+                    this.rightSidebarOpen = false;
+                }
+            } else {
+                this.rightSidebarOpen = !this.rightSidebarOpen;
+                if (this.rightSidebarOpen && window.innerWidth <= 768) {
+                    this.sidebarOpen = false;
+                }
             }
+        },
+        checkScreenSize() {
+            if (window.innerWidth > 768) {
+                this.sidebarOpen = true;
+            } else {
+                this.sidebarOpen = false;
+            }
+        }
+    }" 
+    x-init="() => {
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+    }" 
+class="flex flex-col flex-grow">
+        @include('layouts.topbar')
+        @include('layouts.navigation')
+        @include('layouts.right-sidebar')
 
-            /* Add spacing for input fields */
-            input, select {
-                margin-bottom: 0.5rem;
-}
-        </style>
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @include('layouts.navigation')
-
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-[#5E6FFB] dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
-
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div>
-        <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
-
-        @isset($script)
-            {{ $script }}
+        <main class="flex-grow transition-all duration-300 ease-in-out main-content" :class="mainContentClass">
+    <div class="header-container">
+        @isset($header)
+            <header class="w-full">
+                <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
+                    {{ $header }}
+                </div>
+            </header>
         @endisset
-    </body>
+    </div>
+
+    <div class="p-6">
+        {{ $slot }}
+    </div>
+</main>
+
+
+        @include('layouts.footer')
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    @isset($script)
+        {{ $script }}
+    @endisset
+</body>
 </html>
