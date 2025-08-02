@@ -43,7 +43,7 @@
 
                             <div class="flex items-center space-x-2 ml-2">
                                 <label for="columnFilter" class="text-sm text-gray-700 dark:text-gray-300">Columns</label>
-                                <select id="columnFilter" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-12 text-sm focus:outline-none focus:ring focus:border-blue-300 w-[250px]">
+                                <select id="columnFilter" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-12 text-sm focus:outline-none focus:ring focus:border-blue-300 w-[200px]">
                                     <option value="all" selected>Show All</option>
                                     <option value="header">Header</option>
                                     <option value="content">Content</option>

@@ -35,13 +35,13 @@
                                     <option value="created_desc">Default</option>
                                     <option value="name_asc">Name (A-Z)</option>
                                     <option value="name_desc">Name (Z-A)</option>
-                                    <option value="created_asc">Created (Oldest First)</option>
+                                    <option value="created_asc">Created (Oldest)</option>
                                 </select>
                             </div>
 
                             <div class="flex items-center space-x-2 ml-2">
                                 <label for="columnFilter" class="text-sm text-gray-700 dark:text-gray-300">Columns</label>
-                                <select id="columnFilter" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-12 text-sm focus:outline-none focus:ring focus:border-blue-300 w-[200px]">
+                                <select id="columnFilter" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-12 text-sm focus:outline-none focus:ring focus:border-blue-300 w-[180px]">
                                     <option value="all" selected>Show All</option>
                                     <option value="name">Name</option>
                                     <option value="created">Created</option>

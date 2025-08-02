@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
-use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class EventController extends Controller implements HasMiddleware
 {
@@ -27,58 +27,76 @@ class EventController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Event::with('user')->select('*');
-            
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $buttons = '';
-                    
-                    if (request()->user()->can('view event registrations')) {
-                        $buttons .= '<a href="'.route('events.registrations', $row->id).'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="Registrations">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </a>';
-                    }
+            $query = Event::with(['user', 'registrations']);
 
-                    if (request()->user()->can('edit events')) {
-                        $buttons .= '<a href="'.route('events.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%$search%")
+                      ->orWhere('location', 'like', "%$search%")
+                      ->orWhere('description', 'like', "%$search%")
+                      ->orWhereHas('user', function($q) use ($search) {
+                          $q->where('first_name', 'like', "%$search%")
+                            ->orWhere('last_name', 'like', "%$search%");
+                      });
+                });
+            }
 
-                    if (request()->user()->can('delete events')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="deleteEvent('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </a>';
-                    }
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'title':
+                        $query->orderBy('title', $direction);
+                        break;
+                        
+                    case 'start_date':
+                        $query->orderBy('start_date', $direction);
+                        break;
+                        
+                    case 'is_published':
+                        $query->orderBy('is_published', $direction === 'asc' ? 'asc' : 'desc');
+                        break;
+                        
+                    case 'created':
+                        $query->orderBy('created_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
-                })
-                ->editColumn('is_published', function($row) {
-                    return $row->is_published 
-                        ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Published</span>'
-                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Draft</span>';
-                })
-                ->editColumn('start_date', function($row) {
-                    return $row->start_date->format('M d, Y h:i A');
-                })
-                ->editColumn('end_date', function($row) {
-                    return $row->end_date->format('M d, Y h:i A');
-                })
-                ->addColumn('registrations_count', function($row) {
-                    return $row->registrations()->count() . ($row->capacity ? '/'.$row->capacity : '');
-                })
-                ->addColumn('author', function($row) {
-                    return $row->user->first_name . ' ' . $row->user->last_name;
-                })
-                ->rawColumns(['action', 'is_published'])
-                ->make(true);
+            $perPage = $request->input('perPage', 10);
+            $events = $query->paginate($perPage);
+
+            $transformedEvents = $events->getCollection()->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'start_date' => $event->start_date->format('M d, Y h:i A'),
+                    'end_date' => $event->end_date->format('M d, Y h:i A'),
+                    'location' => $event->location,
+                    'is_published' => $event->is_published,
+                    'author' => $event->user->first_name . ' ' . $event->user->last_name,
+                    'registrations_count' => $event->registrations->count() . ($event->capacity ? '/'.$event->capacity : ''),
+                    'created_at' => $event->created_at->format('d M, Y'),
+                    'can_view_registrations' => request()->user()->can('view event registrations')
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedEvents,
+                'current_page' => $events->currentPage(),
+                'last_page' => $events->lastPage(),
+                'from' => $events->firstItem(),
+                'to' => $events->lastItem(),
+                'total' => $events->total(),
+            ]);
         }
         
         return view('events.list');

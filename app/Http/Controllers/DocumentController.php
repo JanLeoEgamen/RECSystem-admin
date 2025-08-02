@@ -24,59 +24,75 @@ class DocumentController extends Controller implements HasMiddleware
     }
 
     public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $data = Document::with('user')->select('*');
-            
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $buttons = '';
-                    
-                    if (request()->user()->can('edit documents')) {
-                        $buttons .= '<a href="'.route('documents.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+{
+    if ($request->ajax()) {
+        $query = Document::with(['user', 'members']);
 
-                    if (request()->user()->can('delete documents')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="deleteDocument('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </a>';
-                    }
-
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
-                })
-                ->editColumn('is_published', function($row) {
-                    return $row->is_published 
-                        ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Published</span>'
-                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Draft</span>';
-                })
-                ->editColumn('created_at', function($row) {
-                    return $row->created_at->format('d M, y');
-                })
-                ->addColumn('author', function($row) {
-                    return $row->user->first_name . ' ' . $row->user->last_name;
-                })
-                ->addColumn('file_info', function($row) {
-                    if ($row->url) {
-                        return '<a href="'.$row->url.'" target="_blank" class="text-blue-600 hover:underline">External Link</a>';
-                    }
-                    return '<div class="flex items-center">
-                        <i class="fas '.$row->file_icon.' mr-2"></i>
-                        '.$row->file_type.'
-                    </div>';
-                })
-                ->rawColumns(['action', 'is_published', 'file_info'])
-                ->make(true);
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('description', 'like', "%$search%")
+                  ->orWhere('file_type', 'like', "%$search%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('first_name', 'like', "%$search%")
+                        ->orWhere('last_name', 'like', "%$search%");
+                  });
+            });
         }
-        
-        return view('documents.list');
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $sort = $request->sort;
+            $direction = $request->direction;
+            
+            switch ($sort) {
+                case 'title':
+                    $query->orderBy('title', $direction);
+                    break;
+                    
+                case 'is_published':
+                    $query->orderBy('is_published', $direction === 'asc' ? 'asc' : 'desc');
+                    break;
+                    
+                case 'created':
+                    $query->orderBy('created_at', $direction);
+                    break;
+                    
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $perPage = $request->input('perPage', 10);
+        $documents = $query->paginate($perPage);
+
+        $transformedDocuments = $documents->getCollection()->map(function ($document) {
+            return [
+                'id' => $document->id,
+                'title' => $document->title,
+                'file_info' => $document->file_type,
+                'url' => $document->url,
+                'is_published' => $document->is_published,
+                'author' => $document->user->first_name . ' ' . $document->user->last_name,
+                'created_at' => $document->created_at->format('d M, Y'),
+            ];
+        });
+
+        return response()->json([
+            'data' => $transformedDocuments,
+            'current_page' => $documents->currentPage(),
+            'last_page' => $documents->lastPage(),
+            'from' => $documents->firstItem(),
+            'to' => $documents->lastItem(),
+            'total' => $documents->total(),
+        ]);
     }
+    
+    return view('documents.list');
+}
 
     public function create()
     {

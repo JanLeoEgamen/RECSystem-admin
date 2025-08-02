@@ -1,4 +1,4 @@
-<footer style="box-shadow: 0 -8px 15px -5px rgba(0, 0, 0, 0.7)" class="bg-[#101966] dark:bg-gray-800 text-white py-4">
+<footer style="box-shadow: 0 -8px 15px -5px rgba(0, 0, 0, 0.1)" class="bg-[#101966] dark:bg-gray-800 text-white py-4">
     <div class="container mx-auto px-6 w-full">
         <!-- Desktop Layout -->
         <div class="hidden md:flex justify-center items-center space-x-6">
@@ -33,6 +33,7 @@
             </div>
         </div>
 
+        <!-- Mobile Layout -->
         <div class="md:hidden w-full">
             <div class="w-full flex flex-col items-center justify-center text-center mx-auto">
                 <div class="w-full flex justify-center items-center space-x-2 mb-2">
