@@ -17,49 +17,248 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <table id="renewalsTable" class="w-full">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr class="border-b text-center">
-                                <th>#</th>
-                                <th>Member</th>
-                                <th>Reference #</th>
-                                <th>Receipt</th>
-                                <th>Submitted At</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($renewals as $renewal)
-                            <tr class="border-b text-center">
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    {{ $renewal->member?->user
-                                        ? $renewal->member->user->first_name . ' ' . $renewal->member->user->last_name
-                                        : 'Unknown Member' }}
-                                </td>
-                                <td>{{ $renewal->reference_number }}</td>
-                                <td>
-                                    <a href="{{ Storage::url($renewal->receipt_path) }}" target="_blank" class="text-blue-600 hover:underline">
-                                        View Receipt
-                                    </a>
-                                </td>
-                                <td>{{ $renewal->created_at->format('M d, Y h:i A') }}</td>
-                                <td>
-                                    <a href="{{ route('renew.edit', $renewal) }}" 
-                                       class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                                        Assess
-                                    </a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+
+            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <label for="perPage" class="text-sm text-gray-700 dark:text-gray-300">Show</label>
+                                <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">entries</span>
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <label for="sortBy" class="text-sm text-gray-700 dark:text-gray-300">Sort by</label>
+                                <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
+                                    <option value="created_desc">Newest First</option>
+                                    <option value="created_asc">Oldest First</option>
+                                    <option value="name_asc">Name (A-Z)</option>
+                                    <option value="name_desc">Name (Z-A)</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center space-x-2 ml-2">
+                                <label for="columnFilter" class="text-sm text-gray-700 dark:text-gray-300">Columns</label>
+                                <select id="columnFilter" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-12 text-sm focus:outline-none focus:ring focus:border-blue-300 w-[180px]">
+                                    <option value="all" selected>Show All</option>
+                                    <option value="member">Member</option>
+                                    <option value="reference">Reference #</option>
+                                    <option value="receipt">Receipt</option>
+                                    <option value="submitted">Submitted At</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4 ml-6">
+                            <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> requests
+                            </div>
+                            <input type="text" id="searchInput" placeholder="Search requests..." 
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="min-w-[600px]">
+                            <table id="renewalsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
+                                <thead class="bg-[#101966] dark:bg-gray-800 text-gray-200 dark:text-gray-200">
+                                    <tr class="border-b dark:border-gray-700">
+                                        <th class="px-6 py-3 text-center font-medium">#</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-member">Member</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-reference">Reference #</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-receipt">Receipt</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-submitted">Submitted At</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l border-white">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>                   
+                    </div>
+                    <div class="mt-4 flex justify-center" id="paginationLinks"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    
+    <x-slot name="script">
+        <script>
+            $(document).ready(function () {
+                fetchRenewals();
+
+                $('#searchInput').on('keyup', function () {
+                    fetchRenewals(1, $(this).val());
+                });
+
+                $('#perPage').on('change', function () {
+                    fetchRenewals(1, $('#searchInput').val(), $(this).val());
+                });
+
+                $('#sortBy').on('change', function() {
+                    fetchRenewals(1, $('#searchInput').val(), $('#perPage').val());
+                });
+
+                $('#columnFilter').on('change', function() {
+                    updateVisibleColumns();
+                });
+
+                function updateVisibleColumns() {
+                    const selectedColumn = $('#columnFilter').val();
+                    
+                    if (selectedColumn === 'all') {
+                        $('th[class*="column-"], td[class*="column-"]').show();
+                    } else {
+                        $('th[class*="column-"], td[class*="column-"]').each(function() {
+                            const columnClass = Array.from(this.classList).find(c => c.startsWith('column-'));
+                            if (columnClass) {
+                                const columnName = columnClass.replace('column-', '');
+                                if (columnName === selectedColumn) {
+                                    $(this).show();
+                                } else {
+                                    $(this).hide();
+                                }
+                            }
+                        });
+                    }
+                }
+
+                function fetchRenewals(page = 1, search = '', perPage = $('#perPage').val()) {
+                    const sortValue = $('#sortBy').val() || 'created_desc';
+                    const lastUnderscore = sortValue.lastIndexOf('_');
+                    const column = sortValue.substring(0, lastUnderscore);
+                    const direction = sortValue.substring(lastUnderscore + 1);
+                    const sortParams = `&sort=${column}&direction=${direction}`;
+                    
+                    $.ajax({
+                        url: `{{ route('renew.index') }}?page=${page}&search=${search}&perPage=${perPage}${sortParams}`,
+                        type: 'GET',
+                        success: function (response) {
+                            renderRenewals(response.data, response.from);
+                            renderPagination(response);
+                            $('#startRecord').text(response.from ?? 0);
+                            $('#endRecord').text(response.to ?? 0);
+                            $('#totalRecords').text(response.total ?? 0);
+                        }
+                    });
+                }
+
+                function renderRenewals(renewals, startIndex) {
+                    let tbody = $('#renewalsTable tbody');
+                    tbody.empty();
+                    
+                    renewals.forEach((renewal, index) => {
+                        const rowNumber = startIndex + index;
+                        const memberName = renewal.member?.user 
+                            ? `${renewal.member.user.first_name} ${renewal.member.user.last_name}`
+                            : 'Unknown Member';
+                        const receiptUrl = renewal.receipt_path 
+                            ? `{{ Storage::url('') }}${renewal.receipt_path}`
+                            : '#';
+                        
+                        tbody.append(`
+                            <tr class="border-b table-row-hover dark:border-gray-700">
+                                <td class="px-6 py-4 text-center">${rowNumber}</td>
+                                <td class="px-6 py-4 text-left column-member">${memberName}</td>
+                                <td class="px-6 py-4 text-left column-reference">${renewal.reference_number}</td>
+                                <td class="px-6 py-4 text-left column-receipt">
+                                    <a href="${receiptUrl}" target="_blank" class="text-blue-600 hover:underline">
+                                        View Receipt
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 text-left column-submitted">${new Date(renewal.created_at).toLocaleString()}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="/renew/${renewal.id}/edit" 
+                                       class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                        Assess
+                                    </a>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                    
+                    updateVisibleColumns();
+                }
+
+                function renderPagination(data) {
+                    let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
+
+                    if (data.current_page > 1) {
+                        paginationHtml += `
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
+                                onclick="fetchRenewals(1, $('#searchInput').val(), $('#perPage').val())">
+                                &laquo; First
+                            </button>
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
+                                onclick="fetchRenewals(${data.current_page - 1}, $('#searchInput').val(), $('#perPage').val())">
+                                Previous
+                            </button>`;
+                    }
+
+                    const totalPages = data.last_page;
+                    const currentPage = data.current_page;
+                    const pagesToShow = 3;
+
+                    let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
+                    let endPage = Math.min(totalPages, startPage + pagesToShow - 1);
+
+                    if (endPage - startPage + 1 < pagesToShow) {
+                        startPage = Math.max(1, endPage - pagesToShow + 1);
+                    }
+
+                    if (startPage > 1) {
+                        paginationHtml += `
+                            <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
+                                onclick="fetchRenewals(1, $('#searchInput').val(), $('#perPage').val())">
+                                1
+                            </button>`;
+                        if (startPage > 2) {
+                            paginationHtml += `<span class="px-2">...</span>`;
+                        }
+                    }
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        paginationHtml += `
+                            <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
+                                onclick="fetchRenewals(${i}, $('#searchInput').val(), $('#perPage').val())">
+                                ${i}
+                            </button>`;
+                    }
+
+                    if (endPage < totalPages) {
+                        if (endPage < totalPages - 1) {
+                            paginationHtml += `<span class="px-2">...</span>`;
+                        }
+                        paginationHtml += `
+                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
+                                onclick="fetchRenewals(${totalPages}, $('#searchInput').val(), $('#perPage').val())">
+                                ${totalPages}
+                            </button>`;
+                    }
+
+                    if (data.current_page < data.last_page) {
+                        paginationHtml += `
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
+                                onclick="fetchRenewals(${data.current_page + 1}, $('#searchInput').val(), $('#perPage').val())">
+                                Next
+                            </button>
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
+                                onclick="fetchRenewals(${data.last_page}, $('#searchInput').val(), $('#perPage').val())">
+                                Last &raquo;
+                            </button>`;
+                    }
+
+                    paginationHtml += '</div>';
+                    $('#paginationLinks').html(paginationHtml);
+                }
+
+                window.fetchRenewals = fetchRenewals;
+            });
+        </script>
+    </x-slot>
 </x-app-layout>

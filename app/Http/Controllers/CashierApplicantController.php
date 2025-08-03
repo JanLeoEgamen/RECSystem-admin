@@ -26,34 +26,64 @@ class CashierApplicantController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $user = $request->user();
+            $query = Applicant::where('payment_status', 'Pending');
 
-            $query = Applicant::where('payment_status', 'Pending')->orderBy('created_at', 'desc');
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('reference_number', 'like', "%$search%");
+                });
+            }
 
-            return DataTables::of($query)
-                ->addIndexColumn()
-                ->addColumn('payment_proof_path', function ($row) {
-                    return $row->payment_proof_path
-                        ? '<img src="'.asset('images/payment_proofs/'.$row->payment_proof_path).'">'
-                        : 'No receipt';
-                })
-                ->addColumn('action', function ($row) use ($request) {
-                    $buttons = '';
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'name':
+                        $query->orderBy('last_name', $direction)
+                            ->orderBy('first_name', $direction);
+                        break;
+                        
+                    case 'created':
+                        $query->orderBy('created_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
 
-                    if ($request->user()->can('verify applicants')) {
-                        $buttons .= '<a href="' . route('cashier.assess', $row->id) . '" 
-                            class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="Verify Payment">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+            $perPage = $request->input('perPage', 10);
+            $applicants = $query->paginate($perPage);
 
-                    return '<div class="flex justify-center space-x-2">' . $buttons . '</div>';
-                })
-                ->editColumn('status', fn ($row) => ucfirst(str_replace('_', ' ', $row->status)))
-                ->rawColumns(['payment_proof_path', 'action']) // allow image and buttons to render
-                ->make(true);
+            $transformedApplicants = $applicants->getCollection()->map(function ($applicant) {
+                return [
+                    'id' => $applicant->id,
+                    'first_name' => $applicant->first_name,
+                    'last_name' => $applicant->last_name,
+                    'email_address' => $applicant->email_address,
+                    'reference_number' => $applicant->reference_number,
+                    'payment_proof_path' => $applicant->payment_proof_path,
+                    'payment_status' => $applicant->payment_status,
+                    'can_verify' => request()->user()->can('verify payments'),
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedApplicants,
+                'current_page' => $applicants->currentPage(),
+                'last_page' => $applicants->lastPage(),
+                'from' => $applicants->firstItem(),
+                'to' => $applicants->lastItem(),
+                'total' => $applicants->total(),
+            ]);
         }
 
         return view('cashier.list');

@@ -89,42 +89,119 @@
             max-height: 200px;
             overflow: auto;
         }
+
+        .topbar-shadow {
+            box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 1);
+        }
+
+        .left-sidebar-shadow {
+            box-shadow: 5px 0 15px -5px rgba(0, 0, 0, 0.9);
+        }
+        
+        .right-sidebar-shadow {
+            box-shadow: -5px 0 15px -5px rgba(0, 0, 0, 0.9);
+        }
+        
+        .footer-shadow {
+            box-shadow: 0 -8px 15px -5px rgba(0, 0, 0, 0.8);
+        }
+
+        /* ✅ Member Topbar Links Hover */
+        .member-nav-link {
+            color: white !important;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .member-nav-link:hover {
+            background-color: #5e6ffb !important;
+            color: white !important;
+        }
+
+        /* ✅ Member Mobile Menu Links */
+        .member-mobile-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            color: white !important;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .member-mobile-link:hover {
+            background-color: #5e6ffb !important;
+            color: white !important;
+        }
     </style>
 </head>
-<body class="font-sans antialiased bg-gray-50" 
-      x-data="{ sidebarOpen: false, rightSidebarOpen: false, headerWidth: 'max-w-7xl px-4 sm:px-6 lg:px-8' }">
+<body class="font-sans antialiased bg-gray-50"
+      x-data="{
+        sidebarOpen: window.innerWidth >= 768,  
+        rightSidebarOpen: false,               
+        headerWidth: 'max-w-7xl px-4 sm:px-6 lg:px-8',
+        toggleSidebar(side) {
+          if (window.innerWidth < 768) {
+            // Mobile: only one sidebar can be open
+            if (side === 'left') {
+              this.sidebarOpen = !this.sidebarOpen;
+              if (this.sidebarOpen) this.rightSidebarOpen = false;
+            } else {
+              this.rightSidebarOpen = !this.rightSidebarOpen;
+              if (this.rightSidebarOpen) this.sidebarOpen = false;
+            }
+          } else {
+            // Desktop: independent toggles
+            if (side === 'left') this.sidebarOpen = !this.sidebarOpen;
+            if (side === 'right') this.rightSidebarOpen = !this.rightSidebarOpen;
+          }
+        }
+      }"
+      x-init="
+        const updateSidebars = () => {
+          if (window.innerWidth < 768) {
+            sidebarOpen = false;
+            rightSidebarOpen = false;
+          } else {
+            sidebarOpen = true;
+            rightSidebarOpen = false;
+          }
+        };
+        window.addEventListener('resize', updateSidebars);
+      ">
+
 
     <div class="min-h-screen flex flex-col">
 
-        <!-- Navigation -->
-        <x-navigation />
+        <!-- ✅ Topbar Component -->
+        <x-topbar />
 
-        <!-- Header Section -->
-        <div class="header-container pt-16"> 
-            @isset($header)
-                <header class="w-full">
-                    <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
-        </div>
+        <!-- ✅ Left Sidebar -->
+        <x-left-sidebar />
+
+        <!-- ✅ Right Sidebar -->
+        <x-right-sidebar />
+
+        <!-- Header Spacer -->
+        <div class ="h-16 2xl:h-20"></div>
 
         <div class="flex flex-1">
-
             <!-- Main content -->
             <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Header Section -->
+                <div class="header-container pt-16"> 
+                    @isset($header)
+                        <header class="w-full">
+                            <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
+                                {{ $header }}
+                            </div>
+                        </header>
+                    @endisset
+                </div>
+
                 <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50">
                     {{ $slot }}
-                </main>
-                <x-footer />
+                </main>             
             </div>
-
-            <!-- Right Sidebar -->
-            <x-right-sidebar>
-                @include('partials.right-sidebar-content')
-            </x-right-sidebar>
         </div>
+
+        <!-- ✅ Footer -->
+        <x-footer />
     </div>
     
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>

@@ -27,14 +27,74 @@ class RenewalController extends Controller implements HasMiddleware
 
 
     // List pending renewals (for admin)
-    public function index()
+    public function index(Request $request)
     {
-        $renewals = Renewal::with(['member', 'member.user'])
-            ->where('status', 'pending')
-            ->latest()
-            ->get();
+        if ($request->ajax()) {
+            $query = Renewal::with(['member', 'member.user'])
+                ->where('status', 'pending');
 
-        return view('renew.list', compact('renewals'));
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('reference_number', 'like', "%$search%")
+                    ->orWhereHas('member.user', function($q) use ($search) {
+                        $q->where('first_name', 'like', "%$search%")
+                            ->orWhere('last_name', 'like', "%$search%");
+                    });
+                });
+            }
+
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'name':
+                        $query->join('members', 'renewals.member_id', '=', 'members.id')
+                            ->join('users', 'members.user_id', '=', 'users.id')
+                            ->orderBy('users.last_name', $direction)
+                            ->orderBy('users.first_name', $direction)
+                            ->select('renewals.*');
+                        break;
+                        
+                    case 'created':
+                        $query->orderBy('created_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $renewals = $query->paginate($perPage);
+
+            $transformedRenewals = $renewals->getCollection()->map(function ($renewal) {
+                return [
+                    'id' => $renewal->id,
+                    'member' => [
+                        'user' => $renewal->member->user ?? null
+                    ],
+                    'reference_number' => $renewal->reference_number,
+                    'receipt_path' => $renewal->receipt_path,
+                    'created_at' => $renewal->created_at,
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedRenewals,
+                'current_page' => $renewals->currentPage(),
+                'last_page' => $renewals->lastPage(),
+                'from' => $renewals->firstItem(),
+                'to' => $renewals->lastItem(),
+                'total' => $renewals->total(),
+            ]);
+        }
+
+        return view('renew.list');
     }
 
     // Show assessment form

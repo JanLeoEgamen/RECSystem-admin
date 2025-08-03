@@ -32,95 +32,115 @@ class MemberController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
-public function index(Request $request)
-{
-    if ($request->ajax()) {
-        $user = $request->user(); 
-                
-        $data = Member::with(['membershipType', 'section'])
-            ->when(!$user->can('view all members'), function($query) use ($user) {
-                // Get section IDs from the pivot table where user is assigned
-                $sectionIds = DB::table('user_bureau_section')
-                    ->where('user_id', $user->id)
-                    ->whereNotNull('section_id')
-                    ->pluck('section_id');
-                
-                // Get bureau IDs from the pivot table where user is assigned (without specific section)
-                $bureauIds = DB::table('user_bureau_section')
-                    ->where('user_id', $user->id)
-                    ->whereNull('section_id')
-                    ->pluck('bureau_id');
-                
-                // Get all section IDs from these bureaus
-                $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
-                
-                // Combine both specific section assignments and bureau-wide assignments
-                $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
-                
-                // Filter members by these section IDs
-                $query->whereIn('section_id', $allSectionIds);
-            })->orderBy('id', 'desc')
-            ->select('*');
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+            $user = $request->user(); 
             
-        return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('action', function($row) {
-                $buttons = '';
+            $query = Member::with(['membershipType', 'section'])
+                ->when(!$user->can('view all members'), function($query) use ($user) {
+                    $sectionIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNotNull('section_id')
+                        ->pluck('section_id');
+                    
+                    $bureauIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNull('section_id')
+                        ->pluck('bureau_id');
+                    
+                    $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                    
+                    $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                    
+                    $query->whereIn('section_id', $allSectionIds);
+                });
 
-                if (request()->user()->can('view members')) {
-                    $buttons .= '<a href="'.route('members.show', $row->id).'" dusk="view-member-'.$row->id.'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="View">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                    </a>';
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('rec_number', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('cellphone_no', 'like', "%$search%")
+                    ->orWhereHas('membershipType', function($q) use ($search) {
+                        $q->where('type_name', 'like', "%$search%");
+                    });
+                });
+            }
+
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'last_name':
+                        $query->orderBy('last_name', $direction)
+                            ->orderBy('first_name', $direction);
+                        break;
+                        
+                    case 'rec_number':
+                        $query->orderBy('rec_number', $direction);
+                        break;
+                        
+                    case 'membership_start':
+                        $query->orderBy('membership_start', $direction);
+                        break;
+                        
+                    case 'membership_end':
+                        $query->orderBy('membership_end', $direction);
+                        break;
+                        
+                    case 'status':
+                        $query->orderBy('status', $direction)
+                            ->orderBy('is_lifetime_member', $direction === 'asc' ? 'desc' : 'asc');
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
                 }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
 
-                if (request()->user()->can('edit members')) {
-                    $buttons .= '<a href="'.route('members.edit', $row->id).'" dusk="edit-member-'.$row->id.'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                    </a>';
-                }
+            $perPage = $request->input('perPage', 10);
+            $members = $query->paginate($perPage);
 
-                if (request()->user()->can('renew members')) {
-                    $buttons .= '<a href="'.route('members.renew.show', $row->id).'" dusk="renew-member-'.$row->id.'" class="p-2 text-green-600 hover:text-white hover:bg-green-600 rounded-full transition-colors duration-200" title="Renew">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                    </a>';
-                }
+            $transformedMembers = $members->getCollection()->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'first_name' => $member->first_name,
+                    'last_name' => $member->last_name,
+                    'email_address' => $member->email_address,
+                    'cellphone_no' => $member->cellphone_no,
+                    'rec_number' => $member->rec_number,
+                    'membership_type' => $member->membershipType->type_name ?? 'N/A',
+                    'membership_start' => $member->membership_start ? Carbon::parse($member->membership_start)->format('d M, Y') : '',
+                    'membership_end' => $member->membership_end ? Carbon::parse($member->membership_end)->format('d M, Y') : '',
+                    'status' => $member->status,
+                    'is_lifetime_member' => $member->is_lifetime_member,
+                    'street_address' => $member->street_address,
+                    'can_view' => request()->user()->can('view members'),
+                    'can_edit' => request()->user()->can('edit members'),
+                    'can_renew' => request()->user()->can('renew members'),
+                    'can_delete' => request()->user()->can('delete members'),
+                ];
+            });
 
-                if (request()->user()->can('delete members')) {
-                    $buttons .= '<a href="javascript:void(0)" onclick="deleteMember('.$row->id.')" dusk="delete-member-'.$row->id.'" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </a>';
-                }
-
-                return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
-            })
-
-            ->editColumn('membership_start', function($row) {
-                return $row->membership_start ? \Carbon\Carbon::parse($row->membership_start)->format('d M, Y') : '';
-            })
-            ->editColumn('membership_end', function($row) {
-                return $row->membership_end ? \Carbon\Carbon::parse($row->membership_end)->format('d M, Y') : '';
-            })
-            ->editColumn('birthdate', function($row) {
-                return $row->birthdate ? \Carbon\Carbon::parse($row->birthdate)->format('d M, Y') : '';
-            })
-            ->editColumn('is_lifetime_member', function($row) {
-                return $row->is_lifetime_member ? 'Yes' : 'No';
-            })
-            ->rawColumns(['action'])
-            ->make(true);
+            return response()->json([
+                'data' => $transformedMembers,
+                'current_page' => $members->currentPage(),
+                'last_page' => $members->lastPage(),
+                'from' => $members->firstItem(),
+                'to' => $members->lastItem(),
+                'total' => $members->total(),
+            ]);
+        }
+        
+        return view('members.list');
     }
-    
-    return view('members.list');
-}
     /**
      * Show the form for creating a new resource.
      */

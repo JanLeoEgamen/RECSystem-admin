@@ -1,4 +1,4 @@
-<footer style="box-shadow: 0 -8px 15px -5px rgba(0, 0, 0, 0.1)" class="bg-[#101966] dark:bg-gray-800 text-white py-4">
+<footer class="footer-shadow bg-[#101966] dark:bg-gray-800 text-white py-4">
     <div class="container mx-auto px-6 w-full">
         <!-- Desktop Layout -->
         <div class="hidden md:flex justify-center items-center space-x-6">

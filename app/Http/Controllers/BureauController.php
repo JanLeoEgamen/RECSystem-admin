@@ -24,38 +24,60 @@ class BureauController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Bureau::select('*');
-            
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $buttons = '';
-                    
-                    if (request()->user()->can('edit bureaus')) {
-                        $buttons .= '<a href="'.route('bureaus.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+            $query = Bureau::query();
 
-                    if (request()->user()->can('delete bureaus')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="deleteBureau('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </a>';
-                    }
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('bureau_name', 'like', "%$search%");
+                });
+            }
 
-                    return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
-                })
-                ->editColumn('created_at', function($row) {
-                    return $row->created_at->format('d M, y');
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'bureau_name':
+                        $query->orderBy('bureau_name', $direction);
+                        break;
+                        
+                    case 'created':
+                    case 'created_at':
+                        $query->orderBy('created_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $bureaus = $query->paginate($perPage);
+
+            $transformedBureaus = $bureaus->getCollection()->map(function ($bureau) {
+                return [
+                    'id' => $bureau->id,
+                    'bureau_name' => $bureau->bureau_name,
+                    'created_at' => $bureau->created_at->format('d M, Y'),
+                    'can_edit' => request()->user()->can('edit bureaus'),
+                    'can_delete' => request()->user()->can('delete bureaus'),
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedBureaus,
+                'current_page' => $bureaus->currentPage(),
+                'last_page' => $bureaus->lastPage(),
+                'from' => $bureaus->firstItem(),
+                'to' => $bureaus->lastItem(),
+                'total' => $bureaus->total(),
+            ]);
         }
-        
+
         return view('bureaus.list');
     }
 
@@ -143,5 +165,4 @@ class BureauController extends Controller implements HasMiddleware
         session()->flash('success', 'Bureau deleted successfully.');
         return response()->json(['status' => true]);
     }
-
 }

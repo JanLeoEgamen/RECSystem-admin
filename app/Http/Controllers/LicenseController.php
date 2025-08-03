@@ -28,75 +28,91 @@ class LicenseController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Member::with(['membershipType', 'section.bureau'])
+            $query = Member::with(['membershipType', 'section.bureau'])
                 ->whereNotNull('license_number')
-                ->whereNotNull('license_class')
-                ->select('*');
-            
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('name', function($row) {
-                    return $row->first_name . ' ' . $row->last_name;
-                })
-                ->addColumn('bureau', function($row) {
-                    return $row->section->bureau->bureau_name ?? 'N/A';
-                })
-                ->addColumn('section', function($row) {
-                    return $row->section->section_name ?? 'N/A';
+                ->whereNotNull('license_class');
+
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('callsign', 'like', "%$search%")
+                    ->orWhere('license_number', 'like', "%$search%")
+                    ->orWhere('license_class', 'like', "%$search%")
+                    ->orWhereHas('section.bureau', function($q) use ($search) {
+                        $q->where('bureau_name', 'like', "%$search%");
+                    });
+                });
+            }
+
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'name':
+                        $query->orderBy('last_name', $direction)
+                            ->orderBy('first_name', $direction);
+                        break;
+                        
+                    case 'callsign':
+                        $query->orderBy('callsign', $direction);
+                        break;
+                        
+                    case 'expiry':
+                        $query->orderBy('license_expiration_date', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
                 }
-                )->addColumn('membership_type', function($row) {
-                    return $row->membershipType->type_name ?? 'N/A';
-                })
-                ->addColumn('license_validity', function($row) {
-                    if (!$row->license_expiration_date) {
-                        return 'N/A';
-                    }
-                    
-                    $now = now();
-                    $expiry = \Carbon\Carbon::parse($row->license_expiration_date);
-                    
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $members = $query->paginate($perPage);
+
+            $transformedMembers = $members->getCollection()->map(function ($member) {
+                $expiry = $member->license_expiration_date ? \Carbon\Carbon::parse($member->license_expiration_date) : null;
+                $now = now();
+                
+                $validity = 'N/A';
+                if ($expiry) {
                     if ($now->gt($expiry)) {
-                        return '<span class="text-red-600">Expired ' . $expiry->format('M d, Y') . '</span>';
+                        $validity = '<span class="text-red-600">Expired ' . $expiry->format('M d, Y') . '</span>';
                     } else {
-                        return '<span class="text-green-600">Valid until ' . $expiry->format('M d, Y') . '</span>';
+                        $validity = '<span class="text-green-600">Valid until ' . $expiry->format('M d, Y') . '</span>';
                     }
-                })
-                ->addColumn('action', function($row) {
-                    $buttons = '';
-                    
-                    // Add view button
-                    if (request()->user()->can('view licenses')) {
-                        $buttons .= '<a href="'.route('licenses.show', $row->id).'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="View">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </a>';
-                    }
-                    
-                    // Rest of your buttons remain the same
-                    if (request()->user()->can('edit licenses')) {
-                        $buttons .= '<a href="'.route('licenses.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+                }
 
-                    if (request()->user()->can('delete licenses')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="deleteLicense('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </a>';
-                    }
+                return [
+                    'id' => $member->id,
+                    'name' => $member->first_name . ' ' . $member->last_name,
+                    'callsign' => $member->callsign,
+                    'license_class' => $member->license_class,
+                    'membership_type' => $member->membershipType->type_name ?? 'N/A',
+                    'bureau' => $member->section->bureau->bureau_name ?? 'N/A',
+                    'section' => $member->section->section_name ?? 'N/A',
+                    'license_validity' => $validity,
+                    'can_view' => request()->user()->can('view licenses'),
+                    'can_edit' => request()->user()->can('edit licenses'),
+                    'can_delete' => request()->user()->can('delete licenses'),
+                ];
+            });
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
-                })
-                ->rawColumns(['action', 'license_validity'])
-                ->make(true);
+            return response()->json([
+                'data' => $transformedMembers,
+                'current_page' => $members->currentPage(),
+                'last_page' => $members->lastPage(),
+                'from' => $members->firstItem(),
+                'to' => $members->lastItem(),
+                'total' => $members->total(),
+            ]);
         }
-        
+
         return view('licenses.list');
     }
 

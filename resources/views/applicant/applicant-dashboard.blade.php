@@ -23,27 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endif
-
-<!-- recApply Section -->
-<div id="recapply-section">
-  <section class="bg-white dark:bg-gray-900 py-12">
-    <div class="max-w-4xl mx-auto text-center px-4">
-      <div class="mx-auto w-20 h-20">
-        <!-- Inline SVG Icon for Submit Document (Application Form) -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" class="w-full h-full text-[#132080] dark:text-white">
-            <image href="https://img.icons8.com/ios-filled/50/3f53e8/submit-document.png" width="50" height="50" />
-        </svg>
-    </div>
-      <h2 class="text-3xl sm:text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-wider text-[#132080] dark:text-white mt-4">APPLICATION FORM</h2>
-      <p class="mt-3 text-xl text-gray-600 dark:text-gray-300">Complete the form to apply for membership</p>
-    </div>
-  </section>
   
   <!-- Application Form -->
-  <div class="bg-white dark:bg-gray-900 min-h-screen py-8 transition-colors duration-300">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-white dark:bg-gray-900 min-h-screen py-8 transition-colors duration-300">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-800 rounded-xl p-6">
         <!-- Form Container -->
-        <div class="flex-1 bg-white dark:bg-gray-900 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="flex-1 bg-white dark:bg-gray-900 rounded-lg shadow-xl overflow-hidden transition-all duration-300 hover:shadow-lg">
             <!-- Form Header -->
             <div class="bg-[#101966] dark:bg-blue-800 px-8 py-6 transition-colors duration-300">
                 <h2 class="text-2xl font-bold text-white">Application Form</h2>

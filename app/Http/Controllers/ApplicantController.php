@@ -35,73 +35,91 @@ class ApplicantController extends Controller implements HasMiddleware
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $data = Applicant::where('status', 'Pending')->orderby('created_at', 'desc')->select('*');
+        {
+            if ($request->ajax()) {
+                $query = Applicant::where('status', 'Pending');
 
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $buttons = '';
+                if ($request->has('search') && $request->search != '') {
+                    $search = $request->search;
+                    $query->where(function ($q) use ($search) {
+                        $q->where('first_name', 'like', "%$search%")
+                        ->orWhere('last_name', 'like', "%$search%")
+                        ->orWhere('middle_name', 'like', "%$search%")
+                        ->orWhere('cellphone_no', 'like', "%$search%")
+                        ->orWhere('email_address', 'like', "%$search%");
+                    });
+                }
+
+                if ($request->has('sort') && $request->has('direction')) {
+                    $sort = $request->sort;
+                    $direction = $request->direction;
                     
-                    if (request()->user()->can('view applicants')) {
-                        $buttons .= '<a href="'.route('applicants.show', $row->id).'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="View">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </a>';
+                    switch ($sort) {
+                        case 'full_name':
+                            $query->orderBy('last_name', $direction)
+                                ->orderBy('first_name', $direction)
+                                ->orderBy('middle_name', $direction);
+                            break;
+                            
+                        case 'sex':
+                            $query->orderBy('sex', $direction);
+                            break;
+                            
+                        case 'birthdate':
+                            $query->orderBy('birthdate', $direction);
+                            break;
+                            
+                        case 'created':
+                        case 'created_at':
+                            $query->orderBy('created_at', $direction);
+                            break;
+                            
+                        default:
+                            $query->orderBy('created_at', 'desc');
+                            break;
+                    }
+                } else {
+                    $query->orderBy('created_at', 'desc');
+                }
+
+                $perPage = $request->input('perPage', 10);
+                $applicants = $query->paginate($perPage);
+
+                $transformedApplicants = $applicants->getCollection()->map(function ($applicant) {
+                    $fullName = $applicant->first_name . ' ' . $applicant->last_name;
+                    if ($applicant->middle_name) {
+                        $fullName .= ' ' . $applicant->middle_name;
+                    }
+                    if ($applicant->suffix) {
+                        $fullName .= ' ' . $applicant->suffix;
                     }
 
-                    if (request()->user()->can('edit applicants')) {
-                        $buttons .= '<a href="'.route('applicants.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>';
-                    }
+                    return [
+                        'id' => $applicant->id,
+                        'full_name' => $fullName,
+                        'sex' => $applicant->sex,
+                        'birthdate' => $applicant->birthdate ? \Carbon\Carbon::parse($applicant->birthdate)->format('d M, Y') : '',
+                        'cellphone_no' => $applicant->cellphone_no,
+                        'created_at' => $applicant->created_at->format('d M, Y'),
+                        'can_view' => request()->user()->can('view applicants'),
+                        'can_edit' => request()->user()->can('edit applicants'),
+                        'can_delete' => request()->user()->can('delete applicants'),
+                        'can_assess' => request()->user()->can('assess applicants'),
+                    ];
+                });
 
-                    if (request()->user()->can('delete applicants')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="deleteApplicant('.$row->id.')" class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </a>';
-                    }
-
-                    if (request()->user()->can('assess applicants')) {
-                        $buttons .= '<a href="'.route('applicants.assess', $row->id).'" class="p-2 text-green-600 hover:text-white hover:bg-green-600 rounded-full transition-colors duration-200" title="Assess">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </a>';
-                    }
-
-                    return '<div class="flex justify-center space-x-2">'.$buttons.'</div>';
-                })
-                ->addColumn('full_name', function($row) {
-                    $name = $row->first_name . ' ' . $row->last_name;
-                    if ($row->middle_name) {
-                        $name .= ' ' . $row->middle_name;
-                    }
-                    if ($row->suffix) {
-                        $name .= ' ' . $row->suffix;
-                    }
-                    return $name;
-                })
-                ->editColumn('created_at', function($row) {
-                    return $row->created_at->format('d M, y');
-                })
-                ->editColumn('birthdate', function($row) {
-                    return $row->birthdate ? \Carbon\Carbon::parse($row->birthdate)->format('d M, y') : '';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+                return response()->json([
+                    'data' => $transformedApplicants,
+                    'current_page' => $applicants->currentPage(),
+                    'last_page' => $applicants->lastPage(),
+                    'from' => $applicants->firstItem(),
+                    'to' => $applicants->lastItem(),
+                    'total' => $applicants->total(),
+                ]);
+            }
+            
+            return view('applicants.list');
         }
-        
-        return view('applicants.list');
-    }
-
     /**
      * Show the form for creating a new resource.
      */
