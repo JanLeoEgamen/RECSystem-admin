@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicantConversionController;
 use App\Http\Controllers\ArticleController;
@@ -353,7 +354,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/renew/{renewal}', [RenewalController::class, 'update'])->name('renew.update');
     Route::get('/renew/history', [RenewalController::class, 'history'])->name('renew.history');
 
-
+    //activity logs
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 });
 
 Route::fallback(function () {

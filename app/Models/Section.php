@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Section extends Model
 {
@@ -33,4 +35,18 @@ class Section extends Model
         return $this->belongsToMany(User::class, 'user_bureau_section')
             ->withPivot('bureau_id');
     }
+
+    // logs
+    use LogsActivity;
+    protected static $logOnlyDirty = true;
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['section_name'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Section has been {$eventName}")
+            ->useLogName('section')
+            ->dontSubmitEmptyLogs();
+    }
+
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Announcement extends Model
 {
@@ -27,4 +29,23 @@ class Announcement extends Model
             ->withPivot(['is_read', 'read_at'])
             ->withTimestamps();
     }
+
+
+
+    // logs
+    use LogsActivity;
+    protected static $logOnlyDirty = true;
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title', 'content', 'is_published'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Announcement has been {$eventName}")
+            ->useLogName('announcement')
+            ->dontSubmitEmptyLogs();
+    }
+
+
+
+
 }

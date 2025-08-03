@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Quiz extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -36,4 +39,19 @@ class Quiz extends Model
         return $this->belongsToMany(Member::class, 'quiz_member')
             ->withTimestamps();
     }
+
+    // logs
+    use LogsActivity;
+    protected static $logOnlyDirty = true;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title', 'description', 'is_published'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Quiz has been {$eventName}")
+            ->useLogName('quiz')
+            ->dontSubmitEmptyLogs();
+    }
+
 }

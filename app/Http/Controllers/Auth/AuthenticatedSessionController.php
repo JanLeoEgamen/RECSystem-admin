@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->hasRole('Applicant')) {
-            // ✅ Check the applicant's status (not user's)
+            //  Check the applicant's status (not user's)
             $applicant = Applicant::where('user_id', $user->id)->first();
 
             if ($applicant && $applicant->status === 'Pending') {

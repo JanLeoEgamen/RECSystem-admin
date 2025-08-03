@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Document extends Model
 {
@@ -48,4 +51,18 @@ class Document extends Model
                 return 'fa-file';
         }
     }
+
+    //logs
+    use LogsActivity;
+    protected static $logOnlyDirty = true;
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title', 'description', 'file_path', 'file_type', 'file_size', 'url', 'is_published'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Document has been {$eventName}")
+            ->useLogName('document')
+            ->dontSubmitEmptyLogs();
+    }
+    
 }

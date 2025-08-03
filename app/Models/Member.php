@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Member extends Model
 {
@@ -179,4 +181,33 @@ protected $dates = [
     {
         return $this->hasOne(Renewal::class)->latestOfMany();
     }
+
+    //logs
+    use LogsActivity;
+    protected static $logOnlyDirty = true;
+    
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'status', 
+                'last_name', 
+                'first_name', 
+                'middle_name', 
+                'suffix',
+                'birthdate',
+                'license_expiration_date',
+                'membership_start',
+                'membership_end',
+                'last_renewal_date',
+                'created_at',
+                'updated_at',
+                'deleted_at'
+            ])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Member has been {$eventName}")
+            ->useLogName('member')
+            ->dontSubmitEmptyLogs();
+    }
+
 }

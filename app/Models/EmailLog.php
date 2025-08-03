@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class EmailLog extends Model
 {
@@ -19,11 +21,11 @@ class EmailLog extends Model
         'error_message',
         'sent_at',
         'user_id',
-        'attachments',  // ADD THIS LINE
+        'attachments',  
     ];
 
     protected $casts = [
-        'attachments' => 'array', // Cast attachments as array automatically
+        'attachments' => 'array',
     ];
 
     public function template()
@@ -34,5 +36,18 @@ class EmailLog extends Model
     public function sender()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    use LogsActivity;
+    protected static $logOnlyDirty = true;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['recipient_email', 'subject', 'status'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Email Log has been {$eventName}")
+            ->useLogName('email_log')
+            ->dontSubmitEmptyLogs();
     }
 }
