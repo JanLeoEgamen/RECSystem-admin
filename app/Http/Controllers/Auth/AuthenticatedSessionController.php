@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Spatie\Activitylog\Facades\CauserResolver;
+use Spatie\Activitylog\Facades\LogBatch;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -30,6 +32,25 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+
+        // Log the login activity
+        LogBatch::startBatch();
+        
+        CauserResolver::setCauser($user);
+        
+        activity()
+            ->useLog('authentication')
+            ->causedBy($user)
+            ->withProperties([
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'login_time' => now(),
+                'status' => 'success'
+            ])
+            ->log('user_login');
+            
+        LogBatch::endBatch();
+
 
         if ($user->hasRole('Member')) {
             return redirect()->route('member.dashboard');

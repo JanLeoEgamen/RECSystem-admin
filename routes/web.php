@@ -34,6 +34,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LicenseController;
+use App\Http\Controllers\LoginLogController;
 use App\Http\Controllers\MemberCertificateController;
 use App\Http\Controllers\MemberDashboardController;
 use App\Http\Controllers\MemberQuizController;
@@ -356,6 +357,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //activity logs
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+    //log in logs
+    Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs.index');
+    Route::get('/login-logs/export', [LoginLogController::class, 'index'])->name('login-logs.export');
+
 });
 
 Route::fallback(function () {

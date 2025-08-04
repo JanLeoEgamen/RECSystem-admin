@@ -354,7 +354,7 @@
                                 name="password"
                                 required 
                                 autocomplete="new-password"
-                                placeholder="••••••••"
+                                placeholder="Enter your password"
                             />
                             <button type="button" 
                                     class="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-white/50 hover:text-white"
@@ -383,7 +383,7 @@
                                 name="password_confirmation" 
                                 required 
                                 autocomplete="new-password"
-                                placeholder="••••••••"
+                                placeholder="Confirm your password"
                             />
                             <button type="button" 
                                     class="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-white/50 hover:text-white"

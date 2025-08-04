@@ -18,12 +18,37 @@
         @method('patch')
 
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+        <div class="space-y-4">
+            <!-- First Name -->
+            <div>
+                <x-input-label :value="__('First Name')" />
+                <div class="mt-1 text-gray-900 dark:text-gray-100">
+                    {{ $user->first_name }}
+                </div>
+                <input type="hidden" name="first_name" value="{{ $user->first_name }}">
+            </div>
+
+            <!-- Last Name -->
+            <div>
+                <x-input-label :value="__('Last Name')" />
+                <div class="mt-1 text-gray-900 dark:text-gray-100">
+                    {{ $user->last_name }}
+                </div>
+                <input type="hidden" name="last_name" value="{{ $user->last_name }}">
+            </div>
+
+            <!-- Email -->
+            <div>
+                <x-input-label :value="__('Email')" />
+                <div class="mt-1 text-gray-900 dark:text-gray-100">
+                    {{ $user->email }}
+                </div>
+                <input type="hidden" name="email" value="{{ $user->email }}">
+            </div>
+        </div>
         </div>
 
-        <div>
+        {{-- <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
@@ -59,6 +84,6 @@
                     class="text-sm text-gray-600 dark:text-gray-400"
                 >{{ __('Saved.') }}</p>
             @endif
-        </div>
+        </div> --}}
     </form>
 </section>

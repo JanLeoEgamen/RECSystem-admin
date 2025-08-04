@@ -17,7 +17,23 @@ class PasswordController extends Controller
     {
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)                    // Minimum 8 characters
+                    ->letters()                     // Must contain at least one letter
+                    ->mixedCase()                  // Must contain both uppercase and lowercase
+                    ->numbers()                    // Must contain at least one number
+                    ->symbols()                    // Must contain at least one symbol
+                    ->uncompromised(),              // Must not be compromised in data leaks
+                // Add validation to prevent same as current password
+                function ($attribute, $value, $fail) use ($request) {
+                    if (Hash::check($value, $request->user()->password)) {
+                        $fail('The new password must be different from your current password.');
+                    }
+                }
+
+            ],
         ]);
 
         $request->user()->update([

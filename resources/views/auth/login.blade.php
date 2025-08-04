@@ -307,7 +307,7 @@
                             name="password"
                             required 
                             autocomplete="current-password"
-                            placeholder="••••••••"
+                            placeholder="Enter your password"
                         />
                         <button type="button" 
                                 dusk="password-toggle"

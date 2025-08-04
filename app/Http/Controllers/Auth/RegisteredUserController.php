@@ -35,9 +35,8 @@ class RegisteredUserController extends Controller
                 'string',
                 'min:2',
                 'max:50',
-                'regex:/^[\pL\s\-]+$/u', // Allows letters, spaces, and hyphens
+                'regex:/^[\pL\s\-]+$/u', 
                 function ($attribute, $value, $fail) use ($request) {
-                    // Check for unique combination of first and last name
                     $exists = User::where('first_name', $value)
                                 ->where('last_name', $request->last_name)
                                 ->exists();
@@ -59,21 +58,20 @@ class RegisteredUserController extends Controller
                 'before_or_equal:' . now()->subYears(18)->format('Y-m-d'), // Must be 18+ years old
                 'after_or_equal:' . now()->subYears(100)->format('Y-m-d') // Reasonable minimum age
             ],
-            // 'email' => [
-            //     'required',
-            //     'string',
-            //     'email',
-            //     'max:255',
-            //     'unique:users',
-            //     function ($attribute, $value, $fail) {
-            //         // Block disposable emails
-            //         $disposableDomains = ['mailinator.com', 'tempmail.com', 'example.com'];
-            //         $domain = substr(strrchr($value, "@"), 1);
-            //         if (in_array($domain, $disposableDomains)) {
-            //             $fail('Disposable email addresses are not allowed.');
-            //         }
-            //     }
-            // ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users',
+                function ($attribute, $value, $fail) {
+                    $disposableDomains = ['mailinator.com', 'tempmail.com', 'example.com'];
+                    $domain = substr(strrchr($value, "@"), 1);
+                    if (in_array($domain, $disposableDomains)) {
+                        $fail('Disposable email addresses are not allowed.');
+                    }
+                }
+            ],
             'password' => [
                 'required',
                 'confirmed',

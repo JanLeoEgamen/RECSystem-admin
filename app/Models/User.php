@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 
 
@@ -30,7 +32,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'member_id',
-
     ];
 
     /**
@@ -129,5 +130,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Section::class, 'user_bureau_section')
             ->withPivot('bureau_id');
     }
+
+    // logs
+    use LogsActivity;
+    protected static $logOnlyDirty = true;
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['last_name', 'first_name', 'birthdate', 'email', 'member_id'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "User has been {$eventName}")
+            ->useLogName('user')
+            ->dontSubmitEmptyLogs();
+    }
+    
 
 }
