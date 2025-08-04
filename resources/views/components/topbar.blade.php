@@ -46,12 +46,14 @@
             @can('view admin dashboard')
             <!-- Center Section - Hidden on Mobile -->
             <div class="absolute left-1/2 transform -translate-x-1/2 hidden sm:flex items-center">
-                <svg class="w-5 h-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+                <img src="https://img.icons8.com/glyph-neue/64/FFFFFF/groups.png" 
+                    alt="Membership Icon" 
+                    class="w-6 h-6 mr-2 object-contain">
+                
                 <span class="text-sm sm:text-base font-medium text-white mr-2 whitespace-nowrap">
                     Membership Information Management System
                 </span>
+                
                 <span class="px-3 py-0.5 text-xs font-bold bg-[#5e6ffb] text-white rounded-full">
                     MIMS
                 </span>
@@ -78,7 +80,7 @@
                 @can('view admin dashboard')
                 <div class="hidden sm:flex items-center">
                     <img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/FFFFFF/user-shield.png" alt="admin" class="mr-2">
-                    <span class="font-medium text-white mr-2">Hi, Admin</span>
+                    <span class="font-medium text-white mr-2">Super Admin</span>
                 </div>
                 @endcan
 

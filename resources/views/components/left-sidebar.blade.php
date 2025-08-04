@@ -3,17 +3,20 @@
 <aside 
     x-show="sidebarOpen || $screen('md')"
     @click.away="if ($screen('sm')) sidebarOpen = false"
-    class="fixed inset-y-0 left-0 z-50 w-64 flex flex-col bg-[#101966] left-sidebar-shadow transition-all duration-300 ease-in-out transform"
-    :class="{
-        '-translate-x-full md:translate-x-0': !sidebarOpen,
-        'translate-x-0': sidebarOpen
-    }"
+    class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-[#101966] left-sidebar-shadow"
     style="margin-top: 4rem; height: calc(100vh - 4rem);"
     x-data="{ 
         openDropdown: null,
         isDropdownOpen(name) { return this.openDropdown === name },
         toggleDropdown(name) { this.openDropdown = this.openDropdown === name ? null : name }
     }"
+    x-transition:enter="transform transition-transform duration-300 ease-out"
+    x-transition:enter-start="-translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transform transition-transform duration-300 ease-in"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="-translate-x-full"
+    x-cloak
 >
     <!-- Sidebar Content -->
     <div class="flex-1 flex flex-col overflow-y-auto scrollbar-left pt-4 pb-4">
@@ -36,14 +39,17 @@
             <a 
                 href="{{ route('dashboard') }}" 
                 :active="request()->routeIs('dashboard')" 
-                class="flex items-center px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] transition-colors duration-150"
+                class="flex items-center px-3 py-3 text-sm font-medium rounded-md text-white 
+                    hover:bg-[#5E6FFB] 
+                    transition-transform duration-300 
+                    hover:scale-105 active:scale-95"
             >
                 <img 
                     src="https://img.icons8.com/external-kmg-design-glyph-kmg-design/50/FFFFFF/external-dashboard-user-interface-kmg-design-glyph-kmg-design.png" 
                     alt="dashboard"
-                    class="w-5 h-5 object-contain mr-2"
+                    class="w-5 h-5 object-contain mr-2 transition-transform duration-300"
                 >
-                <span class="flex-1 text-left">
+                <span class="flex-1 text-left transition-transform duration-300">
                     {{ __('Dashboard') }}
                 </span>
             </a>
@@ -54,19 +60,27 @@
             <div>
                 <button 
                     @click="toggleDropdown('userManagement')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] focus:outline-none transition-colors duration-150"
+                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white 
+                        hover:bg-[#5E6FFB] focus:outline-none 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
+                    <!-- Icon -->
                     <svg 
-                        class="w-5 h-5 mr-3" 
+                        class="w-5 h-5 mr-3 transition-transform duration-300" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    <span class="flex-1 text-left">
+
+                    <!-- Label -->
+                    <span class="flex-1 text-left transition-transform duration-300">
                         {{ __('User Management') }}
                     </span>
+
+                    <!-- Arrow Icon -->
                     <svg 
-                        class="ml-1 h-4 w-4 transform transition-transform duration-200" 
+                        class="ml-1 h-4 w-4 transform transition-transform duration-300" 
                         :class="{'rotate-180': isDropdownOpen('userManagement')}" 
                         fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" 
@@ -76,16 +90,15 @@
                 </button>
 
                 <!-- Dropdown Content -->
-                <div 
-                    x-show="isDropdownOpen('userManagement')"
+                <div x-show="isDropdownOpen('userManagement')"
                     x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-x-2"
+                    x-transition:enter-end="opacity-100 translate-x-0"
                     x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="pl-8 space-y-1"
-                >
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 translate-x-2"
+                    class="ml-6 pl-4 border-l-2 border-[#5E6FFB] space-y-2">
+         
                     @can('view users')
                         <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')"  class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 hover:text-white hover:bg-[#5E6FFB]">
                             <img src="https://img.icons8.com/sf-black-filled/64/FFFFFF/conference-call.png"  class="w-4 h-4 mr-2 object-contain" alt="Main Carousels">
@@ -113,18 +126,26 @@
             <div>
                 <button 
                     @click="toggleDropdown('websiteManagement')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] focus:outline-none transition-colors duration-150"
+                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white 
+                        hover:bg-[#5E6FFB] focus:outline-none 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
-                    <svg class="w-5 h-5 mr-3" 
+                    <!-- Icon -->
+                    <svg class="w-5 h-5 mr-3 transition-transform duration-300" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span class="flex-1 text-left">
+
+                    <!-- Label -->
+                    <span class="flex-1 text-left transition-transform duration-300">
                         {{ __('Website Management') }}
                     </span>
+
+                    <!-- Arrow Icon -->
                     <svg 
-                        class="ml-1 h-4 w-4 transform transition-transform duration-200" 
+                        class="ml-1 h-4 w-4 transform transition-transform duration-300" 
                         :class="{'rotate-180': isDropdownOpen('websiteManagement')}" 
                         fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" 
@@ -136,12 +157,12 @@
                 <div 
                     x-show="isDropdownOpen('websiteManagement')"
                     x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-x-2"
+                    x-transition:enter-end="opacity-100 translate-x-0"
                     x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="pl-8 space-y-1"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 translate-x-2"
+                    class="ml-6 pl-4 border-l-2 border-[#5E6FFB] space-y-2"
                 >
                     @can('view main carousels')
                         <x-nav-link :href="route('main-carousels.index')" :active="request()->routeIs('main-carousels.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 hover:text-white hover:bg-[#5E6FFB]">
@@ -194,18 +215,26 @@
             <div>
                 <button 
                     @click="toggleDropdown('memberManagement')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] focus:outline-none transition-colors duration-150"
+                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white 
+                        hover:bg-[#5E6FFB] focus:outline-none 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
-                    <svg class="w-5 h-5 mr-3"
+                    <!-- Icon -->
+                    <svg class="w-5 h-5 mr-3 transition-transform duration-300"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    
-                    <span class="flex-1 text-left">
+
+                    <!-- Label -->
+                    <span class="flex-1 text-left transition-transform duration-300">
                         {{ __('Member Management') }}
                     </span>
+
+                    <!-- Arrow Icon -->
                     <svg 
-                        class="ml-1 h-4 w-4 transform transition-transform duration-200" 
+                        class="ml-1 h-4 w-4 transform transition-transform duration-300" 
                         :class="{'rotate-180': isDropdownOpen('memberManagement')}" 
                         fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" 
@@ -217,12 +246,12 @@
                 <div 
                     x-show="isDropdownOpen('memberManagement')"
                     x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-x-2"
+                    x-transition:enter-end="opacity-100 translate-x-0"
                     x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="pl-8 space-y-1"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 translate-x-2"
+                    class="ml-6 pl-4 border-l-2 border-[#5E6FFB] space-y-2"
                 >
                     @can('view membership types')
                         <x-nav-link :href="route('membership-types.index')" :active="request()->routeIs('membership-types.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 hover:text-white hover:bg-[#5E6FFB]">
@@ -287,18 +316,26 @@
             <div>
                 <button 
                     @click="toggleDropdown('memberEngagement')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] focus:outline-none transition-colors duration-150"
+                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white 
+                        hover:bg-[#5E6FFB] focus:outline-none 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
-                    <svg class="w-5 h-5 object-contain mr-3" 
+                    <!-- Icon -->
+                    <svg class="w-5 h-5 object-contain mr-3 transition-transform duration-300" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    <span class="flex-1 text-left">
+
+                    <!-- Label -->
+                    <span class="flex-1 text-left transition-transform duration-300">
                         {{ __('Member Engagement') }}
                     </span>
+
+                    <!-- Arrow Icon -->
                     <svg 
-                        class="ml-1 h-4 w-4 transform transition-transform duration-200" 
+                        class="ml-1 h-4 w-4 transform transition-transform duration-300" 
                         :class="{'rotate-180': isDropdownOpen('memberEngagement')}" 
                         fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" 
@@ -310,12 +347,12 @@
                 <div 
                     x-show="isDropdownOpen('memberEngagement')"
                     x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-x-2"
+                    x-transition:enter-end="opacity-100 translate-x-0"
                     x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="pl-8 space-y-1"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 translate-x-2"
+                    class="ml-6 pl-4 border-l-2 border-[#5E6FFB] space-y-2"
                 >
                     @can('view events')
                         <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.index')" 
@@ -352,18 +389,26 @@
             <div>
                 <button 
                     @click="toggleDropdown('assessments')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] focus:outline-none transition-colors duration-150"
+                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white 
+                        hover:bg-[#5E6FFB] focus:outline-none 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
-                    <svg class="w-5 h-5 object-contain mr-3" 
+                    <!-- Icon -->
+                    <svg class="w-5 h-5 object-contain mr-3 transition-transform duration-300" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span class="flex-1 text-left">
+
+                    <!-- Label -->
+                    <span class="flex-1 text-left transition-transform duration-300">
                         {{ __('Assessments') }}
                     </span>
+
+                    <!-- Arrow Icon -->
                     <svg 
-                        class="ml-1 h-4 w-4 transform transition-transform duration-200" 
+                        class="ml-1 h-4 w-4 transform transition-transform duration-300" 
                         :class="{'rotate-180': isDropdownOpen('assessments')}" 
                         fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" 
@@ -372,15 +417,16 @@
                     </svg>
                 </button>
 
+
                 <div 
                     x-show="isDropdownOpen('assessments')"
                     x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-x-2"
+                    x-transition:enter-end="opacity-100 translate-x-0"
                     x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="pl-8 space-y-1"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 translate-x-2"
+                    class="ml-6 pl-4 border-l-2 border-[#5E6FFB] space-y-2"
                 >
                     @can('view quizzes')
                         <x-nav-link :href="route('quizzes.index')" :active="request()->routeIs('quizzes.index')" 
@@ -407,18 +453,26 @@
             <div>
                 <button 
                     @click="toggleDropdown('integrations')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] focus:outline-none transition-colors duration-150"
+                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white 
+                        hover:bg-[#5E6FFB] focus:outline-none 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
-                    <svg class="w-5 h-5 object-contain mr-3" 
+                    <!-- Icon -->
+                    <svg class="w-5 h-5 object-contain mr-3 transition-transform duration-300" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                     </svg>
-                    <span class="flex-1 text-left">
+
+                    <!-- Label -->
+                    <span class="flex-1 text-left transition-transform duration-300">
                         {{ __('Integrations') }}
                     </span>
+
+                    <!-- Arrow Icon -->
                     <svg 
-                        class="ml-1 h-4 w-4 transform transition-transform duration-200" 
+                        class="ml-1 h-4 w-4 transform transition-transform duration-300" 
                         :class="{'rotate-180': isDropdownOpen('integrations')}" 
                         fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" 
@@ -430,12 +484,12 @@
                 <div 
                     x-show="isDropdownOpen('integrations')"
                     x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-x-2"
+                    x-transition:enter-end="opacity-100 translate-x-0"
                     x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="pl-8 space-y-1"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 translate-x-2"
+                    class="ml-6 pl-4 border-l-2 border-[#5E6FFB] space-y-2"
                 >
                     @can('view emails')
                         <x-nav-link :href="route('emails.index')" :active="request()->routeIs('emails.index')" 
@@ -459,23 +513,31 @@
             @endcanany
 
             <!-- Profile Section -->
-            <div class="px-2 pt-4">
+            <div>
                 <button 
                     @click="toggleDropdown('profile')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white hover:bg-[#5E6FFB] focus:outline-none transition-colors duration-150"
+                    class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-md text-white 
+                        hover:bg-[#5E6FFB] focus:outline-none 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
-                    <svg class="w-5 h-5 object-contain mr-3" 
+                    <!-- Profile Icon -->
+                    <svg class="w-5 h-5 object-contain mr-3 transition-transform duration-300" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span>
+
+                    <!-- Profile Name -->
+                    <span class="transition-transform duration-300">
                         {{ Auth::user()->first_name }}
                     </span>
+
+                    <!-- Arrow Icon -->
                     <svg 
-                        class="ml-1 h-4 w-4 transform transition-transform duration-200" 
+                        class="ml-auto h-4 w-4 transform transition-transform duration-300" 
                         :class="{'rotate-180': isDropdownOpen('profile')}" 
                         fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" 
@@ -488,12 +550,12 @@
                 <div 
                     x-show="isDropdownOpen('profile')"
                     x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-x-2"
+                    x-transition:enter-end="opacity-100 translate-x-0"
                     x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="pl-8 space-y-1"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 translate-x-2"
+                    class="ml-6 pl-4 border-l-2 border-[#5E6FFB] space-y-2"
                 >
                     <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')" 
                         class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 hover:text-white hover:bg-[#5E6FFB]">
@@ -512,12 +574,23 @@
                 @csrf
                 <button 
                     type="submit"
-                    class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-[#1A25A1] rounded-md hover:bg-[#5E6FFB] transition-colors duration-150"
+                    class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white 
+                        bg-[#1A25A1] rounded-md 
+                        hover:bg-[#5E6FFB] 
+                        transition-transform duration-300 
+                        hover:scale-105 active:scale-95"
                 >
-                    <svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <!-- Icon -->
+                    <svg class="mr-2 h-4 w-4 transition-transform duration-300" 
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    <span>{{ __('Log Out') }}</span>
+
+                    <!-- Label -->
+                    <span class="transition-transform duration-300">
+                        {{ __('Log Out') }}
+                    </span>
                 </button>
             </form>
         </div>

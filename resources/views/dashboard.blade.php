@@ -1,9 +1,17 @@
 <x-app-layout>
    <x-slot name="header">
-        <h1 class="font-semibold text-3xl text-white dark:text-white leading-tight">
+    <div class="flex items-center justify-center sm:justify-start
+                p-4 sm:p-6 rounded-lg shadow-lg
+                bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
+                dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+
+        <!-- Header Title -->
+        <h1 class="font-semibold text-2xl sm:text-3xl text-white dark:text-gray-100 leading-tight text-center sm:text-left">
             {{ __('Dashboard') }}
         </h1>
-    </x-slot>
+    </div>
+</x-slot>
+
 
     <!-- Welcome Card -->
     <div class="py-6">

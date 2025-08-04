@@ -50,7 +50,6 @@
             margin-right: auto;
             padding: 1.5rem 1rem;
             max-width: 85%;
-            background-color: #1A25A1;
             border-radius: 0.5rem;
         }
 
@@ -128,6 +127,10 @@
             background-color: #5e6ffb !important;
             color: white !important;
         }
+
+        .bg-\[\#1A25A1\] {
+        background-color: #1A25A1 !important;
+        }
     </style>
 </head>
 <body class="font-sans antialiased bg-gray-50"
@@ -137,7 +140,6 @@
         headerWidth: 'max-w-7xl px-4 sm:px-6 lg:px-8',
         toggleSidebar(side) {
           if (window.innerWidth < 768) {
-            // Mobile: only one sidebar can be open
             if (side === 'left') {
               this.sidebarOpen = !this.sidebarOpen;
               if (this.sidebarOpen) this.rightSidebarOpen = false;
@@ -146,7 +148,6 @@
               if (this.rightSidebarOpen) this.sidebarOpen = false;
             }
           } else {
-            // Desktop: independent toggles
             if (side === 'left') this.sidebarOpen = !this.sidebarOpen;
             if (side === 'right') this.rightSidebarOpen = !this.rightSidebarOpen;
           }
@@ -181,13 +182,14 @@
         <div class ="h-16 2xl:h-20"></div>
 
         <div class="flex flex-1">
+            
             <!-- Main content -->
             <div class="flex-1 flex flex-col overflow-hidden">
                 <!-- Header Section -->
                 <div class="header-container pt-16"> 
                     @isset($header)
                         <header class="w-full">
-                            <div class="header-content mx-auto transition-all duration-300 ease-in-out" :class="headerWidth">
+                            <div class="header-content mx-auto" :class="headerWidth">
                                 {{ $header }}
                             </div>
                         </header>
@@ -203,6 +205,11 @@
         <!-- ✅ Footer -->
         <x-footer />
     </div>
+
+    <!-- CHATBOT INTEGRATION EMBEDDED CODE -->
+    <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2025/01/12/14/20250112142449-BTWBU6OV.js"></script>
+    <!-- END OF CHATBOT CALLING -->
     
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     @isset($script)
