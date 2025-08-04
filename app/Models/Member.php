@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
+
 class Member extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+    protected static $logOnlyDirty = true;
 
     protected $fillable = [
         'status',
@@ -182,9 +184,7 @@ protected $dates = [
         return $this->hasOne(Renewal::class)->latestOfMany();
     }
 
-    //logs
-    use LogsActivity;
-    protected static $logOnlyDirty = true;
+    
     
     public function getActivitylogOptions(): LogOptions
     {
@@ -210,4 +210,14 @@ protected $dates = [
             ->dontSubmitEmptyLogs();
     }
 
+    public function canBeViewedBy(User $user)
+    {
+        // Admins can view any member's logs
+        if ($user->hasPermissionTo('view members')) {
+            return true;
+        }
+        
+        // Members can only view their own logs
+        return $user->id === $this->id;
+    }
 }

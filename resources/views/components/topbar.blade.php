@@ -98,9 +98,15 @@
                             'member.quizzes' => 'Reviewers',
                             'member.certificates.index' => 'Certificates',
                             'member.documents' => 'Documents',
+                            'members.activity_logs' => 'My Logs',
                         ] as $route => $label)
-                            <x-nav-link :href="route($route)" :active="request()->routeIs($route)" 
-                                class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md">
+                            <x-nav-link 
+                                :href="$route === 'members.activity_logs' 
+                                    ? route($route, Auth::user()->member->id) 
+                                    : route($route)"
+                                :active="request()->routeIs($route)" 
+                                class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md"
+                            >
                                 {{ __($label) }}
                             </x-nav-link>
                         @endforeach
@@ -204,11 +210,18 @@
                 'member.quizzes' => 'Reviewers',
                 'member.certificates.index' => 'Certificates',
                 'member.documents' => 'Documents',
+                'members.activity_logs' => 'My Logs',
             ] as $route => $label)
-                <x-nav-link :href="route($route)" :active="request()->routeIs($route)" 
-                    class="member-mobile-link">
+                <x-nav-link 
+                    :href="$route === 'members.activity_logs' 
+                        ? route($route, Auth::user()->member->id) 
+                        : route($route)"
+                    :active="request()->routeIs($route)" 
+                    class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md"
+                >
                     {{ __($label) }}
                 </x-nav-link>
+
             @endforeach
 
             <!-- Mobile Profile Icon + Dropdown Links -->

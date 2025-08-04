@@ -122,6 +122,21 @@ class MemberQuizController extends Controller implements HasMiddleware
         
         // Update total score
         $response->update(['total_score' => $totalScore]);
+
+        // In submitQuiz method (after quiz is submitted):
+        $scorePercentage = ($totalScore / $quiz->questions->sum('points')) * 100;
+        logQuizSurveyActivity(
+            $member,
+            'quiz',
+            $quiz,
+            'completed',
+            "Quiz completed with score: {$totalScore}/{$quiz->questions->sum('points')} ({$scorePercentage}%)",
+            [
+                'score' => $totalScore,
+                'total_possible' => $quiz->questions->sum('points'),
+                'percentage' => $scorePercentage
+            ]
+        );
         
         return redirect()->route('member.quiz-result', $response->id);
     }

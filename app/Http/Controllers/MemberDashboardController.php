@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class MemberDashboardController extends Controller implements HasMiddleware
@@ -93,21 +94,51 @@ public function index()
             'receipt' => 'required|image|max:2048',
         ]);
 
-        $receiptPath = $request->file('receipt')->store('renewals', 'public');
+        $member = Auth::user()->member;
+        if (!$member) {
+            Log::error('Renewal submission failed - no member profile', ['user_id' => Auth::id()]);
+            return back()->with('error', 'No member profile found');
+        }
 
-        Renewal::create([
-            'member_id' => Auth::user()->member->id,
-            'reference_number' => $request->reference_number,
-            'receipt_path' => $receiptPath,
-            'status' => 'pending',
-        ]);
+        Log::info('Starting renewal process', ['member_id' => $member->id]);
 
-        // Send email using the Mailable class
-        Mail::to(Auth::user()->email)->send(
-            new RenewalSubmitted(Auth::user()->name, $request->reference_number)
-        );
+        try {
+            $receiptPath = $request->file('receipt')->store('renewals', 'public');
 
-        return redirect()->route('member.dashboard')->with('success', 'Renewal request submitted successfully!');
+            $renewal = Renewal::create([
+                'member_id' => $member->id,
+                'reference_number' => $request->reference_number,
+                'receipt_path' => $receiptPath,
+                'status' => 'pending',
+            ]);
+
+            // Detailed activity log
+            logMembershipRenewal(
+                $member,
+                'pending',
+                'Membership renewal submitted',
+                [
+                    'reference_number' => $request->reference_number,
+                    'receipt_path' => $receiptPath,
+                    'renewal_id' => $renewal->id,
+                    'ip' => $request->ip()
+                ]
+            );
+
+            Mail::to(Auth::user()->email)->send(
+                new RenewalSubmitted(Auth::user()->name, $request->reference_number)
+            );
+
+            return redirect()->route('member.dashboard')
+                ->with('success', 'Renewal request submitted successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Renewal submission failed', [
+                'error' => $e->getMessage(),
+                'member_id' => $member->id
+            ]);
+            return back()->with('error', 'Failed to submit renewal request');
+        }
     }
 
 
@@ -262,7 +293,15 @@ public function index()
             'member_id' => $member->id,
             'status' => 'registered'
         ]);
-        
+
+        // In registerForEvent method:
+        logEventParticipation(
+            $member,
+            $event,
+            'registered',
+            "Registered for event: {$event->title}"
+        );
+                
         return redirect()->route('member.events')
             ->with('success', 'You have successfully registered for the event.');
     }
@@ -284,6 +323,14 @@ public function index()
         $registration->update([
             'status' => 'cancelled'
         ]);
+
+        // In cancelRegistration method:
+        logEventParticipation(
+            $member,
+            $event,
+            'cancelled',
+            "Cancelled registration for event: {$event->title}"
+        );
         
         return redirect()->route('member.events')
             ->with('success', 'Your registration has been cancelled.');

@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Mail\PaymentRejectedMail;
 use App\Models\Applicant;
+use App\Models\MemberActivityLog;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\Middleware as RouteMiddleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\DataTables;
 
@@ -106,29 +108,92 @@ class CashierApplicantController extends Controller implements HasMiddleware
 
     public function verify($id) 
     {
-        $applicant = Applicant::findOrFail($id);
-        $applicant->payment_status = 'verified';
-        $applicant->save();
+        try {
+            $applicant = Applicant::findOrFail($id);
+            
+            // Verify the payment
+            $applicant->payment_status = 'verified';
+            $applicant->verified_at = now();
+            $applicant->save();
 
-        return response()->json(['success' => true, 'message' => 'Applicant payment has been verified.']);
+            // Log the verification
+            $this->logPaymentActivity(
+                $applicant,
+                'verified',
+                'Payment verified by cashier',
+                [
+                    'cashier_id' => auth()->id(),
+                    'verified_at' => now()->toDateTimeString()
+                ]
+            );
+
+            return response()->json([
+                'success' => true, 
+                'message' => 'Applicant payment has been verified.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Payment verification failed', [
+                'error' => $e->getMessage(),
+                'applicant_id' => $id,
+                'cashier_id' => auth()->id()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to verify payment'
+            ], 500);
+        }
     }
 
     public function reject(Request $request, $id)
     {
-        $applicant = Applicant::findOrFail($id);
-
-        $reason = $request->input('reason');
-
-        $applicant->payment_status = 'rejected';
-        $applicant->save();
-
-        // Send rejection email
-        Mail::to($applicant->email_address)->send(new PaymentRejectedMail($applicant, $reason));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment rejected and applicant notified via email.',
+        $request->validate([
+            'reason' => 'required|string|max:500'
         ]);
+
+        try {
+            $applicant = Applicant::findOrFail($id);
+
+            // Reject the payment
+            $applicant->payment_status = 'rejected';
+            $applicant->rejection_reason = $request->reason;
+            $applicant->rejected_at = now();
+            $applicant->save();
+
+            // Log the rejection
+            $this->logPaymentActivity(
+                $applicant,
+                'rejected',
+                'Payment rejected by cashier',
+                [
+                    'cashier_id' => auth()->id(),
+                    'rejection_reason' => $request->reason,
+                    'rejected_at' => now()->toDateTimeString()
+                ]
+            );
+
+            // Send rejection email
+            Mail::to($applicant->email_address)
+                ->send(new PaymentRejectedMail($applicant, $request->reason));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment rejected and applicant notified via email.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Payment rejection failed', [
+                'error' => $e->getMessage(),
+                'applicant_id' => $id,
+                'cashier_id' => auth()->id()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reject payment'
+            ], 500);
+        }
     }
 
     public function verified(Request $request)
@@ -220,13 +285,59 @@ class CashierApplicantController extends Controller implements HasMiddleware
 
     public function restore($id)
     {
-        $applicant = Applicant::findOrFail($id);
-        $applicant->payment_status = 'pending';
-        $applicant->save();
+        try {
+            $applicant = Applicant::findOrFail($id);
+            
+            // Restore to pending
+            $applicant->payment_status = 'pending';
+            $applicant->rejection_reason = null;
+            $applicant->rejected_at = null;
+            $applicant->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Applicant restored to pending payments.'
+            // Log the restoration
+            $this->logPaymentActivity(
+                $applicant,
+                'restored',
+                'Payment restored to pending',
+                [
+                    'cashier_id' => auth()->id(),
+                    'previous_status' => 'rejected',
+                    'restored_at' => now()->toDateTimeString()
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Applicant restored to pending payments.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Payment restoration failed', [
+                'error' => $e->getMessage(),
+                'applicant_id' => $id,
+                'cashier_id' => auth()->id()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to restore payment'
+            ], 500);
+        }
+    }
+
+    /**
+     * Helper method to log payment activities
+     */
+    protected function logPaymentActivity($applicant, $action, $details, $meta = [])
+    {
+        MemberActivityLog::create([
+            'member_id' => $applicant->id, // Assuming applicant can be treated as member
+            'type' => 'payment',
+            'action' => $action,
+            'details' => $details,
+            'meta' => $meta,
+            'performed_by' => auth()->id(),
+            'created_at' => now()
         ]);
     }
 }

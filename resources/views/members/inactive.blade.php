@@ -60,5 +60,77 @@
                 });
             });
         </script>
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.addEventListener('click', function (e) {
+            const btn = e.target.closest('.delete-member-btn');
+            if (!btn) return;
+
+            const memberId = btn.getAttribute('data-id');
+            if (!memberId) return;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will delete the member's record.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("{{ route('members.forceDelete') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: new URLSearchParams({
+                            '_method': 'DELETE',
+                            'id': memberId
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: data.message || 'Member status set to inactive successfully.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            $('#inactiveMembersTable').DataTable().ajax.reload(null, false);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to delete member.'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to delete member. Please try again.',
+                        });
+                    });
+                }
+            });
+        });
+    });
+    </script>
+
     </x-slot>
 </x-app-layout>

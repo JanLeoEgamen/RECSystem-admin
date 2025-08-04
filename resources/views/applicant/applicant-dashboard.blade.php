@@ -1,4 +1,14 @@
 <x-app-layout>
+    
+<div class="flex justify-end p-4">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit"
+            class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+            Logout
+        </button>
+    </form>
+</div>
 
 @if(session('success'))
 <div id="success-notification" class="fixed top-4 right-4 z-50 p-4 bg-green-500 text-white rounded-lg shadow-lg flex items-center animate-fade-in">

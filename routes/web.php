@@ -35,6 +35,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LicenseController;
 use App\Http\Controllers\LoginLogController;
+use App\Http\Controllers\MemberActivityLogController;
 use App\Http\Controllers\MemberCertificateController;
 use App\Http\Controllers\MemberDashboardController;
 use App\Http\Controllers\MemberQuizController;
@@ -92,31 +93,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::post('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users', [UserController::class, 'destroy'])->name('users.destroy');
-
+    
     //member portal
-    Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
-    Route::get('/member/membership-details', [MemberDashboardController::class, 'membershipDetails'])->name('member.membership-details');
-    Route::get('/member/announcements', [MemberDashboardController::class, 'announcements'])->name('member.announcements');
-    Route::get('/member/announcements/{id}', [MemberDashboardController::class, 'viewAnnouncement'])->name('member.view-announcement');    
-    Route::get('/member/surveys', [MemberDashboardController::class, 'surveys'])->name('member.surveys');
-    Route::get('/member/surveys/{id}', [MemberDashboardController::class, 'takeSurvey'])->name('member.take-survey');
-    Route::post('/member/surveys/{id}', [MemberDashboardController::class, 'submitSurvey'])->name('member.submit-survey');
-    Route::get('/member/events', [MemberDashboardController::class, 'events'])->name('member.events');
-    Route::get('/member/events/{id}', [MemberDashboardController::class, 'viewEvent'])->name('member.view-event');
-    Route::post('/member/events/{id}/register', [MemberDashboardController::class, 'registerForEvent'])->name('member.register-event');
-    Route::post('/member/events/{id}/cancel', [MemberDashboardController::class, 'cancelRegistration'])->name('member.cancel-registration');
-    Route::get('/member/quizzes', [MemberQuizController::class, 'quizzes'])->name('member.quizzes');
-    Route::get('/member/take-quiz/{id}', [MemberQuizController::class, 'takeQuiz'])->name('member.take-quiz');
-    Route::post('/member/submit-quiz/{id}', [MemberQuizController::class, 'submitQuiz'])->name('member.submit-quiz');
-    Route::get('/member/quiz-result/{id}', [MemberQuizController::class, 'quizResult'])->name('member.quiz-result');
-    Route::get('/member/certificates', [MemberCertificateController::class, 'index'])->name('member.certificates.index');
-    Route::get('/member/certificates/{certificate}', [MemberCertificateController::class, 'show'])->name('member.certificates.show');
-    Route::get('/member/documents', [MemberDashboardController::class, 'documents'])->name('member.documents');
-    Route::get('/member/documents/{id}', [MemberDashboardController::class, 'viewDocument'])->name('member.view-document');
-    Route::get('/member/documents/{id}/download', [MemberDashboardController::class, 'downloadDocument'])->name('member.download-document');
-    Route::get('/member/renew', [MemberDashboardController::class, 'create'])->name('member.renew');
-    Route::post('/member/renew', [MemberDashboardController::class, 'store'])->name('renew.store');
+    Route::group([
+    'prefix' => 'member',
+    'middleware' => ['auth', 'verified'],
+    ], function() {
+        Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
+        Route::get('/membership-details', [MemberDashboardController::class, 'membershipDetails'])->name('member.membership-details');
+        Route::get('/announcements', [MemberDashboardController::class, 'announcements'])->name('member.announcements');
+        Route::get('/announcements/{id}', [MemberDashboardController::class, 'viewAnnouncement'])->name('member.view-announcement');    
+        Route::get('/surveys', [MemberDashboardController::class, 'surveys'])->name('member.surveys');
+        Route::get('/surveys/{id}', [MemberDashboardController::class, 'takeSurvey'])->name('member.take-survey');
+        Route::post('/surveys/{id}', [MemberDashboardController::class, 'submitSurvey'])->name('member.submit-survey');
+        Route::get('/events', [MemberDashboardController::class, 'events'])->name('member.events');
+        Route::get('/events/{id}', [MemberDashboardController::class, 'viewEvent'])->name('member.view-event');
+        Route::post('/events/{id}/register', [MemberDashboardController::class, 'registerForEvent'])->name('member.register-event');
+        Route::post('/events/{id}/cancel', [MemberDashboardController::class, 'cancelRegistration'])->name('member.cancel-registration');
+        Route::get('/quizzes', [MemberQuizController::class, 'quizzes'])->name('member.quizzes');
+        Route::get('/take-quiz/{id}', [MemberQuizController::class, 'takeQuiz'])->name('member.take-quiz');
+        Route::post('/submit-quiz/{id}', [MemberQuizController::class, 'submitQuiz'])->name('member.submit-quiz');
+        Route::get('/quiz-result/{id}', [MemberQuizController::class, 'quizResult'])->name('member.quiz-result');
+        Route::get('/certificates', [MemberCertificateController::class, 'index'])->name('member.certificates.index');
+        Route::get('/certificates/{certificate}', [MemberCertificateController::class, 'show'])->name('member.certificates.show');
+        Route::get('/documents', [MemberDashboardController::class, 'documents'])->name('member.documents');
+        Route::get('/documents/{id}', [MemberDashboardController::class, 'viewDocument'])->name('member.view-document');
+        Route::get('/documents/{id}/download', [MemberDashboardController::class, 'downloadDocument'])->name('member.download-document');
+        Route::get('/renew', [MemberDashboardController::class, 'create'])->name('member.renew');
+        Route::post('/renew', [MemberDashboardController::class, 'store'])->name('renew.store'); 
 
+        Route::get('/my-activity-logs', [MemberActivityLogController::class, 'myLogs'])->name('members.activity_logs');
+    });
 
     //faqs
     Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
@@ -229,10 +236,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/members/{member}/renew', [MemberController::class, 'showRenewalForm'])->name('members.renew.show');
     Route::put('/members/{member}/renew', [MemberController::class, 'processRenewal'])->name('members.renew');
     Route::get('members/applicants/{id}', [MemberController::class, 'getApplicantData'])->name('members.getApplicantData');
+    Route::delete('/members/force-delete', [MemberController::class, 'forceDelete'])->name('members.forceDelete');
 
-    Route::post('/members/deactivate', [MemberController::class, 'deactivate'])->name('members.deactivate');
+
+    Route::post('/members/{member}/deactivate', [MemberController::class, 'deactivate'])->name('members.deactivate');
+
     Route::post('/members/reactivate', [MemberController::class, 'reactivate'])->name('members.reactivate');
-
 
     //reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

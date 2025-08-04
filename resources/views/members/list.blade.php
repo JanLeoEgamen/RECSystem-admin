@@ -136,6 +136,14 @@
                                 const columnName = columnClass.replace('column-', '');
                                 $(this).toggle(columnName === selectedColumn);
                             }
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to deactivate member. Please try again.',
+                            });
                         });
                     }
                 }
@@ -215,13 +223,13 @@
                                     </a>
                                     ` : ''}
                                     ${member.can_delete ? `
-                                    <button onclick="deleteMember(${member.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Delete">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
+                                        <a href="javascript:void(0)" onclick="deactivateMember(${member.id})" dusk="deactivate-member-${member.id}" class="p-2 text-yellow-600 hover:text-white hover:bg-yellow-600 rounded-full transition-colors duration-200 flex items-center" title="Deactivate">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <!-- minus-circle / deactivate icon -->
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M12 4a8 8 0 100 16 8 8 0 000-16z" />
+                                            </svg>
+                                            <span class="sr-only">Deactivate</span>
+                                        </a>
                                     ` : ''}
                                 </td>
                             </tr>
@@ -321,7 +329,38 @@
                 }
 
                 window.fetchMembers = fetchMembers;
+
+                window.deactivateMember = function (id) {
+                    if (!confirm('Are you sure you want to deactivate this member?')) return;
+
+                    fetch(`/members/${id}/deactivate`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.status) {
+                            fetchMembers();
+                        } else {
+                            alert(data.message || 'Deactivation failed');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Failed to deactivate member.');
+                    });
+                }
+
             });
+            
         </script>
     </x-slot>
 </x-app-layout>

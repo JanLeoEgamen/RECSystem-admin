@@ -9,18 +9,19 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-    )
+    )       
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'approved.applicant' => \App\Http\Middleware\EnsureApplicantIsApproved::class,
+            'application.incomplete' => \App\Http\Middleware\EnsureApplicationIsComplete::class,
         ]);
         
-        // ✅ Add as global middleware (runs on every request)
+        // Add as global middleware (runs on every request)
         $middleware->web(append: [
-            \App\Http\Middleware\RedirectPendingApplicants::class, // Now runs AFTER auth
+            \App\Http\Middleware\RedirectPendingApplicants::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

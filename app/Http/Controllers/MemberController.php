@@ -239,6 +239,13 @@ class MemberController extends Controller implements HasMiddleware
         $member->status = 'Active'; // Default status for new members
         $this->saveMemberData($member, $request);
 
+        // In store method (after member is created):
+        logMemberRegistration($member, 'New member registered', [
+            'membership_type' => $member->membershipType->type_name ?? 'N/A',
+            'membership_start' => $member->membership_start,
+            'membership_end' => $member->membership_end
+        ]);
+
         return redirect()->route('members.index')->with('success', 'Member added successfully');
     }
 
@@ -320,6 +327,11 @@ class MemberController extends Controller implements HasMiddleware
 
         $this->saveMemberData($member, $request);
 
+        // In update method (after member is updated):
+        logMemberActivity($member, 'profile', 'updated', 'Member profile updated', [
+            'updated_fields' => $request->except(['_token', '_method'])
+        ]);
+
         return redirect()->route('members.index')->with('success', 'Member updated successfully');
     }
 
@@ -338,6 +350,7 @@ class MemberController extends Controller implements HasMiddleware
 
         $member->status = 'Inactive';
         $member->save();
+        logMemberActivity($member, 'status', 'inactive', 'Member account deactivated');
 
         session()->flash('success', 'Member status set to inactive successfully.');
         return response()->json(['status' => true]);
@@ -614,16 +627,26 @@ class MemberController extends Controller implements HasMiddleware
                     return $row->membership_end ? \Carbon\Carbon::parse($row->membership_end)->format('M d, Y') : '';
                 })
                 ->addColumn('action', function ($row) {
-                    return '<a href="' . route('members.edit', $row->id) . '" 
-                        class="inline-flex items-center px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition"
-                        title="Edit Member">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit
-                    </a>';
+                    return '<div class="flex items-center space-x-1">
+                        <a href="' . route('members.edit', $row->id) . '" 
+                            class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200"
+                            title="Edit Member">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </a>
+                        <button data-id="' . $row->id . '" 
+                            class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200 delete-member-btn"
+                            title="Delete Member">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -632,13 +655,16 @@ class MemberController extends Controller implements HasMiddleware
         return view('members.inactive');
     }
 
-    public function deactivate(Request $request)
+    public function deactivate(\App\Models\Member $member)
     {
-        $member = Member::findOrFail($request->id);
-        $member->status = 'inactive';
+
+        $member->status = 'inactive'; // match whatever casing/values you use elsewhere
         $member->save();
 
-        return response()->json(['status' => true, 'message' => 'Member deactivated.']);
+        return response()->json([
+            'status' => true,
+            'message' => 'Member deactivated.',
+        ]);
     }
 
     public function reactivate(Request $request)
@@ -646,8 +672,33 @@ class MemberController extends Controller implements HasMiddleware
         $member = Member::findOrFail($request->id);
         $member->status = 'active';
         $member->save();
-
+        // In reactivate method:
+        logMemberActivity($member, 'status', 'active', 'Member account reactivated');
+        
         return response()->json(['status' => true, 'message' => 'Member reactivated.']);
     }
+    
+    public function forceDelete(Request $request)
+    {
+        
+        $id = $request->id;
+        $member = Member::find($id);
+
+        if (!$member) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Member not found.'
+            ]);
+        }
+
+        $member->delete(); // if using SoftDeletes, use forceDelete() to remove completely
+        // $member->forceDelete(); // uncomment if you want hard delete even with SoftDeletes
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Member permanently deleted successfully.'
+        ]);
+    }
+
 
 }
