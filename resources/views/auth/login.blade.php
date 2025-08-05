@@ -267,7 +267,7 @@
     </header>
 
     <main class="flex-1 flex items-center justify-center py-8 px-4 sm:px-8">
-        <div class="w-full max-w-md bg-white/30 backdrop-blur-lg rounded-xl border-2 border-white shadow-xl overflow-hidden p-8">
+        <div class="w-full max-w-md bg-[#101966] backdrop-blur-lg rounded-xl border-2 border-white shadow-xl overflow-hidden p-8">
             <div class="text-center mb-8">
                 <h2 class="text-3xl font-bold text-white">Welcome Back</h2>
                 <p class="text-white/80 mt-2">Please log in to your account</p>
