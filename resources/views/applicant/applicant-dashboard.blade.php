@@ -173,33 +173,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Email Address *</label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email" 
-                                value="{{ auth()->user()->email }}" 
-                                readonly 
-                                required 
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 cursor-not-allowed transition-all duration-200"
-                                onblur="validateEmail(this)"> <!-- changed from oninput to onblur -->
-                            <p id="emailError" class="mt-1 text-sm text-red-600 hidden">Please enter a valid Gmail address (e.g. example@gmail.com)</p>
-                        </div>
-                        <div>
-                            <label for="cellphone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Cellphone No. *</label>
-                            <input type="tel" id="cellphone" name="cellphone" required placeholder="e.g. 09171234567" 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                                   maxlength="11"
-                                   oninput="validatePhoneNumber(this, 'cellphoneError')">
-                            <p id="cellphoneError" class="mt-1 text-sm text-red-600 hidden">Please enter a valid 11-digit phone number (e.g. 09171234567)</p>
-                        </div>
-                        <div>
-                            <label for="telephone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Telephone No.</label>
-                            <input type="tel" id="telephone" name="telephone" placeholder="e.g. 2-XXXX-XXXX" 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
-                        </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                            Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            value="{{ auth()->user()->email }}" 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 
+                                transition-all duration-200"
+                        >
                     </div>
+
+                    <div>
+                        <label for="cellphone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                            Cellphone No.
+                        </label>
+                        <input 
+                            type="tel" 
+                            id="cellphone" 
+                            name="cellphone" 
+                            placeholder="e.g. 09171234567" 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                dark:bg-gray-700 dark:text-white transition-all duration-200"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="telephone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                            Telephone No.
+                        </label>
+                        <input 
+                            type="tel" 
+                            id="telephone" 
+                            name="telephone" 
+                            placeholder="e.g. 2-XXXX-XXXX" 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                dark:bg-gray-700 dark:text-white transition-all duration-200"
+                        >
+                    </div>
+                </div>
+
                 </div>
                 
                 <!-- Emergency Contact Section -->

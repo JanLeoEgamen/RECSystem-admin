@@ -131,6 +131,27 @@
         .bg-\[\#1A25A1\] {
         background-color: #1A25A1 !important;
         }
+
+           /* Add these new styles */
+        .main-content-transition {
+            transition-property: margin;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .header-content-transition {
+            transition-property: max-width;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Mobile specific styles */
+        @media (max-width: 767px) {
+            .main-content-mobile {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+        }
     </style>
 </head>
 <body class="font-sans antialiased bg-gray-50"
@@ -151,6 +172,30 @@
             if (side === 'left') this.sidebarOpen = !this.sidebarOpen;
             if (side === 'right') this.rightSidebarOpen = !this.rightSidebarOpen;
           }
+        },
+        getMainContentMargin() {
+          // Only apply margins on desktop (>=768px)
+          if (window.innerWidth >= 768) {
+            let marginLeft = this.sidebarOpen ? 'ml-64' : 'ml-0';
+            let marginRight = this.rightSidebarOpen ? 'mr-72' : 'mr-0';
+            return `${marginLeft} ${marginRight}`;
+          }
+          return ''; // No margins on mobile
+        },
+        getHeaderContentWidth() {
+          if (window.innerWidth < 768) {
+            return 'max-w-full px-4';
+          }
+          if (this.sidebarOpen && this.rightSidebarOpen) {
+            return 'max-w-4xl px-4 sm:px-6 lg:px-8';
+          }
+          if (this.sidebarOpen || this.rightSidebarOpen) {
+            return 'max-w-5xl px-4 sm:px-6 lg:px-8';
+          }
+          return 'max-w-7xl px-4 sm:px-6 lg:px-8';
+        },
+        isDesktop() {
+          return window.innerWidth >= 768;
         }
       }"
       x-init="
@@ -160,10 +205,10 @@
             rightSidebarOpen = false;
           } else {
             sidebarOpen = true;
-            rightSidebarOpen = false;
           }
         };
         window.addEventListener('resize', updateSidebars);
+        updateSidebars(); // Initialize on load
       ">
 
 
@@ -184,12 +229,13 @@
         <div class="flex flex-1">
             
             <!-- Main content -->
-            <div class="flex-1 flex flex-col overflow-hidden">
+            <div class="flex-1 flex flex-col overflow-hidden main-content-transition" 
+                 :class="{'main-content-mobile': !isDesktop(), [getMainContentMargin()]: isDesktop()}">
                 <!-- Header Section -->
                 <div class="header-container pt-16"> 
                     @isset($header)
                         <header class="w-full">
-                            <div class="header-content mx-auto" :class="headerWidth">
+                            <div class="header-content mx-auto header-content-transition" :class="getHeaderContentWidth()">
                                 {{ $header }}
                             </div>
                         </header>

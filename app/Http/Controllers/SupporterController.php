@@ -51,7 +51,7 @@ class SupporterController extends Controller implements HasMiddleware
                         $query->orderBy('status', $direction === 'asc' ? 'asc' : 'desc');
                         break;
                         
-                    case 'created':
+                    case 'created_at':
                         $query->orderBy('created_at', $direction);
                         break;
                         
