@@ -22,17 +22,17 @@ class SurveyCompletionConfirmation extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public function __construct(
-        string $name,
-        string $surveyTitle,
-        string $completionDate,
-        string $surveyLink
-    ) {
-        $this->name = $name ?? 'Valued Member';
-        $this->surveyTitle = $surveyTitle ?? 'Our Survey';
-        $this->completionDate = $completionDate ?? now()->format('F j, Y g:i a');
-        $this->surveyLink = $surveyLink ?? route('member.surveys');
-    }
-
+    ?string $name = null,  // Make nullable
+    string $surveyTitle,
+    string $completionDate,
+    string $surveyLink
+) {
+    $this->name = $name ?? 'Member';  // Default value
+    $this->surveyTitle = $surveyTitle;
+    $this->completionDate = $completionDate;
+    $this->surveyLink = $surveyLink;
+}
+ 
     /**
      * Get the message envelope.
      */

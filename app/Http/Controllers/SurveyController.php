@@ -59,7 +59,7 @@ class SurveyController extends Controller implements HasMiddleware
                         $query->withCount('responses')->orderBy('responses_count', $direction);
                         break;
                         
-                    case 'created':
+                    case 'created_at':
                         $query->orderBy('created_at', $direction);
                         break;
                         

@@ -117,19 +117,6 @@ function logQuizSurveyActivity($member, $type, $item, $action, $details = null, 
     );
 }
 
-/**
- * Log member login activity
- */
-function logMemberLogin($member, $details = null, $meta = [])
-{
-    return logMemberActivity(
-        $member,
-        'authentication',
-        'login',
-        $details ?? 'Member logged in',
-        $meta
-    );
-}
 
 /**
  * Log member logout activity
@@ -198,5 +185,19 @@ function logRenewalRejected(Member $member, Renewal $renewal, User $processedBy,
             'processed_by' => $processedBy->id,
             'remarks' => $remarks
         ]
+    );
+}
+
+/**
+ * Log member login activity
+ */
+function logMemberLogin($member, $details = null, $meta = [])
+{
+    return logMemberActivity(
+        $member,
+        'authentication',
+        'login',
+        $details ?? 'Member logged in',
+        $meta
     );
 }

@@ -16,7 +16,6 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        /* Custom left-side scrollbar for right sidebar */
         .scrollbar-left {
             scrollbar-width: thin;             
             scrollbar-color: #5E6FFB #101966;  
@@ -115,7 +114,6 @@
             color: white !important;
         }
 
-        /* ✅ Member Mobile Menu Links */
         .member-mobile-link {
             display: block;
             padding: 0.5rem 0.75rem;
@@ -129,10 +127,15 @@
         }
 
         .bg-\[\#1A25A1\] {
-        background-color: #1A25A1 !important;
+            background-color: #1A25A1 !important;
         }
 
-           /* Add these new styles */
+        @media (prefers-color-scheme: dark) {
+            .bg-\[\#1A25A1\] {
+                background-color: #1f2937 !important;
+            }
+        }
+
         .main-content-transition {
             transition-property: margin;
             transition-duration: 300ms;
@@ -145,7 +148,6 @@
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* Mobile specific styles */
         @media (max-width: 767px) {
             .main-content-mobile {
                 margin-left: 0 !important;
@@ -157,7 +159,7 @@
 <body class="font-sans antialiased bg-gray-50"
       x-data="{
         sidebarOpen: window.innerWidth >= 768,  
-        rightSidebarOpen: false,               
+        rightSidebarOpen: false, // Always start hidden
         headerWidth: 'max-w-7xl px-4 sm:px-6 lg:px-8',
         toggleSidebar(side) {
           if (window.innerWidth < 768) {
@@ -174,13 +176,12 @@
           }
         },
         getMainContentMargin() {
-          // Only apply margins on desktop (>=768px)
           if (window.innerWidth >= 768) {
             let marginLeft = this.sidebarOpen ? 'ml-64' : 'ml-0';
             let marginRight = this.rightSidebarOpen ? 'mr-72' : 'mr-0';
             return `${marginLeft} ${marginRight}`;
           }
-          return ''; // No margins on mobile
+          return '';
         },
         getHeaderContentWidth() {
           if (window.innerWidth < 768) {
@@ -208,7 +209,7 @@
           }
         };
         window.addEventListener('resize', updateSidebars);
-        updateSidebars(); // Initialize on load
+        updateSidebars();
       ">
 
 

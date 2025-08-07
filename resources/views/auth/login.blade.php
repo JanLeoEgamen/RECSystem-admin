@@ -407,6 +407,8 @@
             const eyeIcon = document.getElementById('eye-icon');
             const eyeSlashIcon = document.getElementById('eye-slash-icon');
             
+            if (!passwordInput || !eyeIcon || !eyeSlashIcon) return;
+            
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 eyeIcon.classList.add('hidden');

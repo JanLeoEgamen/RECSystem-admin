@@ -2,7 +2,7 @@
 <div x-data="{ memberMenuOpen: false }" class="flex flex-col flex-1 overflow-hidden">
 
     <!-- TOPBAR Section --> 
-    <header class="fixed top-0 left-0 right-0 z-50 bg-[#101966] topbar-shadow h-16">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#101966] dark:bg-gray-900 topbar-shadow h-16">
         <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8 relative">  
             
             <!-- Left Section -->
@@ -18,7 +18,7 @@
                             sidebarOpen = !sidebarOpen;
                         }
                     " 
-                    class="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#5e6ffb]"
+                    class="p-2 rounded-md text-white dark:text-gray-200 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#5e6ffb]"
                 >
                     <svg x-show="!sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -31,9 +31,9 @@
 
                 <!-- Logo and DZ1REC Badge -->
                 <div class="flex items-center ml-2 space-x-2">
-                    <x-application-logo class="h-8 w-8 text-white" />
+                    <x-application-logo class="h-8 w-8 text-white dark:text-gray-200" />
                     <div class="flex items-center">
-                        <span class="text-sm sm:text-base font-medium text-white mr-2">
+                        <span class="text-sm sm:text-base font-medium text-white dark:text-gray-200 mr-2">
                             Radio Engineering Circle Inc.
                         </span>
                         <span class="hidden lg:inline-block px-2.5 py-0.5 text-xs font-bold bg-[#5e6ffb] text-white rounded-full">
@@ -50,7 +50,7 @@
                     alt="Membership Icon" 
                     class="w-6 h-6 mr-2 object-contain">
                 
-                <span class="text-sm sm:text-base font-medium text-white mr-2 whitespace-nowrap">
+                <span class="text-sm sm:text-base font-medium text-white dark:text-gray-200 mr-2 whitespace-nowrap">
                     Membership Information Management System
                 </span>
                 
@@ -71,7 +71,7 @@
                             alt="radio-waves" 
                             class="w-6 h-6 mr-2 object-contain"
                         >
-                        <span class="font-medium text-white mr-2">Hello ka-circle!</span>
+                        <span class="font-medium text-white dark:text-gray-200 mr-2">Hello ka-circle!</span>
                     </div>
                     @endunlessrole
                 @endcannot
@@ -80,7 +80,7 @@
                 @can('view admin dashboard')
                 <div class="hidden sm:flex items-center">
                     <img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/FFFFFF/user-shield.png" alt="admin" class="mr-2">
-                    <span class="font-medium text-white mr-2">Super Admin</span>
+                    <span class="font-medium text-white dark:text-gray-200 mr-2">Super Admin</span>
                 </div>
                 @endcan
 
@@ -105,7 +105,7 @@
                                     ? route($route, Auth::user()->member->id) 
                                     : route($route)"
                                 :active="request()->routeIs($route)" 
-                                class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md"
+                                class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md dark:text-gray-200"
                             >
                                 {{ __($label) }}
                             </x-nav-link>
@@ -139,7 +139,7 @@
                 <!-- Mobile menu button -->
                 <button 
                     @click="memberMenuOpen = true" 
-                    class="sm:hidden p-2 rounded-md text-white hover:bg-white/10 transition-colors duration-200"
+                    class="sm:hidden p-2 rounded-md text-white dark:text-gray-200 hover:bg-white/10 transition-colors duration-200"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -188,7 +188,7 @@
 
         <!-- Slide-in Menu -->
         <div 
-            class="w-64 bg-[#101966] h-full p-4 flex flex-col space-y-2 transform transition-transform duration-300 right-sidebar-shadow"
+            class="w-64 bg-[#101966] dark:bg-gray-900 h-full p-4 flex flex-col space-y-2 transform transition-transform duration-300 right-sidebar-shadow"
             x-show="memberMenuOpen"
             x-transition:enter="translate-x-full"
             x-transition:enter-end="translate-x-0"
@@ -196,7 +196,7 @@
             x-transition:leave-end="translate-x-full"
         >
             <div class="flex justify-end mb-4">
-                <button @click="memberMenuOpen = false" class="text-white hover:text-[#5e6ffb] transition-colors duration-200">
+                <button @click="memberMenuOpen = false" class="text-white dark:text-gray-200 hover:text-[#5e6ffb] transition-colors duration-200">
                     ✕
                 </button>
             </div>
@@ -217,7 +217,7 @@
                         ? route($route, Auth::user()->member->id) 
                         : route($route)"
                     :active="request()->routeIs($route)" 
-                    class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md"
+                    class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md dark:text-gray-200"
                 >
                     {{ __($label) }}
                 </x-nav-link>
@@ -225,10 +225,10 @@
             @endforeach
 
             <!-- Mobile Profile Icon + Dropdown Links -->
-            <div class="mt-4 border-t border-white/20 pt-2 space-y-2">
+            <div class="mt-4 border-t border-white/20 dark:border-gray-700 pt-2 space-y-2">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="flex items-center space-x-2 w-full px-3 py-2 text-white hover:text-[#5e6ffb] transition">
+                        <button class="flex items-center space-x-2 w-full px-3 py-2 text-white dark:text-gray-200 hover:text-[#5e6ffb] transition">
                             <img src="https://img.icons8.com/ios-glyphs/30/ffffff/user--v1.png" class="h-5 w-5"/>
                             <span>{{ Auth::user()->first_name }}</span>
                         </button>
