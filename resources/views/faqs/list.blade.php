@@ -423,6 +423,7 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
                             success: function (response) {
+                                alert("Successfully deleted.");
                                 fetchFAQs();
                             }
                         });

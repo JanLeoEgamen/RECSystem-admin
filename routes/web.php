@@ -366,10 +366,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //activity logs
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('/activity-logs-table', [ActivityLogController::class, 'indexTable'])->name('activity-logs.indexTable');
 
     //log in logs
     Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs.index');
-    Route::get('/login-logs/export', [LoginLogController::class, 'index'])->name('login-logs.export');
+    Route::get('/login-logs-table', [LoginLogController::class, 'indexTable'])->name('login-logs.indexTable');
+    Route::get('/login-logs/export', [LoginLogController::class, 'export'])->name('login-logs.export');
 
 });
 

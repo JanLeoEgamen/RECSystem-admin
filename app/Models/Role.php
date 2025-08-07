@@ -1,5 +1,4 @@
 <?php
-// app/Models/Role.php
 namespace App\Models;
 
 use Spatie\Permission\Models\Role as SpatieRole;
@@ -9,6 +8,7 @@ use Spatie\Activitylog\LogOptions;
 class Role extends SpatieRole
 {
     use LogsActivity;
+    
 
     public function getActivitylogOptions(): LogOptions
     {

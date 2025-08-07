@@ -383,6 +383,7 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
                             success: function (response) {
+                                alert("Membership type deleted successfully.");
                                 fetchMembershipTypes();
                             }
                         });

@@ -401,6 +401,7 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
                             success: function (response) {
+                                alert("Section deleted successfully.");
                                 fetchSections();
                             }
                         });
