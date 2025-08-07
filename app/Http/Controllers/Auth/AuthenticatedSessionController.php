@@ -32,6 +32,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+        
+        if ($user->hasRole('Member')) {
+            return redirect()->intended(route('member.dashboard'));
+        }
 
         // Log the login activity
         LogBatch::startBatch();

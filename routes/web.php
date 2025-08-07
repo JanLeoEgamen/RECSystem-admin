@@ -392,6 +392,10 @@ Route::fallback(function () {
     return redirect('/')->with('error', 'Page not found.');
 });
 
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', \App\Http\Middleware\RedirectByRole::class])
+    ->name('dashboard');
+
 
 
 require __DIR__.'/auth.php';

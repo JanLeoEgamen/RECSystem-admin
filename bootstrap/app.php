@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Add as global middleware (runs on every request)
         $middleware->web(append: [
             \App\Http\Middleware\RedirectPendingApplicants::class,
+            \App\Http\Middleware\RedirectByRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
