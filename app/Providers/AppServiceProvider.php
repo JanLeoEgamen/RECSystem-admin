@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\RoleHasPermissions;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Auth\Notifications\VerifyEmail;
