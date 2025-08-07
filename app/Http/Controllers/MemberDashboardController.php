@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\RenewalSubmitted;
+use App\Mail\SurveyCompletionConfirmation;
 use App\Models\Event;
 use App\Models\Renewal;
 use App\Models\Survey;
@@ -202,9 +203,18 @@ public function index()
     {
         $survey = Survey::with('questions')->findOrFail($id);
         $member = auth()->user()->member;
+        $user = auth()->user();
         
         // Check if already submitted
         if ($survey->responses()->where('member_id', $member->id)->exists()) {
+            logMemberActivity(
+                $member,
+                'survey',
+                'duplicate_attempt',
+                "Attempted to submit survey {$survey->id} again",
+                ['survey_id' => $survey->id]
+            );
+            
             return redirect()->route('member.surveys')
                 ->with('error', 'You have already submitted this survey.');
         }
@@ -224,6 +234,17 @@ public function index()
         $validator = Validator::make($request->all(), $rules);
         
         if ($validator->fails()) {
+            logMemberActivity(
+                $member,
+                'survey',
+                'validation_failed',
+                "Failed validation for survey {$survey->id}",
+                [
+                    'survey_id' => $survey->id,
+                    'errors' => $validator->errors()->all()
+                ]
+            );
+            
             return redirect()->route('member.take-survey', $id)
                 ->withErrors($validator)
                 ->withInput();
@@ -249,6 +270,27 @@ public function index()
                 'answer' => $answer,
             ]);
         }
+        
+        /***** CRITICAL LOGGING *****/
+        logMemberActivity(
+            $member,
+            'survey',
+            'completed',
+            "Completed survey: {$survey->title}",
+            [
+                'survey_id' => $survey->id,
+                'response_id' => $response->id,
+                'questions_answered' => count($survey->questions)
+            ]
+        );
+        
+        /***** EMAIL CONFIRMATION *****/
+        Mail::to($user->email)->send(new SurveyCompletionConfirmation(
+            $user->name,
+            $survey->title,
+            now()->format('F j, Y g:i a'),
+            route('member.surveys')
+        ));
         
         return redirect()->route('member.surveys')
             ->with('success', 'Thank you for completing the survey!');

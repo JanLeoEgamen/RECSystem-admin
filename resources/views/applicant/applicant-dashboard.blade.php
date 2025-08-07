@@ -187,7 +187,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 
                                 transition-all duration-200"
                         >
+                        <p id="emailError" class="mt-1 text-sm text-red-500 hidden">
+                            Please enter a valid Gmail address.
+                        </p>
                     </div>
+
+                    
 
                     <div>
                         <label for="cellphone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
@@ -202,6 +207,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                                 dark:bg-gray-700 dark:text-white transition-all duration-200"
                         >
+                        <p id="cellphoneError" class="mt-1 text-sm text-red-500 hidden">
+                            Please enter a valid 11-digit cellphone number (e.g., 09171234567).
+                        </p>
                     </div>
 
                     <div>

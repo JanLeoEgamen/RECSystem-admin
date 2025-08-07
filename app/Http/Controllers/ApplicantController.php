@@ -6,6 +6,7 @@ use App\Mail\ApplicantApprovedMail;
 use App\Mail\ApplicantRejectedMail;
 use App\Models\Applicant;
 use App\Models\Member;
+use App\Models\MemberActivityLog;
 use App\Models\MembershipType;
 use App\Models\Section;
 use App\Models\User;
@@ -340,7 +341,36 @@ class ApplicantController extends Controller implements HasMiddleware
                 $user->removeRole('Applicant');
             }
         }
+        
+        logApplicantToMemberConversion(
+            $applicant,
+            $member,
+            auth()->user(), 
+            [
+                'membership_start' => $member->membership_start,
+                'is_lifetime' => $member->is_lifetime_member
+            ]
+        );
 
+   
+        MemberActivityLog::where('applicant_id', $applicant->id)
+            ->update(['member_id' => $member->id]);
+
+
+        if ($user) {
+            logMemberActivity(
+                $member,
+                'role_change',
+                'updated',
+                "Applicant role converted to Member",
+                [
+                    'old_roles' => ['Applicant'],
+                    'new_roles' => $user->getRoleNames()->toArray()
+                ]
+            );
+        }
+
+        // Send email
         Mail::to($applicant->email_address)->send(new ApplicantApprovedMail($member));
 
         return redirect()->route('applicants.index')

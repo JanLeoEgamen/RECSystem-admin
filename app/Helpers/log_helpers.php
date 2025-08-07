@@ -1,6 +1,10 @@
 <?php
 
+use App\Models\Applicant;
+use App\Models\Member;
 use App\Models\MemberActivityLog;
+use App\Models\Renewal;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -110,5 +114,89 @@ function logQuizSurveyActivity($member, $type, $item, $action, $details = null, 
         $action,
         $details ?? ucfirst($type) . ' ' . $action,
         $meta
+    );
+}
+
+/**
+ * Log member login activity
+ */
+function logMemberLogin($member, $details = null, $meta = [])
+{
+    return logMemberActivity(
+        $member,
+        'authentication',
+        'login',
+        $details ?? 'Member logged in',
+        $meta
+    );
+}
+
+/**
+ * Log member logout activity
+ */
+function logMemberLogout($member, $details = null, $meta = [])
+{
+    return logMemberActivity(
+        $member,
+        'authentication',
+        'logout',
+        $details ?? 'Member logged out',
+        $meta
+    );
+}
+
+/**
+ * Log applicant-to-member conversion
+ */
+function logApplicantToMemberConversion(Applicant $applicant, Member $member, User $approver = null, array $meta = [])
+{
+    return logMemberActivity(
+        $member->id, // Now has member_id
+        'approval',
+        'converted_to_member',
+        "Officially becomes a member",
+        array_merge($meta, [
+            'applicant_id' => $applicant->id,
+            'approved_by' => $approver ? $approver->id : null,
+            'membership_type' => $member->membership_type_id,
+            'rec_number' => $member->rec_number
+        ])
+    );
+}
+
+/**
+ * Log renewal approval
+ */
+function logRenewalApproved(Member $member, Renewal $renewal, User $processedBy, ?string $remarks = null)
+{
+    return logMemberActivity(
+        $member->id,
+        'renewal',
+        'approved',
+        "Membership renewal approved until {$member->membership_end}",
+        [
+            'renewal_id' => $renewal->id,
+            'processed_by' => $processedBy->id,
+            'remarks' => $remarks,
+            'new_end_date' => $member->membership_end->toDateString()
+        ]
+    );
+}
+
+/**
+ * Log renewal rejection
+ */
+function logRenewalRejected(Member $member, Renewal $renewal, User $processedBy, ?string $remarks = null)
+{
+    return logMemberActivity(
+        $member->id,
+        'renewal',
+        'rejected',
+        "Renewal rejected: " . ($remarks ?? 'No remarks provided'),
+        [
+            'renewal_id' => $renewal->id,
+            'processed_by' => $processedBy->id,
+            'remarks' => $remarks
+        ]
     );
 }

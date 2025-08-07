@@ -14,6 +14,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MemberController extends Controller implements HasMiddleware
 {
@@ -680,24 +681,75 @@ class MemberController extends Controller implements HasMiddleware
     
     public function forceDelete(Request $request)
     {
-        
         $id = $request->id;
-        $member = Member::find($id);
+        
+        DB::beginTransaction();
 
-        if (!$member) {
+        try {
+            $member = Member::with(['user', 'applicant'])->find($id);
+
+            if (!$member) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Member not found.'
+                ], 404);
+            }
+
+            // Delete associated user if exists (using user_id from member)
+            if ($member->user) {
+                $member->user->forceDelete(); 
+            }
+
+            // Delete associated applicant if exists
+            if ($member->applicant) {
+                $member->applicant->forceDelete();
+            }
+
+            // Clean up relationships
+            $this->cleanupMemberRelationships($member);
+
+            // Delete the member
+            $member->forceDelete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Member, user account, and all related data permanently deleted successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Member deletion failed', [
+                'error' => $e->getMessage(),
+                'member_id' => $id,
+                'user_id' => $member->user->id ?? null,
+                'applicant_id' => $member->applicant->id ?? null
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => 'Member not found.'
-            ]);
+                'message' => 'Failed to delete member and related data. Error: ' . $e->getMessage()
+            ], 500);
         }
+    }
 
-        $member->delete(); // if using SoftDeletes, use forceDelete() to remove completely
-        // $member->forceDelete(); // uncomment if you want hard delete even with SoftDeletes
+    protected function cleanupMemberRelationships(Member $member)
+    {
+        // Detach many-to-many relationships
+        $member->certificates()->detach();
+        $member->announcements()->detach();
+        $member->surveys()->detach();
+        $member->events()->detach();
+        $member->quizzes()->detach();
+        $member->documents()->detach();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Member permanently deleted successfully.'
-        ]);
+        // Delete one-to-many relationships
+        $member->surveyResponses()->delete();
+        $member->eventRegistrations()->delete();
+        $member->quizResponses()->delete();
+        $member->renewals()->delete();
     }
 
 

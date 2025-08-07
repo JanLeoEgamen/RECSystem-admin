@@ -311,7 +311,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-left column-submitted">${new Date(renewal.created_at).toLocaleString()}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    <a href="/renew/${renewal.id}/edit" 
+                                    <a href="/renew/${renewal.id}/assess" 
                                        class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" 
                                             class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition" 

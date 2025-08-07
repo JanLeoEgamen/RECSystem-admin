@@ -77,7 +77,7 @@
                                         <div class="relative text-center">
                                             <img src="{{ asset('images/payment_proofs/' . $applicant->payment_proof_path) }}"
                                                 class="max-h-64 mx-auto rounded-md shadow cursor-zoom-in"
-                                                onclick="openZoomModal('{{ asset('images/payment_proofs/' . $applicant->payment_proof_path) }}')"">
+                                                onclick="openZoomModal('{{ asset('images/payment_proofs/' . $applicant->payment_proof_path) }}')">
 
                                             <button onclick="openZoomModal('{{ asset('images/payment_proofs/' . $applicant->payment_proof_path) }}')"
                                                     class="mt-3 inline-block px-4 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded transition">

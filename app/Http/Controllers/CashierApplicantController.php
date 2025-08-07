@@ -330,8 +330,14 @@ class CashierApplicantController extends Controller implements HasMiddleware
      */
     protected function logPaymentActivity($applicant, $action, $details, $meta = [])
     {
+        Log::debug('Attempting to log activity', [
+            'applicant_id' => $applicant->id,
+            'action' => $action
+        ]);
+        
         MemberActivityLog::create([
-            'member_id' => $applicant->id, // Assuming applicant can be treated as member
+            'applicant_id' => $applicant->id,
+            'member_id' => null, // Will be updated when applicant becomes member
             'type' => 'payment',
             'action' => $action,
             'details' => $details,

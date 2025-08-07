@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Auth\Events\Login;    // Laravel's built-in login event
+use Illuminate\Auth\Events\Logout;  // Laravel's built-in logout event
+use Illuminate\Support\Facades\Event;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,6 +40,26 @@ class AppServiceProvider extends ServiceProvider
                 ]);
         });
 
-    
+        // Log login events
+        Event::listen('Illuminate\Auth\Events\Login', function ($event) {
+            if ($event->user->member ?? false) {
+                logMemberLogin(
+                    $event->user->member,
+                    'User logged in',
+                    ['ip' => request()->ip(), 'user_agent' => request()->userAgent()]
+                );
+            }
+        });
+
+        // Log logout events
+        Event::listen('Illuminate\Auth\Events\Logout', function ($event) {
+            if ($event->user->member ?? false) {
+                logMemberLogout(
+                    $event->user->member,
+                    'User logged out',
+                    ['ip' => request()->ip(), 'user_agent' => request()->userAgent()]
+                );
+            }
+        });
     }    
 }
