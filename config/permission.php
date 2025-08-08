@@ -26,8 +26,8 @@ return [
 
         // 'role' => Spatie\Permission\Models\Role::class,
 
-        'permission' => 'App\Models\Permission',
-'role' => 'App\Models\Role',
+            'permission' => App\Models\Permission::class,
+            'role' => App\Models\Role::class,
 
 
     ],

@@ -8,12 +8,13 @@ use Spatie\Activitylog\LogOptions;
 class Permission extends SpatiePermission
 {
     use LogsActivity;
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'guard_name']) 
-            ->logOnlyDirty() 
-            ->setDescriptionForEvent(fn(string $eventName) => "Permission was {$eventName}")
-            ->useLogName('permission');
+            ->logOnly(['name'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Permission {$this->name} was {$eventName}")
+            ->useLogName('permissions');
     }
 }

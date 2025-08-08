@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use App\Models\Role;
 
 class RoleController extends Controller implements HasMiddleware
 {
@@ -107,6 +107,13 @@ class RoleController extends Controller implements HasMiddleware
 
             if (!empty($request->permission)) {
                 $role->syncPermissions($request->permission);
+                
+                activity()
+                    ->performedOn($role)
+                    ->withProperties(['permissions' => $request->permission])
+                    ->log('Initial permissions assigned to role');
+                    
+
             }
 
             return redirect()->route('roles.index')->with('success', 'Role added successfully');
