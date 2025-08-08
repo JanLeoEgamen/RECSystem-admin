@@ -1,9 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
+        <div class="flex justify-between items-center flex-wrap gap-4
+                    p-4 sm:p-6 rounded-lg shadow-lg
+                    bg-gradient-to-r from-[#101966] via-[#3F53E8] via-[#5E6FFB] to-[#8AA9FF]
+                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+
             <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-            {{ __('My Certificates') }}
-        </h2>
+                {{ __('My Certificates') }}
+            </h2>
+        </div>
     </x-slot>
+
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

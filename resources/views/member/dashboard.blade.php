@@ -1,9 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-            {{ __('Member Dashboard') }}
-        </h2>
+        <div class="flex items-center justify-between
+                    p-4 sm:p-6 rounded-lg shadow-lg
+                    bg-gradient-to-r from-[#101966] via-[#3F53E8] via-[#5E6FFB] to-[#8AA9FF]
+                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+                {{ __('Member Dashboard') }}
+            </h2>
+        </div>
     </x-slot>
+
 
     <div class="py-12">
         @if($isMembershipNearExpiry)

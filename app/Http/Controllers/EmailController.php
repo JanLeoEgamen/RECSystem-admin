@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class EmailController extends Controller implements HasMiddleware
-{
+{   
     public static function middleware(): array
     {
         return [
@@ -85,11 +85,11 @@ class EmailController extends Controller implements HasMiddleware
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('recipient_email', 'like', "%$search%")
-                  ->orWhere('recipient_name', 'like', "%$search%")
-                  ->orWhere('subject', 'like', "%$search%")
-                  ->orWhereHas('template', function($q) use ($search) {
-                      $q->where('name', 'like', "%$search%");
-                  });
+                ->orWhere('recipient_name', 'like', "%$search%")
+                ->orWhere('subject', 'like', "%$search%")
+                ->orWhereHas('template', function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                });
             });
         }
 
@@ -112,6 +112,17 @@ class EmailController extends Controller implements HasMiddleware
                 }
             }
 
+            // Handle sent_at properly
+            $sentAt = null;
+            if ($log->sent_at) {
+                try {
+                    $sentAt = Carbon::parse($log->sent_at)->format('d M, Y h:i A');
+                } catch (\Exception $e) {
+                    // Fallback to raw value if parsing fails
+                    $sentAt = $log->sent_at;
+                }
+            }
+
             return [
                 'id' => $log->id,
                 'recipient_email' => $log->recipient_email,
@@ -120,7 +131,7 @@ class EmailController extends Controller implements HasMiddleware
                 'subject' => $log->subject,
                 'attachments' => $attachments,
                 'status' => $log->status,
-                'sent_at' => $log->sent_at->format('d M, Y h:i A'),
+                'sent_at' => $sentAt,
                 'can_delete' => auth()->user()->can('delete emails'),
             ];
         });

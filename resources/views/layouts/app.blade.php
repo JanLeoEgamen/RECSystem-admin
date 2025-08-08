@@ -158,8 +158,8 @@
 </head>
 <body class="font-sans antialiased bg-gray-50"
       x-data="{
-        sidebarOpen: window.innerWidth >= 768,  
-        rightSidebarOpen: false, // Always start hidden
+        sidebarOpen: window.innerWidth >= 768 && !@json(auth()->check() && (auth()->user()->hasRole('Member') || auth()->user()->hasRole('Applicant'))),  
+        rightSidebarOpen: false,
         headerWidth: 'max-w-7xl px-4 sm:px-6 lg:px-8',
         toggleSidebar(side) {
           if (window.innerWidth < 768) {
@@ -205,7 +205,7 @@
             sidebarOpen = false;
             rightSidebarOpen = false;
           } else {
-            sidebarOpen = true;
+            sidebarOpen = !@json(auth()->check() && (auth()->user()->hasRole('Member') || auth()->user()->hasRole('Applicant')));
           }
         };
         window.addEventListener('resize', updateSidebars);
@@ -219,7 +219,9 @@
         <x-topbar />
 
         <!-- ✅ Left Sidebar -->
-        <x-left-sidebar />
+        @canany(['view admin dashboard', 'view applicant dashboard'])
+            <x-left-sidebar />
+        @endcanany
 
         <!-- ✅ Right Sidebar -->
         <x-right-sidebar />

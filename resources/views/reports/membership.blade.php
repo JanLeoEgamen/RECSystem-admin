@@ -1,30 +1,39 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center flex-wrap gap-4
+                    p-4 sm:p-6 rounded-lg shadow-lg
+                    bg-gradient-to-r from-[#101966] via-[#3F53E8] via-[#5E6FFB] to-[#8AA9FF]
+                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+
             <h1 class="font-semibold text-3xl text-white dark:text-white leading-tight">
                 Membership Report
             </h1>
 
-            <div class="flex space-x-4">
+            <div class="flex flex-wrap gap-4">
                 @can('generate membership reports')
-                <a href="{{ route('reports.membership', ['export' => 'pdf']) }}" 
-                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center">
-                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Export PDF
-                </a>
+                    <a href="{{ route('reports.membership', ['export' => 'pdf']) }}" 
+                    class="bg-white text-red-700 hover:bg-red-700 hover:text-white px-4 py-2 rounded-md flex items-center font-medium border border-white hover:border-white transition">
+                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Export PDF
+                    </a>
                 @endcan
 
-                <a href="{{ route('reports.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+                <a href="{{ route('reports.index') }}"
+                class="bg-white text-[#101966] hover:bg-[#101966] hover:text-white px-4 py-2 rounded-md flex items-center font-medium border border-white hover:border-white transition">
                     <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     Back to Reports
                 </a>
             </div>
+
         </div>
     </x-slot>
+
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -119,32 +128,32 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
+                            <thead class="bg-[#101966]">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bureau/Section</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Active</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Inactive</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Bureau/Section</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Active</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Inactive</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($bureaus as $bureau)
-                                <tr class="bg-gray-100 dark:bg-gray-700">
-                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-gray-900 dark:text-white">
+                                <tr class="bg-[#393E85]/70 dark:bg-gray-700 hover:bg-[#5e6ffb] group">
+                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-white group-hover:text-black">
                                         {{ $bureau->bureau_name }} (Bureau)
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300">
+                                    <td class="px-6 py-4 whitespace-nowrap text-white group-hover:text-black">
                                         {{ $bureau->active_members_count }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300">
+                                    <td class="px-6 py-4 whitespace-nowrap text-white group-hover:text-black">
                                         {{ $bureau->inactive_members_count }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300">
+                                    <td class="px-6 py-4 whitespace-nowrap text-white group-hover:text-black">
                                         {{ $bureau->total_members_count }}
                                     </td>
                                 </tr>
                                 @foreach($bureau->sections as $section)
-                                <tr>
+                                <tr class="hover:bg-[#5e6ffb]">
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300 pl-10">
                                         {{ $section->section_name }} (Section)
                                     </td>
@@ -160,18 +169,18 @@
                                 </tr>
                                 @endforeach
                                 @endforeach
-                                                    <!-- Totals Row -->
-                                <tr class="bg-gray-200 dark:bg-gray-600 font-semibold">
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
+                                <!-- Totals Row -->
+                                <tr class="bg-green-600 font-semibold">
+                                    <td class="px-6 py-4 whitespace-nowrap text-white">
                                         Grand Total
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-white">
                                         {{ $activeMembers }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-white">
                                         {{ $inactiveMembers }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-white">
                                         {{ $totalMembers }}
                                     </td>
                                 </tr>
@@ -188,16 +197,16 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
+                            <thead class="bg-[#101966]">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rec #</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Callsign</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Validity</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Membership Type</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bureau</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Section</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Rec #</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Callsign</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Validity</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Membership Type</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Bureau</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Section</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">

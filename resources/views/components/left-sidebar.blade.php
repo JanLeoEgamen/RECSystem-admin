@@ -19,7 +19,7 @@
     }
 </style>
 
-@can('view admin dashboard')
+@canany(['view admin dashboard', 'view applicant dashboard'])
 
 <aside 
     x-show="sidebarOpen || $screen('md')"
@@ -36,8 +36,8 @@
                 'reports.index', 'members.index', 'licenses.index', 'renew.index', 'cashier.index',
                 'events.index', 'announcements.index', 'surveys.index',
                 'quizzes.index', 'certificates.index',
-                'emails.index', 'documents.index',
-                'profile.edit'
+                'emails.index', 'documents.index', 'activity-logs.index', 'login-logs.index',
+                'profile.edit' 
             ) 
                 ? (
                     request()->routeIs('users.index', 'roles.index', 'permissions.index') 
@@ -63,7 +63,7 @@
                                                                     request()->routeIs('profile.edit')
                                                                         ? 'profile'
                                                                         : 'memberManagement'
-                                                            )            
+                                                                )            
                                                         )
                                                 )
                                         )
@@ -514,7 +514,7 @@
             @canany(['view activity log', 'view login log'])
             <div>
                 @php
-                    $auditActive = request()->routeIs('emails.index', 'documents.index');
+                    $auditActive = request()->routeIs('activity-logs.index', 'login-logs.index');
                 @endphp  
                 <button 
                     @click.stop="toggleDropdown('auditTrail')" 
