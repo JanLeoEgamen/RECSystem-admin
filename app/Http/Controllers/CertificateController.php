@@ -293,18 +293,30 @@ class CertificateController extends Controller implements HasMiddleware
 
     public function sendCertificate(Request $request, $id)
     {
+        // Validate the request
         $request->validate([
             'members' => 'required|array',
             'members.*' => 'exists:members,id'
         ]);
 
+        // Find the certificate
+        $certificate = Certificate::findOrFail($id);
+
+        // Get the selected member IDs
         $memberIds = $request->input('members');
 
         foreach ($memberIds as $memberId) {
-            SendCertificateJob::dispatch($id, $memberId);
+            // Check if member already has this certificate
+            if (!$certificate->members()->where('member_id', $memberId)->exists()) {
+                // Just attach the certificate to the member
+                $certificate->members()->attach($memberId, [
+                    'issued_at' => now(),
+                    'pdf_path' => null // No PDF file
+                ]);
+            }
         }
 
-        return back()->with('success', 'Certificate sending has been queued and will be processed shortly.');
+        return back()->with('success', 'Certificates have been issued to selected members.');
     }
 
 

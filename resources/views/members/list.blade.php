@@ -1,61 +1,57 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 
-                    p-4 sm:p-6 rounded-lg shadow-lg
-                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-
-            <!-- Header Title -->
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-100 leading-tight text-center sm:text-left">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"> 
+            <!-- Title -->
+            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 {{ __('Members') }}
             </h2>
 
             <!-- Action Buttons -->
-            <div class="flex flex-wrap justify-center sm:justify-end gap-4">
+            <div class="flex flex-col sm:flex-row flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
                 @can('create members')
                 <a href="{{ route('members.showMemberCreateForm') }}" 
-                   class="inline-block px-5 py-2 
-                          text-white dark:text-gray-900
-                          hover:text-[#101966] dark:hover:text-white
-                          bg-white/10 dark:bg-gray-200/20 
-                          hover:bg-white dark:hover:bg-gray-600
-                          focus:outline-none focus:ring-2 focus:ring-offset-2 
-                          focus:ring-white dark:focus:ring-gray-500
-                          border border-white dark:border-gray-500 
-                          font-medium rounded-lg 
-                          text-base sm:text-xl leading-normal 
-                          text-center transition">
+                class="px-4 py-2 sm:px-5 sm:py-2 
+                        text-white dark:text-gray-900
+                        hover:text-[#101966] dark:hover:text-white
+                        bg-white/10 dark:bg-gray-200/20 
+                        hover:bg-white dark:hover:bg-gray-600
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-white dark:focus:ring-gray-500
+                        border border-white dark:border-gray-500 
+                        font-medium rounded-lg 
+                        text-sm sm:text-base leading-normal 
+                        text-center transition w-full sm:w-auto">
                     Create
                 </a>
                 @endcan
 
                 <a href="{{ route('members.active') }}" dusk="go-to-active"
-                   class="inline-block px-5 py-2 
-                          text-white dark:text-gray-900
-                          hover:text-[#101966] dark:hover:text-white
-                          bg-white/10 dark:bg-gray-200/20 
-                          hover:bg-white dark:hover:bg-gray-600
-                          focus:outline-none focus:ring-2 focus:ring-offset-2 
-                          focus:ring-white dark:focus:ring-gray-500
-                          border border-white dark:border-gray-500 
-                          font-medium rounded-lg 
-                          text-base sm:text-xl leading-normal 
-                          text-center transition">
+                class="px-4 py-2 sm:px-5 sm:py-2 
+                        text-white dark:text-gray-900
+                        hover:text-[#101966] dark:hover:text-white
+                        bg-white/10 dark:bg-gray-200/20 
+                        hover:bg-white dark:hover:bg-gray-600
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-white dark:focus:ring-gray-500
+                        border border-white dark:border-gray-500 
+                        font-medium rounded-lg 
+                        text-sm sm:text-base leading-normal 
+                        text-center transition w-full sm:w-auto">
                     Active Members
                 </a>
 
                 <a href="{{ route('members.inactive') }}" dusk="go-to-inactive"
-                   class="inline-block px-5 py-2 
-                          text-white dark:text-gray-900
-                          hover:text-[#101966] dark:hover:text-white
-                          bg-white/10 dark:bg-gray-200/20 
-                          hover:bg-white dark:hover:bg-gray-600
-                          focus:outline-none focus:ring-2 focus:ring-offset-2 
-                          focus:ring-white dark:focus:ring-gray-500
-                          border border-white dark:border-gray-500 
-                          font-medium rounded-lg 
-                          text-base sm:text-xl leading-normal 
-                          text-center transition">
+                class="px-4 py-2 sm:px-5 sm:py-2 
+                        text-white dark:text-gray-900
+                        hover:text-[#101966] dark:hover:text-white
+                        bg-white/10 dark:bg-gray-200/20 
+                        hover:bg-white dark:hover:bg-gray-600
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-white dark:focus:ring-gray-500
+                        border border-white dark:border-gray-500 
+                        font-medium rounded-lg 
+                        text-sm sm:text-base leading-normal 
+                        text-center transition w-full sm:w-auto">
                     Inactive Members
                 </a>
             </div>
@@ -67,7 +63,7 @@
             <x-message></x-message>
 
             <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+                <div class="p-4 sm:p-6 text-gray-900 dark:text-gray-100">
                     <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
                         <!-- Left side filters -->
@@ -228,21 +224,21 @@
                     </div>
 
                     <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div class="min-w-[1000px]">
+                        <div class="w-full">
                             <table id="membersTable" class="w-full bg-white dark:bg-gray-900 text-sm">
                                 <thead class="bg-[#101966] dark:bg-gray-800 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
-                                        <th class="px-6 py-3 text-center font-medium">#</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-personal">Full Name</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-contact">Email</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-contact">Cellphone</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-membership">Record No.</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-membership">Membership Type</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-membership">Start Date</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-membership">End Date</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-membership">Status</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-address">Address</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white">Action</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium whitespace-nowrap">#</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-personal whitespace-nowrap">Full Name</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-contact whitespace-nowrap">Email</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-contact whitespace-nowrap">Cellphone</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-membership whitespace-nowrap">Record No.</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-membership whitespace-nowrap">Membership Type</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-membership whitespace-nowrap">Start Date</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-membership whitespace-nowrap">End Date</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-membership whitespace-nowrap">Status</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white column-address whitespace-nowrap">Address</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l border-white whitespace-nowrap">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -360,21 +356,21 @@
 
                         let row = `
                             <tr class="border-b table-row-hover dark:border-gray-700">
-                                <td class="px-6 py-4 text-center">${rowNumber}</td>
-                                <td class="px-6 py-4 text-left column-personal">${fullName}</td>
-                                <td class="px-6 py-4 text-left column-contact">${member.email_address}</td>
-                                <td class="px-6 py-4 text-left column-contact">${member.cellphone_no}</td>
-                                <td class="px-6 py-4 text-center column-membership">${member.rec_number}</td>
-                                <td class="px-6 py-4 text-center column-membership">${member.membership_type}</td>
-                                <td class="px-6 py-4 text-center column-membership">${member.membership_start}</td>
-                                <td class="px-6 py-4 text-center column-membership">${member.membership_end || '-'}</td>
-                                <td class="px-6 py-4 text-center column-membership">${statusBadge}</td>
-                                <td class="px-6 py-4 text-left column-address">${member.street_address || ''}</td>
-                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                <td class="px-3 sm:px-6 py-4 text-center">${rowNumber}</td>
+                                <td class="px-3 sm:px-6 py-4 text-left column-personal whitespace-nowrap">${fullName}</td>
+                                <td class="px-3 sm:px-6 py-4 text-left column-contact whitespace-nowrap">${member.email_address}</td>
+                                <td class="px-3 sm:px-6 py-4 text-left column-contact whitespace-nowrap">${member.cellphone_no}</td>
+                                <td class="px-3 sm:px-6 py-4 text-center column-membership whitespace-nowrap">${member.rec_number}</td>
+                                <td class="px-3 sm:px-6 py-4 text-center column-membership whitespace-nowrap">${member.membership_type}</td>
+                                <td class="px-3 sm:px-6 py-4 text-center column-membership whitespace-nowrap">${member.membership_start}</td>
+                                <td class="px-3 sm:px-6 py-4 text-center column-membership whitespace-nowrap">${member.membership_end || '-'}</td>
+                                <td class="px-3 sm:px-6 py-4 text-center column-membership whitespace-nowrap">${statusBadge}</td>
+                                <td class="px-3 sm:px-6 py-4 text-left column-address whitespace-nowrap">${member.street_address || ''}</td>
+                                <td class="px-3 sm:px-6 py-4 text-center flex justify-center items-center space-x-1 sm:space-x-2 whitespace-nowrap">
                                     ${member.can_view ? `
-                                    <a href="/members/${member.id}" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="View">
+                                    <a href="/members/${member.id}" class="group bg-blue-100 hover:bg-blue-200 p-1 sm:p-2 rounded-full transition" title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
+                                            class="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 group-hover:text-blue-800 transition"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -382,30 +378,28 @@
                                     </a>
                                     ` : ''}
                                     ${member.can_edit ? `
-                                    <a href="/members/${member.id}/edit" class="group bg-indigo-100 hover:bg-indigo-200 p-2 rounded-full transition" title="Edit">
+                                    <a href="/members/${member.id}/edit" class="group bg-indigo-100 hover:bg-indigo-200 p-1 sm:p-2 rounded-full transition" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-indigo-600 group-hover:text-indigo-800 transition"
+                                            class="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 group-hover:text-indigo-800 transition"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </a>
                                     ` : ''}
                                     ${member.can_renew ? `
-                                    <a href="/members/${member.id}/renew" class="group bg-green-100 hover:bg-green-200 p-2 rounded-full transition" title="Renew">
+                                    <a href="/members/${member.id}/renew" class="group bg-green-100 hover:bg-green-200 p-1 sm:p-2 rounded-full transition" title="Renew">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-green-600 group-hover:text-green-800 transition"
+                                            class="h-4 w-4 sm:h-5 sm:w-5 text-green-600 group-hover:text-green-800 transition"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                         </svg>
                                     </a>
                                     ` : ''}
                                     ${member.can_delete ? `
-                                        <a href="javascript:void(0)" onclick="deactivateMember(${member.id})" dusk="deactivate-member-${member.id}" class="p-2 text-yellow-600 hover:text-white hover:bg-yellow-600 rounded-full transition-colors duration-200 flex items-center" title="Deactivate">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <!-- minus-circle / deactivate icon -->
+                                        <a href="javascript:void(0)" onclick="deactivateMember(${member.id})" dusk="deactivate-member-${member.id}" class="p-1 sm:p-2 text-yellow-600 hover:text-white hover:bg-yellow-600 rounded-full transition-colors duration-200 flex items-center" title="Deactivate">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M12 4a8 8 0 100 16 8 8 0 000-16z" />
                                             </svg>
-                                            <span class="sr-only">Deactivate</span>
                                         </a>
                                     ` : ''}
                                 </td>
@@ -416,15 +410,15 @@
                 }
 
                 function renderPagination(data) {
-                    let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
+                    let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-1 sm:space-x-2">';
 
                     if (data.current_page > 1) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                            <button class="px-2 py-1 sm:px-3 sm:py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white text-xs sm:text-sm"
                                 onclick="fetchMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 &laquo; First
                             </button>
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                            <button class="px-2 py-1 sm:px-3 sm:py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white text-xs sm:text-sm"
                                 onclick="fetchMembers(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Previous
                             </button>`;
@@ -442,38 +436,38 @@
                     }
                     if (startPage > 1) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                            <button class="px-2 py-1 sm:px-3 sm:py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'} text-xs sm:text-sm"
                                 onclick="fetchMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 1
                             </button>`;
                         if (startPage > 2) {
-                            paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
+                            paginationHtml += `<span class="px-1 sm:px-2 dark:text-white text-xs sm:text-sm">...</span>`;
                         }
                     }
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                            <button class="px-2 py-1 sm:px-3 sm:py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'} text-xs sm:text-sm"
                                 onclick="fetchMembers(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${i}
                             </button>`;
                     }
                     if (endPage < totalPages) {
                         if (endPage < totalPages - 1) {
-                            paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
+                            paginationHtml += `<span class="px-1 sm:px-2 dark:text-white text-xs sm:text-sm">...</span>`;
                         }
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                            <button class="px-2 py-1 sm:px-3 sm:py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'} text-xs sm:text-sm"
                                 onclick="fetchMembers(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${totalPages}
                             </button>`;
                     }
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                            <button class="px-2 py-1 sm:px-3 sm:py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white text-xs sm:text-sm"
                                 onclick="fetchMembers(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Next
                             </button>
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                            <button class="px-2 py-1 sm:px-3 sm:py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white text-xs sm:text-sm"
                                 onclick="fetchMembers(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Last &raquo;
                             </button>`;

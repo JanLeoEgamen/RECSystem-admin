@@ -238,7 +238,11 @@
                 <div class="header-container pt-16"> 
                     @isset($header)
                         <header class="w-full">
-                            <div class="header-content mx-auto header-content-transition" :class="getHeaderContentWidth()">
+                            <div 
+                                class="header-content mx-auto header-content-transition p-4 sm:p-6 rounded-lg shadow-lg
+                                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
+                                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700"
+                                :class="getHeaderContentWidth()" >
                                 {{ $header }}
                             </div>
                         </header>

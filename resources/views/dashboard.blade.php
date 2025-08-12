@@ -1,14 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-center sm:justify-start
-                    p-4 sm:p-6 rounded-lg shadow-lg
-                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700
-                    animate-fade-in-down">
-            <!-- Header Title -->
-            <h1 class="font-semibold text-2xl sm:text-3xl text-white dark:text-gray-100 leading-tight text-center sm:text-left">
+        <div class="flex justify-between"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
                 {{ __('Dashboard') }}
-            </h1>
+            </h2>
         </div>
     </x-slot>
 
@@ -82,6 +77,29 @@
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-gray-900 dark:text-white">
                                         {{ $activeMembers }}
+                                    </div>
+                                </dd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inactive Members Card -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg animate-fade-in-down" style="animation-delay: 0.45s;">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-[#FF5E5E] rounded-md p-3">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
+                                </svg>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300 truncate">
+                                    Inactive Members
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                        {{ $inactiveMembers }}
                                     </div>
                                 </dd>
                             </div>

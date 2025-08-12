@@ -2,7 +2,7 @@
 <!-- Right Sidebar -->
 <aside 
     x-show="rightSidebarOpen"
-    @click.away="if ($screen('sm')) rightSidebarOpen = false"
+    @click.away="rightSidebarOpen = false"
     class="fixed inset-y-0 right-0 z-40 w-72 flex flex-col bg-[#101966] dark:bg-gray-900 right-sidebar-shadow"
     style="margin-top: 4rem; height: calc(100vh - 4rem); display: none;"
     x-transition:enter="transform transition-all duration-300 ease-out"

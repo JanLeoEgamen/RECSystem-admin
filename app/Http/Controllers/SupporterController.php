@@ -76,7 +76,7 @@ class SupporterController extends Controller implements HasMiddleware
                         'id' => $supporter->id,
                         'supporter_name' => $supporter->supporter_name,
                         'image_url' => $supporter->image 
-                            ? asset('storage/'.$supporter->image) // Fixed path to use storage
+                            ? asset('images/'.$supporter->image)
                             : null,
                         'author' => $supporter->user->first_name . ' ' . $supporter->user->last_name,
                         'status' => $supporter->status ? 'Active' : 'Inactive',
