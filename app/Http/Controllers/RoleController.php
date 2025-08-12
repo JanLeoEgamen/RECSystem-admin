@@ -172,10 +172,22 @@ class RoleController extends Controller implements HasMiddleware
             ]);
         }
 
+        // List of protected role names that cannot be deleted
+        $protectedRoles = ['superadmin', 'Member', 'Applicant'];
+
+        if (in_array($role->name, $protectedRoles)) {
+        session()->flash('error', 'This role cannot be deleted');
+        return response()->json([
+            'status' => false,
+            'message' => 'Protected role cannot be deleted'
+        ]);
+    }
+
         $role->delete();
         session()->flash('success', 'Role deleted successfully');
         return response()->json([
-            'status' => true
+            'status' => true,
+            'message' => 'Role deleted successfully'
         ]);
     }
 }

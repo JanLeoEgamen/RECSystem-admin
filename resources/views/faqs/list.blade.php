@@ -317,6 +317,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-left column-created">${faq.created_at}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                    @can('edit faqs')
                                     <a href="/faqs/${faq.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
@@ -325,6 +326,8 @@
                                                 d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
                                         </svg>
                                     </a>
+                                    @endcan
+                                    @can('delete faqs')
                                     <button onclick="deleteFAQ(${faq.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
@@ -333,6 +336,7 @@
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
+                                    @endcan
                                 </td>
                             </tr>
                         `;

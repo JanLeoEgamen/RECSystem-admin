@@ -307,6 +307,7 @@
                                 <td class="px-6 py-4 text-left column-author">${certificate.author}</td>
                                 <td class="px-6 py-4 text-left column-created">${certificate.created_at}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                    @can('view certificates')
                                     <a href="/certificates/${certificate.id}/preview" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="Preview">
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
@@ -315,6 +316,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
                                     </a>
+                                    @endcan
+                                    @can('edit certificates')
                                     <a href="/certificates/${certificate.id}/edit" class="group bg-indigo-100 hover:bg-indigo-200 p-2 rounded-full transition" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-indigo-600 group-hover:text-indigo-800 transition"
@@ -323,6 +326,8 @@
                                                 d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
                                         </svg>
                                     </a>
+                                    @endcan
+                                    @can('delete certificates')
                                     <button onclick="deleteCertificate(${certificate.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Delete"> 
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
@@ -331,6 +336,7 @@
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
+                                    @endcan
                                 </td>
                             </tr>
                         `;

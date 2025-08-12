@@ -330,6 +330,17 @@ class UserController extends Controller implements HasMiddleware
             $id = $request->id;
             $user = User::findOrFail($id);
 
+            // Check if the user has the superadmin role
+            if ($user->hasRole('superadmin')) {
+                session()->flash('error', 'Superadmin users cannot be deleted.');
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Superadmin users cannot be deleted.'
+                ]); // Forbidden status code
+            }
+
+
+
             $user->forceDelete();
             
             session()->flash('success', 'User deleted successfully.');

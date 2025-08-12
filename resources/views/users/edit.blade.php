@@ -1,100 +1,132 @@
 <x-app-layout>
     <x-slot name="header">
-    <div class="flex justify-between"> 
+        <div class="flex justify-between items-center">
             <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-                Users / Edit
+                Edit User
             </h2>
-                    <a href="{{ route('users.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Back to Users
-                    </a>                
+            <a href="{{ route('users.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center transition duration-150 ease-in-out">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Users
+            </a>                
         </div>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{route('users.update', $user->id)}}" method="post">
+                <div class="p-8 text-gray-900 dark:text-gray-100">
+                    <form action="{{ route('users.update', $user->id) }}" method="post">
                         @csrf
-                        <div>
-                            <label for="first_name" class="text-sm font-medium">First Name</label>
-                            <div class="my-3">    
-                                <input value="{{ old('first_name', $user->first_name) }}" name="first_name" placeholder="Enter first name" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
-                                @error('first_name')
-                                <p class="text-red-400 font-medium"> {{ $message }} </p>
-                                @enderror
+                        <div class="space-y-6">
+                            <!-- Personal Information Section -->
+                            <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Personal Information</h3>
+                                <div class="mt-4 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                                    <div class="sm:col-span-3">
+                                        <label for="first_name" class="block text-sm font-medium">First Name</label>
+                                        <div class="mt-1">
+                                            <input value="{{ old('first_name', $user->first_name) }}" name="first_name" placeholder="Enter first name" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+                                            @error('first_name')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="sm:col-span-3">
+                                        <label for="last_name" class="block text-sm font-medium">Last Name</label>
+                                        <div class="mt-1">
+                                            <input value="{{ old('last_name', $user->last_name) }}" name="last_name" placeholder="Enter last name" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+                                            @error('last_name')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="sm:col-span-3">
+                                        <label for="birthdate" class="block text-sm font-medium">Birthdate</label>
+                                        <div class="mt-1">
+                                            <input value="{{ old('birthdate', $user->birthdate ? (\Carbon\Carbon::parse($user->birthdate)->format('Y-m-d')) : '') }}" name="birthdate" type="date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+                                            @error('birthdate')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="sm:col-span-3">
+                                        <label for="email" class="block text-sm font-medium">Email</label>
+                                        <div class="mt-1">
+                                            <input value="{{ old('email', $user->email) }}" name="email" placeholder="Enter email" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+                                            @error('email')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <label for="last_name" class="text-sm font-medium">Last Name</label>
-                            <div class="my-3">    
-                                <input value="{{ old('last_name', $user->last_name) }}" name="last_name" placeholder="Enter last name" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
-                                @error('last_name')
-                                <p class="text-red-400 font-medium"> {{ $message }} </p>
-                                @enderror
-                            </div>
-
-                            <label for="birthdate" class="text-sm font-medium">Birthdate</label>
-                            <div class="my-3">    
-                                <input value="{{ old('birthdate', $user->birthdate ? (\Carbon\Carbon::parse($user->birthdate)->format('Y-m-d')) : '') }}" name="birthdate" type="date" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
-                                @error('birthdate')
-                                <p class="text-red-400 font-medium"> {{ $message }} </p>
-                                @enderror
-                            </div>
-
-                            <label for="" class="text-sm font-medium"> Email</label>
-                            <div class = "my-3">    
-                                <input value="{{ old('email', $user->email) }}" name="email" placeholder="Enter Email" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
-                                @error('email')
-                                <p class="text-red-400 font-medium"> {{ $message }} </p>
-                                @enderror
-                            </div>
-
-                            <div class="mt-6">
-                                <label class="text-sm font-medium">Assign Roles</label>
-
-                                <div class="grid grid-cols-4 mb-3">
+                            <!-- Roles Section -->
+                            <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Assign Roles</h3>
+                                <div class="mt-4">
                                     @if ($roles->isNotEmpty())
-                                        @foreach($roles as $role)
-                                            <div class="mt-3">
-                                                <input {{ $hasRoles->contains($role->id) ? 'checked' : '' }} type="checkbox" id="role-{{ $role->id}}" class="rounded" name="role[]" value="{{ $role->name }}">
-                                                <label for="role-{{ $role->id}}">{{ $role->name }}</label>
-                                            </div>
-                                        @endforeach
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                            @foreach($roles as $role)
+                                                <div class="relative flex items-start">
+                                                    <div class="flex h-5 items-center">
+                                                        <input id="role-{{ $role->id }}" name="role[]" type="checkbox" value="{{ $role->name }}" {{ $hasRoles->contains($role->id) ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                                    </div>
+                                                    <div class="ml-3 text-sm">
+                                                        <label for="role-{{ $role->id }}" class="font-medium text-gray-700 dark:text-gray-300">{{ $role->name }}</label>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">No roles available</p>
                                     @endif
                                 </div>
                             </div>
 
-                            <div class="mt-6">
-                                <label class="text-sm font-medium">Assign to Bureaus</label>
-                                <div class="grid grid-cols-4 gap-4 mt-2">
+                            <!-- Bureaus & Sections Section -->
+                            <div>
+                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Assign to Bureaus & Sections</h3>
+                                <div class="mt-4 space-y-6">
                                     @foreach($bureaus as $bureau)
-                                        <div>
-                                            <input type="checkbox" id="bureau-{{ $bureau->id }}" name="bureaus[]" value="{{ $bureau->id }}" 
-                                                {{ $user->assignedBureaus->contains($bureau->id) ? 'checked' : '' }} class="rounded">
-                                            <label for="bureau-{{ $bureau->id }}">{{ $bureau->bureau_name }}</label>
+                                        <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                            <div class="flex items-center">
+                                                <input type="checkbox" id="bureau-{{ $bureau->id }}" name="bureaus[]" value="{{ $bureau->id }}" 
+                                                    {{ $user->assignedBureaus->contains($bureau->id) ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 bureau-checkbox">
+                                                <label for="bureau-{{ $bureau->id }}" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    {{ $bureau->bureau_name }}
+                                                </label>
+                                            </div>
+                                            
+                                            @if($bureau->sections->isNotEmpty())
+                                                <div class="mt-3 ml-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                                    @foreach($bureau->sections as $section)
+                                                        <div class="flex items-center">
+                                                            <input type="checkbox" id="section-{{ $section->id }}" name="sections[]" value="{{ $section->id }}"
+                                                                {{ $user->assignedSections->contains($section->id) ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 section-checkbox">
+                                                            <label for="section-{{ $section->id }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-400">
+                                                                {{ $section->section_name }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
                             </div>
 
-                            <div class="mt-6">
-                                <label class="text-sm font-medium">Or Assign to Specific Sections</label>
-                                <div class="grid grid-cols-4 gap-4 mt-2">
-                                    @foreach($sections as $section)
-                                        <div>
-                                            <input type="checkbox" id="section-{{ $section->id }}" name="sections[]" value="{{ $section->id }}"
-                                                {{ $user->assignedSections->contains($section->id) ? 'checked' : '' }} class="rounded">
-                                            <label for="section-{{ $section->id }}">
-                                                {{ $section->section_name }} ({{ $section->bureau->bureau_name }})
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
+                            <!-- Submit Button -->
+                            <div class="flex justify-end">
+                                <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                                    Update User
+                                </button>
                             </div>
-                            <button class="inline-block px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#101966] border border-white border font-medium dark:border-[#3E3E3A] dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">Update</button>
                         </div>
                     </form>
                 </div>
