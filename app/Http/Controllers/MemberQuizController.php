@@ -10,6 +10,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 
 class MemberQuizController extends Controller implements HasMiddleware
 {
@@ -46,9 +47,18 @@ class MemberQuizController extends Controller implements HasMiddleware
     {
         $quiz = Quiz::with('questions')->findOrFail($id);
         $member = auth()->user()->member;
+        $user = auth()->user();
         
         // Check if already submitted
         if ($quiz->responses()->where('member_id', $member->id)->exists()) {
+            logQuizSurveyActivity(
+                $member,
+                'quiz',
+                $quiz,
+                'duplicate_attempt',
+                "Attempted to submit quiz {$quiz->id} again"
+            );
+            
             return redirect()->route('member.quizzes')
                 ->with('error', 'You have already submitted this quiz.');
         }
@@ -70,6 +80,15 @@ class MemberQuizController extends Controller implements HasMiddleware
         $validator = Validator::make($request->all(), $rules);
         
         if ($validator->fails()) {
+            logQuizSurveyActivity(
+                $member,
+                'quiz',
+                $quiz,
+                'validation_failed',
+                "Failed validation for quiz {$quiz->id}",
+                ['errors' => $validator->errors()->all()]
+            );
+            
             return redirect()->route('member.take-quiz', $id)
                 ->withErrors($validator)
                 ->withInput();
@@ -122,9 +141,10 @@ class MemberQuizController extends Controller implements HasMiddleware
         
         // Update total score
         $response->update(['total_score' => $totalScore]);
-
-        // In submitQuiz method (after quiz is submitted):
+        
         $scorePercentage = ($totalScore / $quiz->questions->sum('points')) * 100;
+        
+        /***** CRITICAL LOGGING *****/
         logQuizSurveyActivity(
             $member,
             'quiz',
@@ -134,9 +154,21 @@ class MemberQuizController extends Controller implements HasMiddleware
             [
                 'score' => $totalScore,
                 'total_possible' => $quiz->questions->sum('points'),
-                'percentage' => $scorePercentage
+                'percentage' => $scorePercentage,
+                'response_id' => $response->id
             ]
         );
+        
+        /***** EMAIL CONFIRMATION *****/
+        Mail::to($user->email)->send(new QuizCompletionConfirmation(
+            $user->name,
+            $quiz->title,
+            $totalScore,
+            $quiz->questions->sum('points'),
+            $scorePercentage,
+            now()->format('F j, Y g:i a'),
+            route('member.quiz-result', $response->id)
+        ));
         
         return redirect()->route('member.quiz-result', $response->id);
     }

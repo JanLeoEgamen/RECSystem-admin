@@ -450,6 +450,8 @@
             const eyeIcon = document.getElementById(`${fieldId}-eye-icon`);
             const eyeSlashIcon = document.getElementById(`${fieldId}-eye-slash-icon`);
             
+            if (!passwordInput || !eyeIcon || !eyeSlashIcon) return;
+            
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 eyeIcon.classList.add('hidden');

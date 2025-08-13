@@ -1,45 +1,41 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 
-                    p-4 sm:p-6 rounded-lg shadow-lg
-                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-
-            <!-- Header Title -->
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-100 leading-tight text-center sm:text-left">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <!-- Title -->
+            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 {{ __('Payment Verification') }}
             </h2>
 
             <!-- Action Buttons -->
-            <div class="flex items-center flex-wrap gap-4 justify-center sm:justify-end">
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-center justify-center sm:justify-end w-full sm:w-auto">
                 @can('view applicants')
                     <a href="{{ route('cashier.rejected') }}" 
-                       class="inline-block px-5 py-2 
-                              text-white dark:text-gray-900
-                              hover:text-[#101966] dark:hover:text-white
-                              bg-white/10 dark:bg-gray-200/20 
-                              hover:bg-white dark:hover:bg-gray-600
-                              focus:outline-none focus:ring-2 focus:ring-offset-2 
-                              focus:ring-white dark:focus:ring-gray-500
-                              border border-white dark:border-gray-500 
-                              font-medium rounded-lg 
-                              text-base sm:text-xl leading-normal 
-                              transition">
+                    class="px-4 py-2 sm:px-5 sm:py-2 
+                            text-white dark:text-gray-900
+                            hover:text-[#101966] dark:hover:text-white
+                            bg-white/10 dark:bg-gray-200/20 
+                            hover:bg-white dark:hover:bg-gray-600
+                            focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-white dark:focus:ring-gray-500
+                            border border-white dark:border-gray-500 
+                            font-medium rounded-lg 
+                            text-sm sm:text-base leading-normal 
+                            text-center transition w-full sm:w-auto">
                         Rejected Payments
                     </a>
 
                     <a href="{{ route('cashier.verified') }}" 
-                       class="inline-block px-5 py-2 
-                              text-white dark:text-gray-900
-                              hover:text-[#101966] dark:hover:text-white
-                              bg-white/10 dark:bg-gray-200/20 
-                              hover:bg-white dark:hover:bg-gray-600
-                              focus:outline-none focus:ring-2 focus:ring-offset-2 
-                              focus:ring-white dark:focus:ring-gray-500
-                              border border-white dark:border-gray-500 
-                              font-medium rounded-lg 
-                              text-base sm:text-xl leading-normal 
-                              transition">
+                    class="px-4 py-2 sm:px-5 sm:py-2 
+                            text-white dark:text-gray-900
+                            hover:text-[#101966] dark:hover:text-white
+                            bg-white/10 dark:bg-gray-200/20 
+                            hover:bg-white dark:hover:bg-gray-600
+                            focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-white dark:focus:ring-gray-500
+                            border border-white dark:border-gray-500 
+                            font-medium rounded-lg 
+                            text-sm sm:text-base leading-normal 
+                            text-center transition w-full sm:w-auto">
                         Verified Payments
                     </a>
                 @endcan

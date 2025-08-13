@@ -1,5 +1,4 @@
 <?php
-// app/Models/Permission.php
 namespace App\Models;
 
 use Spatie\Permission\Models\Permission as SpatiePermission;
@@ -13,9 +12,9 @@ class Permission extends SpatiePermission
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'guard_name']) 
-            ->logOnlyDirty() 
-            ->setDescriptionForEvent(fn(string $eventName) => "Permission was {$eventName}")
-            ->useLogName('permission');
+            ->logOnly(['name'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Permission {$this->name} was {$eventName}")
+            ->useLogName('permissions');
     }
 }

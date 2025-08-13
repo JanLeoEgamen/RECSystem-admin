@@ -17,11 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'approved.applicant' => \App\Http\Middleware\EnsureApplicantIsApproved::class,
             'application.incomplete' => \App\Http\Middleware\EnsureApplicationIsComplete::class,
+            'active.membership' => App\Http\Middleware\EnsureMembershipIsActive::class,
         ]);
         
         // Add as global middleware (runs on every request)
         $middleware->web(append: [
             \App\Http\Middleware\RedirectPendingApplicants::class,
+            \App\Http\Middleware\RedirectByRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

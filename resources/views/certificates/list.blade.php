@@ -1,33 +1,28 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 
-                    p-4 sm:p-6 rounded-lg shadow-lg
-                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-
-            <!-- Header Title -->
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-100 leading-tight text-center sm:text-left">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <!-- Title -->
+            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">    
                 {{ __('Certificate Templates') }}
             </h2>
 
             <!-- Create Button -->
             @can('create certificates')
             <a href="{{ route('certificates.create') }}" dusk="certificates-create-button"
-               class="inline-block px-5 py-2 
-                      text-white dark:text-gray-900
-                      hover:text-[#101966] dark:hover:text-white
-                      bg-white/10 dark:bg-gray-200/20 
-                      hover:bg-white dark:hover:bg-gray-600
-                      focus:outline-none focus:ring-2 focus:ring-offset-2 
-                      focus:ring-white dark:focus:ring-gray-500
-                      border border-white dark:border-gray-500 
-                      font-medium rounded-lg 
-                      text-base sm:text-xl leading-normal 
-                      text-center sm:text-right transition">
+            class="px-4 py-2 sm:px-5 sm:py-2 
+                    text-white dark:text-gray-900
+                    hover:text-[#101966] dark:hover:text-white
+                    bg-white/10 dark:bg-gray-200/20 
+                    hover:bg-white dark:hover:bg-gray-600
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-white dark:focus:ring-gray-500
+                    border border-white dark:border-gray-500 
+                    font-medium rounded-lg 
+                    text-sm sm:text-base leading-normal 
+                    text-center transition w-full sm:w-auto">
                 Create
             </a>
             @endcan
-
         </div>
     </x-slot>
 
@@ -312,6 +307,7 @@
                                 <td class="px-6 py-4 text-left column-author">${certificate.author}</td>
                                 <td class="px-6 py-4 text-left column-created">${certificate.created_at}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                    @can('view certificates')
                                     <a href="/certificates/${certificate.id}/preview" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="Preview">
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
@@ -320,6 +316,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
                                     </a>
+                                    @endcan
+                                    @can('edit certificates')
                                     <a href="/certificates/${certificate.id}/edit" class="group bg-indigo-100 hover:bg-indigo-200 p-2 rounded-full transition" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-indigo-600 group-hover:text-indigo-800 transition"
@@ -328,6 +326,8 @@
                                                 d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
                                         </svg>
                                     </a>
+                                    @endcan
+                                    @can('delete certificates')
                                     <button onclick="deleteCertificate(${certificate.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Delete"> 
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
@@ -336,6 +336,7 @@
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
+                                    @endcan
                                 </td>
                             </tr>
                         `;

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class RenewalController extends Controller implements HasMiddleware
@@ -100,6 +101,22 @@ class RenewalController extends Controller implements HasMiddleware
     // Show assessment form
     public function edit(Renewal $renewal)
     {
+        Log::info('Renewal Assessment Access Attempt', [
+        'renewal_id' => $renewal->id,
+        'user_id' => auth()->id(),
+        'user_email' => auth()->user()->email,
+        'has_permission' => auth()->user()->can('assess renewals'),
+        'route' => request()->fullUrl()
+    ]);
+
+    // Check permission
+    if (!auth()->user()->can('assess renewals')) {
+        Log::warning('Permission Denied for Renewal Assessment', [
+            'renewal_id' => $renewal->id,
+            'user_id' => auth()->id()
+        ]);
+        return redirect()->route('dashboard');
+    }
         return view('renew.assess', compact('renewal'));
     }
 
@@ -120,6 +137,7 @@ class RenewalController extends Controller implements HasMiddleware
 
         $member = $renewal->member;
         $user = $member->user;
+        $processor = Auth::user();
 
         if ($request->status === 'approved') {
             // Update membership
@@ -128,12 +146,18 @@ class RenewalController extends Controller implements HasMiddleware
                 'membership_end' => now()->addYear(),
             ]);
 
+            /***** CRITICAL LOG *****/
+            logRenewalApproved($member, $renewal, $processor, $request->remarks);
+
             // Send approval email
             Mail::to($user->email)->send(
                 new RenewalApproved($user->name, $member->membership_end)
             );
 
         } elseif ($request->status === 'rejected') {
+            /***** CRITICAL LOG *****/
+            logRenewalRejected($member, $renewal, $processor, $request->remarks);
+
             // Send rejection email
             Mail::to($user->email)->send(
                 new RenewalRejected($user->name, $request->remarks)

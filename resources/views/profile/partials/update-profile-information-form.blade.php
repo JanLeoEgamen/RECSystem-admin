@@ -18,61 +18,37 @@
         @method('patch')
 
         <div>
-        <div class="space-y-4">
-            <!-- First Name -->
-            <div>
-                <x-input-label :value="__('First Name')" />
-                <div class="mt-1 text-gray-900 dark:text-gray-100">
-                    {{ $user->first_name }}
-                </div>
-                <input type="hidden" name="first_name" value="{{ $user->first_name }}">
-            </div>
-
-            <!-- Last Name -->
-            <div>
-                <x-input-label :value="__('Last Name')" />
-                <div class="mt-1 text-gray-900 dark:text-gray-100">
-                    {{ $user->last_name }}
-                </div>
-                <input type="hidden" name="last_name" value="{{ $user->last_name }}">
-            </div>
-
-            <!-- Email -->
-            <div>
-                <x-input-label :value="__('Email')" />
-                <div class="mt-1 text-gray-900 dark:text-gray-100">
-                    {{ $user->email }}
-                </div>
-                <input type="hidden" name="email" value="{{ $user->email }}">
-            </div>
-        </div>
-        </div>
-
-        {{-- <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- First Name -->
                 <div>
-                    <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
+                    <x-input-label :value="__('First Name')" />
+                    <div class="mt-1 text-gray-900 dark:text-gray-100">
+                        {{ $user->first_name }}
+                    </div>
+                    <input type="hidden" name="first_name" value="{{ $user->first_name }}">
                 </div>
-            @endif
+
+                <!-- Last Name -->
+                <div>
+                    <x-input-label :value="__('Last Name')" />
+                    <div class="mt-1 text-gray-900 dark:text-gray-100">
+                        {{ $user->last_name }}
+                    </div>
+                    <input type="hidden" name="last_name" value="{{ $user->last_name }}">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <x-input-label :value="__('Email')" />
+                    <div class="mt-1 text-gray-900 dark:text-gray-100">
+                        {{ $user->email }}
+                    </div>
+                    <input type="hidden" name="email" value="{{ $user->email }}">
+                </div>
+            </div>
         </div>
 
-        <div class="flex items-center gap-4">
+        <!-- <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
@@ -84,6 +60,6 @@
                     class="text-sm text-gray-600 dark:text-gray-400"
                 >{{ __('Saved.') }}</p>
             @endif
-        </div> --}}
+        </div> -->
     </form>
 </section>

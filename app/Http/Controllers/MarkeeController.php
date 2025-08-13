@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
 
 class MarkeeController extends Controller implements HasMiddleware
@@ -15,162 +19,221 @@ class MarkeeController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('permission:view markees', only: ['index']),
-            new Middleware('permission:edit markees', only: ['edit']),
-            new Middleware('permission:create markees', only: ['create']),
+            new Middleware('permission:edit markees', only: ['edit', 'update']),
+            new Middleware('permission:create markees', only: ['create', 'store']),
             new Middleware('permission:delete markees', only: ['destroy']),
         ];
     }
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            $query = Markee::with('user');
+        try {
+            if ($request->ajax()) {
+                $query = Markee::with('user:id,first_name,last_name');
 
-            if ($request->has('search') && $request->search != '') {
-                $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    $q->where('header', 'like', "%$search%")
-                      ->orWhere('content', 'like', "%$search%")
-                      ->orWhereHas('user', function($q) use ($search) {
-                          $q->where('first_name', 'like', "%$search%")
-                            ->orWhere('last_name', 'like', "%$search%");
-                      });
-                });
-            }
-
-            if ($request->has('sort') && $request->has('direction')) {
-                $sort = $request->sort;
-                $direction = $request->direction;
-                
-                switch ($sort) {
-                    case 'header':
-                        $query->orderBy('header', $direction);
-                        break;
-                        
-                    case 'status':
-                        $query->orderBy('status', $direction === 'asc' ? 'asc' : 'desc');
-                        break;
-                        
-                    case 'created':
-                        $query->orderBy('created_at', $direction);
-                        break;
-                        
-                    default:
-                        $query->orderBy('created_at', 'desc');
-                        break;
+                // Search functionality
+                if ($request->has('search') && !empty($request->search)) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('header', 'like', '%' . $request->search . '%')
+                          ->orWhere('content', 'like', '%' . $request->search . '%')
+                          ->orWhereHas('user', function($q) use ($request) {
+                              $q->where('first_name', 'like', '%' . $request->search . '%')
+                                ->orWhere('last_name', 'like', '%' . $request->search . '%');
+                          });
+                    });
                 }
-            } else {
-                $query->orderBy('created_at', 'desc');
+
+                // Apply sorting
+                $this->applySorting($query, $request);
+
+                // Pagination
+                $perPage = $request->input('perPage', 10);
+                $markees = $query->paginate($perPage);
+
+                $transformedMarkees = $markees->getCollection()->map(function ($markee) {
+                    return [
+                        'id' => $markee->id,
+                        'header' => $markee->header,
+                        'content' => Str::limit($markee->content, 50),
+                        'author' => $markee->user->first_name ?? 'Unknown' . ' ' . $markee->user->last_name ?? '',
+                        'status' => $markee->status ? 'Active' : 'Inactive',
+                        'created_at' => $markee->created_at->format('d M, Y'),
+                    ];
+                });
+
+                return response()->json([
+                    'data' => $transformedMarkees,
+                    'current_page' => $markees->currentPage(),
+                    'last_page' => $markees->lastPage(),
+                    'from' => $markees->firstItem(),
+                    'to' => $markees->lastItem(),
+                    'total' => $markees->total(),
+                ]);
             }
 
-            $perPage = $request->input('perPage', 10);
-            $markees = $query->paginate($perPage);
+            return view('markees.list');
 
-            $transformedMarkees = $markees->getCollection()->map(function ($markee) {
-                return [
-                    'id' => $markee->id,
-                    'header' => $markee->header,
-                    'content' => Str::limit($markee->content, 50),
-                    'author' => $markee->user->first_name . ' ' . $markee->user->last_name,
-                    'status' => $markee->status ? 'Active' : 'Inactive',
-                    'created_at' => $markee->created_at->format('d M, Y'),
-                ];
-            });
-
-            return response()->json([
-                'data' => $transformedMarkees,
-                'current_page' => $markees->currentPage(),
-                'last_page' => $markees->lastPage(),
-                'from' => $markees->firstItem(),
-                'to' => $markees->lastItem(),
-                'total' => $markees->total(),
-            ]);
+        } catch (\Exception $e) {
+            Log::error('Markee index error: ' . $e->getMessage());
+            
+            return $request->ajax()
+                ? response()->json(['error' => 'Failed to load markees'], Response::HTTP_INTERNAL_SERVER_ERROR)
+                : redirect()->back()->with('error', 'Failed to load markees. Please try again.');
         }
-
-        return view('markees.list');
     }
 
     public function create()
     {
-        return view('markees.create');
+        try {
+            return view('markees.create');
+        } catch (\Exception $e) {
+            Log::error('Markee create form error: ' . $e->getMessage());
+            return redirect()->route('markees.index')
+                ->with('error', 'Failed to load markee creation form. Please try again.');
+        }
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'header' => 'required|min:3|max:255',
-            'content' => 'required|min:10',
-            'status' => 'sometimes|boolean',
-        ]);
+        try {
+            $validated = $this->validateMarkeeRequest($request);
 
-        if ($validator->fails()) {
+            $markee = Markee::create([
+                'header' => $validated['header'],
+                'content' => $validated['content'],
+                'status' => $validated['status'] ?? true,
+                'user_id' => $request->user()->id,
+            ]);
+
+            return redirect()->route('markees.index')
+                ->with('success', 'Markee added successfully');
+
+        } catch (ValidationException $e) {
+            throw $e;
+
+        } catch (\Exception $e) {
+            Log::error('Markee store error: ' . $e->getMessage());
             return redirect()->route('markees.create')
                 ->withInput()
-                ->withErrors($validator);
+                ->with('error', 'Failed to create markee. Please try again.');
         }
-
-        $markee = new Markee();
-        $markee->header = $request->header;
-        $markee->content = $request->content;
-        $markee->user_id = $request->user()->id;
-        $markee->status = $request->status ?? true;
-        $markee->save();
-
-        return redirect()->route('markees.index')
-            ->with('success', 'Markee added successfully');
     }
 
     public function edit(string $id)
     {
-        $markee = Markee::findOrFail($id);
-        return view('markees.edit', [
-            'markee' => $markee
-        ]);
-    } 
+        try {
+            $markee = Markee::findOrFail($id);
+            return view('markees.edit', compact('markee'));
+
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Markee not found for editing: {$id}");
+            return redirect()->route('markees.index')
+                ->with('error', 'Markee not found.');
+
+        } catch (\Exception $e) {
+            Log::error("Markee edit form error for ID {$id}: " . $e->getMessage());
+            return redirect()->route('markees.index')
+                ->with('error', 'Failed to load markee edit form. Please try again.');
+        }
+    }
 
     public function update(Request $request, string $id)
     {
-        $markee = Markee::findOrFail($id);
+        try {
+            $markee = Markee::findOrFail($id);
+            $validated = $this->validateMarkeeRequest($request);
 
-        $validator = Validator::make($request->all(), [
-            'header' => 'required|min:3|max:255',
-            'content' => 'required|min:10',
-            'status' => 'sometimes|boolean',
-        ]);
+            $markee->update([
+                'header' => $validated['header'],
+                'content' => $validated['content'],
+                'status' => $validated['status'] ?? $markee->status,
+            ]);
 
-        if ($validator->fails()) {
+            return redirect()->route('markees.index')
+                ->with('success', 'Markee updated successfully');
+
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Markee not found for update: {$id}");
+            return redirect()->route('markees.index')
+                ->with('error', 'Markee not found.');
+
+        } catch (ValidationException $e) {
+            throw $e;
+
+        } catch (\Exception $e) {
+            Log::error("Markee update error for ID {$id}: " . $e->getMessage());
             return redirect()->route('markees.edit', $id)
                 ->withInput()
-                ->withErrors($validator);
+                ->with('error', 'Failed to update markee. Please try again.');
         }
-
-        $markee->header = $request->header;
-        $markee->content = $request->content;
-        $markee->status = $request->status ?? $markee->status;
-        $markee->save();
-
-        return redirect()->route('markees.index')
-            ->with('success', 'Markee updated successfully');
     }
 
     public function destroy(Request $request)
     {
-        $id = $request->id;
-        $markee = Markee::findOrFail($id);
+        try {
+            $markee = Markee::findOrFail($request->id);
+            $markee->delete();
 
-        if ($markee == null) {
-            session()->flash('error', 'Markee not found.');
             return response()->json([
-                'status' => false
+                'status' => true,
+                'message' => 'Markee deleted successfully.'
             ]);
+
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Markee not found for deletion: {$request->id}");
+            return response()->json([
+                'status' => false,
+                'message' => 'Markee not found.'
+            ], Response::HTTP_NOT_FOUND);
+
+        } catch (\Exception $e) {
+            Log::error("Markee deletion error for ID {$request->id}: " . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to delete markee. Please try again.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
 
-        $markee->delete();
-
-        session()->flash('success', 'Markee deleted successfully.');
-        return response()->json([
-            'status' => true
+    /**
+     * Validate markee request data
+     */
+    protected function validateMarkeeRequest(Request $request): array
+    {
+        return $request->validate([
+            'header' => 'required|string|min:3|max:255',
+            'content' => 'required|string|min:10|max:5000',
+            'status' => 'sometimes|boolean',
         ]);
     }
 
+    /**
+     * Apply sorting to the query
+     */
+    protected function applySorting($query, Request $request): void
+    {
+        $sort = $request->sort ?? 'created_at';
+        $direction = in_array(strtolower($request->direction ?? 'desc'), ['asc', 'desc']) 
+            ? $request->direction 
+            : 'desc';
+
+        switch ($sort) {
+            case 'header':
+                $query->orderBy('header', $direction);
+                break;
+                
+            case 'status':
+                $query->orderBy('status', $direction);
+                break;
+                
+            case 'created':
+            case 'created_at':
+                $query->orderBy('created_at', $direction);
+                break;
+                
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+    }
 }

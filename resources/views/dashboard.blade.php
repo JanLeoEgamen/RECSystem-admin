@@ -1,20 +1,14 @@
 <x-app-layout>
-   <x-slot name="header">
-    <div class="flex items-center justify-center sm:justify-start
-                p-4 sm:p-6 rounded-lg shadow-lg
-                bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-
-        <!-- Header Title -->
-        <h1 class="font-semibold text-2xl sm:text-3xl text-white dark:text-gray-100 leading-tight text-center sm:text-left">
-            {{ __('Dashboard') }}
-        </h1>
-    </div>
-</x-slot>
-
+    <x-slot name="header">
+        <div class="flex justify-between"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+                {{ __('Dashboard') }}
+            </h2>
+        </div>
+    </x-slot>
 
     <!-- Welcome Card -->
-    <div class="py-6">
+    <div class="py-6 animate-fade-in-down" style="animation-delay: 0.1s;">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-gradient-to-r from-[#101966] to-[#5E6FFB] dark:from-[#101966] dark:to-[#5E6FFB] overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="p-6 text-2xl font-bold text-white dark:text-white">
@@ -39,13 +33,13 @@
     </div>
 
     @can('view members')
-    <div class="py-6">
+    <div class="py-6 animate-fade-in-down" style="animation-delay: 0.2s;">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <!-- Stats Cards Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <!-- Total Members Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg animate-fade-in-down" style="animation-delay: 0.3s;">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 bg-[#5E6FFB] rounded-md p-3">
@@ -68,7 +62,7 @@
                 </div>
 
                 <!-- Active Members Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg animate-fade-in-down" style="animation-delay: 0.4s;">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 bg-[#5E6FFB] rounded-md p-3">
@@ -90,8 +84,31 @@
                     </div>
                 </div>
 
+                <!-- Inactive Members Card -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg animate-fade-in-down" style="animation-delay: 0.45s;">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-[#FF5E5E] rounded-md p-3">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
+                                </svg>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300 truncate">
+                                    Inactive Members
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                        {{ $inactiveMembers }}
+                                    </div>
+                                </dd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Expiring Soon Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg animate-fade-in-down" style="animation-delay: 0.5s;">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 bg-[#101966] rounded-md p-3">
@@ -117,7 +134,7 @@
             <!-- Tables Row -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Memberships Expiring Soon Table -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg animate-fade-in-down" style="animation-delay: 0.6s;">
                     <div class="px-4 py-5 sm:p-6">
                         <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
                             Memberships Expiring Soon
@@ -158,7 +175,7 @@
                 </div>
 
                 <!-- Recent Members Table -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg animate-fade-in-down" style="animation-delay: 0.7s;">
                     <div class="px-4 py-5 sm:p-6">
                         <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
                             Recent Members
@@ -195,4 +212,21 @@
         </div>
     </div>
     @endcan
+
+    <style>
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 0.5s ease-out forwards;
+            opacity: 0;
+        }
+    </style>
 </x-app-layout>

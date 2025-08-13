@@ -56,6 +56,53 @@ class LoginLogController extends Controller
         ]);
     }
 
+    public function indexTable(Request $request)
+    {
+        $query = Activity::with('causer')
+            ->where('log_name', 'authentication')
+            ->orderBy('created_at', 'desc');
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                  ->orWhereHas('causer', function($q) use ($search) {
+                      $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by login type if needed
+        if ($request->has('login_type')) {
+            $query->where('description', $request->input('login_type'));
+        }
+
+        $logs = $query->paginate(20);
+
+        // Format the properties for display
+        $logs->getCollection()->transform(function ($log) {
+            $log->formatted_properties = $this->formatLoginProperties($log->properties);
+            return $log;
+        });
+
+        // PDF Export
+        if ($request->has('export') && $request->export === 'pdf') {
+            $exportLogs = $query->get();
+            $exportLogs->transform(function ($log) {
+                $log->formatted_properties = $this->formatLoginProperties($log->properties);
+                return $log;
+            });
+
+            return $this->generatePdf($exportLogs, $request->input('search'));
+        }
+
+        return view('login-logs.list-table', [
+            'logs' => $logs,
+            'search' => $request->input('search')
+        ]);
+    }
+
     protected function generatePdf($logs, $searchTerm = null)
     {
         $options = new Options();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\RenewalSubmitted;
+use App\Mail\SurveyCompletionConfirmation;
 use App\Models\Event;
 use App\Models\Renewal;
 use App\Models\Survey;
@@ -28,19 +29,25 @@ class MemberDashboardController extends Controller implements HasMiddleware
     }
 
 
-public function index()
-{
-    $member = auth()->user()->member;
-    
-    // Check if membership is expired
-    if (!$member->is_lifetime_member && $member->membership_end && now()->gt($member->membership_end)) {
-        return redirect()->route('member.renew');
+    private function isMembershipExpired($member)
+    {
+        return !$member->is_lifetime_member && $member->membership_end && now()->gt($member->membership_end);
     }
-    
-    return view('member.dashboard', [
-        'isMembershipNearExpiry' => $this->isMembershipNearExpiry($member)
-    ]);
-}
+
+    public function index()
+    {
+        $member = auth()->user()->member;
+        
+        // Check if membership is expired
+        if ($this->isMembershipExpired($member)) {
+            return redirect()->route('member.renew');
+        }
+        
+        return view('member.dashboard', [
+            'isMembershipNearExpiry' => $this->isMembershipNearExpiry($member),
+            'isMembershipExpired' => $this->isMembershipExpired($member)
+        ]);
+    }
 
     public function membershipDetails()
     {
@@ -202,9 +209,18 @@ public function index()
     {
         $survey = Survey::with('questions')->findOrFail($id);
         $member = auth()->user()->member;
+        $user = auth()->user();
         
         // Check if already submitted
         if ($survey->responses()->where('member_id', $member->id)->exists()) {
+            logMemberActivity(
+                $member,
+                'survey',
+                'duplicate_attempt',
+                "Attempted to submit survey {$survey->id} again",
+                ['survey_id' => $survey->id]
+            );
+            
             return redirect()->route('member.surveys')
                 ->with('error', 'You have already submitted this survey.');
         }
@@ -224,6 +240,17 @@ public function index()
         $validator = Validator::make($request->all(), $rules);
         
         if ($validator->fails()) {
+            logMemberActivity(
+                $member,
+                'survey',
+                'validation_failed',
+                "Failed validation for survey {$survey->id}",
+                [
+                    'survey_id' => $survey->id,
+                    'errors' => $validator->errors()->all()
+                ]
+            );
+            
             return redirect()->route('member.take-survey', $id)
                 ->withErrors($validator)
                 ->withInput();
@@ -249,6 +276,27 @@ public function index()
                 'answer' => $answer,
             ]);
         }
+        
+        /***** CRITICAL LOGGING *****/
+        logMemberActivity(
+            $member,
+            'survey',
+            'completed',
+            "Completed survey: {$survey->title}",
+            [
+                'survey_id' => $survey->id,
+                'response_id' => $response->id,
+                'questions_answered' => count($survey->questions)
+            ]
+        );
+        
+        /***** EMAIL CONFIRMATION *****/
+        Mail::to($user->email)->send(new SurveyCompletionConfirmation(
+            $user->name,
+            $survey->title,
+            now()->format('F j, Y g:i a'),
+            route('member.surveys')
+        ));
         
         return redirect()->route('member.surveys')
             ->with('success', 'Thank you for completing the survey!');

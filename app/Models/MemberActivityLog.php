@@ -9,6 +9,7 @@ class MemberActivityLog extends Model
     public $timestamps = false; // using created_at manually
     protected $fillable = [
         'member_id',
+        'applicant_id',
         'type',
         'action',
         'details',
@@ -29,6 +30,8 @@ class MemberActivityLog extends Model
 
     public function performer()
     {
-        return $this->belongsTo(User::class, 'performed_by');
+        return $this->belongsTo(User::class, 'performed_by')->withDefault([
+            'name' => 'System'
+        ]);
     }
 }

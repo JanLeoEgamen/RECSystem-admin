@@ -1,9 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-            My Announcements
-        </h2>
+        <div class="flex justify-between"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+                My Announcements
+            </h2>
+        </div>
     </x-slot>
+
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

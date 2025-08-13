@@ -1,12 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 
-                    p-4 sm:p-6 rounded-lg shadow-lg
-                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
-
-            <!-- Header Title -->
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-100 leading-tight text-center sm:text-left">
+        <div class="flex justify-between"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
                 {{ __('Permissions') }}
             </h2>
 
@@ -282,6 +277,7 @@
                                 <td class="px-6 py-4 text-left column-name">${permission.name}</td>
                                 <td class="px-6 py-4 text-left column-created">${permission.created_at}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                    @can('edit permissions')
                                     <a href="/permissions/${permission.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
@@ -290,6 +286,8 @@
                                                 d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
                                         </svg>
                                     </a>
+                                    @endcan
+                                    @can('delete permissions')
                                     <button onclick="deletePermission(${permission.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
@@ -298,6 +296,7 @@
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
+                                    @endcan
                                 </td>
                             </tr>
                         `;

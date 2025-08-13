@@ -62,8 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="col-span-1">
                         <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">First Name *</label>
-                        <input type="text" id="firstName" name="firstName" required placeholder="e.g. Juan" 
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                        <input type="text" id="firstName" name="firstName" required 
+                            value="{{ auth()->user()->first_name ?? '' }}"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 cursor-not-allowed transition-all duration-200" readonly>
                     </div>
                     <div class="col-span-1">
                         <label for="middleName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Middle Name</label>
@@ -72,8 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="col-span-1">
                         <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Last Name *</label>
-                        <input type="text" id="lastName" name="lastName" required placeholder="e.g. Cruz" 
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                        <input type="text" id="lastName" name="lastName" required 
+                            value="{{ auth()->user()->last_name ?? '' }}"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 cursor-not-allowed transition-all duration-200" readonly>
                     </div>
                 </div>
     
@@ -187,7 +189,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 
                                 transition-all duration-200"
                         >
+                        <p id="emailError" class="mt-1 text-sm text-red-500 hidden">
+                            Please enter a valid Gmail address.
+                        </p>
                     </div>
+
+                    
 
                     <div>
                         <label for="cellphone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
@@ -202,6 +209,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                                 dark:bg-gray-700 dark:text-white transition-all duration-200"
                         >
+                        <p id="cellphoneError" class="mt-1 text-sm text-red-500 hidden">
+                            Please enter a valid 11-digit cellphone number (e.g., 09171234567).
+                        </p>
                     </div>
 
                     <div>

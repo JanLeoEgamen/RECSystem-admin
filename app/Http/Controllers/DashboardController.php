@@ -11,15 +11,12 @@ use Carbon\Carbon;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-
 class DashboardController extends Controller implements HasMiddleware
 {
-
     public static function middleware(): array
     {
         return [
             new Middleware('permission:view admin dashboard', only: ['index']),
-
         ];
     }
 
@@ -42,7 +39,6 @@ class DashboardController extends Controller implements HasMiddleware
         $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
         $accessibleSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
 
-        // Member statistics
         $memberQuery = Member::whereIn('section_id', $accessibleSectionIds);
 
         $totalMembers = (clone $memberQuery)->count();
@@ -50,7 +46,14 @@ class DashboardController extends Controller implements HasMiddleware
         $activeMembers = (clone $memberQuery)->where(function ($query) {
             $query->where('is_lifetime_member', true)
                   ->orWhere('membership_end', '>=', now());
-        })->count();
+        })
+        ->where('status', 'Active')
+        ->count();
+
+        $inactiveMembers = (clone $memberQuery)->where('is_lifetime_member', false)
+            ->where('membership_end', '<', now())
+            ->orWhere('status', 'Inactive')
+            ->count();
 
         $expiringSoon = (clone $memberQuery)->where('is_lifetime_member', false)
             ->whereBetween('membership_end', [now(), now()->addDays(30)])
@@ -64,17 +67,14 @@ class DashboardController extends Controller implements HasMiddleware
 
         $recentMembers = (clone $memberQuery)->latest()->take(5)->get();
 
-
-
-
         return view('dashboard', [
-            'fullName' => $fullName,  // Pass full name to the view
+            'fullName' => $fullName, 
             'totalMembers' => $totalMembers,
             'activeMembers' => $activeMembers,
+            'inactiveMembers' => $inactiveMembers,
             'expiringSoon' => $expiringSoon,
             'recentMembers' => $recentMembers,
             'expiringSoonMembers' => $expiringSoonMembers,
-            
         ]);
     }
 }

@@ -94,11 +94,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users', [UserController::class, 'destroy'])->name('users.destroy');
     
-    //member portal
+    // Routes requiring active membership
     Route::group([
-    'prefix' => 'member',
-    'middleware' => ['auth', 'verified'],
-    ], function() {
+        'prefix' => 'member',
+        'middleware' => ['auth', 'verified', 'active.membership'],
+    ], function () {
         Route::get('/member-dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard');
         Route::get('/membership-details', [MemberDashboardController::class, 'membershipDetails'])->name('member.membership-details');
         Route::get('/announcements', [MemberDashboardController::class, 'announcements'])->name('member.announcements');
@@ -119,11 +119,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/documents', [MemberDashboardController::class, 'documents'])->name('member.documents');
         Route::get('/documents/{id}', [MemberDashboardController::class, 'viewDocument'])->name('member.view-document');
         Route::get('/documents/{id}/download', [MemberDashboardController::class, 'downloadDocument'])->name('member.download-document');
-        Route::get('/renew', [MemberDashboardController::class, 'create'])->name('member.renew');
-        Route::post('/renew', [MemberDashboardController::class, 'store'])->name('renew.store'); 
-
         Route::get('/my-activity-logs', [MemberActivityLogController::class, 'myLogs'])->name('members.activity_logs');
     });
+
+    // Renewal routes (accessible even if membership is expired)
+    Route::group([
+        'prefix' => 'member',
+        'middleware' => ['auth', 'verified'], // no 'active.membership' middleware here
+    ], function () {
+        Route::get('/renew', [MemberDashboardController::class, 'create'])->name('member.renew');
+        Route::post('/renew', [MemberDashboardController::class, 'store'])->name('renew.store');
+    });
+
 
     //faqs
     Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
@@ -271,7 +278,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Certificates
     Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
-    Route::get('/certificates/create', [CertificateController::class, 'cre  ate'])->name('certificates.create');
+    Route::get('/certificates/create', [CertificateController::class, 'create'])->name('certificates.create');
     Route::post('/certificates', [CertificateController::class, 'store'])->name('certificates.store');
     Route::get('/certificates/{id}/edit', [CertificateController::class, 'edit'])->name('certificates.edit');
     Route::put('/certificates/{id}', [CertificateController::class, 'update'])->name('certificates.update');
@@ -366,10 +373,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //activity logs
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('/activity-logs-table', [ActivityLogController::class, 'indexTable'])->name('activity-logs.indexTable');
 
     //log in logs
     Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs.index');
-    Route::get('/login-logs/export', [LoginLogController::class, 'index'])->name('login-logs.export');
+    Route::get('/login-logs-table', [LoginLogController::class, 'indexTable'])->name('login-logs.indexTable');
+    Route::get('/login-logs/export', [LoginLogController::class, 'export'])->name('login-logs.export');
 
 });
 
@@ -391,6 +400,10 @@ Route::fallback(function () {
     // Guest fallback
     return redirect('/')->with('error', 'Page not found.');
 });
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', \App\Http\Middleware\RedirectByRole::class])
+    ->name('dashboard');
 
 
 

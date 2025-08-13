@@ -30,7 +30,8 @@ class MemberActivityLogController extends BaseController
             ]);
         }
 
-        $query = MemberActivityLog::with(['performer'])
+        // Updated query with eager loading
+        $query = MemberActivityLog::with(['performer.roles']) // Load roles efficiently
             ->where('member_id', $member->id)
             ->latest();
 
@@ -58,7 +59,7 @@ class MemberActivityLogController extends BaseController
             ]);
         }
 
-        $query = MemberActivityLog::with(['performer'])
+        $query = MemberActivityLog::with(['performer.roles']) // Load roles efficiently
             ->where('member_id', $member->id)
             ->latest();
 
@@ -71,7 +72,7 @@ class MemberActivityLogController extends BaseController
     protected function applyFilters($query, Request $request)
     {
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->where('type', $request->type);  
         }
         
         if ($request->filled('action')) {
@@ -98,7 +99,7 @@ class MemberActivityLogController extends BaseController
                 'action' => $this->formatAction($log->action),
                 'details' => $log->details,
                 'meta' => $log->meta,
-                'performed_by' => $log->performer?->name ?? 'System',
+                'performed_by' => optional($log->performer->roles->first())->name ?? 'System',
                 'created_at' => $log->created_at->format('d M, Y h:i A'),
                 'created_at_raw' => $log->created_at->toDateTimeString(),
             ];

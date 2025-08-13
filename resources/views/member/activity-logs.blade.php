@@ -1,11 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center flex-wrap gap-4">
-            <h2 class="font-semibold text-4xl text-white leading-tight">
+        <div class="flex justify-between"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
                 {{ __('Activity Logs for ') . $member->first_name . ' ' . $member->last_name }}
             </h2>
-        </div>
-    </x-slot>
+    </div>
+</x-slot>
+
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

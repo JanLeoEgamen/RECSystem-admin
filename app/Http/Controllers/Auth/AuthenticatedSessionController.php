@@ -32,6 +32,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+        
+        if ($user->hasRole('Member')) {
+            return redirect()->intended(route('member.dashboard'));
+        }
 
         // Log the login activity
         LogBatch::startBatch();
@@ -76,11 +80,36 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Get user before logout
+        $user = $request->user();
+        $ipAddress = $request->ip();
+        $userAgent = $request->userAgent();
+
+        // Perform logout
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
+
+        // Log the logout activity if user was authenticated
+        if ($user) {
+            LogBatch::startBatch();
+            
+            CauserResolver::setCauser($user);
+            
+            activity()
+                ->useLog('authentication')
+                ->causedBy($user)
+                ->withProperties([
+                    'ip_address' => $ipAddress,
+                    'user_agent' => $userAgent,
+                    'logout_time' => now(),
+                    'status' => 'success'
+                ])
+                ->log('user_logout');
+                
+            LogBatch::endBatch();
+        }
 
         return redirect('/');
     }
