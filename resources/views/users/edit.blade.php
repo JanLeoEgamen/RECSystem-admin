@@ -27,46 +27,45 @@
                                     <div class="sm:col-span-3">
                                         <label for="first_name" class="block text-sm font-medium">First Name</label>
                                         <div class="mt-1">
-                                            <input value="{{ old('first_name', $user->first_name) }}" name="first_name" placeholder="Enter first name" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
-                                            @error('first_name')
-                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                            @enderror
+                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
+                                                {{ $user->first_name }}
+                                            </div>
+                                            <input type="hidden" name="first_name" value="{{ $user->first_name }}">
                                         </div>
                                     </div>
 
                                     <div class="sm:col-span-3">
                                         <label for="last_name" class="block text-sm font-medium">Last Name</label>
                                         <div class="mt-1">
-                                            <input value="{{ old('last_name', $user->last_name) }}" name="last_name" placeholder="Enter last name" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
-                                            @error('last_name')
-                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                            @enderror
+                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
+                                                {{ $user->last_name }}
+                                            </div>
+                                            <input type="hidden" name="last_name" value="{{ $user->last_name }}">
                                         </div>
                                     </div>
 
                                     <div class="sm:col-span-3">
                                         <label for="birthdate" class="block text-sm font-medium">Birthdate</label>
                                         <div class="mt-1">
-                                            <input value="{{ old('birthdate', $user->birthdate ? (\Carbon\Carbon::parse($user->birthdate)->format('Y-m-d')) : '') }}" name="birthdate" type="date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
-                                            @error('birthdate')
-                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                            @enderror
+                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
+                                                {{ $user->birthdate ? \Carbon\Carbon::parse($user->birthdate)->format('Y-m-d') : 'N/A' }}
+                                            </div>
+                                            <input type="hidden" name="birthdate" value="{{ $user->birthdate ? (\Carbon\Carbon::parse($user->birthdate)->format('Y-m-d')) : '' }}">
                                         </div>
                                     </div>
 
                                     <div class="sm:col-span-3">
                                         <label for="email" class="block text-sm font-medium">Email</label>
                                         <div class="mt-1">
-                                            <input value="{{ old('email', $user->email) }}" name="email" placeholder="Enter email" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
-                                            @error('email')
-                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                            @enderror
+                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
+                                                {{ $user->email }}
+                                            </div>
+                                            <input type="hidden" name="email" value="{{ $user->email }}">
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Roles Section -->
                             <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
                                 <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Assign Roles</h3>
                                 <div class="mt-4">
@@ -75,7 +74,7 @@
                                             @foreach($roles as $role)
                                                 <div class="relative flex items-start">
                                                     <div class="flex h-5 items-center">
-                                                        <input id="role-{{ $role->id }}" name="role[]" type="checkbox" value="{{ $role->name }}" {{ $hasRoles->contains($role->id) ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                                        <input id="role-{{ $role->id }}" name="role" type="radio" value="{{ $role->name }}" {{ $hasRoles->contains($role->id) ? 'checked' : '' }} class="h-4 w-4 rounded-full border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                                     </div>
                                                     <div class="ml-3 text-sm">
                                                         <label for="role-{{ $role->id }}" class="font-medium text-gray-700 dark:text-gray-300">{{ $role->name }}</label>

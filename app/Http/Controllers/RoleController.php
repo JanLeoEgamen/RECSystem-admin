@@ -112,8 +112,6 @@ class RoleController extends Controller implements HasMiddleware
                     ->performedOn($role)
                     ->withProperties(['permissions' => $request->permission])
                     ->log('Initial permissions assigned to role');
-                    
-
             }
 
             return redirect()->route('roles.index')->with('success', 'Role added successfully');
@@ -125,6 +123,19 @@ class RoleController extends Controller implements HasMiddleware
     public function edit($id)
     {
         $role = Role::findOrFail($id);
+        
+        // List of protected role names that cannot be deleted
+        $protectedRoles = ['superadmin', 'Member', 'Applicant'];
+
+        if (in_array($role->name, $protectedRoles)) {
+        session()->flash('error', 'This role cannot be deleted');
+        return response()->json([
+            'status' => false,
+            'message' => 'Protected role cannot be deleted'
+        ]);
+        }
+
+        
         $permissions = Permission::orderBy('name', 'ASC')->get();
         $hasPermissions = $role->permissions;
     
@@ -140,10 +151,23 @@ class RoleController extends Controller implements HasMiddleware
     {
         $role = Role::findOrFail($id);
         
+        // List of protected role names that cannot be deleted
+        $protectedRoles = ['superadmin', 'Member', 'Applicant'];
+
+        if (in_array($role->name, $protectedRoles)) {
+        session()->flash('error', 'This role cannot be deleted');
+        return response()->json([
+            'status' => false,
+            'message' => 'Protected role cannot be edited'
+        ]);
+        }
+
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:roles,name,'.$id.',id'
         ]);
 
+    
         if ($validator->passes()) {
             $role->name = $request->name;
             $role->save();
@@ -181,7 +205,7 @@ class RoleController extends Controller implements HasMiddleware
             'status' => false,
             'message' => 'Protected role cannot be deleted'
         ]);
-    }
+        }
 
         $role->delete();
         session()->flash('success', 'Role deleted successfully');

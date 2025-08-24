@@ -11,6 +11,30 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md sm:rounded-lg p-6">
+                @if($hasPendingRenewal)
+                    {{-- Show pending renewal message --}}
+                    <div class="text-center py-8">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900">
+                            <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-3 text-lg font-medium text-gray-900 dark:text-gray-100">Renewal Request in Progress</h3>
+                        <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                            <p>Your membership renewal request is currently being processed.</p>
+                            <p class="mt-2">Reference Number: <span class="font-semibold">{{ $pendingRenewal->reference_number }}</span></p>
+                            <p class="mt-2">Submitted on: {{ $pendingRenewal->created_at->format('F j, Y g:i a') }}</p>
+                        </div>
+                         <a href="{{ route('login') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+               class="inline-flex items-center px-6 py-3 bg-blue-600 rounded-md text-white hover:bg-blue-700 transition-colors duration-300">
+                Return to Login
+            </a>
+
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+                    </div>
+                @else
 
                 {{-- Payment + Upload Form --}}
                 <form method="POST" action="{{ route('renew.store') }}" enctype="multipart/form-data">
@@ -71,6 +95,8 @@
                         </div>
                     </div>
                 </form>
+                @endif
+
             </div>
         </div>
     </div>

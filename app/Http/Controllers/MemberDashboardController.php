@@ -88,67 +88,108 @@ class MemberDashboardController extends Controller implements HasMiddleware
     }
 
     public function create()
-    {
-        $member = Auth::user()->member;
-        return view('member.renew', compact('member'));
+{
+    $member = Auth::user()->member;
+    
+    // Check for pending renewal
+    $hasPendingRenewal = Renewal::where('member_id', $member->id)
+                              ->where('status', 'pending')
+                              ->exists();
+    
+    $pendingRenewal = null;
+    if ($hasPendingRenewal) {
+        $pendingRenewal = Renewal::where('member_id', $member->id)
+                               ->where('status', 'pending')
+                               ->latest()
+                               ->first();
     }
 
-    // Store renewal request
+    return view('member.renew', [
+        'hasPendingRenewal' => $hasPendingRenewal,
+        'pendingRenewal' => $pendingRenewal,
+        'member' => $member
+    ]);
+}
+
     public function store(Request $request)
-    {
-        $request->validate([
-            'reference_number' => 'required|string|max:255|unique:renewals',
-            'receipt' => 'required|image|max:2048',
+{
+    $request->validate([
+        'reference_number' => 'required|string|max:255|unique:renewals',
+        'receipt' => 'required|image|max:2048',
+    ]);
+
+    $member = Auth::user()->member;
+    if (!$member) {
+        Log::error('Renewal submission failed - no member profile', ['user_id' => Auth::id()]);
+        return back()->with('error', 'No member profile found');
+    }
+
+    // Check for existing pending renewal
+    $hasPendingRenewal = Renewal::where('member_id', $member->id)
+                              ->where('status', 'pending')
+                              ->exists();
+
+    if ($hasPendingRenewal) {
+        return back()->with('error', 'You already have a pending renewal request');
+    }
+
+    Log::info('Starting renewal process', ['member_id' => $member->id]);
+
+    try {
+        $receiptPath = $request->file('receipt')->store('renewals', 'public');
+
+        $renewal = Renewal::create([
+            'member_id' => $member->id,
+            'reference_number' => $request->reference_number,
+            'receipt_path' => $receiptPath,
+            'status' => 'pending',
         ]);
 
-        $member = Auth::user()->member;
-        if (!$member) {
-            Log::error('Renewal submission failed - no member profile', ['user_id' => Auth::id()]);
-            return back()->with('error', 'No member profile found');
-        }
-
-        Log::info('Starting renewal process', ['member_id' => $member->id]);
-
-        try {
-            $receiptPath = $request->file('receipt')->store('renewals', 'public');
-
-            $renewal = Renewal::create([
-                'member_id' => $member->id,
+        // Detailed activity log
+        logMembershipRenewal(
+            $member,
+            'pending',
+            'Membership renewal submitted',
+            [
                 'reference_number' => $request->reference_number,
                 'receipt_path' => $receiptPath,
-                'status' => 'pending',
-            ]);
+                'renewal_id' => $renewal->id,
+                'ip' => $request->ip()
+            ]
+        );
 
-            // Detailed activity log
-            logMembershipRenewal(
-                $member,
-                'pending',
-                'Membership renewal submitted',
-                [
-                    'reference_number' => $request->reference_number,
-                    'receipt_path' => $receiptPath,
-                    'renewal_id' => $renewal->id,
-                    'ip' => $request->ip()
-                ]
-            );
+        Mail::to(Auth::user()->email)->send(
+            new RenewalSubmitted(Auth::user()->name, $request->reference_number)
+        );
 
-            Mail::to(Auth::user()->email)->send(
-                new RenewalSubmitted(Auth::user()->name, $request->reference_number)
-            );
+        return redirect()->route('renew.thank-you')->with([
+            'success' => 'Renewal request submitted successfully!',
+            'reference_number' => $renewal->reference_number,
+            'submission_date' => $renewal->created_at->format('F j, Y g:i a'),
+            'renewal_id' => $renewal->id
+        ]);
 
-            return redirect()->route('member.dashboard')
-                ->with('success', 'Renewal request submitted successfully!');
+    } catch (\Exception $e) {
+        Log::error('Renewal submission failed', [
+            'error' => $e->getMessage(),
+            'member_id' => $member->id
+        ]);
+        return back()->with('error', 'Failed to submit renewal request');
+    }
+}
 
-        } catch (\Exception $e) {
-            Log::error('Renewal submission failed', [
-                'error' => $e->getMessage(),
-                'member_id' => $member->id
-            ]);
-            return back()->with('error', 'Failed to submit renewal request');
-        }
+    public function thankYou()
+{
+    // Check if user came from a successful submission
+    if (!session()->has('reference_number')) {
+        return redirect()->route('member.renew');
     }
 
+    // Logout the user immediately
+    Auth::logout();
 
+    return view('member.renew-thank-you');
+}
 
 
     public function announcements()
