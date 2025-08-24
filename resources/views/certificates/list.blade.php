@@ -1,25 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <!-- Title -->
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">    
+            <h2 class="font-semibold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">    
                 {{ __('Certificate Templates') }}
             </h2>
 
             <!-- Create Button -->
             @can('create certificates')
             <a href="{{ route('certificates.create') }}" dusk="certificates-create-button"
-            class="px-4 py-2 sm:px-5 sm:py-2 
-                    text-white dark:text-gray-900
-                    hover:text-[#101966] dark:hover:text-white
-                    bg-white/10 dark:bg-gray-200/20 
-                    hover:bg-white dark:hover:bg-gray-600
-                    focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-white dark:focus:ring-gray-500
-                    border border-white dark:border-gray-500 
-                    font-medium rounded-lg 
-                    text-sm sm:text-base leading-normal 
-                    text-center transition w-full sm:w-auto">
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full md:w-auto text-center">
                 Create
             </a>
             @endcan
@@ -30,7 +24,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
-            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
@@ -211,48 +205,101 @@
     </div>
 
     <x-slot name="script">
+        <style>
+            .swal2-icon {
+                border: 4px solid #ff0000 !important;
+                background-color: transparent !important;
+                color: #ff0000 !important;
+            }
+
+            .swal2-icon.swal2-warning .swal2-icon-content,
+            .swal2-icon.swal2-error .swal2-icon-content,
+            .swal2-icon.swal2-success .swal2-icon-content,
+            .swal2-icon.swal2-info .swal2-icon-content,
+            .swal2-icon.swal2-question .swal2-icon-content {
+                color: #ff0000 !important;
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .table-row-animate {
+                opacity: 0;
+                animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            }
+
+            .table-row-animate:nth-child(1) { animation-delay: 0.1s; }
+            .table-row-animate:nth-child(2) { animation-delay: 0.2s; }
+            .table-row-animate:nth-child(3) { animation-delay: 0.3s; }
+            .table-row-animate:nth-child(4) { animation-delay: 0.4s; }
+            .table-row-animate:nth-child(5) { animation-delay: 0.5s; }
+            .table-row-animate:nth-child(6) { animation-delay: 0.6s; }
+            .table-row-animate:nth-child(7) { animation-delay: 0.7s; }
+            .table-row-animate:nth-child(8) { animation-delay: 0.8s; }
+            .table-row-animate:nth-child(9) { animation-delay: 0.9s; }
+            .table-row-animate:nth-child(10) { animation-delay: 1.0s; }
+            .table-row-animate:nth-child(n+11) { animation-delay: 1.1s; }
+
+            .table-row-hover {
+                transition: all 0.3s ease-out;
+            }
+            
+            .table-row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.08);
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+            }
+
+            .table-row-hover:hover td:first-child {
+                border-left: 4px solid #3b82f6;
+                padding-left: calc(1.5rem - 4px);
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
                 fetchCertificates();
 
-                // Toggle column filter dropdown (desktop)
                 $('#columnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#columnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Toggle column filter dropdown (mobile)
                 $('#mobileColumnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#mobileColumnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Close dropdowns when clicking outside
                 $(document).on('click', function() {
                     $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
                 });
 
-                // Search functionality for both desktop and mobile
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
                     fetchCertificates(1, $(this).val());
                 });
 
-                // Entries per page change handler
                 $('#perPage, #mobilePerPage').on('change', function () {
                     fetchCertificates(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
-                // Sort by change handler
                 $('#sortBy, #mobileSortBy').on('change', function() {
                     fetchCertificates(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                // Column checkbox change handler
                 $('.column-checkbox').on('change', function() {
                     const column = $(this).data('column');
                     const isChecked = $(this).is(':checked');
                     
-                    // Show/hide the column
                     $(`.column-${column}`).toggle(isChecked);
                 });
 
@@ -283,7 +330,6 @@
                             renderCertificates(response.data, response.from);
                             renderPagination(response);
                             
-                            // Update both desktop and mobile result info
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
                             $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
                             $('#totalRecords, #mobileTotalRecords').text(response.total ?? 0);
@@ -299,44 +345,48 @@
                         const rowNumber = startIndex + index;
 
                         let row = `
-                            <tr class="border-b table-row-hover dark:border-gray-700">
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                 <td class="px-6 py-4 text-center">${rowNumber}</td>
                                 <td class="px-6 py-4 text-left column-title">${certificate.title}</td>
                                 <td class="px-6 py-4 text-left column-content">${certificate.content}</td>
                                 <td class="px-6 py-4 text-left column-signatories">${certificate.signatories}</td>
                                 <td class="px-6 py-4 text-left column-author">${certificate.author}</td>
                                 <td class="px-6 py-4 text-left column-created">${certificate.created_at}</td>
-                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    @can('view certificates')
-                                    <a href="/certificates/${certificate.id}/preview" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="Preview">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                    </a>
-                                    @endcan
-                                    @can('edit certificates')
-                                    <a href="/certificates/${certificate.id}/edit" class="group bg-indigo-100 hover:bg-indigo-200 p-2 rounded-full transition" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-indigo-600 group-hover:text-indigo-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                        </svg>
-                                    </a>
-                                    @endcan
-                                    @can('delete certificates')
-                                    <button onclick="deleteCertificate(${certificate.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Delete"> 
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                    @endcan
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        <a href="/certificates/${certificate.id}/preview" 
+                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">Preview</span>
+                                        </a>
+                                        
+                                        <a href="/certificates/${certificate.id}/edit" 
+                                            class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-indigo-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                            </svg>
+                                            <span class="text-indigo-600 group-hover:text-white text-sm">Edit</span>
+                                        </a>
+                                        
+                                        <button onclick="deleteCertificate(${certificate.id})" 
+                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         `;
@@ -412,21 +462,53 @@
                 }
 
                 window.deleteCertificate = function (id) {
-                    if (confirm("Are you sure you want to delete this certificate template?")) {
-                        $.ajax({
-                            url: '{{ route("certificates.destroy") }}',
-                            type: 'DELETE',
-                            data: { id: id },
-                            dataType: 'json',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            success: function (response) {
-                                fetchCertificates();
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#5e6ffb',
+                        confirmButtonText: 'Yes, delete it!',
+                        background: '#101966',
+                        color: '#fff',
+                        customClass: {
+                                icon: 'swal-icon-red-bg'
                             }
-                        });
-                    }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '{{ route("certificates.destroy") }}',
+                                type: 'DELETE',
+                                data: { id: id },
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: 'Certificate template has been deleted successfully.',
+                                        icon: 'success',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                    fetchCertificates();
+                                },
+                                error: function() {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'Something went wrong while deleting the certificate template.',
+                                        icon: 'error',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
+
                 window.fetchCertificates = fetchCertificates;
             });
         </script>

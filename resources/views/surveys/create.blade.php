@@ -1,10 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-                Surveys / Create
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
+                Surveys / Create</span>
             </h2>
-            <a href="{{ route('surveys.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+            <a href="{{ route('surveys.index') }}" 
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full md:w-auto mt-4 md:mt-0">
+
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -17,12 +23,12 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('surveys.store') }}" method="post">
+                    <form id="createForm" action="{{ route('surveys.store') }}" method="post">
                         @csrf
                         <div>
                             <label for="title" class="text-sm font-medium">Title</label>
                             <div class="my-3">    
-                                <input value="{{ old('title') }}" name="title" placeholder="Enter survey title" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
+                                <input value="{{ old('title') }}" name="title" id="title" placeholder="Enter survey title" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
                                 @error('title')
                                 <p class="text-red-400 font-medium"> {{ $message }} </p>
                                 @enderror
@@ -30,7 +36,7 @@
 
                             <label for="description" class="text-sm font-medium">Description</label>
                             <div class="my-3">    
-                                <textarea name="description" placeholder="Enter survey description" class="border-gray-300 shadow-sm w-full rounded-lg" rows="3">{{ old('description') }}</textarea>
+                                <textarea name="description" id="description" placeholder="Enter survey description" class="border-gray-300 shadow-sm w-full rounded-lg" rows="3">{{ old('description') }}</textarea>
                                 @error('description')
                                 <p class="text-red-400 font-medium"> {{ $message }} </p>
                                 @enderror
@@ -44,12 +50,12 @@
 
                             <div class="mt-8">
                                 <h3 class="text-lg font-medium mb-4">Questions</h3>
-                                
-                                <div id="questions-container">
-                                    <!-- Questions will be added here -->
-                                </div>
-
-                                <button type="button" id="add-question" class="mt-4 flex items-center px-4 py-2 text-sm text-green-600 hover:text-white hover:bg-green-600 rounded-md transition-colors duration-200 border border-green-100 hover:border-green-600 font-medium">
+                                <div id="questions-container"></div>
+                                <button type="button" id="add-question" 
+                                    class="mt-4 flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                        bg-[#10b981] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                        focus:ring-[#10b981] border border-white font-medium dark:border-[#3E3E3A] 
+                                        dark:hover:bg-black dark:hover:border-[#10b981] rounded-lg text-sm leading-normal transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -57,8 +63,7 @@
                                 </button>
                             </div>
 
-
-                            <label for="members" class="text-sm font-medium">Assign to Members</label>
+                            <span class="text-sm font-medium mt-6 block">Assign to Members</span>
                             <div class="my-3">
                                 <div class="flex items-center mb-2">
                                     <input type="checkbox" id="select-all-members" class="rounded mr-2">
@@ -80,9 +85,12 @@
                                 @enderror
                             </div>
 
-
                             <div class="mt-6">
-                                <button type="submit" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:text-white hover:bg-blue-600 rounded-md transition-colors duration-200 border border-blue-100 hover:border-blue-600 font-medium">
+                                <button type="submit" 
+                                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -97,13 +105,13 @@
     </div>
 
     <x-slot name="script">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const questionsContainer = document.getElementById('questions-container');
                 const addQuestionBtn = document.getElementById('add-question');
                 let questionCount = 0;
 
-                // Add first question by default
                 addQuestion();
 
                 addQuestionBtn.addEventListener('click', addQuestion);
@@ -123,12 +131,10 @@
                                 </svg>
                             </button>
                         </div>
-                        
                         <div class="mb-3">
                             <label class="text-sm font-medium">Question Text</label>
                             <input type="text" name="questions[${questionCount}][question]" placeholder="Enter question" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" required>
                         </div>
-                        
                         <div class="mb-3">
                             <label class="text-sm font-medium">Question Type</label>
                             <select name="questions[${questionCount}][type]" class="question-type border-gray-300 shadow-sm w-full rounded-lg mt-1" required>
@@ -138,7 +144,6 @@
                                 <option value="multiple-choice">Multiple Choice</option>
                             </select>
                         </div>
-                        
                         <div class="options-container hidden mb-3">
                             <label class="text-sm font-medium">Options (one per line)</label>
                             <textarea name="questions[${questionCount}][options]" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" rows="3"></textarea>
@@ -147,7 +152,6 @@
 
                     questionsContainer.appendChild(questionDiv);
 
-                    // Add event listener for type change
                     const typeSelect = questionDiv.querySelector('.question-type');
                     typeSelect.addEventListener('change', function() {
                         const optionsContainer = questionDiv.querySelector('.options-container');
@@ -158,46 +162,93 @@
                         }
                     });
 
-                    // Add event listener for remove button
                     const removeBtn = questionDiv.querySelector('.remove-question');
                     removeBtn.addEventListener('click', function() {
                         questionDiv.remove();
-                        // Renumber remaining questions
                         const questions = questionsContainer.querySelectorAll('.question-item');
                         questions.forEach((q, index) => {
                             q.dataset.index = index + 1;
                             q.querySelector('h4').textContent = `Question #${index + 1}`;
-                            // Update all input names
                             const inputs = q.querySelectorAll('input, select, textarea');
                             inputs.forEach(input => {
-                                const name = input.name.replace(/questions\[\d+\]/, `questions[${index + 1}]`);
-                                input.name = name;
+                                input.name = input.name.replace(/questions\[\d+\]/, `questions[${index + 1}]`);
                             });
                         });
                         questionCount = questions.length;
                     });
                 }
-            });
 
-
-            document.getElementById('select-all-members').addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.member-checkbox');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
+                document.getElementById('select-all-members').addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.member-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
                 });
-            });
 
-            // Check "Select All" if all checkboxes are checked
-            const memberCheckboxes = document.querySelectorAll('.member-checkbox');
-            const selectAllMembers = document.getElementById('select-all-members');
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                const selectAllMembers = document.getElementById('select-all-members');
+                function checkSelectAllMembers() {
+                    selectAllMembers.checked = Array.from(memberCheckboxes).every(checkbox => checkbox.checked);
+                }
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', checkSelectAllMembers);
+                });
 
-            function checkSelectAllMembers() {
-                const allChecked = Array.from(memberCheckboxes).every(checkbox => checkbox.checked);
-                selectAllMembers.checked = allChecked;
-            }
+                document.getElementById("createForm").addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you want to create this survey?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#5e6ffb",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, create it!",
+                        cancelButtonText: "Cancel",
+                        background: '#101966',
+                        color: '#fff'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Creating...',
+                                text: 'Please wait',
+                                timer: 1500,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                willClose: () => {
+                                    e.target.submit();
+                                },
+                                background: '#101966',
+                                color: '#fff',
+                                allowOutsideClick: false
+                            });
+                        }
+                    });
+                });
 
-            memberCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', checkSelectAllMembers);
+                @if(session('success'))
+                    Swal.fire({
+                        icon: "success",
+                        title: "Created!",
+                        text: "{{ session('success') }}",
+                        confirmButtonColor: "#5e6ffb",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
+
+                @if(session('error'))
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "{{ session('error') }}",
+                        confirmButtonColor: "#5e6ffb",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
             });
         </script>
     </x-slot>

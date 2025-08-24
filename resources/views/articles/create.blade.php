@@ -1,15 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 Articles / Create
             </h2>
-                    <a href="{{ route('articles.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Back to Articles
-                    </a>                
+
+            <a href="{{ route('articles.index') }}" 
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-base sm:text-lg md:text-xl leading-normal 
+                    transition-colors duration-200 w-full sm:w-auto">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Articles
+            </a>
         </div>
     </x-slot>
 
@@ -59,10 +65,14 @@
                             </div>
 
                         <div class="mt-6">
-                            <button type="submit" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:text-white hover:bg-blue-600 rounded-md transition-colors duration-200 border border-blue-100 hover:border-blue-600 font-medium">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
+                            <button type="submit" class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
                                 Create
                             </button>
                         </div>

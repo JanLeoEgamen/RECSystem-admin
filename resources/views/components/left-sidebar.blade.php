@@ -270,11 +270,11 @@
             </div>
             @endcanany
 
-            @canany(['view membership types', 'view bureaus', 'view sections', 'view applicants', 'view members', 'view licenses', 'view renewals', 'view payments'])
+            @canany(['view membership types', 'view bureau-section', 'view sections', 'view applicants', 'view members', 'view licenses', 'view renewals', 'view payments'])
             <div>
                 @php
                     $memberEngagementActive = request()->routeIs(
-                        'membership-types.index', 'bureaus.index', 'sections.index',
+                        'membership-types.index', 'bureau-section.index', 'sections.index',
                         'sections.index', 'applicants.index', 'reports.index',
                         'members.index', 'licenses.index','renew.index', 'cashier.index'
                     );
@@ -311,20 +311,20 @@
                             <span>{{ __('Membership Types') }}</span>
                         </x-nav-link>
                     @endcan
-                    @can('view bureaus')
-                        <x-nav-link :href="route('bureaus.index')" :active="request()->routeIs('bureaus.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-200 hover:bg-[#5E6FFB] dark:hover:bg-indigo-700 {{ request()->routeIs('bureaus.index') ? 'bg-[#4C5091] text-white' : '' }}
+                    @can('view bureau-section')
+                        <x-nav-link :href="route('bureau-section.index')" :active="request()->routeIs('bureau-section.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-200 hover:bg-[#5E6FFB] dark:hover:bg-indigo-700 {{ request()->routeIs('bureaus.index') ? 'bg-[#4C5091] text-white' : '' }}
                         transition-transform duration-300 hover:scale-105 active:scale-95">
                             <img src="https://img.icons8.com/deco-glyph/48/FFFFFF/department.png" class="w-4 h-4 mr-2 object-contain" alt="Markee">
                             <span>{{ __('Bureaus') }}</span>
                         </x-nav-link>
                     @endcan
-                    @can('view sections')
+                    <!-- @can('view sections')
                         <x-nav-link :href="route('sections.index')" :active="request()->routeIs('sections.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-200 hover:bg-[#5E6FFB] dark:hover:bg-indigo-700 {{ request()->routeIs('sections.index') ? 'bg-[#4C5091] text-white' : '' }}
                         transition-transform duration-300 hover:scale-105 active:scale-95">
                             <img src="https://img.icons8.com/external-tal-revivo-bold-tal-revivo/24/FFFFFF/external-pie-graph-chart-isolated-on-white-right-now-business-bold-tal-revivo.png" class="w-4 h-4 mr-2 object-contain" alt="Articles">
                             <span>{{ __('Sections') }}</span>
                         </x-nav-link>
-                    @endcan
+                    @endcan -->
                     @can('view applicants')
                         <x-nav-link :href="route('applicants.index')" :active="request()->routeIs('applicants.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-200 hover:bg-[#5E6FFB] dark:hover:bg-indigo-700 {{ request()->routeIs('applicants.index') ? 'bg-[#4C5091] text-white' : '' }}
                         transition-transform duration-300 hover:scale-105 active:scale-95">
@@ -634,10 +634,11 @@
             <div class="text-center text-sm text-white rounded-md px-3 py-1 shadow-sm">
                 {{ now()->format('h:i A') }} today, {{ now()->format('d M Y') }}
             </div>
-            <form method="POST" action="{{ route('logout') }}">
+            <form id="logout-form" method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button 
-                    type="submit"
+                    type="button" {{-- change to button (not submit) --}}
+                    id="logout-button"
                     class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white 
                         bg-[#4C5091] dark:bg-indigo-800 rounded-md 
                         hover:bg-red-900 dark:hover:bg-[#F87171] transition-colors duration-300"
@@ -653,6 +654,40 @@
                 </button>
             </form>
         </div>
+
+        {{-- SweetAlert2 --}}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.getElementById('logout-button').addEventListener('click', function () {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You will be logged out of your account.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#101966',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, log me out',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Logging out...',
+                            text: 'Please wait',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        setTimeout(() => {
+                            document.getElementById('logout-form').submit();
+                        }, 1000);
+                    }
+                });
+            });
+        </script>
     </div>
 </aside>
 @endcan

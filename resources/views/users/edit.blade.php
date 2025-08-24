@@ -128,8 +128,55 @@
                             </div>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("updateForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you really want to update this user?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#5e6ffb",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, update it!",
+                cancelButtonText: "Cancel",
+                background: '#101966',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit();
+                }
+            });
+        });
+
+        @if(session('success'))
+            Swal.fire({
+                icon: "success",
+                title: "Updated!",
+                text: "{{ session('success') }}",
+                confirmButtonColor: "#101966",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "{{ session('error') }}",
+                confirmButtonColor: "#101966",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+    </script>
 </x-app-layout>

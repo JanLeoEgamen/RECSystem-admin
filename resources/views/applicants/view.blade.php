@@ -1,15 +1,22 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 Applicant / View
             </h2>
-                    <a href="{{ route('applicants.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Back to Applicants
-                    </a>                
+            <a href="{{ route('applicants.index') }}" 
+               class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                      bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                      focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                      dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                      w-full sm:w-auto mt-4 sm:mt-0">
+
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Applicants
+            </a>                
         </div>
     </x-slot>
 
@@ -166,9 +173,14 @@
                         </div>
                     </div>
 
+                    <!-- Buttons -->
                     <div class="mt-6 flex flex-wrap gap-3">
                         @can('edit applicants')
-                        <a href="{{ route('applicants.edit', $applicant->id) }}" class="flex items-center px-4 py-2 text-sm text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-md transition-colors duration-200 border border-indigo-100 hover:border-indigo-600 font-medium">
+                        <a href="{{ route('applicants.edit', $applicant->id) }}" 
+                           class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                  bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                  focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                  dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
@@ -177,11 +189,14 @@
                         @endcan
 
                         @can('delete applicants')
-                        <form action="{{ route('applicants.destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this applicant?');" class="inline">
+                        <form id="deleteForm" action="{{ route('applicants.destroy') }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <input type="hidden" name="id" value="{{ $applicant->id }}">
-                            <button type="submit" class="flex items-center px-4 py-2 text-sm text-red-600 hover:text-white hover:bg-red-600 rounded-md transition-colors duration-200 border border-red-100 hover:border-red-600 font-medium">
+                            <button type="submit" class="inline-flex items-center px-5 py-2 text-white hover:text-red-700 hover:border-red-700 
+                                    bg-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                    focus:ring-red-600 border border-red-600 font-medium dark:border-red-800 
+                                    dark:hover:bg-black dark:hover:border-red-700 rounded-lg text-xl leading-normal transition-colors duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
@@ -219,4 +234,64 @@
             </div>
         </div>
     </div>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("deleteForm")?.addEventListener("submit", function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to delete this applicant?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#5e6ffb",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel",
+                background: '#101966',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            e.target.submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
+                }
+            });
+        });
+
+        @if(session('success'))
+            Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "{{ session('success') }}",
+                confirmButtonColor: "#5e6ffb",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "{{ session('error') }}",
+                confirmButtonColor: "#5e6ffb",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+    </script>
 </x-app-layout>

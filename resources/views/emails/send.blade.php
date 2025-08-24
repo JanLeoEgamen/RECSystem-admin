@@ -1,10 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Send Email to Members
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
+                Send Email <span class="block md:hidden">to Members</span>
+                <span class="hidden md:inline">to Members</span>
             </h2>
-            <a href="{{ route('emails.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+
+            <a href="{{ route('emails.index') }}" 
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full md:w-auto mt-4 md:mt-0">
+
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -26,7 +34,7 @@
                 </div>
             @endif
 
-            @if ($errors->any()))
+            @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg shadow">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
@@ -40,7 +48,7 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Select Members</label>
+                    <span class="block text-sm font-medium text-gray-700 dark:text-gray-200">Select Members</span>
                     <div class="relative mt-1">
                         <input 
                             type="text" 
@@ -106,13 +114,19 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">You can attach multiple files.</p>
                 </div>
 
-                <div class="mb-4" id="custom-message-wrapper">
+                <div class="mb-4 hidden" id="custom-message-wrapper">
                     <label for="custom_message" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Optional Custom Message</label>
-                    <textarea name="custom_message" rows="4" class="w-full border-gray-300 rounded-lg shadow-sm mt-1"></textarea>
+                    <textarea name="custom_message" id="custom_message" rows="4" class="w-full border-gray-300 rounded-lg shadow-sm mt-1"></textarea>
                 </div>
     
                 <button type="submit"
-                    class="px-6 py-2 bg-[#1e40af] text-white rounded-lg hover:bg-[#112244] focus:ring-2 focus:ring-offset-2 focus:ring-[#1e40af]">
+                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
                     Send Email
                 </button>
             </form>

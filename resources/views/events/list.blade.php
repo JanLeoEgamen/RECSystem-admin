@@ -1,53 +1,44 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"> 
+            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 {{ __('Events') }}
             </h2>
 
-        <!-- Create Button -->
-        @can('create events')
-        <a href="{{ route('events.create') }}" 
-           class="inline-block px-5 py-2 
-                  text-white dark:text-gray-900
-                  hover:text-[#101966] dark:hover:text-white
-                  bg-white/10 dark:bg-gray-200/20 
-                  hover:bg-white dark:hover:bg-gray-600
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 
-                  focus:ring-white dark:focus:ring-gray-500
-                  border border-white dark:border-gray-500 
-                  font-medium rounded-lg 
-                  text-base sm:text-xl leading-normal 
-                  text-center sm:text-right transition">
-            Create
-        </a>
-        @endcan
-
-    </div>
-</x-slot>
-
+            <!-- Create Button -->
+            @can('create events')
+            <a href="{{ route('events.create') }}" 
+               class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full sm:w-auto text-center">
+                Create
+            </a>
+            @endcan
+        </div>
+    </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
-            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center space-x-2">
-                                <label for="perPage" class="text-sm text-gray-700 dark:text-gray-300">Show</label>
+                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
                                 <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
                                     <option value="10" selected>10</option>
                                     <option value="20">20</option>
                                     <option value="50">50</option>
                                     <option value="100">100</option>
                                 </select>
-                                <span class="text-sm text-gray-700 dark:text-gray-300">entries</span>
                             </div>
 
                             <div class="flex items-center space-x-2">
-                                <label for="sortBy" class="text-sm text-gray-700 dark:text-gray-300">Sort by</label>
+                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
                                     <option value="created_desc">Default</option>
                                     <option value="title_asc">Title (A-Z)</option>
@@ -60,28 +51,149 @@
                                 </select>
                             </div>
 
-                            <div class="flex items-center space-x-2 ml-2">
-                                <label for="columnFilter" class="text-sm text-gray-700 dark:text-gray-300">Columns</label>
-                                <select id="columnFilter" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-12 text-sm focus:outline-none focus:ring focus:border-blue-300 w-[150px]">
-                                    <option value="all" selected>Show All</option>
-                                    <option value="title">Title</option>
-                                    <option value="start_date">Start Date</option>
-                                    <option value="end_date">End Date</option>
-                                    <option value="location">Location</option>
-                                    <option value="is_published">Status</option>
-                                    <option value="author">Author</option>
-                                    <option value="registrations">Registrations</option>
-                                    <option value="created">Created</option>
-                                </select>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Columns</span>
+                                <div class="relative">
+                                    <button id="columnFilterButton" class="flex items-center justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
+                                        <span>Select columns</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    
+                                    <div id="columnFilterDropdown" class="hidden absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
+                                        <div class="p-2">
+                                            <div class="space-y-2">
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="title" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">Title</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="start_date" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">Start Date</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="end_date" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">End Date</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="location" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">Location</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="is_published" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">Status</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="author" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">Author</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="registrations" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">Registrations</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                    <input type="checkbox" class="column-checkbox" data-column="created" checked>
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">Created</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="flex items-center space-x-4 ml-6">
+                        <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                 Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> events
                             </div>
                             <input type="text" id="searchInput" placeholder="Search events..." 
                                 class="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
+                        </div>
+                    </div>
+
+                    <!-- Mobile View - Vertical layout -->
+                    <div class="sm:hidden space-y-3 mb-4">
+                        <input type="text" id="mobileSearchInput" placeholder="Search events..." 
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
+                            <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
+                            <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
+                                <option value="created_desc">Default</option>
+                                <option value="title_asc">Title (A-Z)</option>
+                                <option value="title_desc">Title (Z-A)</option>
+                                <option value="start_date_asc">Start Date (Oldest First)</option>
+                                <option value="start_date_desc">Start Date (Newest First)</option>
+                                <option value="is_published_desc">Status (Published First)</option>
+                                <option value="is_published_asc">Status (Draft First)</option>
+                                <option value="created_asc">Created (Oldest First)</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Columns</span>
+                            <div class="relative w-2/3">
+                                <button id="mobileColumnFilterButton" class="flex items-center justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
+                                    <span>Select columns</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                
+                                <div id="mobileColumnFilterDropdown" class="hidden absolute left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
+                                    <div class="p-2">
+                                        <div class="space-y-2">
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="title" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">Title</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="start_date" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">Start Date</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="end_date" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">End Date</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="location" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">Location</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="is_published" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">Status</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="author" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">Author</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="registrations" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">Registrations</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                                <input type="checkbox" class="column-checkbox" data-column="created" checked>
+                                                <span class="text-sm text-gray-700 dark:text-gray-300">Created</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
+                            Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> events
                         </div>
                     </div>
 
@@ -114,62 +226,138 @@
     </div>
 
     <x-slot name="script">
+        <style>
+            .swal2-icon {
+                border: 4px solid #ff0000 !important;
+                background-color: transparent !important;
+                color: #ff0000 !important;
+            }
+
+            .swal2-icon.swal2-warning .swal2-icon-content,
+            .swal2-icon.swal2-error .swal2-icon-content,
+            .swal2-icon.swal2-success .swal2-icon-content,
+            .swal2-icon.swal2-info .swal2-icon-content,
+            .swal2-icon.swal2-question .swal2-icon-content {
+                color: #ff0000 !important;
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .table-row-animate {
+                opacity: 0;
+                animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            }
+
+            .table-row-animate:nth-child(1) { animation-delay: 0.1s; }
+            .table-row-animate:nth-child(2) { animation-delay: 0.2s; }
+            .table-row-animate:nth-child(3) { animation-delay: 0.3s; }
+            .table-row-animate:nth-child(4) { animation-delay: 0.4s; }
+            .table-row-animate:nth-child(5) { animation-delay: 0.5s; }
+            .table-row-animate:nth-child(6) { animation-delay: 0.6s; }
+            .table-row-animate:nth-child(7) { animation-delay: 0.7s; }
+            .table-row-animate:nth-child(8) { animation-delay: 0.8s; }
+            .table-row-animate:nth-child(9) { animation-delay: 0.9s; }
+            .table-row-animate:nth-child(10) { animation-delay: 1.0s; }
+            .table-row-animate:nth-child(n+11) { animation-delay: 1.1s; }
+
+            .table-row-hover {
+                transition: all 0.3s ease-out;
+            }
+            
+            .table-row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.08);
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+            }
+
+            .table-row-hover:hover td:first-child {
+                border-left: 4px solid #3b82f6;
+                padding-left: calc(1.5rem - 4px);
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
                 fetchEvents();
 
-                $('#searchInput').on('keyup', function () {
+                $('#columnFilterButton').on('click', function(e) {
+                    e.stopPropagation();
+                    $('#columnFilterDropdown').toggleClass('hidden');
+                });
+
+                $('#mobileColumnFilterButton').on('click', function(e) {
+                    e.stopPropagation();
+                    $('#mobileColumnFilterDropdown').toggleClass('hidden');
+                });
+
+                $(document).on('click', function() {
+                    $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
+                });
+
+                $('#searchInput, #mobileSearchInput').on('keyup', function () {
                     fetchEvents(1, $(this).val());
                 });
 
-                $('#perPage').on('change', function () {
-                    fetchEvents(1, $('#searchInput').val(), $(this).val());
+                $('#perPage, #mobilePerPage').on('change', function () {
+                    fetchEvents(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
-                $('#sortBy').on('change', function() {
-                    fetchEvents(1, $('#searchInput').val(), $('#perPage').val());
+                $('#sortBy, #mobileSortBy').on('change', function() {
+                    fetchEvents(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                $('#columnFilter').on('change', function() {
-                    updateVisibleColumns();
-                });
-
-                function updateVisibleColumns() {
-                    const selectedColumn = $('#columnFilter').val();
+                $('.column-checkbox').on('change', function() {
+                    const column = $(this).data('column');
+                    const isChecked = $(this).is(':checked');
                     
-                    if (selectedColumn === 'all') {
-                        $('th[class*="column-"], td[class*="column-"]').show();
-                    } else {
-                        $('th[class*="column-"], td[class*="column-"]').each(function() {
-                            const columnClass = Array.from(this.classList).find(c => c.startsWith('column-'));
-                            if (columnClass) {
-                                const columnName = columnClass.replace('column-', '');
-                                if (columnName === selectedColumn) {
-                                    $(this).show();
-                                } else {
-                                    $(this).hide();
-                                }
-                            }
-                        });
-                    }
-                }
+                    $(`.column-${column}`).toggle(isChecked);
+                });
 
-                function fetchEvents(page = 1, search = '', perPage = $('#perPage').val()) {
-                    const sortValue = $('#sortBy').val() || 'created_desc';
-                    const lastUnderscore = sortValue.lastIndexOf('_');
-                    const column = sortValue.substring(0, lastUnderscore);
-                    const direction = sortValue.substring(lastUnderscore + 1);
-                    const sortParams = `&sort=${column}&direction=${direction}`;
+                function fetchEvents(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
+                    const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'created_desc';
+                    const [column, direction] = sortValue.split('_');
+
+                    const sortMap = {
+                        'title_asc': { sort: 'title', direction: 'asc' },
+                        'title_desc': { sort: 'title', direction: 'desc' },
+                        'start_date_asc': { sort: 'start_date', direction: 'asc' },
+                        'start_date_desc': { sort: 'start_date', direction: 'desc' },
+                        'is_published_asc': { sort: 'is_published', direction: 'asc' },
+                        'is_published_desc': { sort: 'is_published', direction: 'desc' },
+                        'created_asc': { sort: 'created_at', direction: 'asc' },
+                        'created_desc': { sort: 'created_at', direction: 'desc' }
+                    };
+
+                    const sortParams = sortMap[sortValue] || { sort: 'created_at', direction: 'desc' };
 
                     $.ajax({
-                        url: `{{ route('events.index') }}?page=${page}&search=${search}&perPage=${perPage}${sortParams}`,
+                        url: `{{ route('events.index') }}`,
                         type: 'GET',
+                        data: {
+                            page: page,
+                            search: search,
+                            perPage: perPage,
+                            sort: sortParams.sort,
+                            direction: sortParams.direction
+                        },
                         success: function (response) {
                             renderEvents(response.data, response.from);
                             renderPagination(response);
-                            $('#startRecord').text(response.from ?? 0);
-                            $('#endRecord').text(response.to ?? 0);
-                            $('#totalRecords').text(response.total ?? 0);
+                            
+                            $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
+                            $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
+                            $('#totalRecords, #mobileTotalRecords').text(response.total ?? 0);
                         }
                     });
                 }
@@ -182,7 +370,7 @@
                         const rowNumber = startIndex + index;
                         
                         tbody.append(`
-                            <tr class="border-b table-row-hover dark:border-gray-700">
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                 <td class="px-6 py-4 text-center">${rowNumber}</td>
                                 <td class="px-6 py-4 text-left column-title">${event.title}</td>
                                 <td class="px-6 py-4 text-left column-start_date">${event.start_date}</td>
@@ -196,38 +384,44 @@
                                 <td class="px-6 py-4 text-left column-author">${event.author}</td>
                                 <td class="px-6 py-4 text-center column-registrations">${event.registrations_count}</td>
                                 <td class="px-6 py-4 text-left column-created">${event.created_at}</td>
-                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    ${event.can_view_registrations ? `
-                                    <a href="/events/${event.id}/registrations" class="group bg-purple-100 hover:bg-purple-200 p-2 rounded-full transition" title="Registrations">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-purple-600 group-hover:text-purple-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </a>
-                                    ` : ''}
-                                    <a href="/events/${event.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                        </svg>
-                                    </a>
-                                    <button onclick="deleteEvent(${event.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Delete"> 
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        ${event.can_view_registrations ? `
+                                        <a href="/events/${event.id}/registrations" 
+                                            class="group flex items-center bg-purple-100 hover:bg-purple-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-purple-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span class="text-purple-600 group-hover:text-white text-sm">Registrations</span>
+                                        </a>
+                                        ` : ''}
+                                        <a href="/events/${event.id}/edit" 
+                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                            </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
+                                        </a>
+                                        <button onclick="deleteEvent(${event.id})" 
+                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         `);
                     });
-                    
-                    updateVisibleColumns();
                 }
 
                 function renderPagination(data) {
@@ -235,12 +429,12 @@
 
                     if (data.current_page > 1) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
-                                onclick="fetchEvents(1, $('#searchInput').val(), $('#perPage').val())">
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                                onclick="fetchEvents(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 &laquo; First
                             </button>
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
-                                onclick="fetchEvents(${data.current_page - 1}, $('#searchInput').val(), $('#perPage').val())">
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                                onclick="fetchEvents(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Previous
                             </button>`;
                     }
@@ -255,69 +449,94 @@
                     if (endPage - startPage + 1 < pagesToShow) {
                         startPage = Math.max(1, endPage - pagesToShow + 1);
                     }
-
                     if (startPage > 1) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
-                                onclick="fetchEvents(1, $('#searchInput').val(), $('#perPage').val())">
+                            <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                                onclick="fetchEvents(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 1
                             </button>`;
                         if (startPage > 2) {
-                            paginationHtml += `<span class="px-2">...</span>`;
+                            paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
                         }
                     }
-
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
-                                onclick="fetchEvents(${i}, $('#searchInput').val(), $('#perPage').val())">
+                            <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                                onclick="fetchEvents(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${i}
                             </button>`;
                     }
-
                     if (endPage < totalPages) {
                         if (endPage < totalPages - 1) {
-                            paginationHtml += `<span class="px-2">...</span>`;
+                            paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
                         }
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200'}"
-                                onclick="fetchEvents(${totalPages}, $('#searchInput').val(), $('#perPage').val())">
+                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                                onclick="fetchEvents(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${totalPages}
                             </button>`;
                     }
-
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
-                                onclick="fetchEvents(${data.current_page + 1}, $('#searchInput').val(), $('#perPage').val())">
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                                onclick="fetchEvents(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Next
                             </button>
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200"
-                                onclick="fetchEvents(${data.last_page}, $('#searchInput').val(), $('#perPage').val())">
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                                onclick="fetchEvents(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Last &raquo;
                             </button>`;
                     }
-
                     paginationHtml += '</div>';
                     $('#paginationLinks').html(paginationHtml);
                 }
 
                 window.deleteEvent = function (id) {
-                    if (confirm("Are you sure you want to delete?")) {
-                        $.ajax({
-                            url: '{{ route("events.destroy") }}',
-                            type: 'DELETE',
-                            data: { id: id },
-                            dataType: 'json',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            success: function (response) {
-                                alert("Successfully deleted.");
-                                fetchEvents();
-                            }
-                        });
-                    }
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#5e6ffb',
+                        confirmButtonText: 'Yes, delete it!',
+                        background: '#101966',
+                        color: '#fff',
+                        customClass: {
+                            icon: 'swal-icon-red-bg'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '{{ route("events.destroy") }}',
+                                type: 'DELETE',
+                                data: { id: id },
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: 'Event has been deleted successfully.',
+                                        icon: 'success',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                    fetchEvents();
+                                },
+                                error: function() {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'Something went wrong while deleting the event.',
+                                        icon: 'error',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
 
                 window.fetchEvents = fetchEvents;

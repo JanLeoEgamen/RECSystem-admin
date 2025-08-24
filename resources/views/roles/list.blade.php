@@ -6,10 +6,12 @@
             </h2>
             @can('create roles')
             <a href="{{ route('roles.create') }}" 
-            class="inline-block px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-            focus:ring-[#101966] border border-white border font-medium dark:border-[#3E3E3A] 
-            dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">Create</a>
+                class="inline-block px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                focus:ring-[#101966] border border-white border font-medium dark:border-[#3E3E3A] 
+                dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">
+                Create
+            </a>
             @endcan
         </div>
     </x-slot>
@@ -18,13 +20,10 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
-            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <!-- Left side filters -->
                         <div class="flex items-center space-x-4">
-                            <!-- Entries per page -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
                                 <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
@@ -35,7 +34,6 @@
                                 </select>
                             </div>
 
-                            <!-- Sort by -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
@@ -46,7 +44,6 @@
                                 </select>
                             </div>
 
-                            <!-- Column Filter -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Columns</span>
                                 <div class="relative">
@@ -57,7 +54,6 @@
                                         </svg>
                                     </button>
                                     
-                                    <!-- Column Filter Dropdown -->
                                     <div id="columnFilterDropdown" class="hidden absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                         <div class="p-2">
                                             <div class="space-y-2">
@@ -80,7 +76,6 @@
                             </div>
                         </div>
 
-                        <!-- Right side - search and result info -->
                         <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                 Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
@@ -90,13 +85,10 @@
                         </div>
                     </div>
 
-                    <!-- Mobile View - Vertical layout -->
                     <div class="sm:hidden space-y-3 mb-4">
-                        <!-- Search bar -->
                         <input type="text" id="mobileSearchInput" placeholder="Search roles..." 
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
 
-                        <!-- Entries per page -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
                             <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -107,7 +99,6 @@
                             </select>
                         </div>
 
-                        <!-- Sort by -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -118,7 +109,6 @@
                             </select>
                         </div>
 
-                        <!-- Column Filter -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Columns</span>
                             <div class="relative w-2/3">
@@ -129,7 +119,6 @@
                                     </svg>
                                 </button>
                                 
-                                <!-- Column Filter Dropdown -->
                                 <div id="mobileColumnFilterDropdown" class="hidden absolute left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                     <div class="p-2">
                                         <div class="space-y-2">
@@ -151,7 +140,6 @@
                             </div>
                         </div>
 
-                        <!-- Result Info -->
                         <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
                             Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
                         </div>
@@ -181,48 +169,101 @@
     </div>
 
     <x-slot name="script">
+        <style>
+            .swal2-icon {
+                border: 4px solid #ff0000 !important;
+                background-color: transparent !important;
+                color: #ff0000 !important;
+            }
+
+            .swal2-icon.swal2-warning .swal2-icon-content,
+            .swal2-icon.swal2-error .swal2-icon-content,
+            .swal2-icon.swal2-success .swal2-icon-content,
+            .swal2-icon.swal2-info .swal2-icon-content,
+            .swal2-icon.swal2-question .swal2-icon-content {
+                color: #ff0000 !important;
+            }
+
+             @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .table-row-animate {
+                opacity: 0;
+                animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            }
+
+            .table-row-animate:nth-child(1) { animation-delay: 0.1s; }
+            .table-row-animate:nth-child(2) { animation-delay: 0.2s; }
+            .table-row-animate:nth-child(3) { animation-delay: 0.3s; }
+            .table-row-animate:nth-child(4) { animation-delay: 0.4s; }
+            .table-row-animate:nth-child(5) { animation-delay: 0.5s; }
+            .table-row-animate:nth-child(6) { animation-delay: 0.6s; }
+            .table-row-animate:nth-child(7) { animation-delay: 0.7s; }
+            .table-row-animate:nth-child(8) { animation-delay: 0.8s; }
+            .table-row-animate:nth-child(9) { animation-delay: 0.9s; }
+            .table-row-animate:nth-child(10) { animation-delay: 1.0s; }
+            .table-row-animate:nth-child(n+11) { animation-delay: 1.1s; }
+
+            .table-row-hover {
+                transition: all 0.3s ease-out;
+            }
+            
+            .table-row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.08);
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+            }
+
+            .table-row-hover:hover td:first-child {
+                border-left: 4px solid #3b82f6;
+                padding-left: calc(1.5rem - 4px);
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
                 fetchRoles();
 
-                // Toggle column filter dropdown (desktop)
                 $('#columnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#columnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Toggle column filter dropdown (mobile)
                 $('#mobileColumnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#mobileColumnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Close dropdowns when clicking outside
                 $(document).on('click', function() {
                     $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
                 });
 
-                // Search functionality for both desktop and mobile
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
                     fetchRoles(1, $(this).val());
                 });
 
-                // Entries per page change handler
                 $('#perPage, #mobilePerPage').on('change', function () {
                     fetchRoles(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
-                // Sort by change handler
                 $('#sortBy, #mobileSortBy').on('change', function() {
                     fetchRoles(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                // Column checkbox change handler
                 $('.column-checkbox').on('change', function() {
                     const column = $(this).data('column');
                     const isChecked = $(this).is(':checked');
                     
-                    // Show/hide the column
                     $(`.column-${column}`).toggle(isChecked);
                 });
 
@@ -253,7 +294,6 @@
                             renderRoles(response.data, response.from);
                             renderPagination(response);
                             
-                            // Update both desktop and mobile result info
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
                             $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
                             $('#totalRecords, #mobileTotalRecords').text(response.total ?? 0);
@@ -285,11 +325,12 @@
                                     @can('edit roles')
                                     <a href="/roles/${role.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
+                                            class="h-4 w-4 text-blue-600 group-hover:text-white transition"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
                                         </svg>
+                                        <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
                                     </a>
                                     @endcan
                                 ` : ''}
@@ -297,11 +338,12 @@
                                     @can('delete roles')
                                     <button onclick="deleteRole(${role.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
+                                            class="h-4 w-4 text-red-600 group-hover:text-white transition"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
+                                        <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
                                     </button>
                                     @endcan
                                 ` : ''}

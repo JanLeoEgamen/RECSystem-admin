@@ -1,15 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-                Applicants / Edit
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
+                Applicants / Edit</span>
             </h2>
-                    <a href="{{ route('applicants.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Back to Applicants
-                    </a>                
+
+            <a href="{{ route('applicants.index') }}" 
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                    w-full sm:w-auto mt-4 sm:mt-0">
+
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Applicants
+            </a>                
         </div>
     </x-slot>
 
@@ -240,21 +248,18 @@
                                         <label for="province" class="block text-sm font-medium">Province *</label>
                                         <select id="province" name="province" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                             <option value="">Select</option>
-                                            <!-- Provinces loaded dynamically via AJAX -->
                                         </select>
                                     </div>
                                     <div>
                                         <label for="municipality" class="block text-sm font-medium">Municipality *</label>
                                         <select id="municipality" name="municipality" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                             <option value="">Select</option>
-                                            <!-- Municipalities loaded dynamically via AJAX -->
                                         </select>
                                     </div>
                                     <div>
                                         <label for="barangay" class="block text-sm font-medium">Barangay *</label>
                                         <select id="barangay" name="barangay" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                             <option value="">Select</option>
-                                            <!-- Barangays loaded dynamically via AJAX -->
                                         </select>
                                     </div>
                                 </div>
@@ -264,12 +269,28 @@
                                     @error('zip_code')
                                     <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                     @enderror
+                                    @error('region')
+                                    <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                    @enderror
+                                    @error('province')
+                                    <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                    @enderror
+                                    @error('municipality')
+                                    <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                    @enderror
+                                    @error('barangay')
+                                    <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-6">
-                            <button type="submit" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:text-white hover:bg-blue-600 rounded-md transition-colors duration-200 border border-blue-100 hover:border-blue-600 font-medium">
+                            <button type="button" id="updateButton"
+                                class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                  bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                  focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                  dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
@@ -282,10 +303,53 @@
         </div>
     </div>
     
-<!--address===========================================================-->
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#101966] mb-4"></div>
+            <p class="text-gray-900 dark:text-gray-100 text-lg">Updating applicant information...</p>
+        </div>
+    </div>
+    
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
+    // SweetAlert for update confirmation
+    $('#updateButton').on('click', function(e) {
+        e.preventDefault();
+        
+        Swal.fire({
+            title: 'Update Applicant Information?',
+            text: "Are you sure you want to update this applicant's information?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#5e6ffb',
+            cancelButtonColor: '#d33',
+            background: '#101966',
+            color: '#fff',
+            confirmButtonText: 'Yes, update it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Updating...',
+                    text: 'Please wait',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    willClose: () => {
+                        $('#applicationForm').submit();
+                    },
+                    background: '#101966',
+                    color: '#fff',
+                    allowOutsideClick: false
+                });
+            }
+        });
+    });
 
     $('#region').on('change', function() {
         let regionCode = $(this).val();
@@ -347,7 +411,7 @@ $(document).ready(function() {
         }
     });
 
-        // --- Address Pre-population on Edit ---
+    // --- Address Pre-population on Edit ---
     let selectedRegion = "{{ old('region', $applicant->region) }}";
     let selectedProvince = "{{ old('province', $applicant->province) }}";
     let selectedMunicipality = "{{ old('municipality', $applicant->municipality) }}";

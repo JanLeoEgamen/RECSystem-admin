@@ -168,13 +168,93 @@ class RenewalController extends Controller implements HasMiddleware
     }
 
     // Show history
-    public function history()
+    public function history(Request $request)
     {
-        $renewals = Renewal::with(['member', 'member.user', 'processor'])
-            ->where('status', '!=', 'pending')
-            ->latest()
-            ->get();
+        if ($request->ajax()) {
+            $query = Renewal::with(['member.user', 'processor'])
+                ->where('status', '!=', 'pending');
 
-        return view('renew.history', compact('renewals'));
+            // Search functionality
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('reference_number', 'like', "%$search%")
+                      ->orWhereHas('member.user', function($q) use ($search) {
+                          $q->where('first_name', 'like', "%$search%")
+                            ->orWhere('last_name', 'like', "%$search%");
+                      })
+                      ->orWhereHas('processor', function($q) use ($search) {
+                          $q->where('first_name', 'like', "%$search%")
+                            ->orWhere('last_name', 'like', "%$search%");
+                      });
+                });
+            }
+
+            // Status filter
+            if ($request->has('status') && $request->status != '') {
+                $query->where('status', $request->status);
+            }
+
+            // Sorting
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'name':
+                        $query->join('members', 'renewals.member_id', '=', 'members.id')
+                            ->join('users', 'members.user_id', '=', 'users.id')
+                            ->orderBy('users.last_name', $direction)
+                            ->orderBy('users.first_name', $direction)
+                            ->select('renewals.*');
+                        break;
+                        
+                    case 'reference':
+                        $query->orderBy('reference_number', $direction);
+                        break;
+                        
+                    case 'status':
+                        $query->orderBy('status', $direction);
+                        break;
+                        
+                    case 'processed_at':
+                        $query->orderBy('processed_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('processed_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('processed_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $renewals = $query->paginate($perPage);
+
+            $transformedRenewals = $renewals->getCollection()->map(function ($renewal) {
+                return [
+                    'id' => $renewal->id,
+                    'member_name' => $renewal->member->user->first_name . ' ' . $renewal->member->user->last_name,
+                    'reference_number' => $renewal->reference_number,
+                    'status' => $renewal->status,
+                    'processed_by' => $renewal->processor ? $renewal->processor->first_name . ' ' . $renewal->processor->last_name : 'System',
+                    'processed_at' => $renewal->processed_at ? $renewal->processed_at->format('M d, Y h:i A') : 'N/A',
+                    'receipt_url' => $renewal->receipt_path ? Storage::url($renewal->receipt_path) : null,
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedRenewals,
+                'current_page' => $renewals->currentPage(),
+                'last_page' => $renewals->lastPage(),
+                'from' => $renewals->firstItem(),
+                'to' => $renewals->lastItem(),
+                'total' => $renewals->total(),
+            ]);
+        }
+
+        // For non-AJAX requests, just return the view
+        return view('renew.history');
     }
 }

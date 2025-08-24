@@ -181,7 +181,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/articles/{id}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::post('/articles/{id}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles', [ArticleController::class, 'destroy'])->name('articles.destroy');
-
+    
     // Markees
     Route::get('/markees', [MarkeeController::class, 'index'])->name('markees.index');
     Route::get('/markees/create', [MarkeeController::class, 'create'])->name('markees.create');

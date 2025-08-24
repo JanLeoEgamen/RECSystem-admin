@@ -199,36 +199,68 @@ class CashierApplicantController extends Controller implements HasMiddleware
     public function verified(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('payment_status', 'verified')->latest();
+            $query = Applicant::where('payment_status', 'verified');
 
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('first_name', fn($row) => $row->first_name)
-                ->addColumn('last_name', fn($row) => $row->last_name)
-                ->addColumn('email_address', fn($row) => $row->email_address)
-                ->addColumn('reference_number', fn($row) => $row->reference_number)
-                ->addColumn('payment_proof_path', function ($row) {
-                    return $row->payment_proof_path
-                        ? '<img src="' . asset('images/payment_proofs/' . $row->payment_proof_path) . '" class="h-12 mx-auto">'
-                        : 'No receipt';
-                })
-                ->addColumn('verified_at', function ($row) {
-                    return \Carbon\Carbon::parse($row->updated_at)->format('M d, Y h:i A');
-                })
-                ->addColumn('action', function ($row) {
-                    return '<a href="' . route('cashier.assess', ['id' => $row->id, 'from' => 'verified']) . '" 
-                        class="inline-flex items-center px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition"
-                        title="View Payment Details">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        View
-                    </a>';
-                })
-                ->rawColumns(['payment_proof_path', 'action'])
-                ->make(true);
+            // Handle search
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('reference_number', 'like', "%$search%");
+                });
+            }
+
+            // Handle sorting
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'first_name':
+                    case 'name':
+                        $query->orderBy('first_name', $direction)
+                              ->orderBy('last_name', $direction);
+                        break;
+                        
+                    case 'created_at':
+                    case 'created':
+                        $query->orderBy('verified_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('verified_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('verified_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $applicants = $query->paginate($perPage);
+
+            $transformedApplicants = $applicants->getCollection()->map(function ($applicant) {
+                return [
+                    'id' => $applicant->id,
+                    'first_name' => $applicant->first_name,
+                    'last_name' => $applicant->last_name,
+                    'email_address' => $applicant->email_address,
+                    'reference_number' => $applicant->reference_number,
+                    'payment_proof_path' => $applicant->payment_proof_path,
+                    'payment_status' => $applicant->payment_status,
+                    'verified_at' => $applicant->verified_at ? \Carbon\Carbon::parse($applicant->verified_at)->format('M d, Y h:i A') : 'N/A',
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedApplicants,
+                'current_page' => $applicants->currentPage(),
+                'last_page' => $applicants->lastPage(),
+                'from' => $applicants->firstItem(),
+                'to' => $applicants->lastItem(),
+                'total' => $applicants->total(),
+            ]);
         }
 
         return view('cashier.verified');
@@ -237,47 +269,69 @@ class CashierApplicantController extends Controller implements HasMiddleware
     public function rejected(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('payment_status', 'rejected')->latest();
+            $query = Applicant::where('payment_status', 'rejected');
 
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('first_name', fn($row) => $row->first_name)
-                ->addColumn('last_name', fn($row) => $row->last_name)
-                ->addColumn('email_address', fn($row) => $row->email_address)
-                ->addColumn('reference_number', fn($row) => $row->reference_number)
-                ->addColumn('payment_proof_path', function ($row) {
-                    return $row->payment_proof_path
-                        ? '<img src="' . asset('images/payment_proofs/' . $row->payment_proof_path) . '" class="h-12 mx-auto">'
-                        : 'No receipt';
-                })
-                ->addColumn('rejected_at', function ($row) {
-                    return \Carbon\Carbon::parse($row->updated_at)->format('M d, Y h:i A');
-                })
-                ->addColumn('action', function ($row) {
-                    $viewBtn = '<a href="' . route('cashier.assess', ['id' => $row->id, 'from' => 'verified']) . '" 
-                        class="inline-flex items-center px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition"
-                        title="View Payment Details">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        View
-                    </a>';
+            // Handle search
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('reference_number', 'like', "%$search%");
+                });
+            }
 
-                    $restoreBtn = '<button onclick="restoreApplicant(' . $row->id . ')" 
-                        class="text-green-600 hover:text-white hover:bg-green-600 p-2 rounded-full transition" title="Restore">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" d="M4 4v16h16V4H4zm2 2h12v12H6V6z"/>
-                        </svg>
-                    </button>';
+            // Handle sorting
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'first_name':
+                    case 'name':
+                        $query->orderBy('first_name', $direction)
+                              ->orderBy('last_name', $direction);
+                        break;
+                        
+                    case 'created_at':
+                    case 'created':
+                        $query->orderBy('rejected_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('rejected_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('rejected_at', 'desc');
+            }
 
-                    return '<div class="flex justify-center space-x-2">' . $viewBtn . $restoreBtn . '</div>';
-                })
-                ->rawColumns(['payment_proof_path', 'action'])
-                ->make(true);
+            $perPage = $request->input('perPage', 10);
+            $applicants = $query->paginate($perPage);
+
+            $transformedApplicants = $applicants->getCollection()->map(function ($applicant) {
+                return [
+                    'id' => $applicant->id,
+                    'first_name' => $applicant->first_name,
+                    'last_name' => $applicant->last_name,
+                    'email_address' => $applicant->email_address,
+                    'reference_number' => $applicant->reference_number,
+                    'payment_proof_path' => $applicant->payment_proof_path,
+                    'payment_status' => $applicant->payment_status,
+                    'rejected_at' => $applicant->rejected_at ? \Carbon\Carbon::parse($applicant->rejected_at)->format('M d, Y h:i A') : 'N/A',
+                    'rejection_reason' => $applicant->rejection_reason,
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedApplicants,
+                'current_page' => $applicants->currentPage(),
+                'last_page' => $applicants->lastPage(),
+                'from' => $applicants->firstItem(),
+                'to' => $applicants->lastItem(),
+                'total' => $applicants->total(),
+            ]);
         }
 
         return view('cashier.rejected');

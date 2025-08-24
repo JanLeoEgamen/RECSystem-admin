@@ -1,28 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <h2 class="font-semibold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 {{ __('Articles') }}
             </h2>
 
-            <!-- Create Button -->
             @can('create articles')
             <a href="{{ route('articles.create') }}" 
-               class="inline-block px-5 py-2 
-                      text-white dark:text-gray-900
-                      hover:text-[#101966] dark:hover:text-white
-                      bg-white/10 dark:bg-gray-200/20 
-                      hover:bg-white dark:hover:bg-gray-600
-                      focus:outline-none focus:ring-2 focus:ring-offset-2 
-                      focus:ring-white dark:focus:ring-gray-500
-                      border border-white dark:border-gray-500 
-                      font-medium rounded-lg 
-                      text-base sm:text-xl leading-normal 
-                      text-center sm:text-right transition">
+               class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                      bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                      focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                      dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                      w-full md:w-auto text-center">
                 Create
             </a>
             @endcan
-
         </div>
     </x-slot>
 
@@ -30,13 +22,10 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
-            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <!-- Left side filters -->
                         <div class="flex items-center space-x-4">
-                            <!-- Entries per page -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
                                 <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
@@ -47,7 +36,6 @@
                                 </select>
                             </div>
 
-                            <!-- Sort by -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
@@ -62,7 +50,6 @@
                                 </select>
                             </div>
 
-                            <!-- Column Filter -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Columns</span>
                                 <div class="relative">
@@ -73,7 +60,6 @@
                                         </svg>
                                     </button>
                                     
-                                    <!-- Column Filter Dropdown -->
                                     <div id="columnFilterDropdown" class="hidden absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                         <div class="p-2">
                                             <div class="space-y-2">
@@ -108,7 +94,6 @@
                             </div>
                         </div>
 
-                        <!-- Right side - search and result info -->
                         <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                 Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
@@ -118,13 +103,10 @@
                         </div>
                     </div>
 
-                    <!-- Mobile View - Vertical layout -->
                     <div class="sm:hidden space-y-3 mb-4">
-                        <!-- Search bar -->
                         <input type="text" id="mobileSearchInput" placeholder="Search articles..." 
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
 
-                        <!-- Entries per page -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
                             <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -135,7 +117,6 @@
                             </select>
                         </div>
 
-                        <!-- Sort by -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -150,7 +131,6 @@
                             </select>
                         </div>
 
-                        <!-- Column Filter -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Columns</span>
                             <div class="relative w-2/3">
@@ -161,7 +141,6 @@
                                     </svg>
                                 </button>
                                 
-                                <!-- Column Filter Dropdown -->
                                 <div id="mobileColumnFilterDropdown" class="hidden absolute left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                     <div class="p-2">
                                         <div class="space-y-2">
@@ -195,7 +174,6 @@
                             </div>
                         </div>
 
-                        <!-- Result Info -->
                         <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
                             Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
                         </div>
@@ -228,48 +206,101 @@
     </div>
 
     <x-slot name="script">
+        <style>
+            .swal2-icon {
+                border: 4px solid #ff0000 !important;
+                background-color: transparent !important;
+                color: #ff0000 !important;
+            }
+
+            .swal2-icon.swal2-warning .swal2-icon-content,
+            .swal2-icon.swal2-error .swal2-icon-content,
+            .swal2-icon.swal2-success .swal2-icon-content,
+            .swal2-icon.swal2-info .swal2-icon-content,
+            .swal2-icon.swal2-question .swal2-icon-content {
+                color: #ff0000 !important;
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .table-row-animate {
+                opacity: 0;
+                animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            }
+
+            .table-row-animate:nth-child(1) { animation-delay: 0.1s; }
+            .table-row-animate:nth-child(2) { animation-delay: 0.2s; }
+            .table-row-animate:nth-child(3) { animation-delay: 0.3s; }
+            .table-row-animate:nth-child(4) { animation-delay: 0.4s; }
+            .table-row-animate:nth-child(5) { animation-delay: 0.5s; }
+            .table-row-animate:nth-child(6) { animation-delay: 0.6s; }
+            .table-row-animate:nth-child(7) { animation-delay: 0.7s; }
+            .table-row-animate:nth-child(8) { animation-delay: 0.8s; }
+            .table-row-animate:nth-child(9) { animation-delay: 0.9s; }
+            .table-row-animate:nth-child(10) { animation-delay: 1.0s; }
+            .table-row-animate:nth-child(n+11) { animation-delay: 1.1s; }
+
+            .table-row-hover {
+                transition: all 0.3s ease-out;
+            }
+            
+            .table-row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.08);
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+            }
+
+            .table-row-hover:hover td:first-child {
+                border-left: 4px solid #3b82f6;
+                padding-left: calc(1.5rem - 4px);
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
                 fetchArticles();
 
-                // Toggle column filter dropdown (desktop)
                 $('#columnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#columnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Toggle column filter dropdown (mobile)
                 $('#mobileColumnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#mobileColumnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Close dropdowns when clicking outside
                 $(document).on('click', function() {
                     $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
                 });
 
-                // Search functionality for both desktop and mobile
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
                     fetchArticles(1, $(this).val());
                 });
 
-                // Entries per page change handler
                 $('#perPage, #mobilePerPage').on('change', function () {
                     fetchArticles(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
-                // Sort by change handler
                 $('#sortBy, #mobileSortBy').on('change', function() {
                     fetchArticles(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                // Column checkbox change handler
                 $('.column-checkbox').on('change', function() {
                     const column = $(this).data('column');
                     const isChecked = $(this).is(':checked');
                     
-                    // Show/hide the column
                     $(`.column-${column}`).toggle(isChecked);
                 });
 
@@ -290,24 +321,31 @@
 
                     const sortParams = sortMap[sortValue] || { sort: 'created_at', direction: 'desc' };
 
+                    const params = {
+                        page: page,
+                        perPage: perPage,
+                        sort: sortParams.sort,
+                        direction: sortParams.direction
+                    };
+
+                    if (search && search.trim() !== '') {
+                        params.search = search.trim();
+                    }
+
                     $.ajax({
                         url: `{{ route('articles.index') }}`,
                         type: 'GET',
-                        data: {
-                            page: page,
-                            search: search,
-                            perPage: perPage,
-                            sort: sortParams.sort,
-                            direction: sortParams.direction
-                        },
+                        data: params,
                         success: function (response) {
                             renderArticles(response.data, response.from);
                             renderPagination(response);
                             
-                            // Update both desktop and mobile result info
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
                             $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
                             $('#totalRecords, #mobileTotalRecords').text(response.total ?? 0);
+                        },
+                        error: function(xhr) {
+                            console.error('Error:', xhr.responseText);
                         }
                     });
                 }
@@ -316,11 +354,22 @@
                     let tbody = $('#articlesTable tbody');
                     tbody.empty();
                     
+                    if (articles.length === 0) {
+                        tbody.append(`
+                            <tr class="border-b dark:border-gray-700">
+                                <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                    No articles found matching your search criteria
+                                </td>
+                            </tr>
+                        `);
+                        return;
+                    }
+                    
                     articles.forEach((article, index) => {
                         const rowNumber = startIndex + index;
-
-                        let row = `
-                            <tr class="border-b table-row-hover dark:border-gray-700">
+                        
+                        tbody.append(`
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                 <td class="px-6 py-4 text-center">${rowNumber}</td>
                                 <td class="px-6 py-4 text-left column-title">${article.title}</td>
                                 <td class="px-6 py-4 text-center column-image">
@@ -336,31 +385,33 @@
                                         : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Inactive</span>'}
                                 </td>
                                 <td class="px-6 py-4 text-left column-created">${article.created_at}</td>
-                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    @can('edit articles')
-                                    <a href="/articles/${article.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                        </svg>
-                                    </a>
-                                    @endcan
-                                    @can('delete articles')
-                                    <button onclick="deleteArticle(${article.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                    @endcan
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        <a href="/articles/${article.id}/edit" 
+                                           class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                            </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
+                                        </a>
+
+                                        <button onclick="deleteArticle(${article.id})" 
+                                                class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
-                        `;
-                        tbody.append(row);
+                        `);
                     });
                 }
 
@@ -389,6 +440,7 @@
                     if (endPage - startPage + 1 < pagesToShow) {
                         startPage = Math.max(1, endPage - pagesToShow + 1);
                     }
+
                     if (startPage > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
@@ -399,6 +451,7 @@
                             paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
                         }
                     }
+
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
@@ -406,6 +459,7 @@
                                 ${i}
                             </button>`;
                     }
+
                     if (endPage < totalPages) {
                         if (endPage < totalPages - 1) {
                             paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
@@ -416,6 +470,7 @@
                                 ${totalPages}
                             </button>`;
                     }
+
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
@@ -427,27 +482,59 @@
                                 Last &raquo;
                             </button>`;
                     }
+
                     paginationHtml += '</div>';
                     $('#paginationLinks').html(paginationHtml);
                 }
 
                 window.deleteArticle = function (id) {
-                    if (confirm("Are you sure you want to delete?")) {
-                        $.ajax({
-                            url: '{{ route("articles.destroy") }}',
-                            type: 'DELETE',
-                            data: { id: id },
-                            dataType: 'json',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            success: function (response) {
-                                alert("Successfully deleted.");
-                                fetchArticles();
-                            }
-                        });
-                    }
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#5e6ffb',
+                        confirmButtonText: 'Yes, delete it!',
+                        background: '#101966',
+                        color: '#fff',
+                        customClass: {
+                            icon: 'swal-icon-red-bg'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '{{ route("articles.destroy") }}',
+                                type: 'DELETE',
+                                data: { id: id },
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: 'Article has been deleted successfully.',
+                                        icon: 'success',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                    fetchArticles();
+                                },
+                                error: function() {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'Something went wrong while deleting the article.',
+                                        icon: 'error',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
+
                 window.fetchArticles = fetchArticles;
             });
         </script>

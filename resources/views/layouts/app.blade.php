@@ -156,7 +156,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-gray-50"
+<body class="font-sans antialiased bg-gray-200"
       x-data="{
         sidebarOpen: window.innerWidth >= 768 && !@json(auth()->check() && (auth()->user()->hasRole('Member') || auth()->user()->hasRole('Applicant'))),  
         rightSidebarOpen: false,
@@ -227,29 +227,38 @@
         <x-right-sidebar />
 
         <!-- Header Spacer -->
-        <div class ="h-16 2xl:h-20"></div>
+        <div class="block 2xl:hidden h-16 xl:h-20"></div>
 
         <div class="flex flex-1">
-            
+        
             <!-- Main content -->
             <div class="flex-1 flex flex-col overflow-hidden main-content-transition" 
                  :class="{'main-content-mobile': !isDesktop(), [getMainContentMargin()]: isDesktop()}">
-                <!-- Header Section -->
-                <div class="header-container pt-16"> 
-                    @isset($header)
-                        <header class="w-full">
-                            <div 
-                                class="header-content mx-auto header-content-transition p-4 sm:p-6 rounded-lg shadow-lg
-                                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                                    dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700"
-                                :class="getHeaderContentWidth()" >
-                                {{ $header }}
-                            </div>
-                        </header>
-                    @endisset
-                </div>
 
-                <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50">
+                <!-- Header Section -->
+                    <div class="header-container pt-16"> 
+
+                        <!-- Breadcrumbs -->
+                         @can('view admin dashboard')
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <x-breadcrumbs />
+                        </div>
+                        @endcan
+                        @isset($header)
+                            <header class="w-full">
+                                <!-- Gradient Header Box -->
+                                <div 
+                                    class="header-content mx-auto header-content-transition p-4 sm:p-6 rounded-lg shadow-lg
+                                        bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
+                                        dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700"
+                                    :class="getHeaderContentWidth()" >
+                                    {{ $header }}
+                                </div>
+                            </header>
+                        @endisset
+                    </div>
+
+                <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-200"> 
                     {{ $slot }}
                 </main>             
             </div>

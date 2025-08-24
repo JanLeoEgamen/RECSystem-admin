@@ -11,51 +11,34 @@
             <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto text-center sm:text-right">
                 @can('create applicants')
                 <a href="{{ route('applicants.showApplicantCreateForm') }}" 
-                class="px-5 py-2 
-                        text-white dark:text-gray-900
-                        hover:text-[#101966] dark:hover:text-white
-                        bg-white/10 dark:bg-gray-200/20 
-                        hover:bg-white dark:hover:bg-gray-600
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-white dark:focus:ring-gray-500
-                        border border-white dark:border-gray-500 
-                        font-medium rounded-lg 
-                        text-base sm:text-xl leading-normal 
-                        text-center transition w-full sm:w-auto">
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full sm:w-auto text-center">
                     Create
                 </a>
                 @endcan
 
-                @can('view applicants')
-                <a href="{{ route('applicants.rejected') }}" dusk="go-to-rejected"
-                class="px-5 py-2 
-                        text-white dark:text-gray-900
-                        hover:text-[#101966] dark:hover:text-white
-                        bg-white/10 dark:bg-gray-200/20 
-                        hover:bg-white dark:hover:bg-gray-600
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-white dark:focus:ring-gray-500
-                        border border-white dark:border-gray-500 
-                        font-medium rounded-lg 
-                        text-base sm:text-xl leading-normal 
-                        text-center transition w-full sm:w-auto">
-                    Rejected Applicants
+                <a href="{{ route('applicants.approved') }}" dusk="go-to-approved"
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full sm:w-auto text-center">
+                        Approved Applicants
                 </a>
 
-                <a href="{{ route('applicants.approved') }}" dusk="go-to-approved"
-                class="px-5 py-2 
-                        text-white dark:text-gray-900
-                        hover:text-[#101966] dark:hover:text-white
-                        bg-white/10 dark:bg-gray-200/20 
-                        hover:bg-white dark:hover:bg-gray-600
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-white dark:focus:ring-gray-500
-                        border border-white dark:border-gray-500 
-                        font-medium rounded-lg 
-                        text-base sm:text-xl leading-normal 
-                        text-center transition w-full sm:w-auto">
-                    Approved Applicants
+                @can('view applicants')
+                <a href="{{ route('applicants.rejected') }}" dusk="go-to-rejected"
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full sm:w-auto text-center">
+                    Rejected Applicants
                 </a>
+   
                 @endcan
             </div>
         </div>
@@ -65,7 +48,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
-            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
@@ -254,48 +237,101 @@
     </div>
 
     <x-slot name="script">
+        <style>
+            .swal2-icon {
+                border: 4px solid #ff0000 !important;
+                background-color: transparent !important;
+                color: #ff0000 !important;
+            }
+
+            .swal2-icon.swal2-warning .swal2-icon-content,
+            .swal2-icon.swal2-error .swal2-icon-content,
+            .swal2-icon.swal2-success .swal2-icon-content,
+            .swal2-icon.swal2-info .swal2-icon-content,
+            .swal2-icon.swal2-question .swal2-icon-content {
+                color: #ff0000 !important;
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .table-row-animate {
+                opacity: 0;
+                animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            }
+
+            .table-row-animate:nth-child(1) { animation-delay: 0.1s; }
+            .table-row-animate:nth-child(2) { animation-delay: 0.2s; }
+            .table-row-animate:nth-child(3) { animation-delay: 0.3s; }
+            .table-row-animate:nth-child(4) { animation-delay: 0.4s; }
+            .table-row-animate:nth-child(5) { animation-delay: 0.5s; }
+            .table-row-animate:nth-child(6) { animation-delay: 0.6s; }
+            .table-row-animate:nth-child(7) { animation-delay: 0.7s; }
+            .table-row-animate:nth-child(8) { animation-delay: 0.8s; }
+            .table-row-animate:nth-child(9) { animation-delay: 0.9s; }
+            .table-row-animate:nth-child(10) { animation-delay: 1.0s; }
+            .table-row-animate:nth-child(n+11) { animation-delay: 1.1s; }
+
+            .table-row-hover {
+                transition: all 0.3s ease-out;
+            }
+            
+            .table-row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.08);
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+            }
+
+            .table-row-hover:hover td:first-child {
+                border-left: 4px solid #3b82f6;
+                padding-left: calc(1.5rem - 4px);
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
                 fetchApplicants();
 
-                // Toggle column filter dropdown (desktop)
                 $('#columnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#columnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Toggle column filter dropdown (mobile)
                 $('#mobileColumnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#mobileColumnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Close dropdowns when clicking outside
                 $(document).on('click', function() {
                     $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
                 });
 
-                // Search functionality for both desktop and mobile
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
                     fetchApplicants(1, $(this).val());
                 });
 
-                // Entries per page change handler
                 $('#perPage, #mobilePerPage').on('change', function () {
                     fetchApplicants(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
-                // Sort by change handler
                 $('#sortBy, #mobileSortBy').on('change', function() {
                     fetchApplicants(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                // Column checkbox change handler
                 $('.column-checkbox').on('change', function() {
                     const column = $(this).data('column');
                     const isChecked = $(this).is(':checked');
                     
-                    // Show/hide the column
                     $(`.column-${column}`).toggle(isChecked);
                 });
 
@@ -330,7 +366,6 @@
                             renderApplicants(response.data, response.from);
                             renderPagination(response);
                             
-                            // Update both desktop and mobile result info
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
                             $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
                             $('#totalRecords, #mobileTotalRecords').text(response.total ?? 0);
@@ -346,51 +381,61 @@
                         const rowNumber = startIndex + index;
 
                         let row = `
-                            <tr class="border-b table-row-hover dark:border-gray-700">
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                 <td class="px-6 py-4 text-center">${rowNumber}</td>
                                 <td class="px-6 py-4 text-left column-full_name">${applicant.full_name}</td>
                                 <td class="px-6 py-4 text-left column-sex">${applicant.sex}</td>
                                 <td class="px-6 py-4 text-left column-birthdate">${applicant.birthdate}</td>
                                 <td class="px-6 py-4 text-left column-cellphone_no">${applicant.cellphone_no}</td>
                                 <td class="px-6 py-4 text-left column-created">${applicant.created_at}</td>
-                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    ${applicant.can_view ? `
-                                    <a href="/applicants/${applicant.id}" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="View">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                    </a>
-                                    ` : ''}
-                                    ${applicant.can_edit ? `
-                                    <a href="/applicants/${applicant.id}/edit" class="group bg-indigo-100 hover:bg-indigo-200 p-2 rounded-full transition" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-indigo-600 group-hover:text-indigo-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                    </a>
-                                    ` : ''}
-                                    ${applicant.can_delete ? `
-                                    <button onclick="deleteApplicant(${applicant.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Delete"> 
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                    ` : ''}
-                                    ${applicant.can_assess ? `
-                                    <a href="/applicants/${applicant.id}/assess" class="group bg-green-100 hover:bg-green-200 p-2 rounded-full transition" title="Assess">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-green-600 group-hover:text-green-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </a>
-                                    ` : ''}
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        ${applicant.can_view ? `
+                                        <a href="/applicants/${applicant.id}" 
+                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">View</span>
+                                        </a>
+                                        ` : ''}
+                                        ${applicant.can_edit ? `
+                                        <a href="/applicants/${applicant.id}/edit" 
+                                            class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-indigo-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            <span class="text-indigo-600 group-hover:text-white text-sm">Edit</span>
+                                        </a>
+                                        ` : ''}
+                                        ${applicant.can_delete ? `
+                                        <button onclick="deleteApplicant(${applicant.id})" 
+                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                        </button>
+                                        ` : ''}
+                                        ${applicant.can_assess ? `
+                                        <a href="/applicants/${applicant.id}/assess" 
+                                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span class="text-green-600 group-hover:text-white text-sm">Assess</span>
+                                        </a>
+                                        ` : ''}
+                                    </div>
                                 </td>
                             </tr>
                         `;
@@ -466,22 +511,53 @@
                 }
 
                 window.deleteApplicant = function (id) {
-                    if (confirm("Are you sure you want to delete this applicant?")) {
-                        $.ajax({
-                            url: '{{ route("applicants.destroy") }}',
-                            type: 'DELETE',
-                            data: { id: id },
-                            dataType: 'json',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            success: function (response) {
-                                alert("Successfully deleted.");
-                                fetchApplicants();
-                            }
-                        });
-                    }
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#5e6ffb',
+                        confirmButtonText: 'Yes, delete it!',
+                        background: '#101966',
+                        color: '#fff',
+                        customClass: {
+                            icon: 'swal-icon-red-bg'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '{{ route("applicants.destroy") }}',
+                                type: 'DELETE',
+                                data: { id: id },
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: 'Applicant has been deleted successfully.',
+                                        icon: 'success',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                    fetchApplicants();
+                                },
+                                error: function() {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'Something went wrong while deleting the applicant.',
+                                        icon: 'error',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
+
                 window.fetchApplicants = fetchApplicants;
             });
         </script>

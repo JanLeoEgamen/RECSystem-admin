@@ -1,15 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 Applicant Assessment
             </h2>
-                    <a href="{{ route('applicants.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Back to Applicants
-                    </a>                
+
+            <a href="{{ route('applicants.index') }}" 
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                        w-full sm:w-auto mt-4 sm:mt-0">
+
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Applicants
+            </a>                
         </div>
     </x-slot>
 
@@ -30,7 +38,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('applicants.approve', $applicant->id) }}" method="post">
+                    <form action="{{ route('applicants.approve', $applicant->id) }}" method="post" id="approvalForm">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Personal Information -->
@@ -340,17 +348,24 @@
 
                         <div class="mt-6 flex flex-wrap gap-3">
                             <!-- Approve Button -->
-                                <button type="submit" 
-                                        class="flex items-center px-4 py-2 text-sm text-green-600 hover:text-white hover:bg-green-600 rounded-md transition-colors duration-200 border border-green-100 hover:border-green-600 font-medium"
-                                        @if($applicant->payment_status !== 'verified') disabled @endif>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Approve & Create Member
-                                </button>
+                            <button type="button" id="approveButton"
+                                class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                  bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                  focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                  dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200"
+                                @if($applicant->payment_status !== 'verified') disabled @endif>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Approve & Create Member
+                            </button>
 
                             <!-- Reject Button -->
-                            <button type="button" id="rejectButton" class="flex items-center px-4 py-2 text-sm text-red-600 hover:text-white hover:bg-red-600 rounded-md transition-colors duration-200 border border-red-100 hover:border-red-600 font-medium">
+                            <button type="button" id="rejectButton" 
+                                class="inline-flex items-center px-5 py-2 text-white hover:text-red-600 hover:border-red-600 
+                                  bg-red-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                  focus:ring-red-600 border border-white font-medium dark:border-[#3E3E3A] 
+                                  dark:hover:bg-black dark:hover:border-red-600 rounded-lg text-xl leading-normal transition-colors duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -363,31 +378,91 @@
         </div>
     </div>
 
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#101966] mb-4"></div>
+            <p class="text-gray-900 dark:text-gray-100 text-lg">Processing request...</p>
+        </div>
+    </div>
+    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Lifetime membership toggle
-        const lifetimeCheckbox = document.getElementById('is_lifetime_member');
-        const membershipEndInput = document.querySelector('input[name="membership_end"]');
+document.addEventListener('DOMContentLoaded', function() {
+    // Lifetime membership toggle
+    const lifetimeCheckbox = document.getElementById('is_lifetime_member');
+    const membershipEndInput = document.querySelector('input[name="membership_end"]');
+    
+    if (lifetimeCheckbox && membershipEndInput) {
+        lifetimeCheckbox.addEventListener('change', function() {
+            membershipEndInput.disabled = this.checked;
+            if (this.checked) {
+                membershipEndInput.value = '';
+            }
+        });
         
-        if (lifetimeCheckbox && membershipEndInput) {
-            lifetimeCheckbox.addEventListener('change', function() {
-                membershipEndInput.disabled = this.checked;
-                if (this.checked) {
-                    membershipEndInput.value = '';
+        // Initialize state on page load
+        if (lifetimeCheckbox.checked) {
+            membershipEndInput.disabled = true;
+        }
+    }
+
+    // Approve button functionality with SweetAlert
+    const approveButton = document.getElementById('approveButton');
+    if (approveButton) {
+        approveButton.addEventListener('click', function() {
+            if (this.disabled) return;
+            
+            Swal.fire({
+                title: 'Approve Applicant?',
+                text: "Are you sure you want to approve this applicant and create a member account?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10B981',
+                cancelButtonColor: '#d33',
+                background: '#101966',
+                color: '#fff',
+                confirmButtonText: 'Yes, approve!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Creating member account',
+                        timer: 2500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            document.getElementById('approvalForm').submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
                 }
             });
-            
-            // Initialize state on page load
-            if (lifetimeCheckbox.checked) {
-                membershipEndInput.disabled = true;
-            }
-        }
+        });
+    }
 
-        // Reject button functionality
-        const rejectButton = document.getElementById('rejectButton');
-        if (rejectButton) {
-            rejectButton.addEventListener('click', function() {
-                if (confirm('Are you sure you want to reject this applicant?')) {
+    // Reject button functionality with SweetAlert
+    const rejectButton = document.getElementById('rejectButton');
+    if (rejectButton) {
+        rejectButton.addEventListener('click', function() {
+            Swal.fire({
+                title: 'Reject Applicant?',
+                text: "Are you sure you want to reject this applicant? This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#5e6ffb',
+                cancelButtonColor: '#d33',
+                background: '#101966',
+                color: '#fff',
+                confirmButtonText: 'Yes, reject!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '{{ route("applicants.reject", $applicant->id) }}';
@@ -400,11 +475,27 @@
                     form.appendChild(csrf);
                     
                     document.body.appendChild(form);
-                    form.submit();
+                    
+                    Swal.fire({
+                        title: 'Rejecting...',
+                        text: 'Processing rejection',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            form.submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
                 }
             });
-        }
-    });
+        });
+    }
+});
 </script>
 
 </x-app-layout>

@@ -1,10 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 Certificate Templates / Create
             </h2>
-            <a href="{{ route('certificates.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+            <a href="{{ route('certificates.index') }}" 
+               class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                      bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                      focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                      dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                      w-full md:w-auto mt-4 md:mt-0">
+
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -17,18 +23,18 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('certificates.store') }}" method="post">
+                    <form id="createCertificateForm" action="{{ route('certificates.store') }}" method="post">
                         @csrf
                         <div>
                             <label for="title" class="text-sm font-medium">Title</label>
                             <div class="my-3">    
-                                <input value="{{ old('title') }}" name="title" placeholder="Enter certificate title" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
+                                <input value="{{ old('title') }}" name="title" id="title" placeholder="Enter certificate title" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
                                 @error('title')
                                 <p class="text-red-400 font-medium"> {{ $message }} </p>
                                 @enderror
                             </div>
 
-                            <label for="content" class="text-sm font-medium">Content</label>
+                            <span class="text-sm font-medium">Content</span>
                             <div class="my-3">    
                                 <textarea id="content" name="content" class="border-gray-300 shadow-sm w-full rounded-lg">{{ old('content') }}</textarea>
                                 @error('content')
@@ -36,7 +42,7 @@
                                 @enderror
                             </div>
 
-                            <label class="text-sm font-medium">Signatories</label>
+                            <span class="text-sm font-medium">Signatories</span>
                             <div class="my-3" id="signatories-container">
                                 <div class="signatory-row flex items-center space-x-4 mb-2">
                                     <input type="text" name="signatories[0][name]" placeholder="Name" class="border-gray-300 shadow-sm rounded-lg w-1/3" required>
@@ -48,15 +54,23 @@
                                     </button>
                                 </div>
                             </div>
-                            <button type="button" id="add-signatory" class="mb-4 text-blue-600 hover:text-blue-800 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <button type="button" id="add-signatory" 
+                                class="mt-4 flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                       bg-[#10b981] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                       focus:ring-[#10b981] border border-white font-medium dark:border-[#3E3E3A] 
+                                       dark:hover:bg-black dark:hover:border-[#10b981] rounded-lg text-sm leading-normal transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
                                 Add Signatory
                             </button>
 
                             <div class="mt-6">
-                                <button type="submit" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:text-white hover:bg-blue-600 rounded-md transition-colors duration-200 border border-blue-100 hover:border-blue-600 font-medium">
+                                <button type="submit" 
+                                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                           bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                           focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                           dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -71,15 +85,13 @@
     </div>
 
     <x-slot name="script">
-        <!-- Include CKEditor -->
         <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-            // Initialize CKEditor
             CKEDITOR.replace('content');
 
-            // Add signatory row
             let signatoryCount = 1;
-            $('#add-signatory').click(function() {
+            document.getElementById('add-signatory').addEventListener('click', function() {
                 const newRow = `
                     <div class="signatory-row flex items-center space-x-4 mb-2">
                         <input type="text" name="signatories[${signatoryCount}][name]" placeholder="Name" class="border-gray-300 shadow-sm rounded-lg w-1/3" required>
@@ -91,18 +103,77 @@
                         </button>
                     </div>
                 `;
-                $('#signatories-container').append(newRow);
+                document.getElementById('signatories-container').insertAdjacentHTML('beforeend', newRow);
                 signatoryCount++;
             });
 
-            // Remove signatory row
-            $(document).on('click', '.remove-signatory', function() {
-                if ($('.signatory-row').length > 1) {
-                    $(this).closest('.signatory-row').remove();
-                } else {
-                    alert('At least one signatory is required.');
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-signatory') || e.target.closest('.remove-signatory')) {
+                    const signatoryRows = document.querySelectorAll('.signatory-row');
+                    if (signatoryRows.length > 1) {
+                        const rowToRemove = e.target.closest('.signatory-row');
+                        rowToRemove.remove();
+                    } else {
+                        alert('At least one signatory is required.');
+                    }
                 }
             });
+
+            document.getElementById('createCertificateForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you want to create this certificate template?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#5e6ffb",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, create it!",
+                    cancelButtonText: "Cancel",
+                    background: '#101966',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Creating...',
+                            text: 'Please wait',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            },
+                            willClose: () => {
+                                e.target.submit();
+                            },
+                            background: '#101966',
+                            color: '#fff',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
+            @if(session('success'))
+                Swal.fire({
+                    icon: "success",
+                    title: "Created!",
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: "#5e6ffb",
+                    background: '#101966',
+                    color: '#fff'
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: "#5e6ffb",
+                    background: '#101966',
+                    color: '#fff'
+                });
+            @endif
         </script>
     </x-slot>
 </x-app-layout>

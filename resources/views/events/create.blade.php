@@ -1,12 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-                Events / Create
+       <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
+                Events / Create</span>
             </h2>
-            <a href="{{ route('events.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+
+            <a href="{{ route('events.index') }}" 
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                    w-full md:w-auto mt-4 md:mt-0">
+
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
                 Back to Events
             </a>                
@@ -17,10 +25,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('events.store') }}" method="post">
+                    <form action="{{ route('events.store') }}" method="post" id="eventForm">
                         @csrf
                         <div class="space-y-6">
-                            <!-- Title -->
                             <div>
                                 <label for="title" class="block text-sm font-medium">Title</label>
                                 <div class="mt-1">
@@ -32,7 +39,6 @@
                                 </div>
                             </div>
 
-                            <!-- Description -->
                             <div>
                                 <label for="description" class="block text-sm font-medium">Description</label>
                                 <div class="mt-1">
@@ -44,7 +50,6 @@
                                 </div>
                             </div>
 
-                            <!-- Date and Time -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="start_date" class="block text-sm font-medium">Start Date & Time</label>
@@ -70,7 +75,6 @@
                                 </div>
                             </div>
 
-                            <!-- Location and Capacity -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="location" class="block text-sm font-medium">Location</label>
@@ -96,9 +100,8 @@
                                 </div>
                             </div>
 
-                            <!-- Members -->
                             <div>
-                                <label for="members" class="block text-sm font-medium">Assign to Members</label>
+                                <label class="block text-sm font-medium">Assign to Members</label>
                                 <div class="mt-1">
                                     <div class="flex items-center mb-2">
                                         <input type="checkbox" id="select-all-members" class="rounded mr-2">
@@ -122,7 +125,6 @@
                                 </div>
                             </div>
 
-                            <!-- Publish Status -->
                             <div class="flex items-center">
                                 <input type="hidden" name="is_published" value="0">
                                 <input type="checkbox" name="is_published" id="is_published" 
@@ -130,9 +132,10 @@
                                 <label for="is_published" class="ml-2 text-sm font-medium">Publish Immediately</label>
                             </div>
 
-                            <!-- Submit Button -->
                             <div class="mt-6">
-                                <button type="submit" class="flex items-center px-4 py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded-md font-medium">
+                                <button type="submit" 
+                                        class="inline-flex items-center px-5 py-2 text-white bg-[#101966] hover:bg-white hover:text-[#101966] 
+                                               border border-white hover:border-[#101966] rounded-lg font-medium text-lg transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -146,10 +149,69 @@
         </div>
     </div>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("eventForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to create this event?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#5e6ffb",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, create it!",
+                cancelButtonText: "Cancel",
+                background: '#101966',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Creating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            e.target.submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
+                }
+            });
+        });
+
+        @if(session('success'))
+            Swal.fire({
+                icon: "success",
+                title: "Created!",
+                text: "{{ session('success') }}",
+                confirmButtonColor: "#5e6ffb",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "{{ session('error') }}",
+                confirmButtonColor: "#5e6ffb",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+    </script>
+
     <x-slot name="script">
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Select all members functionality
                 document.getElementById('select-all-members').addEventListener('change', function() {
                     const checkboxes = document.querySelectorAll('.member-checkbox');
                     checkboxes.forEach(checkbox => {
@@ -157,7 +219,6 @@
                     });
                 });
 
-                // Check "Select All" if all checkboxes are checked
                 const memberCheckboxes = document.querySelectorAll('.member-checkbox');
                 const selectAllMembers = document.getElementById('select-all-members');
 
@@ -170,7 +231,6 @@
                     checkbox.addEventListener('change', checkSelectAllMembers);
                 });
 
-                // Initialize check
                 checkSelectAllMembers();
             });
         </script>

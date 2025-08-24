@@ -10,11 +10,19 @@
                         'Applicants');
         @endphp
 
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
-                Payment Verification
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
+                Payment <span class="block sm:hidden">Verification</span>
+                <span class="hidden sm:inline">Verification</span>
             </h2>
-            <a href="{{ $backRoute }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+
+            <a href="{{ $backRoute }}" 
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                    w-full sm:w-auto mt-4 sm:mt-0">
+
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -95,12 +103,18 @@
                                 @if ($applicant->payment_status !== 'rejected' && $applicant->payment_status !== 'verified')
                                     <div class="mt-6 flex justify-center space-x-3">
                                         <button onclick="verifyPayment({{ $applicant->id }})"
-                                                class="px-4 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors">
+                                               class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                                bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                                focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                                dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
                                             Verify
                                         </button>
 
                                         <button onclick="rejectPayment({{ $applicant->id }})"
-                                                class="px-4 py-2 rounded-md bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors">
+                                                class="inline-flex items-center px-5 py-2 text-white hover:text-red-600 hover:border-red-600 
+                                                  bg-red-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                                  focus:ring-red-600 border border-white font-medium dark:border-[#3E3E3A] 
+                                                  dark:hover:bg-black dark:hover:border-red-600 rounded-lg text-xl leading-normal transition-colors duration-200">
                                             Reject
                                         </button>
                                     </div>
@@ -126,198 +140,139 @@
         </div>
     </div>
 
-    <!-- Confirmation Message -->
-    <div id="confirmationBox" class="hidden mt-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md text-center">
-        <p class="mb-4 font-medium">Are you sure you want to verify this payment?</p>
-        <div class="flex justify-center space-x-4">
-            <button id="confirmYesBtn"
-                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
-                Yes, Verify
-            </button>
-            <button onclick="cancelConfirmation()"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
-                Cancel
-            </button>
-        </div>
-    </div>
-
-    <!-- Status Message Box -->
-    <div id="statusMessage" class="hidden mt-4 p-4 rounded-md text-center font-medium"></div>
-
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Store the current applicant ID when opening the modal
         let pendingVerificationId = null;
 
         function verifyPayment(id) {
             pendingVerificationId = id;
-            document.getElementById('confirmationBox').classList.remove('hidden');
-        }
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to verify this payment?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#5e6ffb',
+                cancelButtonColor: '#d33',
+                background: '#101966',
+                color: '#fff',
+                confirmButtonText: 'Yes, Verify',
+                cancelButtonText: 'Cancel',
+                reverseButtons: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Verifying...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
 
-        function showStatusMessage(type, message) {
-            const box = document.getElementById('statusMessage');
-            box.textContent = message;
-
-            // Set styling
-            box.className = `mt-4 p-4 rounded-md text-center font-medium ${
-                type === 'success' ? 'bg-green-100 text-green-800 border border-green-400' :
-                'bg-red-100 text-red-800 border border-red-400'
-            }`;
-            
-            box.classList.remove('hidden');
-
-            if (type === 'success') {
-                // Redirect after showing message
-                setTimeout(() => {
-                    window.location.href = "{{ route('cashier.index') }}";
-                }, 2000); // Wait 2 seconds before redirect
-            }
-        }
-
-        document.getElementById('confirmYesBtn').addEventListener('click', function () {
-            if (!pendingVerificationId) return;
-
-            fetch(`/cashier/${pendingVerificationId}/verify`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    fetch(`/cashier/${pendingVerificationId}/verify`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Verification failed.');
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Verified',
+                            text: data.message || 'Payment has been successfully verified.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = "{{ route('cashier.index') }}";
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'An error occurred during verification.', 'error');
+                        console.error(error);
+                    });
                 }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Verification failed.');
-                return response.json();
-            })
-            .then(data => {
-                // ✅ Show message and redirect
-                showStatusMessage('success', data.message || 'Payment verified successfully.');
-
-                // ✅ Hide confirmation box
-                document.getElementById('confirmationBox').classList.add('hidden');
-                pendingVerificationId = null;
-            })
-            .catch(error => {
-                console.error(error);
-                showStatusMessage('error', 'An error occurred during verification.');
-            });
-        });
-
-
-        function cancelConfirmation() {
-            pendingVerificationId = null;
-            document.getElementById('confirmationBox').classList.add('hidden');
-        }
-
-
-        function closePreviewModal() {
-            document.getElementById('previewModal').classList.add('hidden');
-        }
-
-        // Use the stored ID when confirming
-        function confirmVerification() {
-            closePreviewModal();
-            
-            if (!currentApplicantId) return;
-            
-            fetch(`/cashier/${currentApplicantId}/verify`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                showToast('success', data.message || 'Payment verified successfully');
-                setTimeout(() => window.location.href = "{{ route('cashier.index') }}", 1500);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('error', 'An error occurred while verifying payment');
             });
         }
+
 
         function rejectPayment(id) {
-            const reason = prompt('Please enter the reason for rejection:');
-            if (reason === null) return;
-            
-            if (reason.trim() === '') {
-                alert('Rejection reason cannot be empty');
-                return;
-            }
-
-            if (confirm(`Are you sure you want to reject this payment? Reason: ${reason}`)) {
-                fetch(`/cashier/${id}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reason: reason })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+            Swal.fire({
+                title: 'Reason for Rejection',
+                input: 'text',
+                inputPlaceholder: 'Enter reason...',
+                showCancelButton: true,
+                confirmButtonColor: '#5e6ffb',
+                cancelButtonColor: '#d33',
+                background: '#101966',
+                color: '#fff',
+                confirmButtonText: 'Reject',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Rejection reason cannot be empty!';
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        showToast('success', data.message || 'Payment rejected successfully');
-                        setTimeout(() => {
+                },
+                reverseButtons: false,
+                didOpen: () => {
+                    const input = Swal.getInput();
+                    if (input) {
+                        input.style.color = '#000';
+                        input.style.backgroundColor = '#fff';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const reason = result.value;
+
+                    Swal.fire({
+                        title: 'Rejecting...',
+                        allowOutsideClick: false,
+                        background: '#101966',
+                        color: '#fff',
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
+
+                    fetch(`/cashier/${id}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ reason: reason })
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Rejected',
+                            text: data.message || 'Payment has been successfully rejected.',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            background: '#101966',
+                            color: '#fff'
+                        }).then(() => {
                             window.location.href = "{{ route('cashier.index') }}";
-                        }, 1500);
-                    } else {
-                        showToast('error', data.message || 'Error rejecting payment');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('error', 'An error occurred while rejecting payment');
-                });
-            }
-        }
-
-        function showToast(type, message) {
-            // Implement your toast notification system here
-            // Example: Using Alpine.js or a toast library
-            alert(`${type.toUpperCase()}: ${message}`);
-        }
-
-        function zoomImage(url) {
-            const zoomWindow = window.open('', '_blank');
-            zoomWindow.document.write(`
-                <html>
-                <head>
-                    <title>Zoomed Image</title>
-                    <style>
-                        body {
-                            margin: 0;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            background: #111;
-                            height: 100vh;
-                        }
-                        img {
-                            max-width: 100%;
-                            max-height: 100%;
-                            object-fit: contain;
-                            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-                        }
-                    </style>
-                </head>
-                <body>
-                    <img src="${url}" alt="Zoomed Payment Proof">
-                </body>
-                </html>
-            `);
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'An error occurred while rejecting payment.', 'error');
+                        console.error(error);
+                    });
+                }
+            });
         }
 
         function openZoomModal(imageUrl) {
@@ -336,5 +291,4 @@
             document.getElementById('zoomedImage').src = '';
         }
     </script>
-    
 </x-app-layout>

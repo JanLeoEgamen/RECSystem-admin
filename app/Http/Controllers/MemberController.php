@@ -575,35 +575,92 @@ class MemberController extends Controller implements HasMiddleware
     public function active(Request $request)
     {
         if ($request->ajax()) {
-            $data = Member::where('status', 'Active')->latest();
+            $user = $request->user(); 
+            
+            $query = Member::where('status', 'Active')
+                ->when(!$user->can('view all members'), function($query) use ($user) {
+                    $sectionIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNotNull('section_id')
+                        ->pluck('section_id');
+                    
+                    $bureauIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNull('section_id')
+                        ->pluck('bureau_id');
+                    
+                    $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                    
+                    $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                    
+                    $query->whereIn('section_id', $allSectionIds);
+                });
 
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('full_name', function($row) {
-                    return $row->first_name . ' ' . $row->last_name;
-                })
-                ->addColumn('email_address', fn($row) => $row->email_address)
-                ->addColumn('cellphone_no', fn($row) => $row->cellphone_no)
-                ->addColumn('membership_start', function($row) {
-                    return $row->membership_start ? \Carbon\Carbon::parse($row->membership_start)->format('M d, Y') : '';
-                })
-                ->addColumn('membership_end', function($row) {
-                    return $row->membership_end ? \Carbon\Carbon::parse($row->membership_end)->format('M d, Y') : '';
-                })
-                ->addColumn('action', function ($row) {
-                    return '<a href="' . route('members.edit', $row->id) . '" 
-                        class="inline-flex items-center px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition"
-                        title="Edit Member">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit
-                    </a>';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            // Add search functionality
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('rec_number', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('cellphone_no', 'like', "%$search%");
+                });
+            }
+
+            // Add sorting
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'first_name':
+                        $query->orderBy('first_name', $direction)
+                            ->orderBy('last_name', $direction);
+                        break;
+                        
+                    case 'email_address':
+                        $query->orderBy('email_address', $direction);
+                        break;
+                        
+                    case 'membership_start':
+                        $query->orderBy('membership_start', $direction);
+                        break;
+                        
+                    case 'membership_end':
+                        $query->orderBy('membership_end', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $members = $query->paginate($perPage);
+
+            $transformedMembers = $members->getCollection()->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'full_name' => $member->first_name . ' ' . $member->last_name,
+                    'email_address' => $member->email_address,
+                    'cellphone_no' => $member->cellphone_no,
+                    'membership_start' => $member->membership_start ? Carbon::parse($member->membership_start)->format('M d, Y') : '',
+                    'membership_end' => $member->membership_end ? Carbon::parse($member->membership_end)->format('M d, Y') : '',
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedMembers,
+                'current_page' => $members->currentPage(),
+                'last_page' => $members->lastPage(),
+                'from' => $members->firstItem(),
+                'to' => $members->lastItem(),
+                'total' => $members->total(),
+            ]);
         }
 
         return view('members.active');
@@ -612,50 +669,97 @@ class MemberController extends Controller implements HasMiddleware
     public function inactive(Request $request)
     {
         if ($request->ajax()) {
-            $data = Member::where('status', 'Inactive')->whereNull('deleted_at')->latest();
+            $user = $request->user(); 
+            
+            $query = Member::where('status', 'Inactive')
+                ->when(!$user->can('view all members'), function($query) use ($user) {
+                    $sectionIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNotNull('section_id')
+                        ->pluck('section_id');
+                    
+                    $bureauIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNull('section_id')
+                        ->pluck('bureau_id');
+                    
+                    $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                    
+                    $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                    
+                    $query->whereIn('section_id', $allSectionIds);
+                });
 
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('full_name', function($row) {
-                    return $row->first_name . ' ' . $row->last_name;
-                })
-                ->addColumn('email_address', fn($row) => $row->email_address)
-                ->addColumn('cellphone_no', fn($row) => $row->cellphone_no)
-                ->addColumn('membership_start', function($row) {
-                    return $row->membership_start ? \Carbon\Carbon::parse($row->membership_start)->format('M d, Y') : '';
-                })
-                ->addColumn('membership_end', function($row) {
-                    return $row->membership_end ? \Carbon\Carbon::parse($row->membership_end)->format('M d, Y') : '';
-                })
-                ->addColumn('action', function ($row) {
-                    return '<div class="flex items-center space-x-1">
-                        <a href="' . route('members.edit', $row->id) . '" 
-                            class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200"
-                            title="Edit Member">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </a>
-                        <button data-id="' . $row->id . '" 
-                            class="p-2 text-red-600 hover:text-white hover:bg-red-600 rounded-full transition-colors duration-200 delete-member-btn"
-                            title="Delete Member">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-                    </div>';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            // Add search functionality
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('rec_number', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('cellphone_no', 'like', "%$search%");
+                });
+            }
+
+            // Add sorting
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'first_name':
+                        $query->orderBy('first_name', $direction)
+                            ->orderBy('last_name', $direction);
+                        break;
+                        
+                    case 'email_address':
+                        $query->orderBy('email_address', $direction);
+                        break;
+                        
+                    case 'membership_start':
+                        $query->orderBy('membership_start', $direction);
+                        break;
+                        
+                    case 'membership_end':
+                        $query->orderBy('membership_end', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $members = $query->paginate($perPage);
+
+            $transformedMembers = $members->getCollection()->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'full_name' => $member->first_name . ' ' . $member->last_name,
+                    'email_address' => $member->email_address,
+                    'cellphone_no' => $member->cellphone_no,
+                    'membership_start' => $member->membership_start ? Carbon::parse($member->membership_start)->format('M d, Y') : '',
+                    'membership_end' => $member->membership_end ? Carbon::parse($member->membership_end)->format('M d, Y') : '',
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedMembers,
+                'current_page' => $members->currentPage(),
+                'last_page' => $members->lastPage(),
+                'from' => $members->firstItem(),
+                'to' => $members->lastItem(),
+                'total' => $members->total(),
+            ]);
         }
 
         return view('members.inactive');
     }
-
+    
     public function deactivate(\App\Models\Member $member)
     {
 

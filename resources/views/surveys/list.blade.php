@@ -1,28 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"> 
+            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 {{ __('Surveys') }}
             </h2>
 
             <!-- Create Button -->
             @can('create surveys')
             <a href="{{ route('surveys.create') }}" 
-               class="inline-block px-5 py-2 
-                      text-white dark:text-gray-900
-                      hover:text-[#101966] dark:hover:text-white
-                      bg-white/10 dark:bg-gray-200/20 
-                      hover:bg-white dark:hover:bg-gray-600
-                      focus:outline-none focus:ring-2 focus:ring-offset-2 
-                      focus:ring-white dark:focus:ring-gray-500
-                      border border-white dark:border-gray-500 
-                      font-medium rounded-lg 
-                      text-base sm:text-xl leading-normal 
-                      text-center sm:text-right transition">
+               class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full sm:w-auto text-center">
                 Create
             </a>
             @endcan
-
         </div>
     </x-slot>
 
@@ -30,7 +23,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
-            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
@@ -219,48 +212,101 @@
     </div>
 
     <x-slot name="script">
+        <style>
+            .swal2-icon {
+                border: 4px solid #ff0000 !important;
+                background-color: transparent !important;
+                color: #ff0000 !important;
+            }
+
+            .swal2-icon.swal2-warning .swal2-icon-content,
+            .swal2-icon.swal2-error .swal2-icon-content,
+            .swal2-icon.swal2-success .swal2-icon-content,
+            .swal2-icon.swal2-info .swal2-icon-content,
+            .swal2-icon.swal2-question .swal2-icon-content {
+                color: #ff0000 !important;
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .table-row-animate {
+                opacity: 0;
+                animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            }
+
+            .table-row-animate:nth-child(1) { animation-delay: 0.1s; }
+            .table-row-animate:nth-child(2) { animation-delay: 0.2s; }
+            .table-row-animate:nth-child(3) { animation-delay: 0.3s; }
+            .table-row-animate:nth-child(4) { animation-delay: 0.4s; }
+            .table-row-animate:nth-child(5) { animation-delay: 0.5s; }
+            .table-row-animate:nth-child(6) { animation-delay: 0.6s; }
+            .table-row-animate:nth-child(7) { animation-delay: 0.7s; }
+            .table-row-animate:nth-child(8) { animation-delay: 0.8s; }
+            .table-row-animate:nth-child(9) { animation-delay: 0.9s; }
+            .table-row-animate:nth-child(10) { animation-delay: 1.0s; }
+            .table-row-animate:nth-child(n+11) { animation-delay: 1.1s; }
+
+            .table-row-hover {
+                transition: all 0.3s ease-out;
+            }
+            
+            .table-row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.08);
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+            }
+
+            .table-row-hover:hover td:first-child {
+                border-left: 4px solid #3b82f6;
+                padding-left: calc(1.5rem - 4px);
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
                 fetchSurveys();
 
-                // Toggle column filter dropdown (desktop)
                 $('#columnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#columnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Toggle column filter dropdown (mobile)
                 $('#mobileColumnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#mobileColumnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Close dropdowns when clicking outside
                 $(document).on('click', function() {
                     $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
                 });
 
-                // Search functionality for both desktop and mobile
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
                     fetchSurveys(1, $(this).val());
                 });
 
-                // Entries per page change handler
                 $('#perPage, #mobilePerPage').on('change', function () {
                     fetchSurveys(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
-                // Sort by change handler
                 $('#sortBy, #mobileSortBy').on('change', function() {
                     fetchSurveys(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                // Column checkbox change handler
                 $('.column-checkbox').on('change', function() {
                     const column = $(this).data('column');
                     const isChecked = $(this).is(':checked');
                     
-                    // Show/hide the column
                     $(`.column-${column}`).toggle(isChecked);
                 });
 
@@ -295,7 +341,6 @@
                             renderSurveys(response.data, response.from);
                             renderPagination(response);
                             
-                            // Update both desktop and mobile result info
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
                             $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
                             $('#totalRecords, #mobileTotalRecords').text(response.total ?? 0);
@@ -311,7 +356,7 @@
                         const rowNumber = startIndex + index;
 
                         let row = `
-                            <tr class="border-b table-row-hover dark:border-gray-700">
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                 <td class="px-6 py-4 text-center">${rowNumber}</td>
                                 <td class="px-6 py-4 text-left column-title">${survey.title}</td>
                                 <td class="px-6 py-4 text-center column-is_published">
@@ -322,32 +367,40 @@
                                 <td class="px-6 py-4 text-center column-responses_count">${survey.responses_count}</td>
                                 <td class="px-6 py-4 text-left column-author">${survey.author}</td>
                                 <td class="px-6 py-4 text-left column-created">${survey.created_at}</td>
-                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    ${survey.can_view_responses ? `
-                                    <a href="/surveys/${survey.id}/responses" class="group bg-purple-100 hover:bg-purple-200 p-2 rounded-full transition" title="Responses">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-purple-600 group-hover:text-purple-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </a>
-                                    ` : ''}
-                                    <a href="/surveys/${survey.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                        </svg>
-                                    </a>
-                                    <button onclick="deleteSurvey(${survey.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Delete"> 
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        ${survey.can_view_responses ? `
+                                        <a href="/surveys/${survey.id}/responses" 
+                                            class="group flex items-center bg-purple-100 hover:bg-purple-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-purple-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span class="text-purple-600 group-hover:text-white text-sm">Responses</span>
+                                        </a>
+                                        ` : ''}
+                                        <a href="/surveys/${survey.id}/edit" 
+                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                            </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
+                                        </a>
+                                        <button onclick="deleteSurvey(${survey.id})" 
+                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         `;
@@ -423,21 +476,53 @@
                 }
 
                 window.deleteSurvey = function (id) {
-                    if (confirm("Are you sure you want to delete this survey and all its responses?")) {
-                        $.ajax({
-                            url: '{{ route("surveys.destroy") }}',
-                            type: 'DELETE',
-                            data: { id: id },
-                            dataType: 'json',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            success: function (response) {
-                                fetchSurveys();
-                            }
-                        });
-                    }
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This will delete the survey and all its responses. This action cannot be undone!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#5e6ffb',
+                        confirmButtonText: 'Yes, delete it!',
+                        background: '#101966',
+                        color: '#fff',
+                        customClass: {
+                            icon: 'swal-icon-red-bg'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '{{ route("surveys.destroy") }}',
+                                type: 'DELETE',
+                                data: { id: id },
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: 'Survey and all its responses have been deleted successfully.',
+                                        icon: 'success',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                    fetchSurveys();
+                                },
+                                error: function() {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'Something went wrong while deleting the survey.',
+                                        icon: 'error',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
+
                 window.fetchSurveys = fetchSurveys;
             });
         </script>

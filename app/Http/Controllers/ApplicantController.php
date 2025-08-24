@@ -438,46 +438,88 @@ class ApplicantController extends Controller implements HasMiddleware
     public function rejected(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('status', 'Rejected')->orderBy('created_at', 'desc')->select('*');
+            $query = Applicant::where('status', 'Rejected');
 
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row) {
-                    $buttons = '';
-                    
-                    if (request()->user()->can('view applicants')) {
-                        $buttons .= '<a href="'.route('applicants.show', $row->id).'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="View">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </a>';
-                    }
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('middle_name', 'like', "%$search%")
+                    ->orWhere('cellphone_no', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%");
+                });
+            }
 
-                    if (request()->user()->can('edit applicants')) {
-                        $buttons .= '<a href="javascript:void(0)" onclick="restoreApplicant('.$row->id.')" class="p-2 text-green-600 hover:text-white hover:bg-green-600 rounded-full transition-colors duration-200" title="Restore">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </a>';
-                    }
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'full_name':
+                        $query->orderBy('last_name', $direction)
+                            ->orderBy('first_name', $direction)
+                            ->orderBy('middle_name', $direction);
+                        break;
+                        
+                    case 'sex':
+                        $query->orderBy('sex', $direction);
+                        break;
+                        
+                    case 'birthdate':
+                        $query->orderBy('birthdate', $direction);
+                        break;
+                        
+                    case 'created':
+                    case 'created_at':
+                        $query->orderBy('created_at', $direction);
+                        break;
 
-                    return '<div class="flex space-x-2">'.$buttons.'</div>';
-                })
-                ->addColumn('full_name', function($row) {
-                    return $row->first_name.' '.$row->last_name.($row->middle_name ? ' '.$row->middle_name : '').($row->suffix ? ' '.$row->suffix : '');
-                })
-                ->editColumn('created_at', function($row) {
-                    return $row->created_at->format('d M, y');
-                })
-                ->editColumn('updated_at', function($row) {
-                    return $row->updated_at->format('d M, y');
-                })
-                ->editColumn('birthdate', function($row) {
-                    return $row->birthdate ? \Carbon\Carbon::parse($row->birthdate)->format('d M, y') : '';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+                    case 'updated':
+                    case 'updated_at':
+                        $query->orderBy('updated_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('updated_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('updated_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $applicants = $query->paginate($perPage);
+
+            $transformedApplicants = $applicants->getCollection()->map(function ($applicant) {
+                $fullName = $applicant->first_name . ' ' . $applicant->last_name;
+                if ($applicant->middle_name) {
+                    $fullName .= ' ' . $applicant->middle_name;
+                }
+                if ($applicant->suffix) {
+                    $fullName .= ' ' . $applicant->suffix;
+                }
+
+                return [
+                    'id' => $applicant->id,
+                    'full_name' => $fullName,
+                    'sex' => $applicant->sex,
+                    'birthdate' => $applicant->birthdate ? \Carbon\Carbon::parse($applicant->birthdate)->format('d M, Y') : '',
+                    'cellphone_no' => $applicant->cellphone_no,
+                    'updated_at' => $applicant->updated_at->format('d M, Y'),
+                    'can_view' => request()->user()->can('view applicants'),
+                    'can_edit' => request()->user()->can('edit applicants'),
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedApplicants,
+                'current_page' => $applicants->currentPage(),
+                'last_page' => $applicants->lastPage(),
+                'from' => $applicants->firstItem(),
+                'to' => $applicants->lastItem(),
+                'total' => $applicants->total(),
+            ]);
         }
         
         return view('applicants.rejected');
@@ -487,43 +529,91 @@ class ApplicantController extends Controller implements HasMiddleware
     public function approved(Request $request)
     {
         if ($request->ajax()) {
-            $data = Applicant::where('status', 'approved')->orderBy('created_at', 'desc')->select('*');
+            $query = Applicant::where('status', 'Approved');
 
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row){
-                    $buttons = '';
-                    
-                    if (request()->user()->can('view applicants')) {
-                        $buttons .= '<a href="'.route('applicants.show', $row->id).'" class="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full transition-colors duration-200" title="View">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </a>';
-                    }
-                    
-                    return $buttons;
-                })
-                ->addColumn('full_name', function($row) {
-                    return $row->first_name.' '.$row->last_name.($row->middle_name ? ' '.$row->middle_name : '').($row->suffix ? ' '.$row->suffix : '');
-                })
-                ->editColumn('created_at', function($row) {
-                    return $row->created_at->format('d M, y');
-                })
-                ->editColumn('updated_at', function($row) {
-                    return $row->updated_at->format('d M, y');
-                })
-                ->editColumn('birthdate', function($row) {
-                    return $row->birthdate ? \Carbon\Carbon::parse($row->birthdate)->format('d M, y') : '';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('middle_name', 'like', "%$search%")
+                    ->orWhere('cellphone_no', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%");
+                });
+            }
+
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'full_name':
+                        $query->orderBy('last_name', $direction)
+                            ->orderBy('first_name', $direction)
+                            ->orderBy('middle_name', $direction);
+                        break;
+                        
+                    case 'sex':
+                        $query->orderBy('sex', $direction);
+                        break;
+                        
+                    case 'birthdate':
+                        $query->orderBy('birthdate', $direction);
+                        break;
+                        
+                    case 'created':
+                    case 'created_at':
+                        $query->orderBy('created_at', $direction);
+                        break;
+
+                    case 'updated':
+                    case 'updated_at':
+                        $query->orderBy('updated_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('updated_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('updated_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $applicants = $query->paginate($perPage);
+
+            $transformedApplicants = $applicants->getCollection()->map(function ($applicant) {
+                $fullName = $applicant->first_name . ' ' . $applicant->last_name;
+                if ($applicant->middle_name) {
+                    $fullName .= ' ' . $applicant->middle_name;
+                }
+                if ($applicant->suffix) {
+                    $fullName .= ' ' . $applicant->suffix;
+                }
+
+                return [
+                    'id' => $applicant->id,
+                    'full_name' => $fullName,
+                    'sex' => $applicant->sex,
+                    'birthdate' => $applicant->birthdate ? \Carbon\Carbon::parse($applicant->birthdate)->format('d M, Y') : '',
+                    'cellphone_no' => $applicant->cellphone_no,
+                    'updated_at' => $applicant->updated_at->format('d M, Y'),
+                    'can_view' => request()->user()->can('view applicants'),
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedApplicants,
+                'current_page' => $applicants->currentPage(),
+                'last_page' => $applicants->lastPage(),
+                'from' => $applicants->firstItem(),
+                'to' => $applicants->lastItem(),
+                'total' => $applicants->total(),
+            ]);
         }
         
         return view('applicants.approved');
     }
-
 
     /**
      * Restore a rejected applicant.

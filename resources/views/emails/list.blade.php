@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <!-- Title -->
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
+            <h2 class="font-semibold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 {{ __('Email Management') }}
             </h2>
 
@@ -10,34 +10,22 @@
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-6 items-center w-full sm:w-auto justify-center sm:justify-end">
                 @can('send emails')
                 <a href="{{ route('emails.compose') }}" 
-                class="px-4 py-2 sm:px-5 sm:py-2 
-                        text-white dark:text-gray-900
-                        hover:text-[#101966] dark:hover:text-white
-                        bg-white/10 dark:bg-gray-200/20 
-                        hover:bg-white dark:hover:bg-gray-600
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-white dark:focus:ring-gray-500
-                        border border-white dark:border-gray-500 
-                        font-medium rounded-lg 
-                        text-sm sm:text-base leading-normal 
-                        text-center transition w-full sm:w-auto">
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full sm:w-auto text-center">
                     Send Email
                 </a>
                 @endcan
 
                 @can('create emails')
                 <a href="{{ route('emails.create') }}" 
-                class="px-4 py-2 sm:px-5 sm:py-2 
-                        text-white dark:text-gray-900
-                        hover:text-green-600 dark:hover:text-white
-                        bg-green-600/80 dark:bg-green-400/30
-                        hover:bg-white dark:hover:bg-green-600
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-green-500 dark:focus:ring-green-400
-                        border border-white dark:border-gray-500 
-                        font-medium rounded-lg 
-                        text-sm sm:text-base leading-normal 
-                        text-center transition w-full sm:w-auto">
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-green-600 hover:border-green-600 
+                        bg-green-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-green-500 border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-green-400 rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full sm:w-auto text-center">
                     Create Template
                 </a>
                 @endcan
@@ -144,6 +132,67 @@
     </div>
 
     <x-slot name="script">
+        <style>
+            .swal2-icon {
+                border: 4px solid #ff0000 !important;
+                background-color: transparent !important;
+                color: #ff0000 !important;
+            }
+
+            .swal2-icon.swal2-warning .swal2-icon-content,
+            .swal2-icon.swal2-error .swal2-icon-content,
+            .swal2-icon.swal2-success .swal2-icon-content,
+            .swal2-icon.swal2-info .swal2-icon-content,
+            .swal2-icon.swal2-question .swal2-icon-content {
+                color: #ff0000 !important;
+            }
+
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .table-row-animate {
+                opacity: 0;
+                animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            }
+
+            .table-row-animate:nth-child(1) { animation-delay: 0.1s; }
+            .table-row-animate:nth-child(2) { animation-delay: 0.2s; }
+            .table-row-animate:nth-child(3) { animation-delay: 0.3s; }
+            .table-row-animate:nth-child(4) { animation-delay: 0.4s; }
+            .table-row-animate:nth-child(5) { animation-delay: 0.5s; }
+            .table-row-animate:nth-child(6) { animation-delay: 0.6s; }
+            .table-row-animate:nth-child(7) { animation-delay: 0.7s; }
+            .table-row-animate:nth-child(8) { animation-delay: 0.8s; }
+            .table-row-animate:nth-child(9) { animation-delay: 0.9s; }
+            .table-row-animate:nth-child(10) { animation-delay: 1.0s; }
+            .table-row-animate:nth-child(n+11) { animation-delay: 1.1s; }
+
+            .table-row-hover {
+                transition: all 0.3s ease-out;
+            }
+            
+            .table-row-hover:hover {
+                background-color: rgba(59, 130, 246, 0.08);
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-left: 4px solid #3b82f6;
+            }
+
+            .table-row-hover:hover td:first-child {
+                border-left: 4px solid #3b82f6;
+                padding-left: calc(1.5rem - 4px);
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
                 // Initialize templates table
@@ -183,33 +232,39 @@
                         
                         this.data.forEach((template, index) => {
                             let row = `
-                                <tr class="border-b table-row-hover dark:border-gray-700">
+                                <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                     <td class="px-6 py-4 text-center">${(this.currentPage - 1) * this.perPage + index + 1}</td>
                                     <td class="px-6 py-4 text-left">${template.name}</td>
                                     <td class="px-6 py-4 text-left">${template.subject}</td>
                                     <td class="px-6 py-4 text-left">${template.created_at}</td>
                                     <td class="px-6 py-4 text-left">${template.updated_at}</td>
-                                    <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                        ${template.can_edit ? `
-                                        <a href="/emails/${template.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </a>
-                                        ` : ''}
-                                        ${template.can_delete ? `
-                                        <button onclick="deleteEmailTemplate(${template.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                        ` : ''}
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex justify-center items-center space-x-2">
+                                            ${template.can_edit ? `
+                                            <a href="/emails/${template.id}/edit" 
+                                                class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                                <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
+                                            </a>
+                                            ` : ''}
+                                            ${template.can_delete ? `
+                                            <button onclick="deleteEmailTemplate(${template.id})" 
+                                                class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                                <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                            </button>
+                                            ` : ''}
+                                        </div>
                                     </td>
                                 </tr>
                             `;
@@ -338,7 +393,7 @@
                                 '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Failed</span>';
                             
                             let row = `
-                                <tr class="border-b table-row-hover dark:border-gray-700">
+                                <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                     <td class="px-6 py-4 text-center">${(this.currentPage - 1) * this.perPage + index + 1}</td>
                                     <td class="px-6 py-4 text-left">
                                         <div>${log.recipient_email}</div>
@@ -351,13 +406,15 @@
                                     <td class="px-6 py-4 text-left">${log.sent_at}</td>
                                     <td class="px-6 py-4 text-center">
                                         ${log.can_delete ? `
-                                        <button onclick="deleteEmailLog(${log.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
+                                        <button onclick="deleteEmailLog(${log.id})" 
+                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
                                             <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M6 18L18 6M6 6l12 12" />
                                             </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
                                         </button>
                                         ` : ''}
                                     </td>
@@ -472,49 +529,119 @@
             });
             
             function deleteEmailTemplate(id) {
-                if (confirm("Are you sure you want to delete this template?")) {
-                    $.ajax({
-                        url: '{{ route("emails.destroy") }}',
-                        type: 'DELETE',
-                        data: { id: id },
-                        dataType: 'json',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                window.templatesTable.fetch(window.templatesTable.currentPage);
-                            }
-                            alert(response.message);
-                        },
-                        error: function (xhr) {
-                            alert("An error occurred while deleting the template.");
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#5e6ffb',
+                    confirmButtonText: 'Yes, delete it!',
+                    background: '#101966',
+                    color: '#fff',
+                    customClass: {
+                            icon: 'swal-icon-red-bg'
                         }
-                    });
-                }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route("emails.destroy") }}',
+                            type: 'DELETE',
+                            data: { id: id },
+                            dataType: 'json',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            success: function (response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: 'Email template has been deleted successfully.',
+                                        icon: 'success',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                    window.templatesTable.fetch(window.templatesTable.currentPage);
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.message || 'An error occurred while deleting the template.',
+                                        icon: 'error',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                }
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: "An error occurred while deleting the template.",
+                                    icon: 'error',
+                                    background: '#101966',
+                                    color: '#fff'
+                                });
+                            }
+                        });
+                    }
+                });
             }
             
             function deleteEmailLog(id) {
-                if (confirm("Are you sure you want to delete this log?")) {
-                    $.ajax({
-                        url: '{{ route("emails.logs.destroy") }}',
-                        type: 'DELETE',
-                        data: { id: id },
-                        dataType: 'json',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                window.logsTable.fetch(window.logsTable.currentPage);
-                            }
-                            alert(response.message);
-                        },
-                        error: function (xhr) {
-                            alert("An error occurred while deleting the email log.");
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#5e6ffb',
+                    confirmButtonText: 'Yes, delete it!',
+                    background: '#101966',
+                    color: '#fff',
+                    customClass: {
+                            icon: 'swal-icon-red-bg'
                         }
-                    });
-                }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route("emails.logs.destroy") }}',
+                            type: 'DELETE',
+                            data: { id: id },
+                            dataType: 'json',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            success: function (response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: 'Email log has been deleted successfully.',
+                                        icon: 'success',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                    window.logsTable.fetch(window.logsTable.currentPage);
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.message || 'An error occurred while deleting the email log.',
+                                        icon: 'error',
+                                        background: '#101966',
+                                        color: '#fff'
+                                    });
+                                }
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: "An error occurred while deleting the email log.",
+                                    icon: 'error',
+                                    background: '#101966',
+                                    color: '#fff'
+                                });
+                            }
+                        });
+                    }
+                });
             }
         </script>
     </x-slot>

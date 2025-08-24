@@ -101,35 +101,49 @@ class LicenseController extends Controller implements HasMiddleware
                             ->orWhereNull('license_class');
                     });
 
-                return DataTables::of($query)
-                    ->addIndexColumn()
-                    ->addColumn('name', function($row) {
-                        return $row->full_name;
-                    })
-                    ->addColumn('bureau', function($row) {
-                        return $row->section->bureau->bureau_name ?? 'N/A';
-                    })
-                    ->addColumn('section', function($row) {
-                        return $row->section->section_name ?? 'N/A';
-                    })
-                    ->addColumn('membership_type', function($row) {
-                        return $row->membershipType->type_name ?? 'N/A';
-                    })
-                    ->addColumn('action', function($row) {
-                        $buttons = '';
-                        
-                        if (request()->user()->can('edit licenses')) {
-                            $buttons .= '<a href="'.route('licenses.edit', $row->id).'" class="p-2 text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-full transition-colors duration-200" title="Edit">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                            </a>';
-                        }
+                // Search functionality
+                if ($request->has('search') && !empty($request->search)) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('first_name', 'like', '%' . $request->search . '%')
+                        ->orWhere('last_name', 'like', '%' . $request->search . '%')
+                        ->orWhereHas('membershipType', function($q) use ($request) {
+                            $q->where('type_name', 'like', '%' . $request->search . '%');
+                        })
+                        ->orWhereHas('section.bureau', function($q) use ($request) {
+                            $q->where('bureau_name', 'like', '%' . $request->search . '%');
+                        })
+                        ->orWhereHas('section', function($q) use ($request) {
+                            $q->where('section_name', 'like', '%' . $request->search . '%');
+                        });
+                    });
+                }
 
-                        return '<div class="flex space-x-2">'.$buttons.'</div>';
-                    })
-                    ->rawColumns(['action'])
-                    ->make(true);
+                // Apply sorting
+                $this->applyUnlicensedSorting($query, $request);
+
+                // Pagination
+                $perPage = $request->input('perPage', 10);
+                $members = $query->paginate($perPage);
+
+                $transformedMembers = $members->getCollection()->map(function ($member) {
+                    return [
+                        'id' => $member->id,
+                        'name' => $member->first_name . ' ' . $member->last_name,
+                        'membership_type' => $member->membershipType->type_name ?? 'N/A',
+                        'bureau' => $member->section->bureau->bureau_name ?? 'N/A',
+                        'section' => $member->section->section_name ?? 'N/A',
+                        'can_edit' => request()->user()->can('edit licenses'),
+                    ];
+                });
+
+                return response()->json([
+                    'data' => $transformedMembers,
+                    'current_page' => $members->currentPage(),
+                    'last_page' => $members->lastPage(),
+                    'from' => $members->firstItem(),
+                    'to' => $members->lastItem(),
+                    'total' => $members->total(),
+                ]);
             }
             
             return view('licenses.unlicensed');
@@ -142,6 +156,39 @@ class LicenseController extends Controller implements HasMiddleware
                 : redirect()->back()->with('error', 'Failed to load unlicensed members. Please try again.');
         }
     }
+
+    protected function applyUnlicensedSorting($query, Request $request): void
+    {
+        $sort = $request->sort ?? 'created_at';
+        $direction = in_array(strtolower($request->direction ?? 'desc'), ['asc', 'desc']) 
+            ? $request->direction 
+            : 'desc';
+
+        switch ($sort) {
+            case 'name':
+                $query->orderBy('last_name', $direction)
+                    ->orderBy('first_name', $direction);
+                break;
+                
+            case 'membership_type':
+                $query->leftJoin('membership_types', 'members.membership_type_id', '=', 'membership_types.id')
+                    ->orderBy('membership_types.type_name', $direction)
+                    ->select('members.*');
+                break;
+                
+            case 'bureau':
+                $query->leftJoin('sections', 'members.section_id', '=', 'sections.id')
+                    ->leftJoin('bureaus', 'sections.bureau_id', '=', 'bureaus.id')
+                    ->orderBy('bureaus.bureau_name', $direction)
+                    ->select('members.*');
+                break;
+                
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+    }
+
 
     public function show(string $id)
     {
