@@ -320,6 +320,7 @@ class CertificateController extends Controller implements HasMiddleware
     }
 
 
+
     public function resendCertificate($certificateId, $memberId)
     {
         $certificate = Certificate::findOrFail($certificateId);

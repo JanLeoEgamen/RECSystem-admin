@@ -7,6 +7,9 @@
     <title>{{ config('app.name', 'RECInc') }} - Register</title>
     <link rel="icon" href="{{ asset('Application-logo/Logo.png') }}" type="image/x-icon" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add SweetAlert2 CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <style type="text/tailwindcss">
         @layer utilities {
             .bg-gradient-blue {
@@ -240,6 +243,64 @@
             .btn-17:hover:after {
                 --progress: -102%;
             }
+
+            /* Password Strength Meter Styles */
+            .password-strength-meter {
+                height: 6px;
+                width: 100%;
+                margin-top: 8px;
+                border-radius: 3px;
+                background-color: rgba(255, 255, 255, 0.2);
+                overflow: hidden;
+            }
+
+            .password-strength-meter-fill {
+                height: 100%;
+                width: 0%;
+                border-radius: 3px;
+                transition: width 0.3s ease, background-color 0.3s ease;
+            }
+
+            .password-strength-text {
+                font-size: 0.75rem;
+                margin-top: 4px;
+                text-align: right;
+                height: 16px;
+            }
+
+            /* Validation Requirements */
+            .validation-list {
+                margin-top: 8px;
+                padding-left: 16px;
+                font-size: 0.75rem;
+            }
+
+            .validation-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 4px;
+            }
+
+            .validation-icon {
+                margin-right: 6px;
+                width: 16px;
+                height: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                font-size: 0.6rem;
+            }
+
+            .validation-icon.valid {
+                background-color: rgba(72, 187, 120, 0.2);
+                color: #48bb78;
+            }
+
+            .validation-icon.invalid {
+                background-color: rgba(245, 101, 101, 0.2);
+                color: #f56565;
+            }
         }
     </style>
 </head>
@@ -273,7 +334,7 @@
                 <p class="text-white/80 mt-2">Join us today to get started!</p>
             </div>
 
-            <form method="POST" action="{{ route('register') }}" class="space-y-6">
+            <form method="POST" action="{{ route('register') }}" class="space-y-6" id="registerForm">
                 @csrf
 
                 <!-- Name Row -->
@@ -355,6 +416,7 @@
                                 required 
                                 autocomplete="new-password"
                                 placeholder="Enter your password"
+                                oninput="checkPasswordStrength()"
                             />
                             <button type="button" 
                                     class="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-white/50 hover:text-white"
@@ -369,6 +431,37 @@
                                 </svg>
                             </button>
                         </div>
+                        
+                        <!-- Password Strength Meter -->
+                        <div class="password-strength-meter mt-2">
+                            <div class="password-strength-meter-fill" id="passwordStrengthMeter"></div>
+                        </div>
+                        <div class="password-strength-text" id="passwordStrengthText"></div>
+                        
+                        <!-- Password Requirements -->
+                        <div class="validation-list text-white/80 mt-2">
+                            <div class="validation-item">
+                                <span class="validation-icon invalid" id="lengthIcon">✕</span>
+                                <span>Minimum 8 characters</span>
+                            </div>
+                            <div class="validation-item">
+                                <span class="validation-icon invalid" id="uppercaseIcon">✕</span>
+                                <span>Uppercase letter (A-Z)</span>
+                            </div>
+                            <div class="validation-item">
+                                <span class="validation-icon invalid" id="lowercaseIcon">✕</span>
+                                <span>Lowercase letter (a-z)</span>
+                            </div>
+                            <div class="validation-item">
+                                <span class="validation-icon invalid" id="numberIcon">✕</span>
+                                <span>Number (0-9)</span>
+                            </div>
+                            <div class="validation-item">
+                                <span class="validation-icon invalid" id="specialIcon">✕</span>
+                                <span>Special character (!@#$%^&*)</span>
+                            </div>
+                        </div>
+                        
                         <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-200" />
                     </div>
 
@@ -384,6 +477,7 @@
                                 required 
                                 autocomplete="new-password"
                                 placeholder="Confirm your password"
+                                oninput="checkPasswordMatch()"
                             />
                             <button type="button" 
                                     class="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-white/50 hover:text-white"
@@ -398,6 +492,7 @@
                                 </svg>
                             </button>
                         </div>
+                        <div id="passwordMatchText" class="text-sm mt-1 h-5"></div>
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-sm text-red-200" />
                     </div>
                 </div>
@@ -407,7 +502,7 @@
                         {{ __('Already registered?') }}
                     </a>
 
-                    <button dusk="register-button" type="submit" class="btn-17 backdrop-blur-sm border border-white/30">
+                    <button dusk="register-button" type="submit" class="btn-17 backdrop-blur-sm border border-white/30" id="registerButton">
                         <span class="text-container">
                             <span class="text tracking-wider">{{ __('Register') }}</span>
                         </span>
@@ -462,6 +557,162 @@
                 eyeSlashIcon.classList.add('hidden');
             }
         }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthMeter = document.getElementById('passwordStrengthMeter');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            // Check individual requirements
+            const hasMinLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            // Update requirement icons
+            document.getElementById('lengthIcon').className = `validation-icon ${hasMinLength ? 'valid' : 'invalid'}`;
+            document.getElementById('lengthIcon').innerHTML = hasMinLength ? '✓' : '✕';
+            
+            document.getElementById('uppercaseIcon').className = `validation-icon ${hasUppercase ? 'valid' : 'invalid'}`;
+            document.getElementById('uppercaseIcon').innerHTML = hasUppercase ? '✓' : '✕';
+            
+            document.getElementById('lowercaseIcon').className = `validation-icon ${hasLowercase ? 'valid' : 'invalid'}`;
+            document.getElementById('lowercaseIcon').innerHTML = hasLowercase ? '✓' : '✕';
+            
+            document.getElementById('numberIcon').className = `validation-icon ${hasNumber ? 'valid' : 'invalid'}`;
+            document.getElementById('numberIcon').innerHTML = hasNumber ? '✓' : '✕';
+            
+            document.getElementById('specialIcon').className = `validation-icon ${hasSpecialChar ? 'valid' : 'invalid'}`;
+            document.getElementById('specialIcon').innerHTML = hasSpecialChar ? '✓' : '✕';
+            
+            // Calculate strength score
+            let strength = 0;
+            if (hasMinLength) strength += 20;
+            if (hasUppercase) strength += 20;
+            if (hasLowercase) strength += 20;
+            if (hasNumber) strength += 20;
+            if (hasSpecialChar) strength += 20;
+            
+            // Update strength meter and text
+            strengthMeter.style.width = `${strength}%`;
+            
+            if (password.length === 0) {
+                strengthText.textContent = '';
+                strengthMeter.style.backgroundColor = 'transparent';
+            } else if (strength < 60) {
+                strengthText.textContent = 'Weak password';
+                strengthText.className = 'password-strength-text text-red-400';
+                strengthMeter.style.backgroundColor = '#f56565';
+            } else if (strength < 100) {
+                strengthText.textContent = 'Medium password';
+                strengthText.className = 'password-strength-text text-yellow-400';
+                strengthMeter.style.backgroundColor = '#ecc94b';
+            } else {
+                strengthText.textContent = 'Strong password';
+                strengthText.className = 'password-strength-text text-green-400';
+                strengthMeter.style.backgroundColor = '#48bb78';
+            }
+            
+            // Check if passwords match
+            checkPasswordMatch();
+        }
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            const matchText = document.getElementById('passwordMatchText');
+            
+            if (confirmPassword.length === 0) {
+                matchText.textContent = '';
+                matchText.className = 'text-sm mt-1 h-5';
+            } else if (password !== confirmPassword) {
+                matchText.textContent = 'Passwords do not match';
+                matchText.className = 'text-sm mt-1 h-5 text-red-400';
+            } else {
+                matchText.textContent = 'Passwords match';
+                matchText.className = 'text-sm mt-1 h-5 text-green-400';
+            }
+        }
+        
+        // Add form validation
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            const password = document.getElementById('password').value;
+            
+            // Check if password meets all requirements
+            const hasMinLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar) {
+                event.preventDefault();
+                
+                // Show SweetAlert instead of standard alert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Password Requirements Not Met',
+                    html: `
+                        <div class="text-left">
+                            <p class="mb-2">Please make sure your password meets all the requirements:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li class="${hasMinLength ? 'text-green-600' : 'text-red-600'}">Minimum 8 characters</li>
+                                <li class="${hasUppercase ? 'text-green-600' : 'text-red-600'}">At least one uppercase letter (A-Z)</li>
+                                <li class="${hasLowercase ? 'text-green-600' : 'text-red-600'}">At least one lowercase letter (a-z)</li>
+                                <li class="${hasNumber ? 'text-green-600' : 'text-red-600'}">At least one number (0-9)</li>
+                                <li class="${hasSpecialChar ? 'text-green-600' : 'text-red-600'}">At least one special character (!@#$%^&*)</li>
+                            </ul>
+                        </div>
+                    `,
+                    confirmButtonColor: '#101966',
+                    confirmButtonText: 'OK, I\'ll fix it'
+                });
+                return;
+            }
+            
+            // Check if passwords match
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                
+                // Show SweetAlert for password mismatch
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Passwords Do Not Match',
+                    text: 'Please make sure your passwords match before submitting.',
+                    confirmButtonColor: '#101966',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+        
+        // Check for existing validation errors from server
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorElements = document.querySelectorAll('.text-red-200');
+            if (errorElements.length > 0) {
+                // Extract error messages
+                const errorMessages = Array.from(errorElements).map(el => el.textContent.trim()).filter(msg => msg !== '');
+                
+                if (errorMessages.length > 0) {
+                    // Show SweetAlert with error messages
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registration Error',
+                        html: `
+                            <div class="text-left">
+                                <p class="mb-2">Please fix the following errors:</p>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    ${errorMessages.map(msg => `<li class="text-red-600">${msg}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `,
+                        confirmButtonColor: '#101966',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        });
     </script>
 </body>
 </html>

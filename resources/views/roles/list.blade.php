@@ -262,19 +262,26 @@
                 }
 
                 function renderRoles(roles, startIndex) {
-                    let tbody = $('#rolesTable tbody');
-                    tbody.empty();
+                let tbody = $('#rolesTable tbody');
+                tbody.empty();
+                
+                roles.forEach((role, index) => {
+                    const rowNumber = startIndex + index;
                     
-                    roles.forEach((role, index) => {
-                        const rowNumber = startIndex + index;
-
-                        let row = `
-                            <tr class="border-b table-row-hover dark:border-gray-700">
-                                <td class="px-6 py-4 text-center">${rowNumber}</td>
-                                <td class="px-6 py-4 text-left column-name">${role.name}</td>
-                                <td class="px-6 py-4 text-left column-permissions">${role.permissions}</td>
-                                <td class="px-6 py-4 text-left column-created">${role.created_at}</td>
-                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                    // Check if the role is one that shouldn't show action buttons
+                    const protectedRoles = ['superadmin', 'Member', 'Applicant'];
+                    const isProtectedRole = protectedRoles.includes(role.name);
+                    const showEditButton = !isProtectedRole;
+                    const showDeleteButton = !isProtectedRole;
+                    
+                    let row = `
+                        <tr class="border-b table-row-hover dark:border-gray-700">
+                            <td class="px-6 py-4 text-center">${rowNumber}</td>
+                            <td class="px-6 py-4 text-left column-name">${role.name}</td>
+                            <td class="px-6 py-4 text-left column-permissions">${role.permissions}</td>
+                            <td class="px-6 py-4 text-left column-created">${role.created_at}</td>
+                            <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                ${showEditButton ? `
                                     @can('edit roles')
                                     <a href="/roles/${role.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
                                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -285,6 +292,8 @@
                                         </svg>
                                     </a>
                                     @endcan
+                                ` : ''}
+                                ${showDeleteButton ? `
                                     @can('delete roles')
                                     <button onclick="deleteRole(${role.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
                                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -295,12 +304,16 @@
                                         </svg>
                                     </button>
                                     @endcan
-                                </td>
-                            </tr>
-                        `;
-                        tbody.append(row);
-                    });
-                }
+                                ` : ''}
+                                ${isProtectedRole ? `
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 italic">Protected</span>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
 
                 function renderPagination(data) {
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';

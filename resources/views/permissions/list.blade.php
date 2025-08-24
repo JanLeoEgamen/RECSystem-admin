@@ -58,7 +58,7 @@
                                 </select>
                             </div>
 
-                            <!-- Column Filter -->
+                            <!-- Column Filter
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Columns</span>
                                 <div class="relative">
@@ -69,7 +69,7 @@
                                         </svg>
                                     </button>
                                     
-                                    <!-- Column Filter Dropdown -->
+                                    Column Filter Dropdown
                                     <div id="columnFilterDropdown" class="hidden absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                         <div class="p-2">
                                             <div class="space-y-2">
@@ -85,7 +85,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
                         <!-- Right side - search and result info -->

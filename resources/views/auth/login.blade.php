@@ -273,7 +273,7 @@
                 <p class="text-white/80 mt-2">Please log in to your account</p>
             </div>
 
-            <x-auth-session-status class="mb-6 p-4 bg-blue-50/30 dark:bg-blue-900/30 text-blue-100 rounded-lg" :status="session('status')" />
+            <x-auth-session-status class="mb-6 p-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 backdrop-blur-sm border border-white/30 rounded-lg text-white font-medium shadow-lg" :status="session('status')" />
 
             <form method="POST" action="{{ route('login') }}" class="space-y-6">
                 @csrf

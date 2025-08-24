@@ -129,7 +129,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ], function () {
         Route::get('/renew', [MemberDashboardController::class, 'create'])->name('member.renew');
         Route::post('/renew', [MemberDashboardController::class, 'store'])->name('renew.store');
-        Route::get('/renew/thank-you', [MemberDashboardController::class, 'thankYou'])->name('renew.thank-you');
     });
 
 
@@ -207,6 +206,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bureaus/{id}/edit', [BureauController::class, 'edit'])->name('bureaus.edit');
     Route::post('/bureaus/{id}', [BureauController::class, 'update'])->name('bureaus.update');
     Route::delete('/bureaus', [BureauController::class, 'destroy'])->name('bureaus.destroy');
+    
+    Route::resource('bureau-section', BureauSectionController::class)->except(['show']);
+    Route::delete('bureau-section/destroy', [BureauSectionController::class, 'destroy'])->name('bureau-section.destroy');
+    Route::get('bureau-section/{id}/{type}/edit', [BureauSectionController::class, 'edit'])->name('bureau-section.edit');
+    Route::put('bureau-section/{id}/{type}', [BureauSectionController::class, 'update'])->name('bureau-section.update');
 
     // Sections
     Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
@@ -215,11 +219,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sections/{id}/edit', [SectionController::class, 'edit'])->name('sections.edit');
     Route::post('/sections/{id}', [SectionController::class, 'update'])->name('sections.update');
     Route::delete('/sections', [SectionController::class, 'destroy'])->name('sections.destroy');
-    
-    Route::resource('bureau-section', BureauSectionController::class)->except(['show']);
-    Route::delete('bureau-section/destroy', [BureauSectionController::class, 'destroy'])->name('bureau-section.destroy');
-    Route::get('bureau-section/{id}/{type}/edit', [BureauSectionController::class, 'edit'])->name('bureau-section.edit');
-    Route::put('bureau-section/{id}/{type}', [BureauSectionController::class, 'update'])->name('bureau-section.update');
     
     // Applicants
     Route::get('/applicants', [ApplicantController::class, 'index'])->name('applicants.index');

@@ -163,18 +163,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
                 
-                <!-- Contact Information Section -->
-                <div id="contact-info" class="border-b border-gray-200 dark:border-gray-700 pb-8 transition-colors duration-300">
-                    <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-6 flex items-center transition-colors duration-300">
-                        <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100 rounded-full p-3 mr-3 transition-colors duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                        </span>
-                        Contact Information
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Contact Information Section -->
+            <div id="contact-info" class="border-b border-gray-200 dark:border-gray-700 pb-8 transition-colors duration-300">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-6 flex items-center transition-colors duration-300">
+                    <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100 rounded-full p-3 mr-3 transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                    </span>
+                    Contact Information
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                             Email Address
@@ -184,17 +184,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             id="email" 
                             name="email" 
                             value="{{ auth()->user()->email }}" 
+                            disabled
                             class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
                                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                                 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 
-                                transition-all duration-200"
+                                transition-all duration-200 disabled-input cursor-not-allowed"
                         >
                         <p id="emailError" class="mt-1 text-sm text-red-500 hidden">
                             Please enter a valid Gmail address.
                         </p>
                     </div>
-
-                    
 
                     <div>
                         <label for="cellphone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
@@ -205,12 +204,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             id="cellphone" 
                             name="cellphone" 
                             placeholder="e.g. 09171234567" 
+                            maxlength="11"
+                            oninput="validatePhoneNumber(this, 'cellphoneError')"
                             class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
                                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                                 dark:bg-gray-700 dark:text-white transition-all duration-200"
                         >
                         <p id="cellphoneError" class="mt-1 text-sm text-red-500 hidden">
-                            Please enter a valid 11-digit cellphone number (e.g., 09171234567).
+                            Please enter a valid 11-digit cellphone number starting with 09 (e.g., 09171234567).
                         </p>
                     </div>
 
@@ -229,53 +230,52 @@ document.addEventListener('DOMContentLoaded', function() {
                         >
                     </div>
                 </div>
+            </div>
 
-                </div>
+            <!-- Emergency Contact Section -->
+            <div id="emergency-contact" class="border-b border-gray-200 dark:border-gray-700 pb-8 transition-colors duration-300">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-6 flex items-center transition-colors duration-300">
+                    <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-full p-3 mr-3 transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </span>
+                    Emergency Contact
+                </h3>
                 
-                <!-- Emergency Contact Section -->
-                <div id="emergency-contact" class="border-b border-gray-200 dark:border-gray-700 pb-8 transition-colors duration-300">
-                    <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-6 flex items-center transition-colors duration-300">
-                        <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-full p-3 mr-3 transition-colors duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </span>
-                        Emergency Contact
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="col-span-1">
-                            <label for="emergencyName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Full Name *</label>
-                            <input type="text" id="emergencyName" name="emergencyName" required placeholder="e.g. Maria De la Cruz" 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                                   oninput="validateFullName(this)">
-                            <p id="emergencyNameError" class="mt-1 text-sm text-red-600 hidden">Please enter both first and last name</p>
-                        </div>
-                        <div class="col-span-1">
-                            <label for="emergencyContact" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Contact No. *</label>
-                            <input type="tel" id="emergencyContact" name="emergencyContact" required placeholder="e.g. 09171234567" 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                                   maxlength="11"
-                                   oninput="validatePhoneNumber(this, 'emergencyContactError')">
-                            <p id="emergencyContactError" class="mt-1 text-sm text-red-600 hidden">Please enter a valid 11-digit phone number (e.g. 09171234567)</p>
-                        </div>
-                        <div class="col-span-1">
-                            <label for="emergencyRelationship" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Relationship *</label>
-                            <select id="emergencyRelationship" name="emergencyRelationship" required
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
-                                <option value="" disabled selected>Select relationship</option>
-                                <option value="Father">Father</option>
-                                <option value="Mother">Mother</option>
-                                <option value="Spouse">Spouse</option>
-                                <option value="Others">Others (please specify)</option>
-                            </select>
-                            <div id="otherRelationshipContainer" class="mt-2 hidden">
-                                <input type="text" id="otherRelationship" name="otherRelationship" placeholder="Please specify relationship"
-                                       class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
-                            </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="col-span-1">
+                        <label for="emergencyName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Full Name *</label>
+                        <input type="text" id="emergencyName" name="emergencyName" required placeholder="e.g. Maria De la Cruz" 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                            oninput="validateFullName(this)">
+                        <p id="emergencyNameError" class="mt-1 text-sm text-red-600 hidden">Please enter both first and last name</p>
+                    </div>
+                    <div class="col-span-1">
+                        <label for="emergencyContact" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Contact No. *</label>
+                        <input type="tel" id="emergencyContact" name="emergencyContact" required placeholder="e.g. 09171234567" 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                            maxlength="11"
+                            oninput="validatePhoneNumber(this, 'emergencyContactError')">
+                        <p id="emergencyContactError" class="mt-1 text-sm text-red-600 hidden">Please enter a valid 11-digit phone number starting with 09 (e.g. 09171234567)</p>
+                    </div>
+                    <div class="col-span-1">
+                        <label for="emergencyRelationship" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Relationship *</label>
+                        <select id="emergencyRelationship" name="emergencyRelationship" required
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            <option value="" disabled selected>Select relationship</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Spouse">Spouse</option>
+                            <option value="Others">Others (please specify)</option>
+                        </select>
+                        <div id="otherRelationshipContainer" class="mt-2 hidden">
+                            <input type="text" id="otherRelationship" name="otherRelationship" placeholder="Please specify relationship"
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                         </div>
                     </div>
                 </div>
+            </div>
                 
                 <!-- Address Information Section -->
                 <div id="address-info" class="border-b border-gray-200 dark:border-gray-700 pb-8 transition-colors duration-300">
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
-<!-- Payment Overlay -->
+        <!-- Payment Overlay -->
 <div id="paymentOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
     <div class="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-2xl w-full mx-4 relative">
         <button id="closePaymentOverlay" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
@@ -418,15 +418,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="mb-6">
                         <label for="gcashRefNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">GCash Reference Number *</label>
                         <input type="text" id="gcashRefNumber" name="gcashRefNumber" required 
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                               placeholder="Enter your GCash reference number">
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                            placeholder="e.g. 1234 567 123456"
+                            maxlength="15"
+                            oninput="formatGcashRefNumber(this)"
+                            onkeypress="return isNumberKey(event)">
+                        <p id="gcashRefError" class="mt-1 text-sm text-red-500 hidden">
+                            Please enter a valid 13-digit GCash reference number (e.g., 1234 567 123456)
+                        </p>
                     </div>
                     
                     <div class="mb-6">
                         <label for="paymentProof" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Payment Proof *</label>
-                        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                            <input type="file" id="paymentProof" name="paymentProof" accept="image/*" required 
-                                   class="hidden" onchange="previewImage(this)">
+                        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center payment-proof-container">
+                            <input type="file" id="paymentProof" name="paymentProof" accept="image/*" class="hidden">
                             <label for="paymentProof" class="cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -579,6 +584,36 @@ $(document).ready(function() {
     paymentForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Validate all required fields
+        const gcashRefValid = validateGcashRefNumber(document.getElementById('gcashRefNumber'));
+        const paymentProofValid = validatePaymentProof(document.getElementById('paymentProof'));
+        
+        if (!gcashRefValid || !paymentProofValid) {
+            // Scroll to the first error
+            if (!gcashRefValid) {
+                document.getElementById('gcashRefNumber').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            } else if (!paymentProofValid) {
+                document.getElementById('paymentProof').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+            return;
+        }
+        
+        // Show SweetAlert loading
+        Swal.fire({
+            title: 'Submitting Application',
+            text: 'Please wait while we process your application...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
         // Create FormData object from both forms
         const formData = new FormData(applicationForm);
         const paymentFormData = new FormData(paymentForm);
@@ -587,30 +622,71 @@ $(document).ready(function() {
         for (let [key, value] of paymentFormData.entries()) {
             formData.append(key, value);
         }
-        
         // Submit the combined form data
         fetch(applicationForm.action, {
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-Requested-With': 'XMLHttpRequest'
             }
         })
         .then(response => {
+            console.log('Response status:', response.status);
+            
             if (response.redirected) {
                 window.location.href = response.url;
+                return;
             }
-            return response.json();
+            
+            // Clone the response to read it multiple times
+            return response.clone().json().then(data => {
+                console.log('Response data:', data);
+                return { status: response.status, data };
+            }).catch(error => {
+                console.error('Error parsing JSON:', error);
+                return response.text().then(text => {
+                    console.log('Response text:', text);
+                    return { status: response.status, text };
+                });
+            });
         })
-        .then(data => {
-            if (data.redirect) {
-                window.location.href = data.redirect;
+        .then(result => {
+            if (result.status === 422) {
+                // Validation errors
+                console.log('Validation errors:', result.data);
+                
+                let errorMessage = 'Please fix the following errors:';
+                if (result.data && result.data.errors) {
+                    for (const field in result.data.errors) {
+                        errorMessage += `\n• ${result.data.errors[field][0]}`;
+                    }
+                } else {
+                    errorMessage += '\n• Unknown validation error';
+                }
+                
+                Swal.fire('Validation Error', errorMessage, 'error');
+            } else if (result.data && result.data.redirect) {
+                window.location.href = result.data.redirect;
+            } else if (result.data && result.data.error) {
+                Swal.fire('Error', result.data.error, 'error');
+            } else {
+                Swal.fire('Error', 'An unexpected error occurred. Please try again.', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
+            Swal.fire('Error', 'An error occurred while submitting your application. Please try again.', 'error');
+        })
+        .finally(() => {
+            Swal.close();
         });
     });
+
+    document.getElementById('paymentProof').onchange = function() {
+        previewImage(this);
+        validatePaymentProof(this);
+    };
 
     // Image preview functionality
     window.previewImage = function(input) {
@@ -708,5 +784,138 @@ document.getElementById('emergencyRelationship').addEventListener('change', func
         document.getElementById('otherRelationship').removeAttribute('required');
     }
 });
+
+// Format GCash reference number with spaces (1234 567 123456)
+function formatGcashRefNumber(input) {
+    // Remove all non-digit characters
+    let value = input.value.replace(/\D/g, '');
+    
+    // Limit to 13 digits only
+    value = value.substring(0, 13);
+    
+    // Format with spaces after 4 digits and then after 3 more digits
+    if (value.length > 4) {
+        value = value.substring(0, 4) + ' ' + value.substring(4);
+    }
+    if (value.length > 8) {
+        value = value.substring(0, 8) + ' ' + value.substring(8);
+    }
+    
+    input.value = value;
+    
+    // Validate the reference number
+    validateGcashRefNumber(input);
+}
+
+// Validate GCash reference number (exactly 13 digits)
+function validateGcashRefNumber(input) {
+    const errorElement = document.getElementById('gcashRefError');
+    // Remove spaces to count only digits
+    const digitsOnly = input.value.replace(/\s/g, '');
+    
+    if (digitsOnly.length === 0) {
+        errorElement.classList.add('hidden');
+        input.classList.remove('border-red-500');
+        return false;
+    }
+    
+    const isValid = digitsOnly.length === 13;
+    
+    if (!isValid) {
+        errorElement.classList.remove('hidden');
+        input.classList.add('border-red-500');
+        return false;
+    } else {
+        errorElement.classList.add('hidden');
+        input.classList.remove('border-red-500');
+        return true;
+    }
+}
+
+// Allow only numbers to be entered
+function isNumberKey(evt) {
+    const charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        evt.preventDefault();
+        return false;
+    }
+    return true;
+}
+
+// Add validation to payment form submission
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    const gcashRefInput = document.getElementById('gcashRefNumber');
+    const isValid = validateGcashRefNumber(gcashRefInput);
+    
+    if (!isValid) {
+        e.preventDefault();
+        gcashRefInput.focus();
+    }
+});
+
+// Also add validation when the overlay is opened
+document.getElementById('proceedToPaymentBtn').addEventListener('click', function() {
+    // Your existing validation code...
+    
+    // After showing overlay, focus on GCash reference input
+    setTimeout(() => {
+        document.getElementById('gcashRefNumber').focus();
+    }, 100);
+});
+
+    function validatePaymentProof(input) {
+        // Remove any existing error
+        const existingError = input.parentNode.parentNode.querySelector('.payment-proof-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        if (!input.files || !input.files[0]) {
+            // Show error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
+            errorDiv.textContent = 'Please upload payment proof.';
+            input.parentNode.parentNode.appendChild(errorDiv);
+            
+            // Make the border red to indicate error
+            input.parentNode.parentNode.classList.add('border-red-500');
+            
+            return false;
+        }
+        
+        // Check file type
+        const file = input.files[0];
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!validTypes.includes(file.type)) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
+            errorDiv.textContent = 'Please upload a valid image (JPEG, PNG, JPG).';
+            input.parentNode.parentNode.appendChild(errorDiv);
+            
+            // Make the border red to indicate error
+            input.parentNode.parentNode.classList.add('border-red-500');
+            
+            return false;
+        }
+        
+        // Check file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
+            errorDiv.textContent = 'File size must be less than 5MB.';
+            input.parentNode.parentNode.appendChild(errorDiv);
+            
+            // Make the border red to indicate error
+            input.parentNode.parentNode.classList.add('border-red-500');
+            
+            return false;
+        }
+        
+        // Remove error styling if valid
+        input.parentNode.parentNode.classList.remove('border-red-500');
+        
+        return true;
+    }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </x-app-layout>

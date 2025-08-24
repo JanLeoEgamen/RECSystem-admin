@@ -153,9 +153,23 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
 
             if ($applicant) {
                 Log::info('Data successfully inserted into database');
+                
+                if ($request->ajax()) {
+                    return response()->json([
+                        'redirect' => route('applicant.thankyou')
+                    ]);
+                }
+                
                 return redirect()->route('applicant.thankyou')->with('success', 'Application submitted successfully!');
             } else {
                 Log::error('Database insertion failed without error');
+                
+                if ($request->ajax()) {
+                    return response()->json([
+                        'error' => 'Failed to submit application. Please try again.'
+                    ], 500);
+                }
+                
                 return redirect()->back()
                     ->with('error', 'Failed to submit application. Please try again.')
                     ->withInput();
@@ -164,6 +178,13 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
         } catch (\Exception $e) {
             Log::error('Database insertion error: ' . $e->getMessage());
             Log::error('Error trace: ' . $e->getTraceAsString());
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'error' => 'Failed to submit application. Error: ' . $e->getMessage()
+                ], 500);
+            }
+            
             return redirect()->back()
                 ->with('error', 'Failed to submit application. Error: ' . $e->getMessage())
                 ->withInput();

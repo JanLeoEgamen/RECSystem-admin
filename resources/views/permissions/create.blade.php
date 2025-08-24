@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
     <div class="flex justify-between"> 
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
                 Permissions / Create
             </h2>
                     <a href="{{ route('permissions.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
