@@ -108,6 +108,7 @@ class LoginLogController extends Controller
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont', 'DejaVu Sans');
         
         $dompdf = new Dompdf($options);
         
@@ -119,8 +120,13 @@ class LoginLogController extends Controller
         ])->render();
         
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4', 'landscape'); // Changed to landscape for better table layout
         $dompdf->render();
+        
+        // Add page numbers
+        $canvas = $dompdf->getCanvas();
+        $font = $dompdf->getFontMetrics()->getFont('DejaVu Sans');
+        $canvas->page_text(540, 820, "Page {PAGE_NUM} of {PAGE_COUNT}", $font, 10, array(0,0,0));
         
         return $dompdf->stream("login_logs_report_".now()->format('Y-m-d').".pdf");
     }
@@ -167,5 +173,35 @@ class LoginLogController extends Controller
         }
         
         return $formatted;
+    }
+
+    public function export(Request $request)
+    {
+        $query = Activity::with('causer')
+            ->where('log_name', 'authentication')
+            ->orderBy('created_at', 'desc');
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                ->orWhereHas('causer', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        if ($request->has('login_type')) {
+            $query->where('description', $request->input('login_type'));
+        }
+
+        $exportLogs = $query->get();
+        $exportLogs->transform(function ($log) {
+            $log->formatted_properties = $this->formatLoginProperties($log->properties);
+            return $log;
+        });
+
+        return $this->generatePdf($exportLogs, $request->input('search'));
     }
 }

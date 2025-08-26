@@ -45,6 +45,10 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         Log::info('Raw request data:', $request->all());
+        Log::info('Request headers:', $request->headers->all());
+        Log::info('Request all data:', $request->all());
+        Log::info('Request files:', $request->file() ? array_keys($request->file()) : ['no files']);
+
 
         // Validate the request data
         $validatedData = $request->validate([

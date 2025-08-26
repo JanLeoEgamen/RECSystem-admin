@@ -47,28 +47,28 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div>
                                         <label for="first_name" class="block text-sm font-medium">First Name *</label>
-                                        <input value="{{ old('first_name', $applicant->first_name) }}" name="first_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('first_name', $applicant->first_name) }}" name="first_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('first_name')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="middle_name" class="block text-sm font-medium">Middle Name</label>
-                                        <input value="{{ old('middle_name', $applicant->middle_name) }}" name="middle_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <input value="{{ old('middle_name', $applicant->middle_name) }}" name="middle_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('middle_name')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="last_name" class="block text-sm font-medium">Last Name *</label>
-                                        <input value="{{ old('last_name', $applicant->last_name) }}" name="last_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('last_name', $applicant->last_name) }}" name="last_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('last_name')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="suffix" class="block text-sm font-medium">Suffix</label>
-                                        <input value="{{ old('suffix', $applicant->suffix) }}" name="suffix" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <input value="{{ old('suffix', $applicant->suffix) }}" name="suffix" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('suffix')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -78,7 +78,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                                     <div>
                                         <label for="sex" class="block text-sm font-medium">Sex *</label>
-                                        <select name="sex" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <select name="sex" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly disabled>
                                             <option value="">Select</option>
                                             <option value="Male" {{ old('sex', $applicant->sex) == 'Male' ? 'selected' : '' }}>Male</option>
                                             <option value="Female" {{ old('sex', $applicant->sex) == 'Female' ? 'selected' : '' }}>Female</option>
@@ -89,14 +89,14 @@
                                     </div>
                                     <div>
                                         <label for="birthdate" class="block text-sm font-medium">Birthdate *</label>
-                                        <input value="{{ old('birthdate', $applicant->birthdate ? \Carbon\Carbon::parse($applicant->birthdate)->format('Y-m-d') : '') }}" name="birthdate" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('birthdate', $applicant->birthdate ? \Carbon\Carbon::parse($applicant->birthdate)->format('Y-m-d') : '') }}" name="birthdate" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('birthdate')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="civil_status" class="block text-sm font-medium">Civil Status *</label>
-                                        <select name="civil_status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <select name="civil_status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly disabled>
                                             <option value="">Select</option>
                                             <option value="Single" {{ old('civil_status', $applicant->civil_status) == 'Single' ? 'selected' : '' }}>Single</option>
                                             <option value="Married" {{ old('civil_status', $applicant->civil_status) == 'Married' ? 'selected' : '' }}>Married</option>
@@ -109,7 +109,7 @@
                                     </div>
                                     <div>
                                         <label for="citizenship" class="block text-sm font-medium">Citizenship *</label>
-                                        <input value="{{ old('citizenship', $applicant->citizenship) }}" name="citizenship" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('citizenship', $applicant->citizenship) }}" name="citizenship" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('citizenship')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -119,7 +119,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                                     <div>
                                         <label for="blood_type" class="block text-sm font-medium">Blood Type</label>
-                                        <select name="blood_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <select name="blood_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly disabled>
                                             <option value="">Select</option>
                                             <option value="A+" {{ old('blood_type', $applicant->blood_type) == 'A+' ? 'selected' : '' }}>A+</option>
                                             <option value="A-" {{ old('blood_type', $applicant->blood_type) == 'A-' ? 'selected' : '' }}>A-</option>
@@ -143,21 +143,21 @@
                                 <div class="space-y-4">
                                     <div>
                                         <label for="cellphone_no" class="block text-sm font-medium">Cellphone No. *</label>
-                                        <input value="{{ old('cellphone_no', $applicant->cellphone_no) }}" name="cellphone_no" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('cellphone_no', $applicant->cellphone_no) }}" name="cellphone_no" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('cellphone_no')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="telephone_no" class="block text-sm font-medium">Telephone No.</label>
-                                        <input value="{{ old('telephone_no', $applicant->telephone_no) }}" name="telephone_no" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <input value="{{ old('telephone_no', $applicant->telephone_no) }}" name="telephone_no" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('telephone_no')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="email_address" class="block text-sm font-medium">Email Address *</label>
-                                        <input value="{{ old('email_address', $applicant->email_address) }}" name="email_address" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('email_address', $applicant->email_address) }}" name="email_address" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('email_address')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -171,21 +171,21 @@
                                 <div class="space-y-4">
                                     <div>
                                         <label for="emergency_contact" class="block text-sm font-medium">Name *</label>
-                                        <input value="{{ old('emergency_contact', $applicant->emergency_contact) }}" name="emergency_contact" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('emergency_contact', $applicant->emergency_contact) }}" name="emergency_contact" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('emergency_contact')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="emergency_contact_number" class="block text-sm font-medium">Contact No. *</label>
-                                        <input value="{{ old('emergency_contact_number', $applicant->emergency_contact_number) }}" name="emergency_contact_number" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('emergency_contact_number', $applicant->emergency_contact_number) }}" name="emergency_contact_number" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('emergency_contact_number')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="relationship" class="block text-sm font-medium">Relationship *</label>
-                                        <input value="{{ old('relationship', $applicant->relationship) }}" name="relationship" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('relationship', $applicant->relationship) }}" name="relationship" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('relationship')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -227,14 +227,14 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label for="house_building_number_name" class="block text-sm font-medium">House/Building No./Name *</label>
-                                        <input value="{{ old('house_building_number_name', $applicant->house_building_number_name) }}" name="house_building_number_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('house_building_number_name', $applicant->house_building_number_name) }}" name="house_building_number_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('house_building_number_name')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="street_address" class="block text-sm font-medium">Street Address *</label>
-                                        <input value="{{ old('street_address', $applicant->street_address) }}" name="street_address" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('street_address', $applicant->street_address) }}" name="street_address" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('street_address')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -243,28 +243,28 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                                     <div>
                                         <label for="region" class="block text-sm font-medium">Region *</label>
-                                        <input value="{{ old('region', $regionName) }}" name="region" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('region', $regionName) }}" name="region" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('region')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="province" class="block text-sm font-medium">Province *</label>
-                                        <input value="{{ old('province', $provinceName) }}" name="province" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('province', $provinceName) }}" name="province" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('province')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="municipality" class="block text-sm font-medium">Municipality *</label>
-                                        <input value="{{ old('municipality',  $municipalityName) }}" name="municipality" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('municipality',  $municipalityName) }}" name="municipality" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('municipality')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label for="barangay" class="block text-sm font-medium">Barangay *</label>
-                                        <input value="{{ old('barangay', $barangayName) }}" name="barangay" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <input value="{{ old('barangay', $barangayName) }}" name="barangay" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                         @error('barangay')
                                         <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                         @enderror
@@ -272,7 +272,7 @@
                                 </div>
                                 <div class="mt-4">
                                     <label for="zip_code" class="block text-sm font-medium">Zip Code *</label>
-                                    <input value="{{ old('zip_code', $applicant->zip_code) }}" name="zip_code" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                    <input value="{{ old('zip_code', $applicant->zip_code) }}" name="zip_code" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100" readonly>
                                     @error('zip_code')
                                     <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                     @enderror

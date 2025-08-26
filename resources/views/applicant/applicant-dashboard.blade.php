@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             <option value="">Select</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
-                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div class="col-span-1">
@@ -150,6 +149,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
 
                     <!-- Student and Professional License Checkboxes - Vertical Stack -->
+                     <input type="hidden" name="hasLicense" value="0">
+                    <input type="hidden" name="isStudent" value="0">
+                    
                     <div class="space-y-2 mt-4">  <!-- Using space-y-2 for vertical spacing -->
                         <div class="flex items-center">
                             <input type="checkbox" id="isStudent" name="isStudent" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
@@ -184,11 +186,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             id="email" 
                             name="email" 
                             value="{{ auth()->user()->email }}" 
-                            disabled
+                            readonly
                             class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
                                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                                 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 
-                                transition-all duration-200 disabled-input cursor-not-allowed"
+                                transition-all duration-200 cursor-not-allowed"
                         >
                         <p id="emailError" class="mt-1 text-sm text-red-500 hidden">
                             Please enter a valid Gmail address.

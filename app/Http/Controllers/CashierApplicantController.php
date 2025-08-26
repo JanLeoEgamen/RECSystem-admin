@@ -268,6 +268,7 @@ class CashierApplicantController extends Controller implements HasMiddleware
 
     public function rejected(Request $request)
     {
+         Log::info('Testing reject endpoint', ['id' => $id, 'data' => $request->all()]);
         if ($request->ajax()) {
             $query = Applicant::where('payment_status', 'rejected');
 
