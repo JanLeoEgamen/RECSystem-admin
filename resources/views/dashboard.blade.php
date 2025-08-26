@@ -260,7 +260,7 @@
                                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
                                             {{ $applicant->first_name }} {{ $applicant->last_name }}
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-center border-r border-gray-300 dark:border-gray-600">
+                                       <td class="px-4 py-3 whitespace-nowrap text-sm text-center border-r border-gray-300 dark:border-gray-600">
                                             @if($applicant->status === 'Pending')
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
                                                     Pending
@@ -272,6 +272,11 @@
                                             @elseif($applicant->status === 'Rejected')
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
                                                     Rejected
+                                                </span>
+                                            @else
+                                                {{-- Default to Pending --}}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                                    Pending
                                                 </span>
                                             @endif
                                         </td>
