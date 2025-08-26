@@ -1,20 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 {{ __('Permissions') }}
             </h2>
 
             @can('create permissions')
             <a href="{{ route('permissions.create') }}" 
-               class="inline-block px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                focus:ring-[#101966] border border-white border font-medium dark:border-[#3E3E3A] 
-                dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal">
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full md:w-auto mt-4 md:mt-0">
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
                 Create
             </a>
             @endcan
-
         </div>
     </x-slot>
 
@@ -71,7 +75,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                         </div>
 
                         <div class="flex items-center space-x-4">

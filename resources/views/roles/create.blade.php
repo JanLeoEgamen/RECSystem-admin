@@ -40,8 +40,8 @@
 
                             <div class="grid grid-cols-2 gap-6 mb-6">
                                 @foreach($groupedPermissions as $object => $permissions)
-                                    <div class="border p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                        <h3 class="text-lg font-semibold mb-2 capitalize text-gray-800 dark:text-white">
+                                    <div class="border p-4 rounded-lg" style="background-color: #4C5091;">
+                                        <h3 class="text-lg font-semibold mb-2 capitalize text-white">
                                             {{ ucfirst($object) }} Permissions
                                         </h3>
                                         <div class="grid grid-cols-1 gap-2">
@@ -52,7 +52,7 @@
                                                         value="{{ $permission->name }}"
                                                         id="permission-{{ $permission->id }}"
                                                         class="rounded">
-                                                    <span class="text-gray-900 dark:text-gray-200">{{ $permission->name }}</span>
+                                                    <span class="text-white">{{ $permission->name }}</span>
                                                 </label>
                                             @endforeach
                                         </div>
@@ -61,7 +61,7 @@
                             </div>
 
                             <div class="mt-6">
-                                <button type="submit" id="createBtn"
+                                <button type="button" id="createBtn"
                                     class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                     bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
                                     focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
@@ -70,7 +70,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
-                                    Create
+                                    Create Role
                                 </button>
                             </div>
                         </div>
@@ -84,23 +84,35 @@
     {{-- SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById("createRoleForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
+        document.getElementById('createBtn').addEventListener('click', function() {
             Swal.fire({
-                title: "Are you sure?",
-                text: "Do you really want to create this role?",
-                icon: "warning",
+                title: 'Create Role?',
+                text: "Are you sure you want to create this role?",
+                icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#5e6ffb',
                 cancelButtonColor: '#d33',
-                confirmButtonText: "Yes, create it!",
-                cancelButtonText: "Cancel",
+                confirmButtonText: 'Yes, create it!',
+                cancelButtonText: 'Cancel',
                 background: '#101966',
-                color: '#fff',
+                color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    e.target.submit();
+                    Swal.fire({
+                        title: 'Creating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            document.getElementById('createRoleForm').submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
                 }
             });
         });

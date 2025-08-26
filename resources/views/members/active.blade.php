@@ -6,17 +6,11 @@
             </h2>
             <div class="flex space-x-4">
                 <a href="{{ route('members.index') }}" 
-                   class="inline-block px-5 py-2 
-                          text-white dark:text-gray-900
-                          hover:text-[#101966] dark:hover:text-white
-                          bg-white/10 dark:bg-gray-200/20 
-                          hover:bg-white dark:hover:bg-gray-600
-                          focus:outline-none focus:ring-2 focus:ring-offset-2 
-                          focus:ring-white dark:focus:ring-gray-500
-                          border border-white dark:border-gray-500 
-                          font-medium rounded-lg 
-                          text-base sm:text-xl leading-normal 
-                          text-center sm:text-right transition">
+                   class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0 text-center">
                     <svg class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -207,6 +201,9 @@
     </div>
 
     <x-slot name="script">
+        <!-- Add SweetAlert script reference -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         <style>
             @keyframes slideInLeft {
                 from {
@@ -337,6 +334,9 @@
                             sort: sortParams.sort,
                             direction: sortParams.direction
                         },
+                        beforeSend: function() {
+                            console.log('Loading active members...');
+                        },
                         success: function (response) {
                             let data, from;
                             
@@ -378,7 +378,22 @@
                         },
                         error: function(xhr, status, error) {
                             console.error('Error fetching active members:', error);
-                            alert('Error loading active members data');
+                            console.error('Response:', xhr.responseText);
+                            
+                            let tbody = $('#activeMembersTable tbody');
+                            tbody.html(`
+                                <tr class="table-row-animate">
+                                    <td colspan="7" class="px-6 py-4 text-center text-red-500 dark:text-red-400">
+                                        Error loading data. Please try again. 
+                                        <button onclick="fetchActiveMembers()" class="ml-2 text-blue-500 hover:text-blue-700">Retry</button>
+                                    </td>
+                                </tr>
+                            `);
+                            
+                            $('#paginationLinks').html('');
+                            $('#startRecord, #mobileStartRecord').text('0');
+                            $('#endRecord, #mobileEndRecord').text('0');
+                            $('#totalRecords, #mobileTotalRecords').text('0');
                         }
                     });
                 }
@@ -409,14 +424,15 @@
                                 <td class="px-6 py-4 text-left column-cellphone">${member.cellphone_no || ''}</td>
                                 <td class="px-6 py-4 text-left column-start">${member.membership_start || ''}</td>
                                 <td class="px-6 py-4 text-left column-end">${member.membership_end || ''}</td>
-                                <td class="px-6 py-4 text-center">
-                                    <a href="/members/${member.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition inline-block">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                        </svg>
+                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                    <a href="/members/${member.id}/edit" 
+                                        class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-2 py-1 sm:px-3 sm:py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        <span class="text-indigo-600 group-hover:text-white text-xs sm:text-sm">Edit</span>
                                     </a>
                                 </td>
                             </tr>
@@ -500,6 +516,28 @@
                 }
 
                 window.fetchActiveMembers = fetchActiveMembers;
+
+                @if(session('success'))
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "{{ session('success') }}",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
+
+                @if(session('error'))
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "{{ session('error') }}",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
             });
         </script>
     </x-slot>

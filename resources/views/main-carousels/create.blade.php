@@ -82,6 +82,7 @@
     <script>
         document.getElementById("carouselForm").addEventListener("submit", function(e) {
             e.preventDefault();
+            
             Swal.fire({
                 title: "Are you sure?",
                 text: "Do you want to create this carousel item?",
@@ -95,7 +96,21 @@
                 color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    e.target.submit();
+                    Swal.fire({
+                        title: 'Creating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            e.target.submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
                 }
             });
         });

@@ -36,8 +36,8 @@
 
                             <div class="grid grid-cols-2 gap-6 mb-6">
                                 @foreach($groupedPermissions as $object => $permissions)
-                                    <div class="border p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                        <h3 class="text-lg font-semibold mb-2 capitalize text-gray-800 dark:text-white">
+                                    <div class="border p-4 rounded-lg" style="background-color: #4C5091;">
+                                        <h3 class="text-lg font-semibold mb-2 capitalize text-white">
                                             {{ ucfirst($object) }} Permissions
                                         </h3>
                                         <div class="grid grid-cols-1 gap-2">
@@ -50,7 +50,7 @@
                                                         id="permission-{{ $permission->id }}"
                                                         class="rounded"
                                                         {{ in_array($permission->name, $hasPermissions->pluck('name')->toArray()) ? 'checked' : '' }}>
-                                                    <span class="text-gray-900 dark:text-gray-200">{{ $permission->name }}</span>
+                                                    <span class="text-white">{{ $permission->name }}</span>
                                                 </label>
                                             @endforeach
                                         </div>
@@ -59,7 +59,7 @@
                             </div>
 
                             <div class="mt-6">
-                                <button type="submit" id="updateRoleBtn"
+                                <button type="button" id="updateRoleBtn"
                                     class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                     bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
                                     focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
@@ -69,7 +69,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
-                                    Update
+                                    Update Role
                                 </button>
                             </div>
                         </div>
@@ -82,23 +82,35 @@
     {{-- SweetAlert --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById("updateRoleForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
+        document.getElementById('updateRoleBtn').addEventListener('click', function() {
             Swal.fire({
-                title: "Are you sure?",
-                text: "Do you really want to update this role?",
-                icon: "warning",
+                title: 'Update Role?',
+                text: "Are you sure you want to update this role?",
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: "#5e6ffb",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, update it!",
-                cancelButtonText: "Cancel",
+                confirmButtonColor: '#5e6ffb',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!',
+                cancelButtonText: 'Cancel',
                 background: '#101966',
                 color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    e.target.submit();
+                    Swal.fire({
+                        title: 'Updating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            document.getElementById('updateRoleForm').submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
                 }
             });
         });

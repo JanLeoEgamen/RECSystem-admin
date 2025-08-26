@@ -23,7 +23,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('articles.store') }}" method="post" enctype="multipart/form-data">
+                    <form id="articleForm" action="{{ route('articles.store') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div>
                             <label for="title" class="text-sm font-medium">Title</label>
@@ -65,7 +65,7 @@
                             </div>
 
                         <div class="mt-6">
-                            <button type="submit" class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            <button type="button" id="createArticleBtn" class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                         bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
                                         focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
                                         dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
@@ -73,7 +73,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
-                                Create
+                                Create Article
                             </button>
                         </div>
                         
@@ -83,4 +83,41 @@
             </div>
         </div>
     </div>
+
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById('createArticleBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Create Article?',
+                text: "Are you sure you want to create this article?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#5e6ffb',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, create it!',
+                cancelButtonText: 'Cancel',
+                background: '#101966',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Creating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            document.getElementById('articleForm').submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
+                }
+            });
+        });
+    </script>
 </x-app-layout>

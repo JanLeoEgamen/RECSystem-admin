@@ -11,9 +11,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
-            <div class="bg-gray-10 dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('bureau-section.store') }}" method="POST">
+                    <form action="{{ route('bureau-section.store') }}" method="POST" id="createForm">
                         @csrf
                         
                         <div class="mb-6">
@@ -82,7 +82,7 @@
                                 class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition">
                                 Cancel
                             </a>
-                            <button type="submit"
+                            <button type="button" id="createButton"
                                 class="px-4 py-2 bg-[#101966] dark:bg-blue-600 text-white rounded-lg hover:bg-[#0e1552] dark:hover:bg-blue-700 transition">
                                 Create
                             </button>
@@ -93,8 +93,81 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <x-slot name="script">
         <script>
+            document.getElementById("createButton").addEventListener("click", function() {
+                const typeSelect = document.getElementById('type');
+                const selectedType = typeSelect.value;
+                
+                if (!selectedType) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Please select a type",
+                        text: "You must select either Bureau or Section before creating.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                const itemType = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
+                
+                Swal.fire({
+                    title: `Create ${itemType}?`,
+                    text: `Are you sure you want to create this ${selectedType}?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#5e6ffb',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, create it!',
+                    cancelButtonText: 'Cancel',
+                    background: '#101966',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Creating...',
+                            text: 'Please wait',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            },
+                            willClose: () => {
+                                document.getElementById('createForm').submit();
+                            },
+                            background: '#101966',
+                            color: '#fff',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
+            @if(session('success'))
+                Swal.fire({
+                    icon: "success",
+                    title: "Created!",
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: "#101966",
+                    background: '#101966',
+                    color: '#fff'
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: "#5e6ffb",
+                    background: '#101966',
+                    color: '#fff'
+                });
+            @endif
+
             $(document).ready(function() {
                 $('#type').change(function() {
                     const type = $(this).val();
@@ -120,7 +193,6 @@
                     }
                 });
 
-                // Trigger change event on page load to set initial state
                 $('#type').trigger('change');
             });
         </script>

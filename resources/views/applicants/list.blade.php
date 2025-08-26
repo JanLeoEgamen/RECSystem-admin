@@ -1,47 +1,71 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            
-            <!-- Title -->
+    
             <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 {{ __('Applicants') }}
             </h2>
 
-            <!-- Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto text-center sm:text-right">
-                @can('create applicants')
-                <a href="{{ route('applicants.showApplicantCreateForm') }}" 
-                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                    w-full sm:w-auto text-center">
-                    Create
-                </a>
-                @endcan
-
-                <a href="{{ route('applicants.approved') }}" dusk="go-to-approved"
+                    
+                    @can('create applicants')
+                    <a href="{{ route('applicants.showApplicantCreateForm') }}" 
                     class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                        w-full sm:w-auto text-center">
-                        Approved Applicants
-                </a>
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                            dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center">
 
-                @can('view applicants')
-                <a href="{{ route('applicants.rejected') }}" dusk="go-to-rejected"
-                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                    w-full sm:w-auto text-center">
-                    Rejected Applicants
-                </a>
-   
-                @endcan
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                            class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create
+                    </a>
+                    @endcan
+
+                    <a href="{{ route('applicants.approved') }}" dusk="go-to-approved"
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                            dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                            class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M15 19a6 6 0 00-12 0m12 0h0M9 11a4 4 0 100-8 4 4 0 000 8z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M16 11l2 2 4-4" />
+                        </svg>
+                        Approved Applicants
+                    </a>
+
+                    @can('view applicants')
+                    <a href="{{ route('applicants.rejected') }}" dusk="go-to-rejected"
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                            dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                            class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M15 19a6 6 0 00-12 0m12 0h0M9 11a4 4 0 100-8 4 4 0 000 8z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M18 12l4 4m0-4l-4 4" />
+                        </svg>
+                        Rejected Applicants
+                    </a>
+                    @endcan
             </div>
         </div>
+
     </x-slot>
 
     <div class="py-12">
@@ -50,11 +74,8 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <!-- Left side filters -->
                         <div class="flex items-center space-x-4">
-                            <!-- Entries per page -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
                                 <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
@@ -65,7 +86,6 @@
                                 </select>
                             </div>
 
-                            <!-- Sort by -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
@@ -80,7 +100,6 @@
                                 </select>
                             </div>
 
-                            <!-- Column Filter -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Columns</span>
                                 <div class="relative">
@@ -91,7 +110,6 @@
                                         </svg>
                                     </button>
                                     
-                                    <!-- Column Filter Dropdown -->
                                     <div id="columnFilterDropdown" class="hidden absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                         <div class="p-2">
                                             <div class="space-y-2">
@@ -122,7 +140,6 @@
                             </div>
                         </div>
 
-                        <!-- Right side - search and result info -->
                         <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                 Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
@@ -132,13 +149,10 @@
                         </div>
                     </div>
 
-                    <!-- Mobile View - Vertical layout -->
                     <div class="sm:hidden space-y-3 mb-4">
-                        <!-- Search bar -->
                         <input type="text" id="mobileSearchInput" placeholder="Search applicants..." 
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
 
-                        <!-- Entries per page -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
                             <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -149,7 +163,6 @@
                             </select>
                         </div>
 
-                        <!-- Sort by -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -164,7 +177,6 @@
                             </select>
                         </div>
 
-                        <!-- Column Filter -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Columns</span>
                             <div class="relative w-2/3">
@@ -175,7 +187,6 @@
                                     </svg>
                                 </button>
                                 
-                                <!-- Column Filter Dropdown -->
                                 <div id="mobileColumnFilterDropdown" class="hidden absolute left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                     <div class="p-2">
                                         <div class="space-y-2">
@@ -205,7 +216,6 @@
                             </div>
                         </div>
 
-                        <!-- Result Info -->
                         <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
                             Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
                         </div>

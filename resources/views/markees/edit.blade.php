@@ -78,31 +78,31 @@
             Swal.fire({
                 title: 'Are you sure?',
                 text: "Do you really want to update this Markee?",
-                icon: 'question',
+                icon: 'warning',
                 background: '#101966',
                 color: '#fff',
                 showCancelButton: true,
                 confirmButtonColor: '#5e6ffb',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Update it',
+                confirmButtonText: 'Yes, update it!',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Updating...',
-                        text: 'Please wait while we process your request',
-                        background: '#101966',
-                        color: '#fff',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
                         didOpen: () => {
                             Swal.showLoading();
-                        }
+                        },
+                        willClose: () => {
+                            e.target.submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
                     });
-
-                    setTimeout(() => {
-                        e.target.submit();
-                    }, 1000);
                 }
             });
         });

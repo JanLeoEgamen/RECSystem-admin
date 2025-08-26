@@ -1,25 +1,19 @@
-<!-- unlicensed.blade.php -->
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <!-- Title -->
             <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 {{ __('Unlicensed Members') }}
             </h2>
 
-            <!-- Back to Licensed Button -->
             <a href="{{ route('licenses.index') }}" 
-            class="px-4 py-2 sm:px-5 sm:py-2 
-                    text-white dark:text-gray-900
-                    hover:text-[#101966] dark:hover:text-white
-                    bg-white/10 dark:bg-gray-200/20 
-                    hover:bg-white dark:hover:bg-gray-600
-                    focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-white dark:focus:ring-gray-500
-                    border border-white dark:border-gray-500 
-                    font-medium rounded-lg 
-                    text-sm sm:text-base leading-normal 
-                    text-center transition w-full sm:w-auto">
+            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0 text-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
                 Back to Licensed Members
             </a>
         </div>
@@ -31,11 +25,8 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Desktop View - Filters in one line -->
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <!-- Left side filters -->
                         <div class="flex items-center space-x-4">
-                            <!-- Entries per page -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
                                 <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
@@ -46,7 +37,6 @@
                                 </select>
                             </div>
 
-                            <!-- Sort by -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
@@ -60,7 +50,6 @@
                                 </select>
                             </div>
 
-                            <!-- Column Filter -->
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Columns</span>
                                 <div class="relative">
@@ -71,7 +60,6 @@
                                         </svg>
                                     </button>
                                     
-                                    <!-- Column Filter Dropdown -->
                                     <div id="columnFilterDropdown" class="hidden absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                         <div class="p-2">
                                             <div class="space-y-2">
@@ -98,7 +86,6 @@
                             </div>
                         </div>
 
-                        <!-- Right side - search and result info -->
                         <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                 Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> members
@@ -108,13 +95,10 @@
                         </div>
                     </div>
 
-                    <!-- Mobile View - Vertical layout -->
                     <div class="sm:hidden space-y-3 mb-4">
-                        <!-- Search bar -->
                         <input type="text" id="mobileSearchInput" placeholder="Search members..." 
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
 
-                        <!-- Entries per page -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
                             <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -125,7 +109,6 @@
                             </select>
                         </div>
 
-                        <!-- Sort by -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
@@ -139,7 +122,6 @@
                             </select>
                         </div>
 
-                        <!-- Column Filter -->
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Columns</span>
                             <div class="relative w-2/3">
@@ -150,7 +132,6 @@
                                     </svg>
                                 </button>
                                 
-                                <!-- Column Filter Dropdown -->
                                 <div id="mobileColumnFilterDropdown" class="hidden absolute left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
                                     <div class="p-2">
                                         <div class="space-y-2">
@@ -176,7 +157,6 @@
                             </div>
                         </div>
 
-                        <!-- Result Info -->
                         <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
                             Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> members
                         </div>
@@ -211,44 +191,36 @@
             $(document).ready(function () {
                 fetchUnlicensedMembers();
 
-                // Toggle column filter dropdown (desktop)
                 $('#columnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#columnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Toggle column filter dropdown (mobile)
                 $('#mobileColumnFilterButton').on('click', function(e) {
                     e.stopPropagation();
                     $('#mobileColumnFilterDropdown').toggleClass('hidden');
                 });
 
-                // Close dropdowns when clicking outside
                 $(document).on('click', function() {
                     $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
                 });
 
-                // Search functionality for both desktop and mobile
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
                     fetchUnlicensedMembers(1, $(this).val());
                 });
 
-                // Entries per page change handler
                 $('#perPage, #mobilePerPage').on('change', function () {
                     fetchUnlicensedMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
-                // Sort by change handler
                 $('#sortBy, #mobileSortBy').on('change', function() {
                     fetchUnlicensedMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                // Column checkbox change handler
                 $('.column-checkbox').on('change', function() {
                     const column = $(this).data('column');
                     const isChecked = $(this).is(':checked');
                     
-                    // Show/hide the column
                     $(`.column-${column}`).toggle(isChecked);
                 });
 
@@ -308,10 +280,14 @@
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center items-center space-x-2">
                                         ${member.can_edit ? `
-                                        <a href="/licenses/${member.id}/edit" class="group bg-indigo-100 hover:bg-indigo-200 p-2 rounded-full transition">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 group-hover:text-indigo-800 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
+                                        <a href="/licenses/${member.id}/edit" 
+                                            class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-2 py-1 sm:px-3 sm:py-2 rounded-full transition space-x-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 group-hover:text-white transition"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            <span class="text-indigo-600 group-hover:text-white text-xs sm:text-sm">Edit</span>
                                         </a>
                                         ` : ''}
                                     </div>

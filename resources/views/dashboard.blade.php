@@ -76,7 +76,6 @@
     <!-- Welcome Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in-down" style="animation-delay: 0.1s;">
         <div class="bg-gray-200 dark:bg-gray-800 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-400 dark:border-gray-700">
-            <!-- Left: Text -->
             <div class="mb-4 sm:mb-0 sm:mr-6 flex-1">
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     Hello, {{ $fullName }}, Welcome Back!
@@ -86,7 +85,6 @@
                 </p>
             </div>
 
-            <!-- Right: Day & Date + Time -->
             <div class="text-left sm:text-right w-full sm:w-auto">
                 <p class="text-lg">
                     <span id="dashboardDay" class="font-semibold"></span>
@@ -97,7 +95,6 @@
         </div>
     </div>
 
-    <!-- Script to update date & time -->
     <script>
         function updateDashboardTime() {
             const now = new Date();
@@ -118,7 +115,7 @@
 
     <div class="py-6 animate-fade-in-down" style="animation-delay: 0.2s;">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- CARDS -->
+            <!-- Row 1: CARDS -->
             <div class=" grid-row row-1 mb-6 grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Total Members -->
                 <a href="{{ route('members.index') }}" 
@@ -237,58 +234,62 @@
 
             </div>
 
-            <!-- Row 2: Visitors Report and Membership Growth Analysis -->
+            <!-- Row 2: Applicant Report and Membership Growth Analysis -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <!-- Applicant Report (shorter, takes 1 column on desktop) -->
+                <!-- Applicant Report -->
                 <div class="card lg:col-span-1 h-full flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-gray-800 dark:text-white font-semibold">Applicant Report</h2>
-                        <button id="exportApplicantBtn" type="button" class="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            Export Data
-                        </button>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Recent Applicants</h3>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 mb-6">
-                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                            <p class="text-sm text-gray-500 dark:text-gray-300">Pending Applications</p>
-                            <p class="text-xl font-bold text-gray-800 dark:text-white">{{ $pendingApplicants }}
-                                @if($applicantGrowthRate >= 0)
-                                    <span class="text-green-500 text-sm font-medium">{{ number_format($applicantGrowthRate, 1) }}% ↑</span>
-                                @else
-                                    <span class="text-red-500 text-sm font-medium">{{ number_format(abs($applicantGrowthRate), 1) }}% ↓</span>
-                                @endif
-                            </p>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                            <p class="text-sm text-gray-500 dark:text-gray-300">Approved This Month</p>
-                            <p class="text-xl font-bold text-gray-800 dark:text-white">{{ $approvedThisMonth }}
-                                @if($approvalGrowthRate >= 0)
-                                    <span class="text-green-500 text-sm font-medium">{{ number_format($approvalGrowthRate, 1) }}% ↑</span>
-                                @else
-                                    <span class="text-red-500 text-sm font-medium">{{ number_format(abs($approvalGrowthRate), 1) }}% ↓</span>
-                                @endif
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex-1">
-                        <canvas id="applicantChart" height="150"></canvas>
-                    </div>
-
-                    <div class="flex justify-center mt-4 space-x-4 text-sm">
-                        <div class="flex items-center space-x-1">
-                            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                            <span class="text-gray-600 dark:text-gray-300">This Week</span>
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <span class="w-3 h-3 rounded-full bg-red-400"></span>
-                            <span class="text-gray-600 dark:text-gray-300">Last Week</span>
-                        </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+                            <thead class="bg-[#101966]">
+                                <tr>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border-r border-gray-300 dark:border-gray-600">
+                                        Name
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg border-r border-gray-300 dark:border-gray-600">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-700">
+                                @forelse($recentApplicants as $applicant)
+                                    <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
+                                            {{ $applicant->first_name }} {{ $applicant->last_name }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-center border-r border-gray-300 dark:border-gray-600">
+                                            @if($applicant->status === 'Pending')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                                    Pending
+                                                </span>
+                                            @elseif($applicant->status === 'Approved')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                                    Approved
+                                                </span>
+                                            @elseif($applicant->status === 'Rejected')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                                    Rejected
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="px-4 py-3 text-center text-sm text-gray-500 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
+                                            No recent applicants.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
 
-                <!-- Membership Growth Analysis (longer, takes 2 columns on desktop) -->
+                <!-- Membership Growth Analysis -->
                 <div class="card lg:col-span-2 h-full flex flex-col">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center mb-2">
                         Radio Engineering Circle Inc. Membership Growth Analysis
@@ -354,91 +355,88 @@
             </div>
 
 
-<!-- Row 4: Recent Members and Memberships Expiring Soon -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-    <!-- Recent Members (shorter content, take 1 column but full height) -->
-    <div class="card lg:col-span-1 h-full flex flex-col">
-        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
-            Recent Members
-        </h3>
-        <div class="overflow-x-auto flex-1">
-            <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-                <thead class="bg-[#101966]">
-                    <tr>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border-r border-gray-300 dark:border-gray-600">
-                            Name
-                        </th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border-r border-gray-300 dark:border-gray-600">
-                            Membership Type
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-700">
-                    @foreach($recentMembers as $member)
-                        <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
-                                {{ $member->first_name }} {{ $member->last_name }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
-                                {{ $member->membershipType->type_name ?? 'N/A' }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <!-- Row 4: Recent Members and Memberships Expiring Soon -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Recent Members -->
+                <div class="card lg:col-span-1 h-full flex flex-col">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+                        Recent Members
+                    </h3>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+                            <thead class="bg-[#101966]">
+                                <tr>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border-r border-gray-300 dark:border-gray-600">
+                                        Name
+                                    </th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border-r border-gray-300 dark:border-gray-600">
+                                        Membership Type
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-700">
+                                @foreach($recentMembers as $member)
+                                    <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
+                                            {{ $member->first_name }} {{ $member->last_name }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
+                                            {{ $member->membershipType->type_name ?? 'N/A' }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-    <!-- Memberships Expiring Soon (longer, takes 2 columns on desktop) -->
-    <div class="card bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg lg:col-span-2 h-full flex flex-col">
-        <div class="px-4 py-5 sm:p-6 flex-1">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
-                Memberships Expiring Soon
-            </h3>
-            <div class="overflow-x-auto flex-1">
-                <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-                    <thead class="bg-[#101966]">
-                        <tr>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border border-gray-300 dark:border-gray-600">
-                                Name
-                            </th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">
-                                Membership End
-                            </th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg border border-gray-300 dark:border-gray-600">
-                                Type
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800">
-                        @forelse($expiringSoonMembers as $member)
-                            <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
-                                    {{ $member->first_name }} {{ $member->last_name }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
-                                    {{ \Carbon\Carbon::parse($member->membership_end)->format('M d, Y') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
-                                    {{ $member->membershipType->type_name ?? 'N/A' }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
-                                    No memberships expiring soon.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
+                    <!-- Memberships Expiring Soon  -->
+                    <div class="card bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg lg:col-span-2 h-full flex flex-col">
+                        <div class="px-4 py-5 sm:p-6 flex-1">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
+                                Memberships Expiring Soon
+                            </h3>
+                            <div class="overflow-x-auto flex-1">
+                                <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+                                    <thead class="bg-[#101966]">
+                                        <tr>
+                                            <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border border-gray-300 dark:border-gray-600">
+                                                Name
+                                            </th>
+                                            <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">
+                                                Membership End
+                                            </th>
+                                            <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg border border-gray-300 dark:border-gray-600">
+                                                Type
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800">
+                                        @forelse($expiringSoonMembers as $member)
+                                            <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
+                                                    {{ $member->first_name }} {{ $member->last_name }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
+                                                    {{ \Carbon\Carbon::parse($member->membership_end)->format('M d, Y') }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
+                                                    {{ $member->membershipType->type_name ?? 'N/A' }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
+                                                    No memberships expiring soon.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -772,83 +770,6 @@
                 }
             }
         });
-    });
-
-    // Applicant Chart
-    const applicantCtx = document.getElementById('applicantChart').getContext('2d');
-    new Chart(applicantCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-            datasets: [
-            {
-                label: 'This Week',
-                data: @json($applicantsThisWeek),
-                backgroundColor: '#6366F1',
-                borderRadius: 6
-            },
-            {
-                label: 'Last Week',
-                data: @json($applicantsLastWeek),
-                type: 'line',
-                borderColor: '#F87171',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4,
-                pointRadius: 0
-            }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-            legend: { display: false }
-            },
-            scales: {
-            y: { display: false },
-            x: { grid: { display: false } }
-            }
-        }
-    });
-
-    // Applicant Report Export
-    const exportApplicantBtn = document.getElementById('exportApplicantBtn');
-    exportApplicantBtn.addEventListener('click', function() {
-        let exportData = [];
-        let fileName = 'applicant_report_' + new Date().toISOString().slice(0, 10) + '.csv';
-        let headers = ['Metric', 'Count', 'Growth Rate'];
-        
-        // Add summary data
-        exportData.push(['Pending Applications', {{ $pendingApplicants }}, '{{ number_format($applicantGrowthRate, 1) }}%']);
-        exportData.push(['Approved This Month', {{ $approvedThisMonth }}, '{{ number_format($approvalGrowthRate, 1) }}%']);
-        exportData.push([]); // Empty row for spacing
-        
-        // Add weekly data headers
-        exportData.push(['Weekly Applicant Data']);
-        exportData.push(['Day', 'This Week', 'Last Week']);
-        
-        // Add weekly data
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const thisWeekData = @json($applicantsThisWeek);
-        const lastWeekData = @json($applicantsLastWeek);
-        
-        days.forEach((day, index) => {
-            exportData.push([day, thisWeekData[index] || 0, lastWeekData[index] || 0]);
-        });
-        
-        // Convert to CSV
-        const csvContent = exportData.map(row => row.join(',')).join('\n');
-        
-        // Create download link
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', fileName);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     });
 </script>
 </x-app-layout>

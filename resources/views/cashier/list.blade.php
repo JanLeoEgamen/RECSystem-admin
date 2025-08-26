@@ -11,19 +11,34 @@
                 @can('view applicants')
                     <a href="{{ route('cashier.verified') }}" 
                         class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                            focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                            dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                            w-full sm:w-auto text-center">
-                            Verified Payments
+                                bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                                w-full sm:w-auto text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                                fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                                class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Verified Payments
                     </a>
 
+
                     <a href="{{ route('cashier.rejected') }}" 
-                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                        w-full sm:w-auto text-center">
+                        class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                                w-full sm:w-auto text-center">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                            class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M18.364 5.636a9 9 0 11-12.728 12.728A9 9 0 0118.364 5.636zm-12.728 0l12.728 12.728" />
+                        </svg>
+                        
                         Rejected Payments
                     </a>
                 @endcan

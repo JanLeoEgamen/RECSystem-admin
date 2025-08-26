@@ -1,13 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 Edit User
             </h2>
-            <a href="{{ route('users.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center transition duration-150 ease-in-out">
-                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
+
+            <a href="{{ route('users.index') }}" 
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0 text-center">
+
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
                 Back to Users
             </a>                
         </div>
@@ -17,10 +24,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-8 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('users.update', $user->id) }}" method="post">
+                    <form action="{{ route('users.update', $user->id) }}" method="post" id="updateForm">
                         @csrf
                         <div class="space-y-6">
-                            <!-- Personal Information Section -->
                             <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
                                 <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Personal Information</h3>
                                 <div class="mt-4 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
@@ -88,7 +94,6 @@
                                 </div>
                             </div>
 
-                            <!-- Bureaus & Sections Section -->
                             <div>
                                 <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Assign to Bureaus & Sections</h3>
                                 <div class="mt-4 space-y-6">
@@ -120,9 +125,17 @@
                                 </div>
                             </div>
 
-                            <!-- Submit Button -->
                             <div class="flex justify-end">
-                                <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                                <button type="button" id="updateButton" 
+                                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
                                     Update User
                                 </button>
                             </div>
@@ -136,23 +149,35 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById("updateForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
+        document.getElementById("updateButton").addEventListener("click", function() {
             Swal.fire({
-                title: "Are you sure?",
-                text: "Do you really want to update this user?",
-                icon: "warning",
+                title: 'Update User?',
+                text: "Are you sure you want to update this user?",
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: "#5e6ffb",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, update it!",
-                cancelButtonText: "Cancel",
+                confirmButtonColor: '#5e6ffb',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!',
+                cancelButtonText: 'Cancel',
                 background: '#101966',
                 color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    e.target.submit();
+                    Swal.fire({
+                        title: 'Updating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            document.getElementById('updateForm').submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
                 }
             });
         });

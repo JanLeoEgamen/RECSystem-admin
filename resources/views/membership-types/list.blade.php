@@ -8,10 +8,14 @@
             @can('create membership-types')
             <a href="{{ route('membership-types.create') }}" 
                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                      bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                      focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                      dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                      w-full md:w-auto text-center">
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
                 Create
             </a>
             @endcan
@@ -321,7 +325,7 @@
 
                                         <button onclick="deleteMembershipType(${type.id})" 
                                                 class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                <svg xmlns="http://www.w3.org/2000/svg"
                                                 class="h-4 w-4 text-red-600 group-hover:text-white transition"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

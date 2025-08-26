@@ -31,7 +31,7 @@
                 'users.index', 'roles.index', 'permissions.index',
                 'main-carousels.index', 'markees.index', 'articles.index',
                 'event-announcements.index', 'communities.index', 'supporters.index', 'faqs.index',
-                'membership-types.index', 'bureaus.index', 'sections.index', 'applicants.index',
+                'membership-types.index', 'bureau-section.index', 'sections.index', 'applicants.index',
                 'reports.index', 'members.index', 'licenses.index', 'renew.index', 'cashier.index',
                 'events.index', 'announcements.index', 'surveys.index',
                 'quizzes.index', 'certificates.index',
@@ -312,10 +312,10 @@
                         </x-nav-link>
                     @endcan
                     @can('view bureau-section')
-                        <x-nav-link :href="route('bureau-section.index')" :active="request()->routeIs('bureau-section.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-200 hover:bg-[#5E6FFB] dark:hover:bg-indigo-700 {{ request()->routeIs('bureaus.index') ? 'bg-[#4C5091] text-white' : '' }}
+                        <x-nav-link :href="route('bureau-section.index')" :active="request()->routeIs('bureau-section.index')" class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-400 hover:text-white dark:hover:text-gray-200 hover:bg-[#5E6FFB] dark:hover:bg-indigo-700 {{ request()->routeIs('bureau-section.index') ? 'bg-[#4C5091] text-white' : '' }}
                         transition-transform duration-300 hover:scale-105 active:scale-95">
                             <img src="https://img.icons8.com/deco-glyph/48/FFFFFF/department.png" class="w-4 h-4 mr-2 object-contain" alt="Markee">
-                            <span>{{ __('Bureaus') }}</span>
+                            <span>{{ __('Bureaus & Sections') }}</span>
                         </x-nav-link>
                     @endcan
                     <!-- @can('view sections')
@@ -662,10 +662,12 @@
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You will be logged out of your account.",
-                    icon: 'warning',
+                    icon: 'question',
                     showCancelButton: true,
-                    confirmButtonColor: '#101966',
+                    confirmButtonColor: '#5e6ffb',
                     cancelButtonColor: '#d33',
+                    background: '#101966',
+                    color: '#fff',
                     confirmButtonText: 'Yes, log me out',
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
@@ -676,6 +678,9 @@
                             allowOutsideClick: false,
                             allowEscapeKey: false,
                             showConfirmButton: false,
+                            confirmButtonColor: '#5e6ffb',
+                            background: '#101966',
+                            color: '#fff',
                             didOpen: () => {
                                 Swal.showLoading();
                             }

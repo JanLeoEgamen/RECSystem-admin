@@ -61,6 +61,9 @@ class DashboardController extends Controller implements HasMiddleware
 
         $recentMembers = (clone $memberQuery)->latest()->take(5)->get();
 
+        // Get recent applicants for the table
+        $recentApplicants = Applicant::latest()->take(10)->get();
+
         $monthlyData = (clone $memberQuery)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
             ->groupBy('month')
@@ -135,46 +138,6 @@ class DashboardController extends Controller implements HasMiddleware
                 return [$item->section->section_name ?? 'Unassigned' => $item->total];
             })
             ->toArray();
-            
-        $pendingApplicants = Applicant::where('status', 'Pending')->count();
-        $approvedThisMonth = Applicant::where('status', 'Approved')
-            ->whereMonth('updated_at', now()->month)
-            ->whereYear('updated_at', now()->year)
-            ->count();
-
-        $applicantsThisWeek = [];
-        $applicantsLastWeek = [];
-
-        for ($i = 0; $i < 7; $i++) {
-            $day = now()->startOfWeek()->addDays($i);
-            $applicantsThisWeek[] = Applicant::whereDate('created_at', $day)->count();
-        }
-
-        for ($i = 0; $i < 7; $i++) {
-            $day = now()->subWeek()->startOfWeek()->addDays($i);
-            $applicantsLastWeek[] = Applicant::whereDate('created_at', $day)->count();
-        }
-
-        $applicantGrowthRate = 0;
-            if (count($applicantsLastWeek) > 0 && $applicantsLastWeek[6] > 0) {
-                $applicantGrowthRate = (($applicantsThisWeek[6] - $applicantsLastWeek[6]) / $applicantsLastWeek[6]) * 100;
-            } else if (count($applicantsLastWeek) > 0 && $applicantsLastWeek[6] == 0 && $applicantsThisWeek[6] > 0) {
-
-                $applicantGrowthRate = 100;
-            }
-
-        $lastMonthApproved = Applicant::where('status', 'Approved')
-            ->whereMonth('updated_at', now()->subMonth()->month)
-            ->whereYear('updated_at', now()->subMonth()->year)
-            ->count();
-
-        $approvalGrowthRate = 0;
-            if ($lastMonthApproved > 0) {
-                $approvalGrowthRate = (($approvedThisMonth - $lastMonthApproved) / $lastMonthApproved) * 100;
-            } else if ($lastMonthApproved == 0 && $approvedThisMonth > 0) {
-                $approvalGrowthRate = 100;
-            }   
-
 
         return view('dashboard', [
             'fullName' => $fullName,
@@ -183,6 +146,7 @@ class DashboardController extends Controller implements HasMiddleware
             'inactiveMembers' => $inactiveMembers,
             'expiringSoon' => $expiringSoon,
             'recentMembers' => $recentMembers,
+            'recentApplicants' => $recentApplicants,
             'expiringSoonMembers' => $expiringSoonMembers,
             'monthlyData' => $allMonthsData,
             'monthlyActiveData' => $allMonthsActiveData,
@@ -190,12 +154,6 @@ class DashboardController extends Controller implements HasMiddleware
             'monthlyExpiringData' => $allMonthsExpiringData,
             'membershipTypeCounts' => $membershipTypeCounts,
             'sectionCounts' => $sectionCounts,
-            'pendingApplicants' => $pendingApplicants,
-            'approvedThisMonth' => $approvedThisMonth,
-            'applicantsThisWeek' => $applicantsThisWeek,
-            'applicantsLastWeek' => $applicantsLastWeek,
-            'applicantGrowthRate' => $applicantGrowthRate,
-            'approvalGrowthRate' => $approvalGrowthRate,
         ]);
     }
 }

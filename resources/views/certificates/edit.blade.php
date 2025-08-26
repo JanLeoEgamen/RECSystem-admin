@@ -1,10 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <h2 class="font-semibold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 Certificate Templates / Edit
             </h2>
-            <a href="{{ route('certificates.index') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center">
+
+            <a href="{{ route('certificates.index') }}" 
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                    w-full md:w-auto text-center">
+
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -17,7 +24,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('certificates.update', $certificate->id) }}" method="post">
+                    <form action="{{ route('certificates.update', $certificate->id) }}" method="post" id="updateCertificateForm">
                         @csrf
                         @method('PUT')
                         <div>
@@ -63,9 +70,15 @@
                             </button>
 
                             <div class="mt-6">
-                                <button type="submit" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:text-white hover:bg-blue-600 rounded-md transition-colors duration-200 border border-blue-100 hover:border-blue-600 font-medium">
+                                <button type="button" id="updateCertificateButton"
+                                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
+
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
                                     Update Certificate Template
                                 </button>
@@ -77,15 +90,16 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <x-slot name="script">
-        <!-- Include CKEditor -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
         <script>
-            // Initialize CKEditor
             CKEDITOR.replace('content');
 
-            // Add signatory row
             let signatoryCount = {{ count($certificate->signatories) }};
+            
             $('#add-signatory').click(function() {
                 const newRow = `
                     <div class="signatory-row flex items-center space-x-4 mb-2">
@@ -102,14 +116,128 @@
                 signatoryCount++;
             });
 
-            // Remove signatory row
             $(document).on('click', '.remove-signatory', function() {
                 if ($('.signatory-row').length > 1) {
                     $(this).closest('.signatory-row').remove();
                 } else {
-                    alert('At least one signatory is required.');
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Cannot Remove",
+                        text: "At least one signatory is required.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
                 }
             });
+
+            $('#updateCertificateButton').click(function(e) {
+                e.preventDefault();
+
+                for (let instance in CKEDITOR.instances) {
+                    CKEDITOR.instances[instance].updateElement();
+                }
+
+                const title = $('input[name="title"]').val().trim();
+                const content = CKEDITOR.instances.content.getData().trim();
+                
+                if (!title) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Missing Title",
+                        text: "Please provide a certificate title.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                if (!content) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Missing Content",
+                        text: "Please provide certificate content.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                let hasValidSignatory = false;
+                $('.signatory-row input[name*="[name]"]').each(function() {
+                    if ($(this).val().trim()) {
+                        hasValidSignatory = true;
+                        return false; 
+                    }
+                });
+
+                if (!hasValidSignatory) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Missing Signatory",
+                        text: "Please provide at least one signatory name.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Update Certificate Template?',
+                    text: "Are you sure you want to update this certificate template?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#5e6ffb',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, update it!',
+                    cancelButtonText: 'Cancel',
+                    background: '#101966',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Updating...',
+                            text: 'Please wait',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            },
+                            willClose: () => {
+                                document.getElementById('updateCertificateForm').submit();
+                            },
+                            background: '#101966',
+                            color: '#fff',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
+            @if(session('success'))
+                Swal.fire({
+                    icon: "success",
+                    title: "Updated!",
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: "#101966",
+                    background: '#101966',
+                    color: '#fff'
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: "#5e6ffb",
+                    background: '#101966',
+                    color: '#fff'
+                });
+            @endif
         </script>
     </x-slot>
 </x-app-layout>

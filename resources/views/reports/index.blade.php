@@ -143,39 +143,68 @@
             <!-- Report Actions -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-6 transition-all duration-300 hover:shadow-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Report Actions</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4 text-center">Report Actions</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
                         <!-- Membership Report Button -->
                         @can('view membership reports')
-                        <a href="{{ route('reports.membership') }}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md group">
+                        <a href="{{ route('reports.membership') }}" 
+                        class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col items-center justify-center 
+                                hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md group">
                             <div class="bg-indigo-100 dark:bg-indigo-900 rounded-full p-4 mb-3 transition-transform duration-300 group-hover:scale-110">
-                                <svg class="h-8 w-8 text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                <svg class="h-8 w-8 text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors duration-300" 
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 
+                                        01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 
+                                        9 11.622 5.176-1.332 9-6.03 9-11.622 
+                                        0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
                             </div>
-                            <span class="text-md font-medium text-gray-700 dark:text-gray-300 text-center group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300">Membership Report</span>
+                            <span class="text-md font-medium text-gray-700 dark:text-gray-300 text-center 
+                                        group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300">
+                                Membership Report
+                            </span>
                         </a>
                         @endcan
+
                         @can('view applicant reports')
                         <!-- Applicants Report Button -->
-                        <a href="{{ route('reports.applicants') }}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md group">
+                        <a href="{{ route('reports.applicants') }}" 
+                        class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col items-center justify-center 
+                                hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md group">
                             <div class="bg-blue-100 dark:bg-blue-900 rounded-full p-4 mb-3 transition-transform duration-300 group-hover:scale-110">
-                                <svg class="h-8 w-8 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                <svg class="h-8 w-8 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300" 
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3
+                                        m-2-5a4 4 0 11-8 0 4 4 0 018 0z
+                                        M3 20a6 6 0 0112 0v1H3v-1z" />
                                 </svg>
                             </div>
-                            <span class="text-md font-medium text-gray-700 dark:text-gray-300 text-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">Applicants Report</span>
+                            <span class="text-md font-medium text-gray-700 dark:text-gray-300 text-center 
+                                        group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                                Applicants Report
+                            </span>
                         </a>
                         @endcan
+
                         @can('view license reports')
                         <!-- License Report Button -->
-                        <a href="{{ route('reports.licenses') }}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md group">
+                        <a href="{{ route('reports.licenses') }}" 
+                        class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col items-center justify-center 
+                                hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md group">
                             <div class="bg-green-100 dark:bg-green-900 rounded-full p-4 mb-3 transition-transform duration-300 group-hover:scale-110">
-                                <svg class="h-8 w-8 text-green-600 dark:text-green-400 group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <svg class="h-8 w-8 text-green-600 dark:text-green-400 group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors duration-300" 
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 
+                                        11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <span class="text-md font-medium text-gray-700 dark:text-gray-300 text-center group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">License Report</span>
+                            <span class="text-md font-medium text-gray-700 dark:text-gray-300 text-center 
+                                        group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">
+                                License Report
+                            </span>
                         </a>
                         @endcan
                     </div>

@@ -1,24 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <h2 class="font-semibold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 {{ __('Inactive Members') }}
             </h2>
-            <div class="flex space-x-4">
+
+            <div class="flex w-full md:w-auto justify-center md:justify-end">
                 <a href="{{ route('members.index') }}" 
-                   class="inline-block px-5 py-2 
-                          text-white dark:text-gray-900
-                          hover:text-[#101966] dark:hover:text-white
-                          bg-white/10 dark:bg-gray-200/20 
-                          hover:bg-white dark:hover:bg-gray-600
-                          focus:outline-none focus:ring-2 focus:ring-offset-2 
-                          focus:ring-white dark:focus:ring-gray-500
-                          border border-white dark:border-gray-500 
-                          font-medium rounded-lg 
-                          text-base sm:text-xl leading-normal 
-                          text-center sm:text-right transition">
-                    <svg class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto text-center">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     Back to Members
                 </a>        
@@ -435,21 +431,24 @@
                                 <td class="px-6 py-4 text-left column-start">${member.membership_start || ''}</td>
                                 <td class="px-6 py-4 text-left column-end">${member.membership_end || ''}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    <a href="/members/${member.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                        </svg>
+                                    <a href="/members/${member.id}/edit" 
+                                        class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-2 py-1 sm:px-3 sm:py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        <span class="text-indigo-600 group-hover:text-white text-xs sm:text-sm">Edit</span>
                                     </a>
-                                    <button class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition delete-member-btn" data-id="${member.id}"> 
+                                    <button class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1 delete-member-btn" 
+                                            data-id="${member.id}">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
+                                            class="h-4 w-4 text-red-600 group-hover:text-white transition"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
+                                        <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
                                     </button>
                                 </td>
                             </tr>
@@ -545,51 +544,95 @@
                         text: "This will permanently delete the member's record.",
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#6c757d',
+                        confirmButtonColor: '#5e6ffb',
+                        cancelButtonColor: '#d33',
                         confirmButtonText: 'Yes, delete it!',
                         cancelButtonText: 'Cancel',
-                        reverseButtons: true
+                        background: '#101966',
+                        color: '#fff'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $.ajax({
-                                url: "{{ route('members.forceDelete') }}",
-                                method: 'POST',
-                                data: {
-                                    '_method': 'DELETE',
-                                    'id': memberId,
-                                    '_token': $('meta[name="csrf-token"]').attr('content')
+                            Swal.fire({
+                                title: 'Deleting...',
+                                text: 'Please wait',
+                                timer: 1500,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading();
                                 },
-                                success: function(data) {
-                                    if (data.status) {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Deleted!',
-                                            text: data.message || 'Member deleted successfully.',
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        });
-                                        fetchInactiveMembers();
-                                    } else {
+                                background: '#101966',
+                                color: '#fff',
+                                allowOutsideClick: false
+                            }).then(() => {
+                                $.ajax({
+                                    url: "{{ route('members.forceDelete') }}",
+                                    method: 'POST',
+                                    data: {
+                                        '_method': 'DELETE',
+                                        'id': memberId,
+                                        '_token': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    success: function(data) {
+                                        if (data.status) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Deleted!',
+                                                text: data.message || 'Member deleted successfully.',
+                                                confirmButtonColor: "#5e6ffb",
+                                                background: '#101966',
+                                                color: '#fff'
+                                            }).then(() => {
+                                                fetchInactiveMembers();
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: data.message || 'Failed to delete member.',
+                                                confirmButtonColor: "#5e6ffb",
+                                                background: '#101966',
+                                                color: '#fff'
+                                            });
+                                        }
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Delete error:', error);
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Error',
-                                            text: data.message || 'Failed to delete member.'
+                                            text: 'Failed to delete member. Please try again.',
+                                            confirmButtonColor: "#5e6ffb",
+                                            background: '#101966',
+                                            color: '#fff'
                                         });
                                     }
-                                },
-                                error: function(xhr, status, error) {
-                                    console.error('Delete error:', error);
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error',
-                                        text: 'Failed to delete member. Please try again.',
-                                    });
-                                }
+                                });
                             });
                         }
                     });
                 });
+
+                @if(session('success'))
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "{{ session('success') }}",
+                        confirmButtonColor: "#5e6ffb",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
+
+                @if(session('error'))
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "{{ session('error') }}",
+                        confirmButtonColor: "#5e6ffb",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
             });
         </script>
     </x-slot>

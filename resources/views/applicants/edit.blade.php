@@ -315,7 +315,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
-    // SweetAlert for update confirmation
     $('#updateButton').on('click', function(e) {
         e.preventDefault();
         
@@ -411,7 +410,6 @@ $(document).ready(function() {
         }
     });
 
-    // --- Address Pre-population on Edit ---
     let selectedRegion = "{{ old('region', $applicant->region) }}";
     let selectedProvince = "{{ old('province', $applicant->province) }}";
     let selectedMunicipality = "{{ old('municipality', $applicant->municipality) }}";
@@ -420,7 +418,6 @@ $(document).ready(function() {
     if (selectedRegion) {
         $('#region').val(selectedRegion);
 
-        // Load provinces
         $.ajax({
             url: '/get-provinces/' + selectedRegion,
             type: 'GET',
@@ -431,7 +428,6 @@ $(document).ready(function() {
                 });
 
                 if (selectedProvince) {
-                    // Load municipalities
                     $.ajax({
                         url: '/get-municipalities/' + selectedRegion + '/' + selectedProvince,
                         type: 'GET',
@@ -442,7 +438,6 @@ $(document).ready(function() {
                             });
 
                             if (selectedMunicipality) {
-                                // Load barangays
                                 $.ajax({
                                     url: '/get-barangays/' + selectedRegion + '/' + selectedProvince + '/' + selectedMunicipality,
                                     type: 'GET',

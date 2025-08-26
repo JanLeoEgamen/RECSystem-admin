@@ -69,8 +69,9 @@
     {{-- SWEETALERT --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById("marqueeForm").addEventListener("submit", function(e) {
+       document.getElementById("marqueeForm").addEventListener("submit", function(e) {
             e.preventDefault();
+            
             Swal.fire({
                 title: "Are you sure?",
                 text: "Do you want to create this marquee?",
@@ -85,20 +86,20 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        title: "Creating...",
-                        text: "Please wait while we save your marquee.",
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
+                        title: 'Creating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
                         didOpen: () => {
                             Swal.showLoading();
                         },
+                        willClose: () => {
+                            e.target.submit();
+                        },
                         background: '#101966',
-                        color: '#fff'
+                        color: '#fff',
+                        allowOutsideClick: false
                     });
-
-                    setTimeout(() => {
-                        e.target.submit();
-                    }, 1500); 
                 }
             });
         });

@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 text: "Are you sure you want to approve this applicant and create a member account?",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#10B981',
+                confirmButtonColor: '#5e6ffb',
                 cancelButtonColor: '#d33',
                 background: '#101966',
                 color: '#fff',

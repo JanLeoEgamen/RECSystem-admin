@@ -397,7 +397,7 @@
             Swal.fire({
                 title: "Are you sure?",
                 text: "Do you want to create this member?",
-                icon: "warning",
+                icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#5e6ffb",
                 cancelButtonColor: "#d33",

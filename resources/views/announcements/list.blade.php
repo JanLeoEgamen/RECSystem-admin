@@ -9,10 +9,14 @@
             @can('create announcements')
             <a href="{{ route('announcements.create') }}" 
                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                    w-full sm:w-auto text-center">
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
                 Create
             </a>
             @endcan
@@ -352,21 +356,25 @@
                                 <td class="px-6 py-4 text-left column-author">${announcement.author}</td>
                                 <td class="px-6 py-4 text-left column-created">${announcement.created_at}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                    <a href="/announcements/${announcement.id}/edit" class="group bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition">
+                                    <a href="/announcements/${announcement.id}/edit"
+                                    class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-600 group-hover:text-blue-800 transition"
+                                            class="h-4 w-4 text-blue-600 group-hover:text-white transition"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                            d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
                                         </svg>
+                                        <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
                                     </a>
-                                    <button onclick="deleteAnnouncement(${announcement.id})" class="group bg-red-100 hover:bg-red-200 p-2 rounded-full transition"> 
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-red-600 group-hover:text-red-800 transition"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    <button onclick="deleteAnnouncement(${announcement.id})" 
+                                        class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                             <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
+                                            </svg>
+                                        <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
                                     </button>
                                 </td>
                             </tr>

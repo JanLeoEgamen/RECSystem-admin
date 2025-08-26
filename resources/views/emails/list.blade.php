@@ -21,11 +21,11 @@
 
                 @can('create emails')
                 <a href="{{ route('emails.create') }}" 
-                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-green-600 hover:border-green-600 
-                        bg-green-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-green-500 border border-white font-medium dark:border-[#3E3E3A] 
-                        dark:hover:bg-black dark:hover:border-green-400 rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                        w-full sm:w-auto text-center">
+                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0 text-center">
                     Create Template
                 </a>
                 @endcan
@@ -345,7 +345,6 @@
                     }
                 };
                 
-                // Initialize logs table
                 let logsTable = {
                     currentPage: 1,
                     perPage: 10,
@@ -497,11 +496,9 @@
                     }
                 };
                 
-                // Initialize both tables
                 templatesTable.fetch();
                 logsTable.fetch();
                 
-                // Event listeners for templates table
                 $('#templatesPerPage').on('change', function() {
                     templatesTable.perPage = $(this).val();
                     templatesTable.fetch(1);
@@ -512,7 +509,6 @@
                     templatesTable.fetch(1);
                 });
                 
-                // Event listeners for logs table
                 $('#logsPerPage').on('change', function() {
                     logsTable.perPage = $(this).val();
                     logsTable.fetch(1);
@@ -523,7 +519,6 @@
                     logsTable.fetch(1);
                 });
                 
-                // Make tables available globally
                 window.templatesTable = templatesTable;
                 window.logsTable = logsTable;
             });

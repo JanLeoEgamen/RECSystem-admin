@@ -13,25 +13,44 @@
                     focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
                     dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
                     w-full sm:w-auto text-center">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
                     Create
                 </a>
                 @endcan
 
                 <a href="{{ route('members.active') }}" dusk="go-to-active"
-                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                    w-full sm:w-auto text-center">
-                    Active Members
-                </a>
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                            dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center">
 
-                <a href="{{ route('members.inactive') }}" dusk="go-to-inactive"
-                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                    w-full sm:w-auto text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                        class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M15 19a6 6 0 00-12 0m12 0h0M9 11a4 4 0 100-8 4 4 0 000 8z" /><path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M16 11l2 2 4-4" />
+                    </svg>
+                    Active Members
+                    </a>
+
+                    <a href="{{ route('members.inactive') }}" dusk="go-to-inactive"
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                            dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M15 19a6 6 0 00-12 0m12 0h0m-6-6a4 4 0 100-8 4 4 0 000 8z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M18 12l4 4m0-4l-4 4" />
+                    </svg>
                     Inactive Members
                 </a>
             </div>

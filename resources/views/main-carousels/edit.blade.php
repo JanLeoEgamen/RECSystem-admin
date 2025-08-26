@@ -105,10 +105,24 @@
                 color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    e.target.submit();
+                    Swal.fire({
+                        title: 'Updating...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            e.target.submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
                 }
             });
-        });
+});
 
         @if(session('success'))
             Swal.fire({
