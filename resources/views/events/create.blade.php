@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-       <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
                 Events / Create</span>
             </h2>
@@ -25,7 +25,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form action="{{ route('events.store') }}" method="post" id="eventForm">
+                    <form id="eventForm" action="{{ route('events.store') }}" method="post">
                         @csrf
                         <div class="space-y-6">
                             <div>
@@ -101,23 +101,61 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium">Assign to Members</label>
-                                <div class="mt-1">
-                                    <div class="flex items-center mb-2">
-                                        <input type="checkbox" id="select-all-members" class="rounded mr-2">
-                                        <label for="select-all-members">Select All Members</label>
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        @foreach($members as $member)
-                                            <div class="flex items-center">
-                                                <input type="checkbox" name="members[]" id="member-{{ $member->id }}" 
-                                                       value="{{ $member->id }}" class="rounded member-checkbox"
-                                                       {{ in_array($member->id, old('members', [])) ? 'checked' : '' }}>
-                                                <label for="member-{{ $member->id }}" class="ml-2">
+                                <span class="text-sm font-medium">Assign to Members</span>
+                                <div class="my-3">
+                                    <div class="relative">
+                                        <select name="members[]" id="members-select" multiple class="hidden">
+                                            @foreach($members as $member)
+                                                <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}>
                                                     {{ $member->first_name }} {{ $member->last_name }}
-                                                </label>
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div id="members-dropdown" class="w-full mt-1">
+                                            <div class="relative">
+                                                <input type="text" id="members-search" placeholder="Search members..." 
+                                                    class="w-full border-gray-300 shadow-sm rounded-lg pl-10 pr-4 py-2">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                    </svg>
+                                                </div>
                                             </div>
-                                        @endforeach
+                                            <div id="members-options" class="mt-1 max-h-60 overflow-y-auto border border-gray-300 rounded-lg hidden">
+                                                <div class="p-2">
+                                                    <div class="flex items-center mb-2">
+                                                        <input type="checkbox" id="select-all-members" class="rounded mr-2">
+                                                        <label for="select-all-members" class="text-sm">Select All Members</label>
+                                                    </div>
+                                                    <div class="space-y-1">
+                                                        @foreach($members as $member)
+                                                            <div class="flex items-center member-option" data-value="{{ $member->id }}">
+                                                                <input type="checkbox" id="member-{{ $member->id }}" 
+                                                                    value="{{ $member->id }}" class="rounded mr-2 member-checkbox"
+                                                                    {{ in_array($member->id, old('members', [])) ? 'checked' : '' }}>
+                                                                <label for="member-{{ $member->id }}" class="text-sm">
+                                                                    {{ $member->first_name }} {{ $member->last_name }}
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="selected-members" class="mt-2 flex flex-wrap gap-2">
+                                                @foreach($members as $member)
+                                                    @if(in_array($member->id, old('members', [])))
+                                                        <div class="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded flex items-center" data-value="{{ $member->id }}">
+                                                            {{ $member->first_name }} {{ $member->last_name }}
+                                                            <button type="button" class="ml-1 text-blue-500 hover:text-blue-700" data-value="{{ $member->id }}">
+                                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
                                     </div>
                                     @error('members')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -125,17 +163,18 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center">
+                            <div class="my-3 flex items-center">
                                 <input type="hidden" name="is_published" value="0">
-                                <input type="checkbox" name="is_published" id="is_published" 
-                                       class="rounded" value="1" {{ old('is_published', false) ? 'checked' : '' }}>
-                                <label for="is_published" class="ml-2 text-sm font-medium">Publish Immediately</label>
+                                <input type="checkbox" name="is_published" id="is_published" class="rounded" value="1" {{ old('is_published', false) ? 'checked' : '' }}>
+                                <label for="is_published" class="ml-2">Publish Immediately</label>
                             </div>
 
                             <div class="mt-6">
                                 <button type="submit" 
-                                        class="inline-flex items-center px-5 py-2 text-white bg-[#101966] hover:bg-white hover:text-[#101966] 
-                                               border border-white hover:border-[#101966] rounded-lg font-medium text-lg transition-colors duration-200">
+                                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -149,89 +188,155 @@
         </div>
     </div>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.getElementById("eventForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: "Are you sure?",
-                text: "Do you want to create this event?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#5e6ffb",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, create it!",
-                cancelButtonText: "Cancel",
-                background: '#101966',
-                color: '#fff'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Creating...',
-                        text: 'Please wait',
-                        timer: 1500,
-                        timerProgressBar: true,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        },
-                        willClose: () => {
-                            e.target.submit();
-                        },
-                        background: '#101966',
-                        color: '#fff',
-                        allowOutsideClick: false
-                    });
-                }
-            });
-        });
-
-        @if(session('success'))
-            Swal.fire({
-                icon: "success",
-                title: "Created!",
-                text: "{{ session('success') }}",
-                confirmButtonColor: "#5e6ffb",
-                background: '#101966',
-                color: '#fff'
-            });
-        @endif
-
-        @if(session('error'))
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "{{ session('error') }}",
-                confirmButtonColor: "#5e6ffb",
-                background: '#101966',
-                color: '#fff'
-            });
-        @endif
-    </script>
-
     <x-slot name="script">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('select-all-members').addEventListener('change', function() {
-                    const checkboxes = document.querySelectorAll('.member-checkbox');
-                    checkboxes.forEach(checkbox => {
-                        checkbox.checked = this.checked;
+                // Members dropdown functionality
+                const membersSelect = document.getElementById('members-select');
+                const membersSearch = document.getElementById('members-search');
+                const membersOptions = document.getElementById('members-options');
+                const selectedMembers = document.getElementById('selected-members');
+                const selectAll = document.getElementById('select-all-members');
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                
+                // Toggle dropdown on search input focus
+                membersSearch.addEventListener('focus', () => {
+                    membersOptions.classList.remove('hidden');
+                });
+                
+                // Hide dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('#members-dropdown')) {
+                        membersOptions.classList.add('hidden');
+                    }
+                });
+                
+                // Filter members based on search input
+                membersSearch.addEventListener('input', () => {
+                    const searchTerm = membersSearch.value.toLowerCase();
+                    document.querySelectorAll('.member-option').forEach(option => {
+                        const label = option.querySelector('label').textContent.toLowerCase();
+                        option.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+                    });
+                });
+                
+                // Update selected members and hidden select
+                function updateSelectedMembers() {
+                    // Clear current selections
+                    selectedMembers.innerHTML = '';
+                    Array.from(membersSelect.options).forEach(option => {
+                        option.selected = false;
+                    });
+                    
+                    // Add selected members
+                    document.querySelectorAll('.member-checkbox:checked').forEach(checkbox => {
+                        const memberId = checkbox.value;
+                        const memberName = checkbox.nextElementSibling.textContent;
+                        
+                        // Update hidden select
+                        const option = membersSelect.querySelector(`option[value="${memberId}"]`);
+                        if (option) option.selected = true;
+                        
+                        // Add to selected members display
+                        const badge = document.createElement('div');
+                        badge.className = 'bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded flex items-center';
+                        badge.innerHTML = `
+                            ${memberName}
+                            <button type="button" class="ml-1 text-blue-500 hover:text-blue-700" data-value="${memberId}">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        `;
+                        selectedMembers.appendChild(badge);
+                        
+                        // Add event to remove button
+                        badge.querySelector('button').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const checkboxToUncheck = document.querySelector(`.member-checkbox[value="${memberId}"]`);
+                            if (checkboxToUncheck) {
+                                checkboxToUncheck.checked = false;
+                                updateSelectedMembers();
+                            }
+                        });
+                    });
+                    
+                    // Update select all checkbox
+                    selectAll.checked = document.querySelectorAll('.member-checkbox:checked').length === memberCheckboxes.length;
+                }
+                
+                // Initialize selected members
+                updateSelectedMembers();
+                
+                // Handle individual member selection
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateSelectedMembers);
+                });
+                
+                // Handle select all functionality
+                selectAll.addEventListener('change', () => {
+                    memberCheckboxes.forEach(checkbox => {
+                        checkbox.checked = selectAll.checked;
+                    });
+                    updateSelectedMembers();
+                });
+
+                document.getElementById("eventForm").addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you want to create this event?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#5e6ffb",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, create it!",
+                        cancelButtonText: "Cancel",
+                        background: '#101966',
+                        color: '#fff'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Creating...',
+                                text: 'Please wait',
+                                timer: 1500,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                willClose: () => {
+                                    e.target.submit();
+                                },
+                                background: '#101966',
+                                color: '#fff',
+                                allowOutsideClick: false
+                            });
+                        }
                     });
                 });
 
-                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
-                const selectAllMembers = document.getElementById('select-all-members');
+                @if(session('success'))
+                    Swal.fire({
+                        icon: "success",
+                        title: "Created!",
+                        text: "{{ session('success') }}",
+                        confirmButtonColor: "#5e6ffb",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
 
-                function checkSelectAllMembers() {
-                    const allChecked = Array.from(memberCheckboxes).every(checkbox => checkbox.checked);
-                    selectAllMembers.checked = allChecked;
-                }
-
-                memberCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', checkSelectAllMembers);
-                });
-
-                checkSelectAllMembers();
+                @if(session('error'))
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "{{ session('error') }}",
+                        confirmButtonColor: "#5e6ffb",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
             });
         </script>
     </x-slot>

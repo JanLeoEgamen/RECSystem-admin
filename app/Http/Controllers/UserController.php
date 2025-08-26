@@ -42,8 +42,8 @@ class UserController extends Controller implements HasMiddleware
                     $search = $request->search;
                     $query->where(function ($q) use ($search) {
                         $q->where('first_name', 'like', "%$search%")
-                          ->orWhere('last_name', 'like', "%$search%")
-                          ->orWhere('email', 'like', "%$search%");
+                        ->orWhere('last_name', 'like', "%$search%")
+                        ->orWhere('email', 'like', "%$search%");
                     });
                 }
 
@@ -55,7 +55,7 @@ class UserController extends Controller implements HasMiddleware
                     switch ($sort) {
                         case 'name':
                             $query->orderBy('first_name', $direction)
-                                  ->orderBy('last_name', $direction);
+                                ->orderBy('last_name', $direction);
                             break;
                             
                         case 'email':
@@ -83,6 +83,7 @@ class UserController extends Controller implements HasMiddleware
                         'name' => $user->first_name . ' ' . $user->last_name,
                         'email' => $user->email,
                         'roles' => $user->roles->pluck('name')->implode(', '),
+                        'is_superadmin' => $user->hasRole('superadmin'), // Add this line
                         'assignments' => collect([
                             ...$user->assignedBureaus->map(fn($b) => 'Bureau: ' . $b->bureau_name),
                             ...$user->assignedSections->map(fn($s) => 'Section: ' . $s->section_name . ' (' . $s->bureau->bureau_name . ')'),
@@ -273,6 +274,20 @@ class UserController extends Controller implements HasMiddleware
                 throw new ValidationException($validator);
             }
             
+            // Check if user is changing from superadmin role
+            $currentRole = $user->roles->first()->name ?? '';
+            $newRole = $request->role;
+            
+            if ($currentRole === 'superadmin' && $newRole !== 'superadmin') {
+                // Check if this is the last superadmin
+                $superadminCount = User::role('superadmin')->count();
+                if ($superadminCount <= 1) {
+                    return redirect()->route('users.edit', $id)
+                        ->withInput()
+                        ->with('error', 'Cannot remove superadmin role. This is the last superadmin user.');
+                }
+            }
+            
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->birthdate = $request->birthdate;
@@ -336,10 +351,8 @@ class UserController extends Controller implements HasMiddleware
                 return response()->json([
                     'status' => false,
                     'message' => 'Superadmin users cannot be deleted.'
-                ]); // Forbidden status code
+                ], 403); // Forbidden status code
             }
-
-
 
             $user->forceDelete();
             
@@ -370,4 +383,5 @@ class UserController extends Controller implements HasMiddleware
             ], 500);
         }
     }
+
 }

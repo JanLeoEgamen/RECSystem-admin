@@ -29,6 +29,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ApplicantDashboardController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CashierApplicantController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DocumentController;
@@ -260,7 +261,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports/membership', [ReportController::class, 'membership'])->name('reports.membership');
     Route::get('/reports/applicants', [ReportController::class, 'applicants'])->name('reports.applicants');
     Route::get('/reports/licenses', [ReportController::class, 'licenses'])->name('reports.licenses');
-    
+    // Custom report routes
+    Route::get('/reports/custom', [ReportController::class, 'custom'])->name('reports.custom');
+    Route::get('/reports/custom/export', [ReportController::class, 'customExport'])->name('reports.custom.export');
+
     // Email Templates
     Route::get('/emails', [EmailController::class, 'index'])->name('emails.index'); 
     Route::get('/emails/create', [EmailController::class, 'create'])->name('emails.create'); 
@@ -384,6 +388,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs.index');
     Route::get('/login-logs-table', [LoginLogController::class, 'indexTable'])->name('login-logs.indexTable');
     Route::get('/login-logs/export', [LoginLogController::class, 'export'])->name('login-logs.export');
+
+    Route::resource('backups', BackupController::class)->except(['show', 'edit', 'update']);
+    Route::get('backups/{id}/download', [BackupController::class, 'download'])->name('backups.download');
+    Route::get('backups/{id}/restore', [BackupController::class, 'restore'])->name('backups.restore');
+
 
 });
 

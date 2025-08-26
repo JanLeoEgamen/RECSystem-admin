@@ -343,6 +343,21 @@
                     
                     users.forEach((user, index) => {
                         const rowNumber = startIndex + index;
+                        const isSuperadmin = user.is_superadmin;
+                        const deleteButton = isSuperadmin ? '' : `
+                            @can('delete users')
+                                <button onclick="deleteUser(${user.id})" 
+                                    class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                </button>
+                            @endcan
+                        `;
 
                         let row = `
                             <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
@@ -357,7 +372,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-left column-created">${user.created}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                 @can('edit users')
+                                @can('edit users')
                                     <a href="/users/${user.id}/edit" 
                                         class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
                                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -481,19 +496,33 @@
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                 },
                                 success: function (response) {
-                                    Swal.fire({
-                                        title: 'Deleted!',
-                                        text: 'User has been deleted successfully.',
-                                        icon: 'success',
-                                        background: '#101966',
-                                        color: '#fff'
-                                    });
-                                    fetchUsers();
+                                    if (response.status) {
+                                        Swal.fire({
+                                            title: 'Deleted!',
+                                            text: 'User has been deleted successfully.',
+                                            icon: 'success',
+                                            background: '#101966',
+                                            color: '#fff'
+                                        });
+                                        fetchUsers();
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Error!',
+                                            text: response.message || 'Cannot delete superadmin user.',
+                                            icon: 'error',
+                                            background: '#101966',
+                                            color: '#fff'
+                                        });
+                                    }
                                 },
-                                error: function() {
+                                error: function(xhr) {
+                                    let errorMessage = 'Something went wrong while deleting the user.';
+                                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                                        errorMessage = xhr.responseJSON.message;
+                                    }
                                     Swal.fire({
                                         title: 'Error!',
-                                        text: 'Something went wrong while deleting the user.',
+                                        text: errorMessage,
                                         icon: 'error',
                                         background: '#101966',
                                         color: '#fff'

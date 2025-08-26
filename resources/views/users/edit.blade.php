@@ -203,5 +203,85 @@
                 color: '#fff'
             });
         @endif
+
+                    // Bureau and Section selection logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all bureau checkboxes
+            const bureauCheckboxes = document.querySelectorAll('.bureau-checkbox');
+            
+            // Add event listener to each bureau checkbox
+            bureauCheckboxes.forEach(bureauCheckbox => {
+                bureauCheckbox.addEventListener('change', function() {
+                    const bureauId = this.value;
+                    const bureauDiv = this.closest('.rounded-lg');
+                    
+                    // Get all section checkboxes within this bureau
+                    const sectionCheckboxes = bureauDiv.querySelectorAll('.section-checkbox');
+                    
+                    if (this.checked) {
+                        // Check all sections when bureau is checked
+                        sectionCheckboxes.forEach(sectionCheckbox => {
+                            sectionCheckbox.checked = true;
+                        });
+                    } else {
+                        // Uncheck all sections when bureau is unchecked
+                        sectionCheckboxes.forEach(sectionCheckbox => {
+                            sectionCheckbox.checked = false;
+                        });
+                    }
+                });
+            });
+
+            // Optional: Add event listener to section checkboxes to handle bureau state
+            const sectionCheckboxes = document.querySelectorAll('.section-checkbox');
+            sectionCheckboxes.forEach(sectionCheckbox => {
+                sectionCheckbox.addEventListener('change', function() {
+                    const bureauDiv = this.closest('.rounded-lg');
+                    const bureauCheckbox = bureauDiv.querySelector('.bureau-checkbox');
+                    const allSections = bureauDiv.querySelectorAll('.section-checkbox');
+                    
+                    // Check if all sections are checked
+                    const allSectionsChecked = Array.from(allSections).every(section => section.checked);
+                    
+                    // Check if any sections are checked
+                    const anySectionsChecked = Array.from(allSections).some(section => section.checked);
+                    
+                    if (allSectionsChecked) {
+                        // If all sections are checked, check the bureau
+                        bureauCheckbox.checked = true;
+                    } else if (!anySectionsChecked) {
+                        // If no sections are checked, uncheck the bureau
+                        bureauCheckbox.checked = false;
+                    }
+                    // If some but not all sections are checked, the bureau remains in indeterminate state
+                    // (visually, this won't show as checked or unchecked)
+                });
+            });
+
+            // Initialize bureau states based on section selections
+            function initializeBureauStates() {
+                bureauCheckboxes.forEach(bureauCheckbox => {
+                    const bureauDiv = bureauCheckbox.closest('.rounded-lg');
+                    const allSections = bureauDiv.querySelectorAll('.section-checkbox');
+                    
+                    const allSectionsChecked = Array.from(allSections).every(section => section.checked);
+                    const anySectionsChecked = Array.from(allSections).some(section => section.checked);
+                    
+                    if (allSectionsChecked) {
+                        bureauCheckbox.checked = true;
+                    } else if (anySectionsChecked) {
+                        // For partially checked state, we can set indeterminate property
+                        bureauCheckbox.indeterminate = true;
+                    } else {
+                        bureauCheckbox.checked = false;
+                        bureauCheckbox.indeterminate = false;
+                    }
+                });
+            }
+
+            // Call initialization
+            initializeBureauStates();
+        });
+
     </script>
 </x-app-layout>

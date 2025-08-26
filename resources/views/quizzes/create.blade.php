@@ -60,20 +60,45 @@
 
                             <span class="text-sm font-medium mt-6 block">Assign to Members</span>
                             <div class="my-3">
-                                <div class="flex items-center mb-2">
-                                    <input type="checkbox" id="select-all-members" class="rounded mr-2">
-                                    <label for="select-all-members">Select All Members</label>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    @foreach($members as $member)
-                                        <div class="flex items-center">
-                                            <input type="checkbox" name="members[]" id="member-{{ $member->id }}" 
-                                                value="{{ $member->id }}" class="rounded member-checkbox">
-                                            <label for="member-{{ $member->id }}" class="ml-2">
+                                <div class="relative">
+                                    <select name="members[]" id="members-select" multiple class="hidden">
+                                        @foreach($members as $member)
+                                            <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}>
                                                 {{ $member->first_name }} {{ $member->last_name }}
-                                            </label>
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div id="members-dropdown" class="w-full mt-1">
+                                        <div class="relative">
+                                            <input type="text" id="members-search" placeholder="Search members..." 
+                                                class="w-full border-gray-300 shadow-sm rounded-lg pl-10 pr-4 py-2">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    @endforeach
+                                        <div id="members-options" class="mt-1 max-h-60 overflow-y-auto border border-gray-300 rounded-lg hidden">
+                                            <div class="p-2">
+                                                <div class="flex items-center mb-2">
+                                                    <input type="checkbox" id="select-all-members" class="rounded mr-2">
+                                                    <label for="select-all-members" class="text-sm">Select All Members</label>
+                                                </div>
+                                                <div class="space-y-1">
+                                                    @foreach($members as $member)
+                                                        <div class="flex items-center member-option" data-value="{{ $member->id }}">
+                                                            <input type="checkbox" id="member-{{ $member->id }}" 
+                                                                value="{{ $member->id }}" class="rounded mr-2 member-checkbox">
+                                                            <label for="member-{{ $member->id }}" class="text-sm">
+                                                                {{ $member->first_name }} {{ $member->last_name }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="selected-members" class="mt-2 flex flex-wrap gap-2"></div>
+                                    </div>
                                 </div>
                                 @error('members')
                                 <p class="text-red-400 font-medium"> {{ $message }} </p>
@@ -227,10 +252,95 @@
                 addQuestion();
                 addQuestionBtn.addEventListener('click', addQuestion);
 
+                // Members dropdown functionality
+                const membersSelect = document.getElementById('members-select');
+                const membersSearch = document.getElementById('members-search');
+                const membersOptions = document.getElementById('members-options');
+                const selectedMembers = document.getElementById('selected-members');
                 const selectAll = document.getElementById('select-all-members');
-                const checkboxes = document.querySelectorAll('.member-checkbox');
-                selectAll.addEventListener('change', () => checkboxes.forEach(c => c.checked = selectAll.checked));
-                checkboxes.forEach(c => c.addEventListener('change', () => selectAll.checked = Array.from(checkboxes).every(cb => cb.checked)));
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                
+                // Toggle dropdown on search input focus
+                membersSearch.addEventListener('focus', () => {
+                    membersOptions.classList.remove('hidden');
+                });
+                
+                // Hide dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('#members-dropdown')) {
+                        membersOptions.classList.add('hidden');
+                    }
+                });
+                
+                // Filter members based on search input
+                membersSearch.addEventListener('input', () => {
+                    const searchTerm = membersSearch.value.toLowerCase();
+                    document.querySelectorAll('.member-option').forEach(option => {
+                        const label = option.querySelector('label').textContent.toLowerCase();
+                        option.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+                    });
+                });
+                
+                // Update selected members and hidden select
+                function updateSelectedMembers() {
+                    // Clear current selections
+                    selectedMembers.innerHTML = '';
+                    Array.from(membersSelect.options).forEach(option => {
+                        option.selected = false;
+                    });
+                    
+                    // Add selected members
+                    document.querySelectorAll('.member-checkbox:checked').forEach(checkbox => {
+                        const memberId = checkbox.value;
+                        const memberName = checkbox.nextElementSibling.textContent;
+                        
+                        // Update hidden select
+                        const option = membersSelect.querySelector(`option[value="${memberId}"]`);
+                        if (option) option.selected = true;
+                        
+                        // Add to selected members display
+                        const badge = document.createElement('div');
+                        badge.className = 'bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded flex items-center';
+                        badge.innerHTML = `
+                            ${memberName}
+                            <button type="button" class="ml-1 text-blue-500 hover:text-blue-700" data-value="${memberId}">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        `;
+                        selectedMembers.appendChild(badge);
+                        
+                        // Add event to remove button
+                        badge.querySelector('button').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const checkboxToUncheck = document.querySelector(`.member-checkbox[value="${memberId}"]`);
+                            if (checkboxToUncheck) {
+                                checkboxToUncheck.checked = false;
+                                updateSelectedMembers();
+                            }
+                        });
+                    });
+                    
+                    // Update select all checkbox
+                    selectAll.checked = document.querySelectorAll('.member-checkbox:checked').length === memberCheckboxes.length;
+                }
+                
+                // Initialize selected members
+                updateSelectedMembers();
+                
+                // Handle individual member selection
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateSelectedMembers);
+                });
+                
+                // Handle select all functionality
+                selectAll.addEventListener('change', () => {
+                    memberCheckboxes.forEach(checkbox => {
+                        checkbox.checked = selectAll.checked;
+                    });
+                    updateSelectedMembers();
+                });
 
                 document.getElementById("createForm").addEventListener("submit", function(e) {
                     e.preventDefault();

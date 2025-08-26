@@ -207,6 +207,17 @@
                             </span>
                         </a>
                         @endcan
+                        @can('view custom reports')
+                        <a href="{{ route('reports.custom') }}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-md group">
+                            <div class="bg-purple-100 dark:bg-purple-900 rounded-full p-4 mb-3 transition-transform duration-300 group-hover:scale-110">
+                                <svg class="h-8 w-8 text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <span class="text-md font-medium text-gray-700 dark:text-gray-300 text-center group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">Custom Report</span>
+                        </a>
+                        @endcan
+
                     </div>
                 </div>
             </div>

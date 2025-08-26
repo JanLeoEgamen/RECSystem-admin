@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Models\Applicant;
 use App\Models\Bureau;
+use App\Models\MembershipType;
 use App\Models\Section;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Dompdf\Exception as DompdfException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 
 class ReportController extends Controller implements HasMiddleware
 {
@@ -28,6 +31,8 @@ class ReportController extends Controller implements HasMiddleware
             new Middleware('permission:generate membership reports', only: ['membership']),
             new Middleware('permission:generate applicant reports', only: ['applicants']),
             new Middleware('permission:generate license reports', only: ['licenses']),
+            new Middleware('permission:view custom reports', only: ['custom', 'customExport']),
+            new Middleware('permission:generate custom reports', only: ['customExport']),
         ];
     }
 
@@ -323,4 +328,105 @@ class ReportController extends Controller implements HasMiddleware
             return redirect()->back()->with('error', 'An unexpected error occurred while generating the license report.');
         }
     }
+
+public function custom(Request $request)
+{
+    try {
+        $bureaus = Bureau::orderBy('bureau_name')->get();
+        $sections = Section::orderBy('section_name')->get();
+        $membershipTypes = MembershipType::orderBy('type_name')->get();
+        
+        // Get filter values from request if any
+        $filters = $request->only([
+            'status', 'bureau_id', 'section_id', 'membership_type_id', 
+            'license_class', 'sex', 'civil_status', 'date_from', 'date_to',
+            'is_lifetime_member'
+        ]);
+        
+        return view('reports.custom', compact('bureaus', 'sections', 'membershipTypes', 'filters'));
+        
+    } catch (\Exception $e) {
+        Log::error('Error in custom report: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'An error occurred while loading the custom report page.');
+    }
+}
+
+public function customExport(Request $request)
+{
+    try {
+        // Build query based on filters
+        $query = Member::with(['section.bureau', 'membershipType']);
+        
+        // Apply filters
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->filled('bureau_id')) {
+            $query->whereHas('section.bureau', function($q) use ($request) {
+                $q->where('id', $request->bureau_id);
+            });
+        }
+        
+        if ($request->filled('section_id')) {
+            $query->where('section_id', $request->section_id);
+        }
+        
+        if ($request->filled('membership_type_id')) {
+            $query->where('membership_type_id', $request->membership_type_id);
+        }
+        
+        if ($request->filled('license_class')) {
+            $query->where('license_class', $request->license_class);
+        }
+        
+        if ($request->filled('sex')) {
+            $query->where('sex', $request->sex);
+        }
+        
+        if ($request->filled('civil_status')) {
+            $query->where('civil_status', $request->civil_status);
+        }
+        
+        if ($request->filled('is_lifetime_member')) {
+            $query->where('is_lifetime_member', $request->is_lifetime_member);
+        }
+        
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+        
+        // Get filtered members
+        $members = $query->orderBy('last_name')->orderBy('first_name')->get();
+        
+        // Get filter values for display
+        $filters = $request->all();
+        
+        // Generate PDF
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        
+        $dompdf = new Dompdf($options);
+        $html = view('reports.custom-pdf', compact('members', 'filters'))->render();
+        
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        
+        return $dompdf->stream("custom_report_".now()->format('Y-m-d').".pdf");
+
+    } catch (\Exception $e) {
+        Log::error('PDF generation failed in custom report: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to generate PDF. Please try again.');
+    }
+}
+
+
+
+
 }
