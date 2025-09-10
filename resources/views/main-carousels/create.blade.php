@@ -8,8 +8,8 @@
             <a href="{{ route('main-carousels.index') }}" 
                 class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                         bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
                         w-full md:w-auto">
 
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,10 +45,18 @@
 
                             <label for="image" class="text-sm font-medium">Image</label>
                             <div class="my-3">    
-                                <input name="image" type="file" class="border-gray-300 shadow-sm w-1/2 rounded-lg" required>
+                                <input 
+                                    name="image" 
+                                    type="file" 
+                                    class="border-gray-300 shadow-sm w-1/2 rounded-lg" 
+                                    accept="image/jpeg,image/png,image/gif,image/bmp,image/webp,image/svg+xml" 
+                                    required
+                                    onchange="validateImage(this)"
+                                >
                                 @error('image')
                                 <p class="text-red-400 font-medium"> {{ $message }} </p>
                                 @enderror
+                                <p id="imageError" class="text-red-400 font-medium hidden"></p>
                             </div>
 
                             <div class="my-3 flex items-center">
@@ -60,8 +68,8 @@
                             <div class="mt-6">
                                 <button type="submit" class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                         bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
+                                        focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
 
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

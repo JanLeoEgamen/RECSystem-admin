@@ -62,7 +62,7 @@ class DashboardController extends Controller implements HasMiddleware
         $recentMembers = (clone $memberQuery)->latest()->take(5)->get();
 
         // Get recent applicants for the table
-        $recentApplicants = Applicant::latest()->take(10)->get();
+        $recentApplicants = Applicant::latest()->take(6)->get();
 
         $monthlyData = (clone $memberQuery)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')

@@ -19,8 +19,8 @@
             <a href="{{ $backRoute }}" 
             class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                     bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                    focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                    dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
                     w-full sm:w-auto mt-4 sm:mt-0">
 
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -103,18 +103,18 @@
                                 @if ($applicant->payment_status !== 'rejected' && $applicant->payment_status !== 'verified')
                                     <div class="mt-6 flex justify-center space-x-3">
                                         <button onclick="verifyPayment({{ $applicant->id }})"
-                                               class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                                            class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                                 bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                                focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                                                dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
+                                                focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                                                dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
                                             Verify
                                         </button>
 
                                         <button onclick="rejectPayment({{ $applicant->id }})"
-                                                class="inline-flex items-center px-5 py-2 text-white hover:text-red-600 hover:border-red-600 
-                                                  bg-red-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                                  focus:ring-red-600 border border-white font-medium dark:border-[#3E3E3A] 
-                                                  dark:hover:bg-black dark:hover:border-red-600 rounded-lg text-xl leading-normal transition-colors duration-200">
+                                            class="inline-flex items-center px-5 py-2 text-white hover:text-red-600 hover:border-red-600 
+                                                bg-red-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                                focus:ring-red-600 border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                                                dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
                                             Reject
                                         </button>
                                     </div>
@@ -133,10 +133,10 @@
     <div id="zoomModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden justify-center items-center">
         <div class="relative max-w-5xl max-h-[90vh] p-4">
             <button onclick="closeZoomModal()"
-                    class="absolute top-2 right-2 bg-white hover:bg-gray-200 text-black rounded-full p-1 shadow-md">
+                    class="absolute top-2 right-2 bg-white hover:bg-gray-200 text-black rounded-full p-1  shadow-md">
                 ✕
             </button>
-            <img id="zoomedImage" src="" alt="Zoomed Payment Proof" class="max-w-full max-h-[80vh] rounded-md shadow-lg mx-auto">
+            <img id="zoomedImage" src="" alt="Zoomed Payment Proof" class="max-w-full max-h-[80vh] rounded-md shadow-lg mx-auto ">
         </div>
     </div>
 
@@ -232,7 +232,7 @@
                     const reason = result.value;
 
                     Swal.fire({
-                        title: 'Rejecting...',
+                        title: 'Please wait...',
                         allowOutsideClick: false,
                         background: '#101966',
                         color: '#fff',

@@ -1,26 +1,13 @@
 <x-app-layout> 
-    <x-slot name="header"> 
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"> 
-        <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left"> 
-            {{ __('Roles') }} 
-        </h2>
-
-        @can('create roles')
-        <a href="{{ route('roles.create') }}" 
-            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                    w-full md:w-auto mt-4 md:mt-0">
-
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-            Create
-        </a>
-        @endcan
-    </div>
-</x-slot>
+    <x-slot name="header">
+        <x-page-header title="{{ __('Roles') }}">
+            <x-slot name="createButton">
+                <x-create-button 
+                    :route="route('roles.create')" 
+                    permission="create roles" />
+            </x-slot>
+        </x-page-header>
+    </x-slot>
 
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -48,52 +35,39 @@
                                 <option value="name_desc">Name (Z-A)</option>
                                 <option value="created_asc">Created (Oldest First)</option>
                             </select>
-                        </div>
-
-                        <div class="flex items-center space-x-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Columns</span>
-                            <div class="relative">
-                                <button id="columnFilterButton" class="flex items-center justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
-                                    <span>Select columns</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-                                
-                                <div id="columnFilterDropdown" class="hidden absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
-                                    <div class="p-2">
-                                        <div class="space-y-2">
-                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
-                                                <input type="checkbox" class="column-checkbox" data-column="name" checked>
-                                                <span class="text-sm text-gray-700 dark:text-gray-300">Name</span>
-                                            </label>
-                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
-                                                <input type="checkbox" class="column-checkbox" data-column="permissions" checked>
-                                                <span class="text-sm text-gray-700 dark:text-gray-300">Permissions</span>
-                                            </label>
-                                            <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
-                                                <input type="checkbox" class="column-checkbox" data-column="created" checked>
-                                                <span class="text-sm text-gray-700 dark:text-gray-300">Created</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        </div>  
                     </div>
 
                     <div class="flex items-center space-x-4">
-                        <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                            Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
-                        </div>
-                        <input type="text" id="searchInput" placeholder="Search roles..." 
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
-                    </div>
-                </div>
+                            <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> markees
+                            </div>
+                            <div class="relative w-48">
+                                <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+                                </svg>
 
-                <div class="sm:hidden space-y-3 mb-4">
-                    <input type="text" id="mobileSearchInput" placeholder="Search roles..." 
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
+                                <input type="text" id="searchInput" 
+                                    placeholder="Search Roles" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
+                                    dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="sm:hidden space-y-3 mb-4">
+                        <div class="relative w-full">
+                            <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+                            </svg>
+
+                            <input type="text" id="mobileSearchInput" placeholder="Search Roles" 
+                                class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
+                                dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
+                        </div>
 
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
@@ -115,37 +89,6 @@
                         </select>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Columns</span>
-                        <div class="relative w-2/3">
-                            <button id="mobileColumnFilterButton" class="flex items-center justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
-                                <span>Select columns</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            
-                            <div id="mobileColumnFilterDropdown" class="hidden absolute left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
-                                <div class="p-2">
-                                    <div class="space-y-2">
-                                        <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
-                                            <input type="checkbox" class="column-checkbox" data-column="name" checked>
-                                            <span class="text-sm text-gray-700 dark:text-gray-300">Name</span>
-                                        </label>
-                                        <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
-                                            <input type="checkbox" class="column-checkbox" data-column="permissions" checked>
-                                            <span class="text-sm text-gray-700 dark:text-gray-300">Permissions</span>
-                                        </label>
-                                        <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer">
-                                            <input type="checkbox" class="column-checkbox" data-column="created" checked>
-                                            <span class="text-sm text-gray-700 dark:text-gray-300">Created</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
                         Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
                     </div>
@@ -154,13 +97,13 @@
                 <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="min-w-[1000px]">
                         <table id="rolesTable" class="w-full bg-white dark:bg-gray-900 text-sm">
-                            <thead class="bg-[#101966] dark:bg-gray-800 text-gray-200 dark:text-gray-200">
+                            <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
                                 <tr class="border-b dark:border-gray-700">
                                     <th class="px-6 py-3 text-center font-medium">#</th>
-                                    <th class="px-6 py-3 text-center font-medium border-l border-white column-name">Name</th>
-                                    <th class="px-6 py-3 text-center font-medium border-l border-white column-permissions">Permissions</th>
-                                    <th class="px-6 py-3 text-center font-medium border-l border-white column-created">Created</th>
-                                    <th class="px-6 py-3 text-center font-medium border-l border-white">Action</th>
+                                    <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-name">Roles</th>
+                                    <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-permissions">Permissions</th>
+                                    <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-created">Created</th>
+                                    <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -261,20 +204,6 @@
         $(document).ready(function () {
             fetchRoles();
 
-            $('#columnFilterButton').on('click', function(e) {
-                e.stopPropagation();
-                $('#columnFilterDropdown').toggleClass('hidden');
-            });
-
-            $('#mobileColumnFilterButton').on('click', function(e) {
-                e.stopPropagation();
-                $('#mobileColumnFilterDropdown').toggleClass('hidden');
-            });
-
-            $(document).on('click', function() {
-                $('#columnFilterDropdown, #mobileColumnFilterDropdown').addClass('hidden');
-            });
-
             $('#searchInput, #mobileSearchInput').on('keyup', function () {
                 fetchRoles(1, $(this).val());
             });
@@ -285,13 +214,6 @@
 
             $('#sortBy, #mobileSortBy').on('change', function() {
                 fetchRoles(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
-            });
-
-            $('.column-checkbox').on('change', function() {
-                const column = $(this).data('column');
-                const isChecked = $(this).is(':checked');
-                
-                $(`.column-${column}`).toggle(isChecked);
             });
 
             function fetchRoles(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
@@ -349,7 +271,7 @@
                                     role.permissions.substring(0, 50) + '... <button onclick="showFullPermissions(\'' + escapeHtml(role.permissions) + '\')" class="text-blue-500 hover:text-blue-700 text-xs">View All</button>' : 
                                     role.permissions}
                             </td>
-                            <td class="px-6 py-4 text-left column-created">${role.created_at}</td>
+                            <td class="px-6 py-4 text-center column-created">${role.created_at}</td>
                             <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
                                 ${showEditButton ? `
                                     @can('edit roles')

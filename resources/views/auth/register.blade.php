@@ -186,6 +186,35 @@
                 display: block;
             }
 
+            /* Password Validation Tooltip */
+            .validation-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 2px;
+            }
+
+            .validation-icon {
+                margin-right: 8px;
+                width: 16px;
+                height: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                font-size: 0.6rem;
+                font-weight: bold;
+            }
+
+            .validation-icon.valid {
+                background-color: rgba(72, 187, 120, 0.2);
+                color: #48bb78;
+            }
+
+            .validation-icon.invalid {
+                background-color: rgba(245, 101, 101, 0.2);
+                color: #f56565;
+            }
+
             .btn-17 .text {
                 display: block;
                 position: relative;
@@ -352,8 +381,11 @@
                             autofocus 
                             autocomplete="given-name"
                             placeholder="Juan" 
+                            pattern="[A-Za-z. ]+"
+                            oninput="validateName(this)"
                         />
                         <x-input-error :messages="$errors->get('first_name')" class="mt-2 text-sm text-red-200" />
+                        <div id="first_name_error" class="text-sm mt-1 h-5 text-red-400"></div>
                     </div>
 
                     <!-- Last Name -->
@@ -368,8 +400,11 @@
                             required 
                             autocomplete="family-name"
                             placeholder="Cruz" 
+                            pattern="[A-Za-z. ]+"
+                            oninput="validateName(this)"
                         />
                         <x-input-error :messages="$errors->get('last_name')" class="mt-2 text-sm text-red-200" />
+                        <div id="last_name_error" class="text-sm mt-1 h-5 text-red-400"></div>
                     </div>
                 </div>
 
@@ -382,6 +417,7 @@
                         type="date" 
                         name="birthdate" 
                         :value="old('birthdate')" 
+                        required
                     />
                     <x-input-error :messages="$errors->get('birthdate')" class="mt-2 text-sm text-red-200" />
                 </div>
@@ -406,64 +442,69 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Password -->
                     <div>
-                        <x-input-label for="password" :value="__('Password')" class="text-white" />
-                        <div class="relative">
-                            <x-text-input 
-                                id="password" 
-                                class="block mt-1 w-full px-4 py-3 bg-white/20 backdrop-blur-sm text-white placeholder-white/50 rounded-lg border-white/30 focus:border-white focus:ring-white pr-12"
-                                type="password"
-                                name="password"
-                                required 
-                                autocomplete="new-password"
-                                placeholder="Enter your password"
-                                oninput="checkPasswordStrength()"
-                            />
-                            <button type="button" 
-                                    class="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-white/50 hover:text-white"
-                                    onclick="togglePasswordVisibility('password')"
-                                    aria-label="Toggle password visibility">
-                                <svg id="password-eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                <svg id="password-eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                </svg>
-                            </button>
-                        </div>
+                    <x-input-label for="password" :value="__('Password')" class="text-white" />
+                    <div class="relative">
+                        <x-text-input 
+                            id="password" 
+                            class="block mt-1 w-full px-4 py-3 bg-white/20 backdrop-blur-sm text-white placeholder-white/50 rounded-lg border-white/30 focus:border-white focus:ring-white pr-12"
+                            type="password"
+                            name="password"
+                            required 
+                            autocomplete="new-password"
+                            placeholder="Enter your password"
+                            onfocus="showPasswordValidation()"
+                            oninput="checkPasswordStrength()"
+                            onblur="hidePasswordValidation()"
+                        />
+                        <button type="button" 
+                                class="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-white/50 hover:text-white"
+                                onclick="togglePasswordVisibility('password')"
+                                aria-label="Toggle password visibility">
+                            <svg id="password-eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg id="password-eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            </svg>
+                        </button>
                         
-                        <!-- Password Strength Meter -->
-                        <div class="password-strength-meter mt-2">
-                            <div class="password-strength-meter-fill" id="passwordStrengthMeter"></div>
-                        </div>
-                        <div class="password-strength-text" id="passwordStrengthText"></div>
-                        
-                        <!-- Password Requirements -->
-                        <div class="validation-list text-white/80 mt-2">
-                            <div class="validation-item">
-                                <span class="validation-icon invalid" id="lengthIcon">✕</span>
-                                <span>Minimum 8 characters</span>
-                            </div>
-                            <div class="validation-item">
-                                <span class="validation-icon invalid" id="uppercaseIcon">✕</span>
-                                <span>Uppercase letter (A-Z)</span>
-                            </div>
-                            <div class="validation-item">
-                                <span class="validation-icon invalid" id="lowercaseIcon">✕</span>
-                                <span>Lowercase letter (a-z)</span>
-                            </div>
-                            <div class="validation-item">
-                                <span class="validation-icon invalid" id="numberIcon">✕</span>
-                                <span>Number (0-9)</span>
-                            </div>
-                            <div class="validation-item">
-                                <span class="validation-icon invalid" id="specialIcon">✕</span>
-                                <span>Special character (!@#$%^&*)</span>
+                        <!-- Password Validation Tooltip (initially hidden) -->
+                        <div id="passwordValidationTooltip" class="absolute z-10 mt-1 w-full bg-white/95 backdrop-blur-md rounded-lg p-3 shadow-lg border border-white/20 hidden">
+                            <div class="text-sm text-gray-800 font-medium mb-2">Password must contain:</div>
+                            <div class="space-y-1">
+                                <div class="validation-item">
+                                    <span class="validation-icon invalid" id="lengthIcon">✕</span>
+                                    <span class="text-xs">Minimum 8 characters</span>
+                                </div>
+                                <div class="validation-item">
+                                    <span class="validation-icon invalid" id="uppercaseIcon">✕</span>
+                                    <span class="text-xs">Uppercase letter (A-Z)</span>
+                                </div>
+                                <div class="validation-item">
+                                    <span class="validation-icon invalid" id="lowercaseIcon">✕</span>
+                                    <span class="text-xs">Lowercase letter (a-z)</span>
+                                </div>
+                                <div class="validation-item">
+                                    <span class="validation-icon invalid" id="numberIcon">✕</span>
+                                    <span class="text-xs">Number (0-9)</span>
+                                </div>
+                                <div class="validation-item">
+                                    <span class="validation-icon invalid" id="specialIcon">✕</span>
+                                    <span class="text-xs">Special character (!@#$%^&*)</span>
+                                </div>
                             </div>
                         </div>
-                        
-                        <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-200" />
                     </div>
+                    
+                    <!-- Password Strength Meter -->
+                    <div class="password-strength-meter mt-2">
+                        <div class="password-strength-meter-fill" id="passwordStrengthMeter"></div>
+                    </div>
+                    <div class="password-strength-text" id="passwordStrengthText"></div>
+                    
+                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-200" />
+                </div>
 
                     <!-- Confirm Password -->
                     <div>
@@ -558,17 +599,34 @@
             }
         }
 
+        function showPasswordValidation() {
+            const tooltip = document.getElementById('passwordValidationTooltip');
+            tooltip.classList.remove('hidden');
+        }
+
+        function hidePasswordValidation() {
+            const passwordInput = document.getElementById('password');
+            const tooltip = document.getElementById('passwordValidationTooltip');
+            
+            // Always hide when focus is lost (cursor leaves the field)
+            tooltip.classList.add('hidden');
+        }
+
         function checkPasswordStrength() {
             const password = document.getElementById('password').value;
             const strengthMeter = document.getElementById('passwordStrengthMeter');
             const strengthText = document.getElementById('passwordStrengthText');
+            const tooltip = document.getElementById('passwordValidationTooltip');
+            
+            // Show tooltip when user starts typing (but don't manage visibility here)
+            // The onfocus/onblur events will handle showing/hiding
             
             // Check individual requirements
             const hasMinLength = password.length >= 8;
             const hasUppercase = /[A-Z]/.test(password);
             const hasLowercase = /[a-z]/.test(password);
             const hasNumber = /[0-9]/.test(password);
-            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            const hasSpecialChar = /[!@#$%^&*]/.test(password);
             
             // Update requirement icons
             document.getElementById('lengthIcon').className = `validation-icon ${hasMinLength ? 'valid' : 'invalid'}`;
@@ -685,6 +743,34 @@
                     confirmButtonText: 'OK'
                 });
             }
+
+            const firstName = document.getElementById('first_name').value;
+            const lastName = document.getElementById('last_name').value;
+            const namePattern = /^[A-Za-z. ]+$/;
+            
+            if (!namePattern.test(firstName)) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid First Name',
+                    text: 'First name can only contain letters, spaces, and dots (.)',
+                    confirmButtonColor: '#101966',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            if (!namePattern.test(lastName)) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Last Name',
+                    text: 'Last name can only contain letters, spaces, and dots (.)',
+                    confirmButtonColor: '#101966',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
         });
         
         // Check for existing validation errors from server
@@ -713,6 +799,19 @@
                 }
             }
         });
+
+        function validateName(input) {
+            const errorElement = document.getElementById(`${input.id}_error`);
+            const namePattern = /^[A-Za-z. ]+$/;
+            
+            if (input.value.length === 0) {
+                errorElement.textContent = '';
+            } else if (!namePattern.test(input.value)) {
+                errorElement.textContent = 'Name can only contain letters, spaces, and dots (.)';
+            } else {
+                errorElement.textContent = '';
+            }
+        }
     </script>
 </body>
 </html>

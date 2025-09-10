@@ -1,26 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"> 
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
-                {{ __('Events') }}
-            </h2>
-
-            <!-- Create Button -->
-            @can('create events')
-            <a href="{{ route('events.create') }}" 
-               class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                    w-full md:w-auto mt-4 md:mt-0">
-
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Create
-            </a>
-            @endcan
-        </div>
+        <x-page-header title="{{ __('Events') }}">
+            <x-slot name="createButton">
+                <x-create-button 
+                    :route="route('events.create')" 
+                    permission="create events" />
+            </x-slot>
+        </x-page-header>
     </x-slot>
 
     <div class="py-12">
@@ -109,17 +95,34 @@
 
                         <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> events
+                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> markees
                             </div>
-                            <input type="text" id="searchInput" placeholder="Search events..." 
-                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
+                            <div class="relative w-48">
+                                <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+                                </svg>
+
+                                <input type="text" id="searchInput" 
+                                    placeholder="Search Title" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
+                                    dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Mobile View - Vertical layout -->
+    
                     <div class="sm:hidden space-y-3 mb-4">
-                        <input type="text" id="mobileSearchInput" placeholder="Search events..." 
-                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
+                        <div class="relative w-full">
+                            <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+                            </svg>
+
+                            <input type="text" id="mobileSearchInput" placeholder="Search Title" 
+                                class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
+                                dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
+                        </div>
 
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
@@ -202,20 +205,20 @@
                     </div>
 
                     <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div class="min-w-[1000px]">
+                        <div class="min-w-[2000px]">
                             <table id="eventsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
-                                <thead class="bg-[#101966] dark:bg-gray-800 text-gray-200 dark:text-gray-200">
+                                <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
                                         <th class="px-6 py-3 text-center font-medium">#</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-title">Title</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-start_date">Start Date</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-end_date">End Date</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-location">Location</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-is_published">Status</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-author">Author</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-registrations">Registrations</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white column-created">Created</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l border-white">Action</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-title">Title</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-start_date">Start Date</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-end_date">End Date</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-location">Location</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-is_published">Status</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-author">Author</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-registrations">Registrations</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-created">Created</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>

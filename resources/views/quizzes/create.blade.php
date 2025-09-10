@@ -7,8 +7,8 @@
             <a href="{{ route('quizzes.index') }}" 
                 class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                     bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                    focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                    dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200">
+                    focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                    dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200">
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -50,7 +50,10 @@
                                 <h3 class="text-lg font-medium mb-4">Questions</h3>
                                 <div id="questions-container"></div>
                                 <button type="button" id="add-question" 
-                                    class="mt-4 flex items-center px-4 py-2 text-sm text-green-600 hover:text-white hover:bg-green-600 rounded-md transition-colors duration-200 border border-green-100 hover:border-green-600 font-medium">
+                                    class="mt-4 flex items-center px-4 py-2 text-sm text-green-600 
+                                    hover:text-white hover:bg-green-600 rounded-md transition-colors 
+                                    duration-200 border border-green-100 hover:border-green-600 font-medium
+                                    dark:bg-gray-900 dark:text-white dark:border-gray-100 dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -109,8 +112,8 @@
                                 <button type="submit" 
                                     class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                         bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200">
+                                        focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>

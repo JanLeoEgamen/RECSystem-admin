@@ -454,42 +454,46 @@
 
 
         <!-- Button - Hidden on mobile -->
-        <button class="header-button animated-button hidden sm:flex">
+        <a href="https://centralized-website.rec.org.ph/rec-home-page" 
+           target="_blank" 
+           class="header-button animated-button hidden sm:flex">
             <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
                 ></path>
             </svg>
-            <span class="text">Visit RECInc. Website</span>
+            <span class="text">Visit Our Website</span>
             <span class="circle"></span>
             <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
                 ></path>
             </svg>
-        </button>
+        </a>
     </header>
 
     <main class="flex-1 py-5 px-4 sm:px-8 flex flex-col items-center">
         <!-- Mobile Visit Button - Visible only on mobile -->
-        <button class="mobile-visit-button animated-button">
+        <a href="https://centralized-website.rec.org.ph/rec-home-page" 
+           target="_blank" 
+           class="mobile-visit-button animated-button">
             <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
                 ></path>
             </svg>
-            <span class="text">Visit RECInc. Website</span>
+            <span class="text">Visit Our Website</span>
             <span class="circle"></span>
             <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
                 ></path>
             </svg>
-        </button>
+        </a>
 
         <!-- Welcome Section -->
         <section class="container mx-auto max-w-7xl text-center mt-8 sm:mt-16 mb-8">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Welcome to REC Inc. Portal</h1>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Welcome to Radio Engineering Circle Inc. Portal</h1>
             <p class="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto">
                 Connecting radio enthusiasts, engineers, and hobbyists. Join our community to explore the fascinating world of radio engineering!
             </p>

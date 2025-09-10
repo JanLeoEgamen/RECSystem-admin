@@ -144,7 +144,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-6 transition-all duration-300 hover:shadow-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4 text-center">Report Actions</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
                         <!-- Membership Report Button -->
                         @can('view membership reports')
                         <a href="{{ route('reports.membership') }}" 

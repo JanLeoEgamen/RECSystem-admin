@@ -1,4 +1,4 @@
-<footer class="footer-shadow bg-[#101966] dark:bg-gray-800 text-white py-4">
+<footer class="footer-shadow bg-[#101966] dark:bg-gray-900 text-white py-4">
     <div class="container mx-auto px-6 w-full">
         <!-- Desktop Layout -->
         <div class="hidden md:flex justify-center items-center space-x-6">
@@ -11,7 +11,7 @@
             </div>
 
             <!-- Copyright -->
-            <div class="text-gray-400 dark:text-gray-500 text-xs text-center px-8">
+            <div class="text-gray-400 dark:text-gray-400 text-xs text-center px-8">
                 &copy; {{ date('Y') }} Radio Engineering Circle Inc. All rights reserved.
             </div>
 

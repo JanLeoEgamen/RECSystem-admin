@@ -17,13 +17,15 @@
 
     <style>
         .scrollbar-left {
-            scrollbar-width: thin;             
-            scrollbar-color: #5E6FFB #101966;  
-            direction: rtl;                    
+            scrollbar-width: thin;
+            scrollbar-color: #5E6FFB #101966; 
+            direction: rtl;
         }
+
         .scrollbar-left > * {
-            direction: ltr;                    
+            direction: ltr;
         }
+
         .scrollbar-left::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -36,6 +38,20 @@
             background-color: #5E6FFB;
             border-radius: 8px;
         }
+
+        /* Dark Mode Support for scrollbars*/
+        @media (prefers-color-scheme: dark) {
+            .scrollbar-left {
+                scrollbar-color: #374151 #1F2937; 
+            }
+            .scrollbar-left::-webkit-scrollbar-track {
+                background: #1F2937;
+            }
+            .scrollbar-left::-webkit-scrollbar-thumb {
+                background-color: #374151; 
+            }
+        }
+
 
         .header-container {
             transition: all 0.3s ease;
@@ -50,16 +66,6 @@
             padding: 1.5rem 1rem;
             max-width: 85%;
             border-radius: 0.5rem;
-        }
-
-        .table-row-hover:hover {
-            background-color: #3142CE !important;
-            color: white !important;
-        }
-
-        .table-row-hover:hover a,
-        .table-row-hover:hover button {
-            color: white !important;
         }
 
         .assignments-cell {
@@ -156,7 +162,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-gray-200"
+<body class="font-sans antialiased bg-gray-300 dark:bg-gray-900"
       x-data="{
         sidebarOpen: window.innerWidth >= 768 && !@json(auth()->check() && (auth()->user()->hasRole('Member') || auth()->user()->hasRole('Applicant'))),  
         rightSidebarOpen: false,
@@ -249,8 +255,8 @@
                                 <!-- Gradient Header Box -->
                                 <div 
                                     class="header-content mx-auto header-content-transition p-4 sm:p-6 rounded-lg shadow-lg
-                                        bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB]
-                                        dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-700"
+                                    bg-gradient-to-r from-[#101966] via-[#3F53E8] to-[#5E6FFB] 
+                                    dark:bg-none dark:bg-gray-700"
                                     :class="getHeaderContentWidth()" >
                                     {{ $header }}
                                 </div>
@@ -258,7 +264,7 @@
                         @endisset
                     </div>
 
-                <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-200"> 
+                <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-300 dark:bg-gray-900"> 
                     {{ $slot }}
                 </main>             
             </div>
@@ -278,5 +284,18 @@
         {{ $script }}
     @endisset
 
+    <!-- TRIGGER ANIMATION FOR THE LEFT SIDE BAR -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('from_menu')) {
+            setTimeout(() => {
+                const url = new URL(window.location);
+                url.searchParams.delete('from_menu');
+                window.history.replaceState({}, '', url);
+            }, 1000); 
+        }
+    });
+    </script>
 </body>
 </html>

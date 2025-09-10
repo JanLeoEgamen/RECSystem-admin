@@ -75,25 +75,29 @@
 
     <!-- Welcome Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in-down" style="animation-delay: 0.1s;">
-        <div class="bg-gray-200 dark:bg-gray-800 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-400 dark:border-gray-700">
+        <div class="bg-gray-300 dark:bg-gray-900 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-400 dark:border-gray-700">
+            
+            <!-- Left Section -->
             <div class="mb-4 sm:mb-0 sm:mr-6 flex-1">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                     Hello, {{ $fullName }}, Welcome Back!
                 </h1>
-                <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
+                <p class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                     You're Logged In - The system is up-to-date
                 </p>
             </div>
 
+            <!-- Right Section -->
             <div class="text-left sm:text-right w-full sm:w-auto">
-                <p class="text-lg">
+                <p class="text-lg text-gray-800 dark:text-gray-200">
                     <span id="dashboardDay" class="font-semibold"></span>
                     <span id="dashboardDate"></span>
                 </p>
-                <p id="dashboardTime" class="text-xl font-bold mt-1"></p>
+                <p id="dashboardTime" class="text-xl font-bold mt-1 text-gray-900 dark:text-white"></p>
             </div>
         </div>
     </div>
+
 
     <script>
         function updateDashboardTime() {
@@ -237,14 +241,14 @@
             <!-- Row 2: Applicant Report and Membership Growth Analysis -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Applicant Report -->
-                <div class="card lg:col-span-1 h-full flex flex-col">
+                <div class="card dark:bg-gray-800 lg:col-span-1 h-full flex flex-col">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Recent Applicants</h3>
                     </div>
 
                     <div class="overflow-x-auto flex-1">
                         <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-                            <thead class="bg-[#101966]">
+                            <thead class="bg-[#101966] dark:bg-gray-600">
                                 <tr>
                                     <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border-r border-gray-300 dark:border-gray-600">
                                         Name
@@ -254,13 +258,13 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-700">
-                                @forelse($recentApplicants as $applicant)
-                                    <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-800">
+                                @forelse($recentApplicants->take(6) as $applicant)
+                                    <tr class="group hover:bg-[#5e6ffb] dark:hover:bg-gray-900 transition-colors duration-200">
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-800">
                                             {{ $applicant->first_name }} {{ $applicant->last_name }}
                                         </td>
-                                       <td class="px-4 py-3 whitespace-nowrap text-sm text-center border-r border-gray-300 dark:border-gray-600">
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-center border-r border-gray-300 dark:border-gray-600">
                                             @if($applicant->status === 'Pending')
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
                                                     Pending
@@ -291,11 +295,21 @@
                             </tbody>
                         </table>
                     </div>
+                    
+                    <!-- View All Applicants Link -->
+                    <div class="mt-4 text-center">
+                        <a href="{{ route('applicants.index') }}" class="inline-flex items-center text-sm font-medium text-[#5e6ffb] hover:text-[#101966] dark:text-blue-400 dark:hover:text-blue-300">
+                            View All Applicants
+                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
 
 
                 <!-- Membership Growth Analysis -->
-                <div class="card lg:col-span-2 h-full flex flex-col">
+                <div class="card dark:bg-gray-800 lg:col-span-2 h-full flex flex-col">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center mb-2">
                         Radio Engineering Circle Inc. Membership Growth Analysis
                     </h3>
@@ -321,7 +335,7 @@
             <!-- Row 3: Bar Chart and Line Chart -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Membership Type Distribution -->
-                <div class="card">
+                <div class="card dark:bg-gray-800">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center mb-2">
                         Membership Type Distribution
                     </h3>
@@ -340,7 +354,7 @@
                 </div>
 
                 <!-- Member Distribution by Section -->
-                <div class="card">
+                <div class="card dark:bg-gray-800">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center mb-2">
                         Member Distribution by Section
                     </h3>
@@ -363,13 +377,13 @@
             <!-- Row 4: Recent Members and Memberships Expiring Soon -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Recent Members -->
-                <div class="card lg:col-span-1 h-full flex flex-col">
+                <div class="card dark:bg-gray-800 lg:col-span-1 h-full flex flex-col">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
                         Recent Members
                     </h3>
                     <div class="overflow-x-auto flex-1">
-                        <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-                            <thead class="bg-[#101966]">
+                        <table class="min-w-full border border-gray-300 dark:border-gray-800 rounded-lg overflow-hidden">
+                            <thead class="bg-[#101966]  dark:bg-gray-600">
                                 <tr>
                                     <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border-r border-gray-300 dark:border-gray-600">
                                         Name
@@ -379,10 +393,10 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-700">
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-300 dark:divide-gray-800">
                                 @foreach($recentMembers as $member)
-                                    <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
+                                    <tr class="group hover:bg-[#5e6ffb] dark:hover:bg-gray-900 transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border-r border-gray-300 dark:border-gray-800">
                                             {{ $member->first_name }} {{ $member->last_name }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border-r border-gray-300 dark:border-gray-600">
@@ -402,8 +416,8 @@
                                 Memberships Expiring Soon
                             </h3>
                             <div class="overflow-x-auto flex-1">
-                                <table class="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-                                    <thead class="bg-[#101966]">
+                                <table class="min-w-full border border-gray-300 dark:border-gray-800 rounded-lg overflow-hidden">
+                                    <thead class="bg-[#101966] dark:bg-gray-600">
                                         <tr>
                                             <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg border border-gray-300 dark:border-gray-600">
                                                 Name
@@ -418,8 +432,8 @@
                                     </thead>
                                     <tbody class="bg-white dark:bg-gray-800">
                                         @forelse($expiringSoonMembers as $member)
-                                            <tr class="group hover:bg-[#5e6ffb] transition-colors duration-200">
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
+                                            <tr class="group hover:bg-[#5e6ffb] dark:hover:bg-gray-900  transition-colors duration-200">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center group-hover:text-white border border-gray-300 dark:border-gray-800">
                                                     {{ $member->first_name }} {{ $member->last_name }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center group-hover:text-white border border-gray-300 dark:border-gray-600">
@@ -456,115 +470,190 @@
         const monthlyActiveData = @json(array_values($monthlyActiveData));
         const monthlyInactiveData = @json(array_values($monthlyInactiveData));
         const monthlyExpiringData = @json(array_values($monthlyExpiringData));
+
+        function isDarkMode() {
+        return document.documentElement.classList.contains('dark') || 
+                document.body.classList.contains('dark') ||
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+
+        function getTextColor() {
+        return isDarkMode() ? '#FFFFFF' : '#000000';
+        }
+
+        function getGridColor() {
+        return isDarkMode() ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        }
+
+        function getTooltipBg() {
+        return isDarkMode() ? '#1F2937' : '#FFFFFF';
+        }
+
         const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
         const monthlyChart = new Chart(monthlyCtx, {
-            type: 'line',
-            data: {
-                labels: monthlyLabels,
-                datasets: [
-                    {
-                        label: 'Total Members',
-                        data: monthlyData,
-                        borderColor: '#5E6FFB',
-                        backgroundColor: 'rgba(94, 111, 251, 0.2)',
-                        yAxisID: 'y',
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Active Members',
-                        data: monthlyActiveData,
-                        borderColor: '#22C55E',
-                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                        yAxisID: 'y1',
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Inactive Members',
-                        data: monthlyInactiveData,
-                        borderColor: '#EF4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                        yAxisID: 'y1',
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Expiring Soon',
-                        data: monthlyExpiringData,
-                        borderColor: '#F59E0B',
-                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                        borderDash: [5, 5],
-                        yAxisID: 'y1',
-                        tension: 0.3,
-                        fill: false
-                    }
-                ]
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [
+                {
+                    label: 'Total Members',
+                    data: monthlyData,
+                    borderColor: '#5E6FFB',
+                    backgroundColor: 'rgba(94, 111, 251, 0.2)',
+                    yAxisID: 'y',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Active Members',
+                    data: monthlyActiveData,
+                    borderColor: '#22C55E',
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    yAxisID: 'y1',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Inactive Members',
+                    data: monthlyInactiveData,
+                    borderColor: '#EF4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    yAxisID: 'y1',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Expiring Soon',
+                    data: monthlyExpiringData,
+                    borderColor: '#F59E0B',
+                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                    borderDash: [5, 5],
+                    yAxisID: 'y1',
+                    tension: 0.3,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Membership Analysis',
+                    font: { size: 16 },
+                    color: getTextColor()
                 },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Monthly Membership Analysis',
-                        font: { size: 16 }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-                                label += context.parsed.y;
-                                return label;
-                            }
-                        }
-                    },
-                    legend: { 
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20
+                tooltip: {
+                    backgroundColor: getTooltipBg(),
+                    titleColor: getTextColor(),
+                    bodyColor: getTextColor(),
+                    borderColor: getTextColor(),
+                    borderWidth: isDarkMode() ? 0 : 1,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += context.parsed.y;
+                            return label;
                         }
                     }
                 },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Total Members' },
-                        ticks: {
-                            precision: 0,
-                            callback: function(value) {
-                                if (Number.isInteger(value)) return value;
-                            },
-                            stepSize: 1
-                        },
-                        min: 0
+                legend: { 
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        color: getTextColor()
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { 
+                        display: true, 
+                        text: 'Total Members',
+                        color: getTextColor()
                     },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        grid: { drawOnChartArea: false },
-                        title: { display: true, text: 'Active/Inactive/Expiring Members' },
-                        ticks: {
-                            precision: 0,
-                            callback: function(value) {
-                                if (Number.isInteger(value)) return value;
-                            },
-                            stepSize: 1
+                    ticks: {
+                        color: getTextColor(),
+                        precision: 0,
+                        callback: function(value) {
+                            if (Number.isInteger(value)) return value;
                         },
-                        min: 0
+                        stepSize: 1
+                    },
+                    grid: {
+                        color: getGridColor()
+                    },
+                    min: 0
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: { 
+                        drawOnChartArea: false,
+                        color: getGridColor()
+                    },
+                    title: { 
+                        display: true, 
+                        text: 'Active/Inactive/Expiring Members',
+                        color: getTextColor()
+                    },
+                    ticks: {
+                        color: getTextColor(),
+                        precision: 0,
+                        callback: function(value) {
+                            if (Number.isInteger(value)) return value;
+                        },
+                        stepSize: 1
+                    },
+                    min: 0
+                },
+                x: {
+                    ticks: {
+                        color: getTextColor()
+                    },
+                    grid: {
+                        color: getGridColor()
                     }
                 }
             }
+        }
         });
+
+        function updateChartColors() {
+        const textColor = getTextColor();
+        const gridColor = getGridColor();
+        const tooltipBg = getTooltipBg();
+
+        monthlyChart.options.plugins.title.color = textColor;
+        monthlyChart.options.plugins.tooltip.backgroundColor = tooltipBg;
+        monthlyChart.options.plugins.tooltip.titleColor = textColor;
+        monthlyChart.options.plugins.tooltip.bodyColor = textColor;
+        monthlyChart.options.plugins.tooltip.borderColor = textColor;
+        monthlyChart.options.plugins.tooltip.borderWidth = isDarkMode() ? 0 : 1;
+        monthlyChart.options.plugins.legend.labels.color = textColor;
+
+        monthlyChart.options.scales.y.title.color = textColor;
+        monthlyChart.options.scales.y.ticks.color = textColor;
+        monthlyChart.options.scales.y.grid.color = gridColor;
+        monthlyChart.options.scales.y1.title.color = textColor;
+        monthlyChart.options.scales.y1.ticks.color = textColor;
+        monthlyChart.options.scales.y1.grid.color = gridColor;
+        monthlyChart.options.scales.x.ticks.color = textColor;
+        monthlyChart.options.scales.x.grid.color = gridColor;
+
+        monthlyChart.update();
+        }
 
         // Monthly Chart Export
         exportBtn.addEventListener('click', function() {

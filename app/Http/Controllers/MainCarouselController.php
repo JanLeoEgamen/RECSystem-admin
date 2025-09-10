@@ -104,7 +104,7 @@ class MainCarouselController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'title' => 'required|min:3',
             'content' => 'required|min:10',
             'status' => 'sometimes|boolean',

@@ -16,13 +16,6 @@
                 Return to Home
             </a>
 
-            <!-- Edit Payment Button -->
-            <a href="{{ url('/application') }}?edit=1"
-                class="inline-flex items-center px-6 py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                Edit Application Details
-            </a>
-
-
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                 @csrf
             </form>
@@ -31,13 +24,10 @@
 
     <script>
         function returnToPayment() {
-            // Hide thank you message
             document.getElementById('thankYouMessage').classList.add('hidden');
 
-            // Show the existing payment overlay
             document.getElementById('paymentOverlay').classList.remove('hidden');
 
-            // Optional: Scroll to the top of the overlay
             document.getElementById('paymentOverlay').scrollIntoView({ behavior: 'smooth' });
         }
     </script>

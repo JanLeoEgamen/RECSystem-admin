@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
                 'string',
                 'min:2',
                 'max:50',
-                'regex:/^[\pL\s\-]+$/u', 
+                'regex:/^[\pL\s\-.]+$/u', 
                 function ($attribute, $value, $fail) use ($request) {
                     $exists = User::where('first_name', $value)
                                 ->where('last_name', $request->last_name)
@@ -50,13 +50,13 @@ class RegisteredUserController extends Controller
                 'string',
                 'min:2',
                 'max:50',
-                'regex:/^[\pL\s\-]+$/u'
+                'regex:/^[\pL\s\-.]+$/u'
             ],
             'birthdate' => [
                 'required',
                 'date',
-                'before_or_equal:' . now()->subYears(18)->format('Y-m-d'), // Must be 18+ years old
-                'after_or_equal:' . now()->subYears(100)->format('Y-m-d') // Reasonable minimum age
+                'before_or_equal:' . now()->subYears(18)->format('Y-m-d'), 
+                'after_or_equal:' . now()->subYears(100)->format('Y-m-d') 
             ],
             'email' => [
                 'required',
@@ -76,10 +76,10 @@ class RegisteredUserController extends Controller
                 'required',
                 'confirmed',
                 Rules\Password::defaults()
-                    ->mixedCase() // Requires at least one uppercase and one lowercase letter
-                    ->numbers()   // Requires at least one number
-                    ->symbols()   // Requires at least one special character
-                    ->min(8)      // Minimum 8 characters
+                    ->mixedCase() 
+                    ->numbers()   
+                    ->symbols()   
+                    ->min(8)      
             ],
         ], [
             'first_name.regex' => 'First name may only contain letters, spaces and hyphens',

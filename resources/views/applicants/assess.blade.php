@@ -8,8 +8,8 @@
             <a href="{{ route('applicants.index') }}" 
                 class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                         bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                        focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
                         w-full sm:w-auto mt-4 sm:mt-0">
 
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -351,8 +351,8 @@
                             <button type="button" id="approveButton"
                                 class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                   bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                  focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
-                                  dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-xl leading-normal transition-colors duration-200"
+                                  focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                                  dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200"
                                 @if($applicant->payment_status !== 'verified') disabled @endif>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -364,8 +364,8 @@
                             <button type="button" id="rejectButton" 
                                 class="inline-flex items-center px-5 py-2 text-white hover:text-red-600 hover:border-red-600 
                                   bg-red-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                  focus:ring-red-600 border border-white font-medium dark:border-[#3E3E3A] 
-                                  dark:hover:bg-black dark:hover:border-red-600 rounded-lg text-xl leading-normal transition-colors duration-200">
+                                  focus:ring-red-600 border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                                  dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.body.appendChild(form);
                     
                     Swal.fire({
-                        title: 'Rejecting...',
+                        title: 'Please wait...',
                         text: 'Processing rejection',
                         timer: 1500,
                         timerProgressBar: true,

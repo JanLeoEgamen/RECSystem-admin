@@ -51,6 +51,39 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+
+// GLOBAL SEARCH
+Route::get('/global-search', function (\Illuminate\Http\Request $request) {
+    $q = strtolower($request->get('q', ''));
+    $results = [];
+
+    foreach (Route::getRoutes() as $route) {
+        $name = $route->getName();
+
+        if (!$name) continue;
+
+        if (Str::contains(strtolower($name), $q)) {
+            try {
+                
+                $params = [];
+                if (Str::contains($name, '.edit')) {
+                    $params = [1]; 
+                }
+                $url = route($name, $params);
+
+                $results[] = [
+                    'label' => Str::headline($name),
+                    'route' => $name,
+                    'url'   => $url,
+                ];
+            } catch (\Exception $e) {
+            }
+        }
+    }
+
+    return response()->json($results);
+})->name('global.search')->middleware('can:view admin dashboard');
 
 Route::get('/', function () {
     return view('welcome');
@@ -393,6 +426,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('backups/{id}/download', [BackupController::class, 'download'])->name('backups.download');
     Route::get('backups/{id}/restore', [BackupController::class, 'restore'])->name('backups.restore');
 
+    //manual
+    Route::get('/manual/list', [ManualController::class, 'index'])->name('manual.index');
+    Route::get('/manual/{manual}/assess', [ManualController::class, 'edit'])->name('manual.edit');
+    Route::put('/manual/{manual}', [ManualController::class, 'update'])->name('manual.update');
+    Route::get('/manual/history', [ManualController::class, 'history'])->name('manual.history');
 
 });
 
