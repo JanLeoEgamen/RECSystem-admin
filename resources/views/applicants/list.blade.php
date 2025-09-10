@@ -112,7 +112,7 @@
 
                         <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> markees
+                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
                             </div>
                             <div class="relative w-48">
                                 <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
