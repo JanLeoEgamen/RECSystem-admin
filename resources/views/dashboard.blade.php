@@ -472,187 +472,187 @@
         const monthlyExpiringData = @json(array_values($monthlyExpiringData));
 
         function isDarkMode() {
-        return document.documentElement.classList.contains('dark') || 
-                document.body.classList.contains('dark') ||
-                window.matchMedia('(prefers-color-scheme: dark)').matches;
+            return document.documentElement.classList.contains('dark') || 
+                   document.body.classList.contains('dark') ||
+                   window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
 
         function getTextColor() {
-        return isDarkMode() ? '#FFFFFF' : '#000000';
+            return isDarkMode() ? '#FFFFFF' : '#000000';
         }
 
         function getGridColor() {
-        return isDarkMode() ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            return isDarkMode() ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
         }
 
         function getTooltipBg() {
-        return isDarkMode() ? '#1F2937' : '#FFFFFF';
+            return isDarkMode() ? '#1F2937' : '#FFFFFF';
         }
 
         const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
         const monthlyChart = new Chart(monthlyCtx, {
-        type: 'line',
-        data: {
-            labels: monthlyLabels,
-            datasets: [
-                {
-                    label: 'Total Members',
-                    data: monthlyData,
-                    borderColor: '#5E6FFB',
-                    backgroundColor: 'rgba(94, 111, 251, 0.2)',
-                    yAxisID: 'y',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Active Members',
-                    data: monthlyActiveData,
-                    borderColor: '#22C55E',
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    yAxisID: 'y1',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Inactive Members',
-                    data: monthlyInactiveData,
-                    borderColor: '#EF4444',
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    yAxisID: 'y1',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Expiring Soon',
-                    data: monthlyExpiringData,
-                    borderColor: '#F59E0B',
-                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                    borderDash: [5, 5],
-                    yAxisID: 'y1',
-                    tension: 0.3,
-                    fill: false
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
+            type: 'line',
+            data: {
+                labels: monthlyLabels,
+                datasets: [
+                    {
+                        label: 'Total Members',
+                        data: monthlyData,
+                        borderColor: '#5E6FFB',
+                        backgroundColor: 'rgba(94, 111, 251, 0.2)',
+                        yAxisID: 'y',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Active Members',
+                        data: monthlyActiveData,
+                        borderColor: '#22C55E',
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        yAxisID: 'y1',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Inactive Members',
+                        data: monthlyInactiveData,
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        yAxisID: 'y1',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Expiring Soon',
+                        data: monthlyExpiringData,
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderDash: [5, 5],
+                        yAxisID: 'y1',
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
             },
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Monthly Membership Analysis',
-                    font: { size: 16 },
-                    color: getTextColor()
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
                 },
-                tooltip: {
-                    backgroundColor: getTooltipBg(),
-                    titleColor: getTextColor(),
-                    bodyColor: getTextColor(),
-                    borderColor: getTextColor(),
-                    borderWidth: isDarkMode() ? 0 : 1,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            label += context.parsed.y;
-                            return label;
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Monthly Membership Analysis',
+                        font: { size: 16 },
+                        color: getTextColor()
+                    },
+                    tooltip: {
+                        backgroundColor: getTooltipBg(),
+                        titleColor: getTextColor(),
+                        bodyColor: getTextColor(),
+                        borderColor: getTextColor(),
+                        borderWidth: isDarkMode() ? 0 : 1,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                label += context.parsed.y;
+                                return label;
+                            }
+                        }
+                    },
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            color: getTextColor()
                         }
                     }
                 },
-                legend: { 
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        color: getTextColor()
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: { 
-                        display: true, 
-                        text: 'Total Members',
-                        color: getTextColor()
-                    },
-                    ticks: {
-                        color: getTextColor(),
-                        precision: 0,
-                        callback: function(value) {
-                            if (Number.isInteger(value)) return value;
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { 
+                            display: true, 
+                            text: 'Total Members',
+                            color: getTextColor()
                         },
-                        stepSize: 1
-                    },
-                    grid: {
-                        color: getGridColor()
-                    },
-                    min: 0
-                },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    grid: { 
-                        drawOnChartArea: false,
-                        color: getGridColor()
-                    },
-                    title: { 
-                        display: true, 
-                        text: 'Active/Inactive/Expiring Members',
-                        color: getTextColor()
-                    },
-                    ticks: {
-                        color: getTextColor(),
-                        precision: 0,
-                        callback: function(value) {
-                            if (Number.isInteger(value)) return value;
+                        ticks: {
+                            color: getTextColor(),
+                            precision: 0,
+                            callback: function(value) {
+                                if (Number.isInteger(value)) return value;
+                            },
+                            stepSize: 1
                         },
-                        stepSize: 1
+                        grid: {
+                            color: getGridColor()
+                        },
+                        min: 0
                     },
-                    min: 0
-                },
-                x: {
-                    ticks: {
-                        color: getTextColor()
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { 
+                            drawOnChartArea: false,
+                            color: getGridColor()
+                        },
+                        title: { 
+                            display: true, 
+                            text: 'Active/Inactive/Expiring Members',
+                            color: getTextColor()
+                        },
+                        ticks: {
+                            color: getTextColor(),
+                            precision: 0,
+                            callback: function(value) {
+                                if (Number.isInteger(value)) return value;
+                            },
+                            stepSize: 1
+                        },
+                        min: 0
                     },
-                    grid: {
-                        color: getGridColor()
+                    x: {
+                        ticks: {
+                            color: getTextColor()
+                        },
+                        grid: {
+                            color: getGridColor()
+                        }
                     }
                 }
             }
-        }
         });
 
         function updateChartColors() {
-        const textColor = getTextColor();
-        const gridColor = getGridColor();
-        const tooltipBg = getTooltipBg();
+            const textColor = getTextColor();
+            const gridColor = getGridColor();
+            const tooltipBg = getTooltipBg();
 
-        monthlyChart.options.plugins.title.color = textColor;
-        monthlyChart.options.plugins.tooltip.backgroundColor = tooltipBg;
-        monthlyChart.options.plugins.tooltip.titleColor = textColor;
-        monthlyChart.options.plugins.tooltip.bodyColor = textColor;
-        monthlyChart.options.plugins.tooltip.borderColor = textColor;
-        monthlyChart.options.plugins.tooltip.borderWidth = isDarkMode() ? 0 : 1;
-        monthlyChart.options.plugins.legend.labels.color = textColor;
+            monthlyChart.options.plugins.title.color = textColor;
+            monthlyChart.options.plugins.tooltip.backgroundColor = tooltipBg;
+            monthlyChart.options.plugins.tooltip.titleColor = textColor;
+            monthlyChart.options.plugins.tooltip.bodyColor = textColor;
+            monthlyChart.options.plugins.tooltip.borderColor = textColor;
+            monthlyChart.options.plugins.tooltip.borderWidth = isDarkMode() ? 0 : 1;
+            monthlyChart.options.plugins.legend.labels.color = textColor;
 
-        monthlyChart.options.scales.y.title.color = textColor;
-        monthlyChart.options.scales.y.ticks.color = textColor;
-        monthlyChart.options.scales.y.grid.color = gridColor;
-        monthlyChart.options.scales.y1.title.color = textColor;
-        monthlyChart.options.scales.y1.ticks.color = textColor;
-        monthlyChart.options.scales.y1.grid.color = gridColor;
-        monthlyChart.options.scales.x.ticks.color = textColor;
-        monthlyChart.options.scales.x.grid.color = gridColor;
+            monthlyChart.options.scales.y.title.color = textColor;
+            monthlyChart.options.scales.y.ticks.color = textColor;
+            monthlyChart.options.scales.y.grid.color = gridColor;
+            monthlyChart.options.scales.y1.title.color = textColor;
+            monthlyChart.options.scales.y1.ticks.color = textColor;
+            monthlyChart.options.scales.y1.grid.color = gridColor;
+            monthlyChart.options.scales.x.ticks.color = textColor;
+            monthlyChart.options.scales.x.grid.color = gridColor;
 
-        monthlyChart.update();
+            monthlyChart.update();
         }
 
         // Monthly Chart Export
@@ -768,6 +768,12 @@
                 plugins: {
                     legend: {
                         position: 'right',
+                        labels: {
+                            color: function(context) {
+                                const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                                return isDarkMode ? 'white' : Chart.defaults.plugins.legend.labels.color;
+                            }
+                        }
                     },
                     tooltip: {
                         callbacks: {
@@ -778,6 +784,14 @@
                                 const percentage = Math.round((value / total) * 100);
                                 return `${label}: ${value} (${percentage}%)`;
                             }
+                        },
+                        titleColor: function(context) {
+                            const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                            return isDarkMode ? 'white' : Chart.defaults.plugins.tooltip.titleColor;
+                        },
+                        bodyColor: function(context) {
+                            const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                            return isDarkMode ? 'white' : Chart.defaults.plugins.tooltip.bodyColor;
                         }
                     }
                 },
@@ -788,18 +802,45 @@
                             centerPointLabels: true,
                             font: {
                                 size: 12
+                            },
+                            color: function(context) {
+                                const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                                return isDarkMode ? 'white' : Chart.defaults.scales.radialLinear.pointLabels.color;
                             }
                         },
                         ticks: {
                             display: false,
-                            stepSize: 1
+                            stepSize: 1,
+                            backdropColor: function(context) {
+                                const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                                return isDarkMode ? 'rgba(0, 0, 0, 0)' : Chart.defaults.scales.radialLinear.ticks.backdropColor;
+                            }
+                        },
+                        angleLines: {
+                            color: function(context) {
+                                const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                                return isDarkMode ? 'rgba(255, 255, 255, 0.2)' : Chart.defaults.scales.radialLinear.angleLines.color;
+                            }
+                        },
+                        grid: {
+                            color: function(context) {
+                                const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                                return isDarkMode ? 'rgba(255, 255, 255, 0.2)' : Chart.defaults.scales.radialLinear.grid.color;
+                            }
                         }
                     }
                 }
             }
         });
 
-        // Section Doughnut Chart
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addEventListener('change', () => {
+                membershipTypeChart.update();
+            });
+        }
+
+        // Section Doughnut Chart 
         const sectionCtx = document.getElementById('sectionChart').getContext('2d');
         const sectionData = {
             labels: @json(array_keys($sectionCounts)),
@@ -844,6 +885,9 @@
                 plugins: {
                     legend: {
                         position: 'right',
+                        labels: {
+                            color: getTextColor()
+                        }
                     },
                     tooltip: {
                         callbacks: {
@@ -854,7 +898,12 @@
                                 const percentage = Math.round((value / total) * 100);
                                 return `${label}: ${value} (${percentage}%)`;
                             }
-                        }
+                        },
+                        backgroundColor: getTooltipBg(), 
+                        titleColor: getTextColor(), 
+                        bodyColor: getTextColor(), 
+                        borderColor: getTextColor(), 
+                        borderWidth: isDarkMode() ? 0 : 1 
                     }
                 },
                 cutout: '60%',
@@ -863,6 +912,23 @@
                     animateRotate: true
                 }
             }
+        });
+
+        function updateAllChartColors() {
+            updateChartColors(); 
+            membershipTypeChart.update(); 
+            sectionChart.update(); 
+        }
+
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addEventListener('change', updateAllChartColors);
+        }
+
+        const observer = new MutationObserver(updateAllChartColors);
+        observer.observe(document.documentElement, { 
+            attributes: true, 
+            attributeFilter: ['class'] 
         });
     });
 </script>
