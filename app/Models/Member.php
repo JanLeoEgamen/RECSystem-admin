@@ -217,4 +217,9 @@ protected $dates = [
         // Members can only view their own logs
         return $user->id === $this->id;
     }
+
+    public function files()
+    {
+        return $this->hasMany(MemberFile::class);
+    }
 }

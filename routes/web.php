@@ -39,10 +39,13 @@ use App\Http\Controllers\LoginLogController;
 use App\Http\Controllers\MemberActivityLogController;
 use App\Http\Controllers\MemberCertificateController;
 use App\Http\Controllers\MemberDashboardController;
+use App\Http\Controllers\MemberFileController;
 use App\Http\Controllers\MemberQuizController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PublicQuizController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RenewalController;
+use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\SurveyController;
 use App\Models\User;
@@ -153,7 +156,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/documents', [MemberDashboardController::class, 'documents'])->name('member.documents');
         Route::get('/documents/{id}', [MemberDashboardController::class, 'viewDocument'])->name('member.view-document');
         Route::get('/documents/{id}/download', [MemberDashboardController::class, 'downloadDocument'])->name('member.download-document');
-        Route::get('/my-activity-logs', [MemberActivityLogController::class, 'myLogs'])->name('members.activity_logs');
+        Route::get('/my-activx`ity-logs', [MemberActivityLogController::class, 'myLogs'])->name('members.activity_logs');
+        Route::get('/my-files', [MemberDashboardController::class, 'myFiles'])->name('member.my-files');
+        Route::get('/view-file/{id}', [MemberDashboardController::class, 'viewFile'])->name('member.view-file');
+        Route::post('/upload-file/{id}', [MemberDashboardController::class, 'uploadFile'])->name('member.upload-file');
+        Route::get('/download-file/{id}/{uploadId}', [MemberDashboardController::class, 'downloadFile'])->name('member.download-file');
+
     });
 
     // Renewal routes (accessible even if membership is expired)
@@ -407,6 +415,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cashier/rejected', [CashierApplicantController::class, 'rejected'])->name('cashier.rejected');
     Route::post('/cashier/{id}/restore', [CashierApplicantController::class, 'restore'])->name('cashier.restore');
 
+
+    //payement method
+    Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment-methods.index');
+    Route::get('/payment-methods/create', [PaymentMethodController::class, 'create'])->name('payment-methods.create');
+    Route::post('/payment-methods', [PaymentMethodController::class, 'store'])->name('payment-methods.store');
+    Route::get('/payment-methods/{id}/edit', [PaymentMethodController::class, 'edit'])->name('payment-methods.edit');
+    Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update'])->name('payment-methods.update');
+    Route::delete('/payment-methods', [PaymentMethodController::class, 'destroy'])->name('payment-methods.destroy');
+    Route::get('/payment-methods/{id}/view', [PaymentMethodController::class, 'view'])->name('payment-methods.view');
+
     //renewal
     Route::get('/renew/list', [RenewalController::class, 'index'])->name('renew.index');
     Route::get('/renew/{renewal}/assess', [RenewalController::class, 'edit'])->name('renew.edit');
@@ -421,16 +439,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs.index');
     Route::get('/login-logs-table', [LoginLogController::class, 'indexTable'])->name('login-logs.indexTable');
     Route::get('/login-logs/export', [LoginLogController::class, 'export'])->name('login-logs.export');
-
+    
+    // Backup routes
     Route::resource('backups', BackupController::class)->except(['show', 'edit', 'update']);
-    Route::get('backups/{id}/download', [BackupController::class, 'download'])->name('backups.download');
-    Route::get('backups/{id}/restore', [BackupController::class, 'restore'])->name('backups.restore');
+    Route::get('backups/{backup}/download', [BackupController::class, 'download'])->name('backups.download');
+    Route::post('backups/cleanup', [BackupController::class, 'cleanup'])->name('backups.cleanup');
 
     //manual
     Route::get('/manual/list', [ManualController::class, 'index'])->name('manual.index');
     Route::get('/manual/{manual}/assess', [ManualController::class, 'edit'])->name('manual.edit');
     Route::put('/manual/{manual}', [ManualController::class, 'update'])->name('manual.update');
     Route::get('/manual/history', [ManualController::class, 'history'])->name('manual.history');
+    
+
+    // Member files
+    Route::get('/memberfiles', [MemberFileController::class, 'index'])->name('memberfiles.index');
+    Route::get('/memberfiles/create', [MemberFileController::class, 'create'])->name('memberfiles.create');
+    Route::post('/memberfiles', [MemberFileController::class, 'store'])->name('memberfiles.store');
+    Route::get('/memberfiles/{id}/edit', [MemberFileController::class, 'edit'])->name('memberfiles.edit');
+    Route::put('/memberfiles/{id}', [MemberFileController::class, 'update'])->name('memberfiles.update');
+    Route::delete('/memberfiles', [MemberFileController::class, 'destroy'])->name('memberfiles.destroy');
+    Route::get('/memberfiles/{id}/view', [MemberFileController::class, 'view'])->name('memberfiles.view');
+    Route::get('/memberfiles/{id}/download/{uploadId}', [MemberFileController::class, 'downloadUpload'])->name('memberfiles.download');
+
 
 });
 

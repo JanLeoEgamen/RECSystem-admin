@@ -278,6 +278,7 @@ class UserController extends Controller implements HasMiddleware
             $currentRole = $user->roles->first()->name ?? '';
             $newRole = $request->role;
             
+            // Superadmin role change validation
             if ($currentRole === 'superadmin' && $newRole !== 'superadmin') {
                 // Check if this is the last superadmin
                 $superadminCount = User::role('superadmin')->count();
