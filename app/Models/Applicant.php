@@ -33,6 +33,8 @@ class Applicant extends Model
         'reference_number',
         'payment_proof_path',
         'payment_status',
+        'gcash_name',
+        'gcash_number',
         'license_class',
         'license_number',
         'callsign',
@@ -45,8 +47,9 @@ class Applicant extends Model
         'house_building_number_name',
         'zip_code',
         'street_address',
-        'is_student'
-        
+        'is_student',
+        'created_at',
+        'updated_at'
     ];
 
     public function user()

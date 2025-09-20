@@ -174,6 +174,8 @@ class ApplicantController extends Controller implements HasMiddleware
             'municipality' => 'required',
             'barangay' => 'required',
             'zip_code' => 'required',
+            'gcash_name' => 'required|string|max:255',
+            'gcash_number' => 'required|string|regex:/^09[0-9]{9}$/',
         ]);
 
         if ($validator->fails()) {
@@ -222,6 +224,8 @@ class ApplicantController extends Controller implements HasMiddleware
             'municipality' => 'required',
             'barangay' => 'required',
             'zip_code' => 'required',
+            'gcash_name' => 'required|string|max:255',
+            'gcash_number' => 'required|string|regex:/^09[0-9]{9}$/',
         ]);
 
         if ($validator->fails()) {

@@ -40,13 +40,25 @@ class RedirectPendingApplicants
             'verification.notice',
             'verification.verify',
             'verification.send',
+            'applicant.dashboard', // Allow access to application form
+            'applicant.store', // Allow form submission
         ];
 
-        // ✅ Allow /application if editing (has ?edit=1)
-        $isEditingPayment = $request->routeIs('applicant.dashboard') && $request->query('edit') === '1';
+        // Allow access to application form for rejected/refunded payments
+        $isPaymentRejectedOrRefunded = $applicant && in_array($applicant->payment_status, ['rejected', 'refunded']);
+        
+        if ($isPaymentRejectedOrRefunded) {
+            if ($request->routeIs('applicant.dashboard') || $request->routeIs('applicant.store')) {
+                return $next($request);
+            }
+            // Redirect to form for rejected payments trying to access other pages
+            if (!in_array($request->route()->getName(), $exemptRoutes)) {
+                return redirect()->route('applicant.dashboard');
+            }
+        }
 
-        // Redirect if pending and not exempt and not editing
-        if ($applicant?->status === 'Pending' && !in_array($request->route()->getName(), $exemptRoutes) && !$isEditingPayment) {
+        // Redirect if pending and not exempt (only for non-rejected payments)
+        if ($applicant?->status === 'Pending' && !$isPaymentRejectedOrRefunded && !in_array($request->route()->getName(), $exemptRoutes)) {
             return redirect()->route('applicant.thankyou');
         }
 

@@ -25,11 +25,8 @@
     <script>
         function returnToPayment() {
             document.getElementById('thankYouMessage').classList.add('hidden');
-
             document.getElementById('paymentOverlay').classList.remove('hidden');
-
             document.getElementById('paymentOverlay').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
-
 </x-app-layout>

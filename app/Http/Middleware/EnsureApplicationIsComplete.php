@@ -24,6 +24,15 @@ class EnsureApplicationIsComplete
 
         $applicant = Applicant::where('user_id', $user->id)->first();
 
+        // Allow access to application form for rejected/refunded payments
+        if ($applicant && in_array($applicant->payment_status, ['rejected', 'refunded'])) {
+            if ($request->routeIs('applicant.dashboard') || $request->routeIs('applicant.store')) {
+                return $next($request);
+            }
+            // Redirect to form for rejected payments
+            return redirect()->route('applicant.dashboard');
+        }
+
         // No application exists - redirect to form
         if (!$applicant) {
             return redirect()->route('applicant.form');

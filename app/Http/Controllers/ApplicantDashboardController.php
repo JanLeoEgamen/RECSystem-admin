@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\ApplicationSubmittedSuccessfully;
 use App\Models\Applicant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -27,19 +28,49 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
 
     public function index() 
     {
-        $applicant = Applicant::where('user_id', auth()->id())->first();
+        $applicant = Applicant::where('user_id', Auth::user()->id)->first();
 
-        // Redirect if applicant is still pending
-        if ($applicant && $applicant->status === 'Pending') {
+        // Redirect to thank you page only if application is pending AND payment is verified
+        if ($applicant && $applicant->status === 'Pending' && $applicant->payment_status === 'verified') {
             return redirect()->route('applicant.thankyou');
         }
 
-        // Load regions only if the applicant is approved
+        // Load regions
         $regions = DB::table('ref_psgc_region')
-            ->select('psgc_reg_code', 'psgc_reg_desc')
+            ->select('PSGC_REG_CODE', 'PSGC_REG_DESC')
             ->get();
 
-        return view('applicant.applicant-dashboard', compact('regions'));
+        // For rejected/refunded payments, allow access to form with pre-populated data
+        if ($applicant && in_array($applicant->payment_status, ['rejected', 'refunded'])) {
+            // Load the specific province, municipality, and barangay data
+            $province = null;
+            $municipality = null;
+            $barangay = null;
+            
+            if ($applicant->region) {
+                $province = DB::table('ref_psgc_province')
+                    ->where('PSGC_PROV_CODE', $applicant->province)
+                    ->first();
+                    
+                if ($applicant->province && $province) {
+                    $municipality = DB::table('ref_psgc_municipality')
+                        ->where('PSGC_MUNC_CODE', $applicant->municipality)
+                        ->first();
+                        
+                    if ($applicant->municipality && $municipality) {
+                        $barangay = DB::table('ref_psgc_barangay')
+                            ->where('PSGC_BRGY_CODE', $applicant->barangay)
+                            ->first();
+                    }
+                }
+            }
+
+            // Pass all data to the view
+            return view('applicant.applicant-dashboard', compact('regions', 'applicant', 'province', 'municipality', 'barangay'));
+        }
+
+        // For new applicants or other cases
+        return view('applicant.applicant-dashboard', compact('regions', 'applicant'));
     }
 
     public function store(Request $request)
@@ -49,6 +80,9 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
         Log::info('Request all data:', $request->all());
         Log::info('Request files:', $request->file() ? array_keys($request->file()) : ['no files']);
 
+        // Check if this is a resubmission for rejected/refunded payment
+        $existingApplicant = Applicant::where('user_id', Auth::user()->id)->first();
+        $isResubmission = $existingApplicant && in_array($existingApplicant->payment_status, ['rejected', 'refunded']);
 
         // Validate the request data
         $validatedData = $request->validate([
@@ -74,12 +108,14 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             'municipality' => 'required|string',
             'barangay' => 'required|string',
             'zipCode' => 'required|string|max:10',
-            'hasLicense' => 'nullable|string',
+            'hasLicense' => 'nullable|string|in:on,0',
             'licenseClass' => 'required_if:hasLicense,on|nullable|string|max:100',
             'licenseNumber' => 'required_if:hasLicense,on|nullable|string|max:100',
             'expirationDate' => 'required_if:hasLicense,on|nullable|date',
             'isStudent' => 'nullable|string',
             'gcashRefNumber' => 'required|string|max:100',
+            'gcashAccountName' => 'required|string|max:255',
+            'gcashAccountNumber' => 'required|string|regex:/^09[0-9]{9}$/', 
             'paymentProof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
@@ -139,19 +175,28 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
                 'license_number' => $validatedData['licenseNumber'] ?? null,
                 'license_expiration_date' => $validatedData['expirationDate'] ?? null,
                 'reference_number' => $validatedData['gcashRefNumber'],
+                'gcash_name' => $validatedData['gcashAccountName'],
+                'gcash_number' => $validatedData['gcashAccountNumber'],
                 'payment_proof_path' => $paymentProofPath,
                 'status' => 'Pending',
                 'payment_status' => 'pending', // Default status for new applicants
-                'user_id' => auth()->user()->id ?? 1, // Replace 1 with appropriate fallback or make this dynamic
+                'user_id' => Auth::user()->id,
                 'is_student' => $request->has('isStudent') ? 1 : 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
 
             Log::info('Prepared data for insertion:', $data);
-
-            // Insert data into the database using Eloquent to get the model instance
-            $applicant = \App\Models\Applicant::create($data);
+            if ($isResubmission) {
+                // Update existing applicant record
+                $existingApplicant->update($data);
+                $applicant = $existingApplicant;
+                Log::info('Existing applicant updated for resubmission:', ['applicant_id' => $applicant->id]);
+            } else {
+                // Insert new data into the database using Eloquent to get the model instance
+                $applicant = \App\Models\Applicant::create($data);
+                Log::info('New applicant created:', ['applicant_id' => $applicant->id]);
+            }
 
             Mail::to($validatedData['email'])->send(new ApplicationSubmittedSuccessfully($applicant));
 
@@ -183,6 +228,20 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             Log::error('Database insertion error: ' . $e->getMessage());
             Log::error('Error trace: ' . $e->getTraceAsString());
             
+            // Handle validation errors specifically
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'message' => 'Validation failed.',
+                        'errors' => $e->errors(),
+                    ], 422);
+                }
+                
+                return redirect()->back()
+                    ->withErrors($e->errors())
+                    ->withInput();
+            }
+            
             if ($request->ajax()) {
                 return response()->json([
                     'error' => 'Failed to submit application. Error: ' . $e->getMessage()
@@ -197,14 +256,21 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
 
     public function applicationSent()
     {
+        $applicant = Applicant::where('user_id', Auth::user()->id)->first();
+        
+        // If payment was rejected, redirect back to form
+        if ($applicant && in_array($applicant->payment_status, ['rejected', 'refunded'])) {
+            return redirect()->route('applicant.dashboard');
+        }
+        
         return view('applicant.thankyou');
     }
 
     public function getProvinces($region_code)
     {
         $provinces = DB::table('ref_psgc_province')
-            ->where('psgc_reg_code', $region_code)
-            ->select('psgc_prov_code', 'psgc_prov_desc')
+            ->where('PSGC_REG_CODE', $region_code)
+            ->select('PSGC_PROV_CODE', 'PSGC_PROV_DESC')
             ->get();
 
         return response()->json($provinces);
@@ -213,9 +279,9 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
     public function getMunicipalities($region_code, $province_code)
     {
         $municipalities = DB::table('ref_psgc_municipality')
-            ->where('psgc_reg_code', $region_code)
-            ->where('psgc_prov_code', $province_code)
-            ->select('psgc_munc_code', 'psgc_munc_desc')
+            ->where('PSGC_REG_CODE', $region_code)
+            ->where('PSGC_PROV_CODE', $province_code)
+            ->select('PSGC_MUNC_CODE', 'PSGC_MUNC_DESC')
             ->get();
 
         return response()->json($municipalities);
@@ -224,10 +290,10 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
     public function getBarangays($region_code, $province_code, $municipality_code)
     {
         $barangays = DB::table('ref_psgc_barangay')
-            ->where('psgc_reg_code', $region_code)
-            ->where('psgc_prov_code', $province_code)
-            ->where('psgc_munc_code', $municipality_code)
-            ->select('psgc_brgy_code', 'psgc_brgy_desc')
+            ->where('PSGC_REG_CODE', $region_code)
+            ->where('PSGC_PROV_CODE', $province_code)
+            ->where('PSGC_MUNC_CODE', $municipality_code)
+            ->select('PSGC_BRGY_CODE', 'PSGC_BRGY_DESC')
             ->get();
 
         return response()->json($barangays);

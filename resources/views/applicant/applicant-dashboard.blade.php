@@ -20,6 +20,100 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    @if(isset($applicant) && $applicant->region)
+        loadProvinces('{{ $applicant->region }}');
+    @endif
+
+    function loadProvinces(regionCode) {
+        $.ajax({
+            url: '/get-provinces/' + regionCode,
+            type: 'GET',
+            success: function(provinces) {
+                $('#province').html('<option value="">Select</option>');
+                provinces.forEach(function(prov) {
+                    $('#province').append('<option value="'+prov.PSGC_PROV_CODE+'">'+prov.PSGC_PROV_DESC+'</option>');
+                });
+                
+                // Select the applicant's province if available
+                @if(isset($applicant) && $applicant->province)
+                    $('#province').val('{{ $applicant->province }}');
+                    loadMunicipalities('{{ $applicant->region }}', '{{ $applicant->province }}');
+                @endif
+            }
+        });
+    }
+
+    function loadMunicipalities(regionCode, provinceCode) {
+        $.ajax({
+            url: '/get-municipalities/' + regionCode + '/' + provinceCode,
+            type: 'GET',
+            success: function(municipalities) {
+                $('#municipality').html('<option value="">Select</option>');
+                municipalities.forEach(function(muni) {
+                    $('#municipality').append('<option value="'+muni.PSGC_MUNC_CODE+'">'+muni.PSGC_MUNC_DESC+'</option>');
+                });
+                
+                // Select the applicant's municipality if available
+                @if(isset($applicant) && $applicant->municipality)
+                    $('#municipality').val('{{ $applicant->municipality }}');
+                    loadBarangays('{{ $applicant->region }}', '{{ $applicant->province }}', '{{ $applicant->municipality }}');
+                @endif
+            }
+        });
+    }
+
+    function loadBarangays(regionCode, provinceCode, municipalityCode) {
+        $.ajax({
+            url: '/get-barangays/' + regionCode + '/' + provinceCode + '/' + municipalityCode,
+            type: 'GET',
+            success: function(barangays) {
+                $('#barangay').html('<option value="">Select</option>');
+                barangays.forEach(function(brgy) {
+                    $('#barangay').append('<option value="'+brgy.PSGC_BRGY_CODE+'">'+brgy.PSGC_BRGY_DESC+'</option>');
+                });
+                
+                // Select the applicant's barangay if available
+                @if(isset($applicant) && $applicant->barangay)
+                    $('#barangay').val('{{ $applicant->barangay }}');
+                @endif
+            }
+        });
+    }
+
+    // Regular AJAX handlers for when users change dropdowns manually
+    $('#region').on('change', function() {
+        let regionCode = $(this).val();
+        if(regionCode) {
+            loadProvinces(regionCode);
+        } else {
+            $('#province').html('<option value="">Select</option>');
+            $('#municipality').html('<option value="">Select</option>');
+            $('#barangay').html('<option value="">Select</option>');
+        }
+    });
+
+    $('#province').on('change', function() {
+        let regionCode = $('#region').val();
+        let provinceCode = $(this).val();
+        if(regionCode && provinceCode) {
+            loadMunicipalities(regionCode, provinceCode);
+        } else {
+            $('#municipality').html('<option value="">Select</option>');
+            $('#barangay').html('<option value="">Select</option>');
+        }
+    });
+
+    $('#municipality').on('change', function() {
+        let regionCode = $('#region').val();
+        let provinceCode = $('#province').val();
+        let municipalityCode = $(this).val();
+        if(regionCode && provinceCode && municipalityCode) {
+            loadBarangays(regionCode, provinceCode, municipalityCode);
+        } else {
+            $('#barangay').html('<option value="">Select</option>');
+        }
+    });
+
     const notification = document.getElementById('success-notification');
     if (notification) {
         setTimeout(() => {
@@ -30,6 +124,130 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 5000);
     }
+
+    const hasLicenseCheckbox = document.getElementById('hasLicense');
+    const licenseSection = document.getElementById('license-info');
+    
+    // Show license section if applicant has license data or checkbox is checked
+    if ({{ $applicant->has_license ?? 'false' }} || hasLicenseCheckbox.checked) {
+        licenseSection.style.display = 'block';
+        // Make license fields required
+        document.getElementById('licenseClass').required = true;
+        document.getElementById('licenseNumber').required = true;
+        document.getElementById('expirationDate').required = true;
+    }
+    
+    // Toggle license section when checkbox changes
+    hasLicenseCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            licenseSection.style.display = 'block';
+            // Make license fields required
+            document.getElementById('licenseClass').required = true;
+            document.getElementById('licenseNumber').required = true;
+            document.getElementById('expirationDate').required = true;
+        } else {
+            licenseSection.style.display = 'none';
+            // Remove required attributes
+            document.getElementById('licenseClass').required = false;
+            document.getElementById('licenseNumber').required = false;
+            document.getElementById('expirationDate').required = false;
+        }
+    });
+
+    // If region is already selected, load provinces
+    @if(isset($applicant) && $applicant->region)
+        loadProvinces('{{ $applicant->region }}');
+    @endif
+
+    function loadProvinces(regionCode) {
+        $.ajax({
+            url: '/get-provinces/' + regionCode,
+            type: 'GET',
+            success: function(provinces) {
+                $('#province').html('<option value="">Select</option>');
+                provinces.forEach(function(prov) {
+                    $('#province').append('<option value="'+prov.psgc_prov_code+'">'+prov.psgc_prov_desc+'</option>');
+                });
+                
+                // Select the applicant's province if available
+                @if(isset($applicant) && $applicant->province)
+                    $('#province').val('{{ $applicant->province }}');
+                    loadMunicipalities('{{ $applicant->region }}', '{{ $applicant->province }}');
+                @endif
+            }
+        });
+    }
+
+    function loadMunicipalities(regionCode, provinceCode) {
+        $.ajax({
+            url: '/get-municipalities/' + regionCode + '/' + provinceCode,
+            type: 'GET',
+            success: function(municipalities) {
+                $('#municipality').html('<option value="">Select</option>');
+                municipalities.forEach(function(muni) {
+                    $('#municipality').append('<option value="'+muni.psgc_munc_code+'">'+muni.psgc_munc_desc+'</option>');
+                });
+                
+                // Select the applicant's municipality if available
+                @if(isset($applicant) && $applicant->municipality)
+                    $('#municipality').val('{{ $applicant->municipality }}');
+                    loadBarangays('{{ $applicant->region }}', '{{ $applicant->province }}', '{{ $applicant->municipality }}');
+                @endif
+            }
+        });
+    }
+
+    function loadBarangays(regionCode, provinceCode, municipalityCode) {
+        $.ajax({
+            url: '/get-barangays/' + regionCode + '/' + provinceCode + '/' + municipalityCode,
+            type: 'GET',
+            success: function(barangays) {
+                $('#barangay').html('<option value="">Select</option>');
+                barangays.forEach(function(brgy) {
+                    $('#barangay').append('<option value="'+brgy.psgc_brgy_code+'">'+brgy.psgc_brgy_desc+'</option>');
+                });
+                
+                // Select the applicant's barangay if available
+                @if(isset($applicant) && $applicant->barangay)
+                    $('#barangay').val('{{ $applicant->barangay }}');
+                @endif
+            }
+        });
+    }
+
+    // Regular AJAX handlers for when users change dropdowns manually
+    $('#region').on('change', function() {
+        let regionCode = $(this).val();
+        if(regionCode) {
+            loadProvinces(regionCode);
+        } else {
+            $('#province').html('<option value="">Select</option>');
+            $('#municipality').html('<option value="">Select</option>');
+            $('#barangay').html('<option value="">Select</option>');
+        }
+    });
+
+    $('#province').on('change', function() {
+        let regionCode = $('#region').val();
+        let provinceCode = $(this).val();
+        if(regionCode && provinceCode) {
+            loadMunicipalities(regionCode, provinceCode);
+        } else {
+            $('#municipality').html('<option value="">Select</option>');
+            $('#barangay').html('<option value="">Select</option>');
+        }
+    });
+
+    $('#municipality').on('change', function() {
+        let regionCode = $('#region').val();
+        let provinceCode = $('#province').val();
+        let municipalityCode = $(this).val();
+        if(regionCode && provinceCode && municipalityCode) {
+            loadBarangays(regionCode, provinceCode, municipalityCode);
+        } else {
+            $('#barangay').html('<option value="">Select</option>');
+        }
+    }); 
 });
 </script>
 @endif
@@ -43,6 +261,14 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="bg-[#101966] dark:bg-blue-800 px-8 py-6 transition-colors duration-300">
                 <h2 class="text-2xl font-bold text-white">Application Form</h2>
                 <p class="text-blue-100 dark:text-blue-200 transition-colors duration-300">Please fill out all required fields</p>
+                @if($applicant && in_array($applicant->payment_status, ['rejected', 'refunded']))
+                    <div class="mt-3 p-3 bg-yellow-100 dark:bg-yellow-900 border border-yellow-300 dark:border-yellow-700 rounded-lg">
+                        <p class="text-yellow-800 dark:text-yellow-200 text-sm">
+                            <strong>Please check your email<br></strong><br>
+                            <strong>Payment Resubmission:</strong> Your previous payment was {{ $applicant->payment_status }}. Please update your payment information and submit again.
+                        </p>
+                    </div>
+                @endif
             </div>
             
             <!-- Form Content -->
@@ -68,8 +294,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="col-span-1">
                         <label for="middleName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Middle Name</label>
-                        <input type="text" id="middleName" name="middleName" placeholder="e.g. De la" 
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                        <input type="text" id="middleName" name="middleName" placeholder="e.g. Reyes" 
+                            value="{{ $applicant->middle_name ?? old('middleName') }}"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                     </div>
                     <div class="col-span-1">
                         <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Last Name *</label>
@@ -84,19 +311,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="suffix" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Suffix</label>
                         <select id="suffix" name="suffix" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                             <option value="">None</option>
-                            <option value="Jr">Jr</option>
-                            <option value="Sr">Sr</option>
-                            <option value="II">II</option>
-                            <option value="III">III</option>
-                            <option value="IV">IV</option>
+                            <option value="Jr" {{ ($applicant->suffix ?? old('suffix')) == 'Jr' ? 'selected' : '' }}>Jr</option>
+                            <option value="Sr" {{ ($applicant->suffix ?? old('suffix')) == 'Sr' ? 'selected' : '' }}>Sr</option>
+                            <option value="II" {{ ($applicant->suffix ?? old('suffix')) == 'II' ? 'selected' : '' }}>II</option>
+                            <option value="III" {{ ($applicant->suffix ?? old('suffix')) == 'III' ? 'selected' : '' }}>III</option>
+                            <option value="IV" {{ ($applicant->suffix ?? old('suffix')) == 'IV' ? 'selected' : '' }}>IV</option>
                         </select>
                     </div>
                     <div class="col-span-1">
                         <label for="sex" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Sex *</label>
                         <select id="sex" name="sex" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                             <option value="">Select</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="Male" {{ ($applicant->sex ?? old('sex')) == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ ($applicant->sex ?? old('sex')) == 'Female' ? 'selected' : '' }}>Female</option>
                         </select>
                     </div>
                     <div class="col-span-1">
@@ -120,10 +347,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="civilStatus" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Civil Status *</label>
                         <select id="civilStatus" name="civilStatus" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                             <option value="">Select</option>
-                            <option value="Single">Single</option>
-                            <option value="Married">Married</option>
-                            <option value="Divorced">Divorced</option>
-                            <option value="Widowed">Widowed</option>
+                            <option value="Single" {{ ($applicant->civil_status ?? old('civilStatus')) == 'Single' ? 'selected' : '' }}>Single</option>
+                            <option value="Married" {{ ($applicant->civil_status ?? old('civilStatus')) == 'Married' ? 'selected' : '' }}>Married</option>
+                            <option value="Divorced" {{ ($applicant->civil_status ?? old('civilStatus')) == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                            <option value="Widowed" {{ ($applicant->civil_status ?? old('civilStatus')) == 'Widowed' ? 'selected' : '' }}>Widowed</option>
                         </select>
                     </div>
                     
@@ -131,29 +358,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="bloodType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Blood Type</label>
                         <select id="bloodType" name="bloodType" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                             <option value="">Select</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
+                            <option value="A+" {{ ($applicant->blood_type ?? old('bloodType')) == 'A+' ? 'selected' : '' }}>A+</option>
+                            <option value="A-" {{ ($applicant->blood_type ?? old('bloodType')) == 'A-' ? 'selected' : '' }}>A-</option>
+                            <option value="B+" {{ ($applicant->blood_type ?? old('bloodType')) == 'B+' ? 'selected' : '' }}>B+</option>
+                            <option value="B-" {{ ($applicant->blood_type ?? old('bloodType')) == 'B-' ? 'selected' : '' }}>B-</option>
+                            <option value="AB+" {{ ($applicant->blood_type ?? old('bloodType')) == 'AB+' ? 'selected' : '' }}>AB+</option>
+                            <option value="AB-" {{ ($applicant->blood_type ?? old('bloodType')) == 'AB-' ? 'selected' : '' }}>AB-</option>
+                            <option value="O+" {{ ($applicant->blood_type ?? old('bloodType')) == 'O+' ? 'selected' : '' }}>O+</option>
+                            <option value="O-" {{ ($applicant->blood_type ?? old('bloodType')) == 'O-' ? 'selected' : '' }}>O-</option>
                         </select>
                     </div>
                     
                     <div class="col-span-1">
                         <label for="citizenship" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Citizenship *</label>
-                        <input type="text" id="citizenship" name="citizenship" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200" 
-                        placeholder="e.g. Filipino">
+                        <input type="text" id="citizenship" name="citizenship" required 
+                            value="{{ $applicant->citizenship ?? old('citizenship') }}"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200" 
+                            placeholder="e.g. Filipino">
                     </div>
 
-                    <!-- Student and Professional License Checkboxes - Vertical Stack -->
-                     <input type="hidden" name="hasLicense" value="0">
-                    
                     <div class="space-y-2 mt-4">  <!-- Using space-y-2 for vertical spacing -->
                         <div class="flex items-center">
-                            <input type="checkbox" id="hasLicense" name="hasLicense" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <input type="checkbox" id="hasLicense" name="hasLicense" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                {{ ($applicant->has_license ?? old('hasLicense')) ? 'checked' : '' }}>
                             <label for="hasLicense" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I have a professional license</label>
                         </div>
                     </div>
@@ -196,17 +423,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="cellphone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                             Cellphone No.
                         </label>
-                        <input 
-                            type="tel" 
-                            id="cellphone" 
-                            name="cellphone" 
+                        <input type="tel" id="cellphone" name="cellphone" 
+                            value="{{ $applicant->cellphone_no ?? old('cellphone') }}"
                             placeholder="e.g. 09171234567" 
                             maxlength="11"
                             oninput="validatePhoneNumber(this, 'cellphoneError')"
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                                dark:bg-gray-700 dark:text-white transition-all duration-200"
-                        >
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                         <p id="cellphoneError" class="mt-1 text-sm text-red-500 hidden">
                             Please enter a valid 11-digit cellphone number starting with 09 (e.g., 09171234567).
                         </p>
@@ -216,15 +438,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="telephone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                             Telephone No.
                         </label>
-                        <input 
-                            type="tel" 
-                            id="telephone" 
-                            name="telephone" 
+                        <input type="tel" id="telephone" name="telephone" 
+                            value="{{ $applicant->telephone_no ?? old('telephone') }}"
                             placeholder="e.g. 2-XXXX-XXXX" 
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                                dark:bg-gray-700 dark:text-white transition-all duration-200"
-                        >
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                     </div>
                 </div>
             </div>
@@ -243,14 +460,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="col-span-1">
                         <label for="emergencyName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Full Name *</label>
-                        <input type="text" id="emergencyName" name="emergencyName" required placeholder="e.g. Maria De la Cruz" 
+                        <input type="text" id="emergencyName" name="emergencyName" required 
+                            value="{{ $applicant->emergency_contact ?? old('emergencyName') }}"
+                            placeholder="e.g. Maria Dela Cruz" 
                             class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
                             oninput="validateFullName(this)">
                         <p id="emergencyNameError" class="mt-1 text-sm text-red-600 hidden">Please enter both first and last name</p>
                     </div>
                     <div class="col-span-1">
                         <label for="emergencyContact" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Contact No. *</label>
-                        <input type="tel" id="emergencyContact" name="emergencyContact" required placeholder="e.g. 09171234567" 
+                        <input type="tel" id="emergencyContact" name="emergencyContact" required 
+                            value="{{ $applicant->emergency_contact_number ?? old('emergencyContact') }}"
+                            placeholder="e.g. 09171234567" 
                             class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
                             maxlength="11"
                             oninput="validatePhoneNumber(this, 'emergencyContactError')">
@@ -259,12 +480,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="col-span-1">
                         <label for="emergencyRelationship" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Relationship *</label>
                         <select id="emergencyRelationship" name="emergencyRelationship" required
-                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                             <option value="" disabled selected>Select relationship</option>
-                            <option value="Father">Father</option>
-                            <option value="Mother">Mother</option>
-                            <option value="Spouse">Spouse</option>
-                            <option value="Others">Others (please specify)</option>
+                            <option value="Father" {{ ($applicant->relationship ?? old('emergencyRelationship')) == 'Father' ? 'selected' : '' }}>Father</option>
+                            <option value="Mother" {{ ($applicant->relationship ?? old('emergencyRelationship')) == 'Mother' ? 'selected' : '' }}>Mother</option>
+                            <option value="Spouse" {{ ($applicant->relationship ?? old('emergencyRelationship')) == 'Spouse' ? 'selected' : '' }}>Spouse</option>
+                            <option value="Others" {{ ($applicant->relationship ?? old('emergencyRelationship')) == 'Others' ? 'selected' : '' }}>Others (please specify)</option>
                         </select>
                         <div id="otherRelationshipContainer" class="mt-2 hidden">
                             <input type="text" id="otherRelationship" name="otherRelationship" placeholder="Please specify relationship"
@@ -289,13 +510,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="houseNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">House/Building No./Name *</label>
-                            <input type="text" id="houseNumber" name="houseNumber" required placeholder="e.g. Blk/Lot" 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            <input type="text" id="houseNumber" name="houseNumber" required 
+                                value="{{ $applicant->house_building_number_name ?? old('houseNumber') }}"
+                                placeholder="e.g. Blk/Lot" 
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                         </div>
                         <div>
                             <label for="streetAddress" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Street Address *</label>
-                            <input type="text" id="streetAddress" name="streetAddress" required placeholder="e.g. Acacia St." 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            <input type="text" id="streetAddress" name="streetAddress" required 
+                                value="{{ $applicant->street_address ?? old('streetAddress') }}"
+                                placeholder="e.g. Acacia St." 
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                         </div>
                     </div>
                     
@@ -305,40 +530,57 @@ document.addEventListener('DOMContentLoaded', function() {
                             <select id="region" name="region" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                                 <option value="">Select</option>
                                 @foreach ($regions as $region)
-                                    <option value="{{ $region->psgc_reg_code }}">{{ $region->psgc_reg_desc }}</option>
+                                    <option value="{{ $region->PSGC_REG_CODE }}" 
+                                        {{ (isset($applicant) && $applicant->region == $region->PSGC_REG_CODE) ? 'selected' : '' }}>
+                                        {{ $region->PSGC_REG_DESC }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
-                    
+
                         <div>
                             <label for="province" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Province *</label>
                             <select id="province" name="province" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                                 <option value="">Select</option>
                                 <!-- Provinces loaded dynamically via AJAX -->
+                                @if(isset($province) && $province)
+                                    <option value="{{ $province->PSGC_PROV_CODE }}" selected>{{ $province->PSGC_PROV_DESC }}</option>
+                                @endif
                             </select>
                         </div>
-                    
+
                         <div>
                             <label for="municipality" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Municipality *</label>
                             <select id="municipality" name="municipality" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                                 <option value="">Select</option>
                                 <!-- Municipalities loaded dynamically via AJAX -->
+                                @if(isset($municipality) && $municipality)
+                                    <option value="{{ $municipality->PSGC_MUNC_CODE }}" selected>{{ $municipality->PSGC_MUNC_DESC }}</option>
+                                @endif
                             </select>
                         </div>
-                    
+
                         <div>
                             <label for="barangay" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Barangay *</label>
                             <select id="barangay" name="barangay" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                                 <option value="">Select</option>
                                 <!-- Barangays loaded dynamically via AJAX -->
+                                @if(isset($barangay) && $barangay)
+                                    <option value="{{ $barangay->PSGC_BRGY_CODE }}" selected>{{ $barangay->PSGC_BRGY_DESC }}</option>
+                                @endif
                             </select>
                         </div>
                     </div>
                     
                     <div class="mt-4 w-1/4">
                         <label for="zipCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Zip Code *</label>
-                        <input type="text" id="zipCode" name="zipCode" required placeholder="1000" 
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                        <input type="text" id="zipCode" name="zipCode" required 
+                            value="{{ $applicant->zip_code ?? old('zipCode') }}"    
+                            placeholder="1000" 
+                            maxlength="4"
+                            oninput="validateZipCode(this)"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                        <p id="zipCodeError" class="mt-1 text-sm text-red-500 hidden">Zip code must be exactly 4 digits.</p>
                     </div>
                 </div>
                 
@@ -356,18 +598,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label for="licenseClass" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">License Class *</label>
-                            <input type="text" id="licenseClass" name="licenseClass" required placeholder="e.g. Class A" 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            <input type="text" id="licenseClass" name="licenseClass" 
+                                value="{{ $applicant->license_class ?? old('licenseClass') }}"
+                                placeholder="e.g. Class A" 
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                         </div>
                         <div>
                             <label for="licenseNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">License Number *</label>
-                            <input type="text" id="licenseNumber" name="licenseNumber" required placeholder="e.g. A01-23-456789" 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            <input type="text" id="licenseNumber" name="licenseNumber" 
+                                value="{{ $applicant->license_number ?? old('licenseNumber') }}"
+                                placeholder="e.g. A01-23-456789" 
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                         </div>
                         <div>
                             <label for="expirationDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Expiration Date *</label>
-                            <input type="date" id="expirationDate" name="expirationDate" required 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            <input type="date" id="expirationDate" name="expirationDate" 
+                                value="{{ isset($applicant) && $applicant->license_expiration_date ? \Carbon\Carbon::parse($applicant->license_expiration_date)->format('Y-m-d') : old('expirationDate') }}"
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                         </div>
                     </div>
                 </div>
@@ -441,6 +688,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</p>
                             <img id="imagePreview" class="max-w-full h-48 rounded-lg border border-gray-200 dark:border-gray-700">
                         </div>
+                        <!-- Refund Note and GCash Details -->
+                        <div class="mt-6">
+                            <p class="text-sm italic text-gray-600 dark:text-gray-400 mb-3">Please provide correct information below. In case of refunding, we will send the refunded payment to the details provided.</p>
+                            <div class="mb-4">
+                                <label for="gcashAccountName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GCash Account Name *</label>
+                                <input type="text" id="gcashAccountName" name="gcashAccountName" value="{{ $applicant->gcash_name ?? old('gcashAccountName') }}" required placeholder="e.g. Juan Dela Cruz" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                            </div>
+                            <div>
+                                <label for="gcashAccountNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GCash Account Number *</label>
+                                <input type="text" id="gcashAccountNumber" name="gcashAccountNumber" value="{{ $applicant->gcash_number ?? old('gcashAccountNumber') }}" required placeholder="e.g. 09171234567" maxlength="11" oninput="validateGcashNumber(this)" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                                <p id="gcashAccountNumberError" class="mt-1 text-sm text-red-500 hidden">Please enter a valid 11-digit GCash number starting with 09.</p>
+                            </div>
+                        </div>
                     </div>
                     
                     <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 text-sm font-medium bg-[#101966] text-white border border-[#101966] rounded-lg 
@@ -473,7 +733,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+
+    $('#applicationForm').on('submit', function(e) {
+    // Handle hasLicense checkbox value
+    const hasLicenseCheckbox = document.getElementById('hasLicense');
+    if (hasLicenseCheckbox.checked) {
+        // Create a hidden input with value "on"
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'hasLicense';
+        hiddenInput.value = 'on';
+        this.appendChild(hiddenInput);
+    } else {
+        // Create a hidden input with value "0"
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'hasLicense';
+        hiddenInput.value = '0';
+        this.appendChild(hiddenInput);
+    }
+    
+    // Your existing code for relationship handling
+    var relSelect = document.getElementById('emergencyRelationship');
+    if (relSelect.value === 'Others') {
+        var otherInput = document.getElementById('otherRelationship');
+        if (otherInput && otherInput.value.trim() !== '') {
+            relSelect.value = otherInput.value.trim();
+        }
+    }
+    
+    // Zip Code validation
+    const zipInput = document.getElementById('zipCode');
+    if (!validateZipCode(zipInput)) {
+        zipInput.scrollIntoView({behavior: 'smooth', block: 'center'});
+        zipInput.focus();
+        e.preventDefault();
+    }
+});
+
 $(document).ready(function() {
+    // On form submit, if relationship is 'Others', set select value to custom input
+    $('#applicationForm').on('submit', function(e) {
+        var relSelect = document.getElementById('emergencyRelationship');
+        if (relSelect.value === 'Others') {
+            var otherInput = document.getElementById('otherRelationship');
+            if (otherInput && otherInput.value.trim() !== '') {
+                relSelect.value = otherInput.value.trim();
+            }
+        }
+    });
+    // Zip Code validation on form submit
+    $('#applicationForm').on('submit', function(e) {
+        const zipInput = document.getElementById('zipCode');
+        if (!validateZipCode(zipInput)) {
+            zipInput.scrollIntoView({behavior: 'smooth', block: 'center'});
+            zipInput.focus();
+            e.preventDefault();
+        }
+    });
 
     $('#region').on('change', function() {
         let regionCode = $(this).val();
@@ -535,6 +852,7 @@ $(document).ready(function() {
         }
     });
 
+
     // Payment overlay functionality
     const proceedToPaymentBtn = document.getElementById('proceedToPaymentBtn');
     const paymentOverlay = document.getElementById('paymentOverlay');
@@ -543,30 +861,77 @@ $(document).ready(function() {
     const paymentForm = document.getElementById('paymentForm');
 
     proceedToPaymentBtn.addEventListener('click', function() {
-        // Validate the form first
+        // Validate all visible required fields in the form
+        let firstInvalidField = null;
+        let isValid = true;
+
+        // Validate custom fields first
         const emailValid = validateEmail(document.getElementById('email'));
         const cellphoneValid = validatePhoneNumber(document.getElementById('cellphone'), 'cellphoneError');
         const nameValid = validateFullName(document.getElementById('emergencyName'));
         const emergencyContactValid = validatePhoneNumber(document.getElementById('emergencyContact'), 'emergencyContactError');
-        
-        if (!emailValid || !cellphoneValid || !nameValid || !emergencyContactValid) {
-            // Scroll to the first error
-            const firstInvalid = [
-                !emailValid ? 'email' : null,
-                !cellphoneValid ? 'cellphone' : null,
-                !nameValid ? 'emergencyName' : null,
-                !emergencyContactValid ? 'emergencyContact' : null
-            ].find(id => id !== null);
+        const zipValid = validateZipCode(document.getElementById('zipCode'));
+
+        if (!emailValid && !firstInvalidField) firstInvalidField = document.getElementById('email');
+        if (!cellphoneValid && !firstInvalidField) firstInvalidField = document.getElementById('cellphone');
+        if (!nameValid && !firstInvalidField) firstInvalidField = document.getElementById('emergencyName');
+        if (!emergencyContactValid && !firstInvalidField) firstInvalidField = document.getElementById('emergencyContact');
+        if (!zipValid && !firstInvalidField) firstInvalidField = document.getElementById('zipCode');
+
+        isValid = emailValid && cellphoneValid && nameValid && emergencyContactValid && zipValid;
+
+        // FIXED: Only validate license fields if license section is visible
+        const licenseSection = document.getElementById('license-info');
+        if (licenseSection.style.display !== 'none') {
+            const licenseClass = document.getElementById('licenseClass');
+            const licenseNumber = document.getElementById('licenseNumber');
+            const expirationDate = document.getElementById('expirationDate');
             
-            if (firstInvalid) {
-                document.getElementById(firstInvalid).scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
+            if (!licenseClass.value) {
+                licenseClass.classList.add('border-red-500');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = licenseClass;
+            }
+            
+            if (!licenseNumber.value) {
+                licenseNumber.classList.add('border-red-500');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = licenseNumber;
+            }
+            
+            if (!expirationDate.value) {
+                expirationDate.classList.add('border-red-500');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = expirationDate;
+            }
+        }
+
+        // Validate all other required fields (text, select, date, etc.)
+        $(applicationForm).find('input[required]:visible, select[required]:visible, textarea[required]:visible').each(function() {
+            // Skip fields already validated above
+            if (["email","cellphone","emergencyName","emergencyContact","zipCode"].includes(this.id)) return;
+            // For license fields, skip if license section is hidden
+            if ((this.id === 'licenseClass' || this.id === 'licenseNumber' || this.id === 'expirationDate') && licenseSection.style.display === 'none') return;
+            // For otherRelationship, skip if not visible
+            if (this.id === 'otherRelationship' && $('#otherRelationshipContainer').hasClass('hidden')) return;
+            // If empty or invalid
+            if (!this.value || (this.type === 'checkbox' && !this.checked)) {
+                $(this).addClass('border-red-500');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = this;
+            } else {
+                $(this).removeClass('border-red-500');
+            }
+        });
+
+        if (!isValid) {
+            if (firstInvalidField) {
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalidField.focus();
             }
             return;
         }
-        
+
         // If all valid, show payment overlay
         paymentOverlay.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -649,14 +1014,28 @@ $(document).ready(function() {
             });
         })
         .then(result => {
+            let firstErrorField = null;
+            
             if (result.status === 422) {
-                // Validation errors
                 console.log('Validation errors:', result.data);
-                
+        
                 let errorMessage = 'Please fix the following errors:';
                 if (result.data && result.data.errors) {
                     for (const field in result.data.errors) {
                         errorMessage += `\n• ${result.data.errors[field][0]}`;
+                        
+                        // ADD THIS CODE TO HIGHLIGHT PROBLEMATIC FIELDS:
+                        // Highlight the problematic field
+                        const fieldElement = document.querySelector(`[name="${field}"]`);
+                        if (fieldElement) {
+                            fieldElement.classList.add('border-red-500');
+                            // Scroll to the first error field
+                            if (!firstErrorField) {
+                                firstErrorField = fieldElement;
+                                fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                fieldElement.focus();
+                            }
+                        }
                     }
                 } else {
                     errorMessage += '\n• Unknown validation error';
@@ -760,6 +1139,37 @@ function validatePhoneNumber(input, errorId) {
     input.value = input.value.replace(/\D/g, '');
     
     if (input.value.length !== 11 || !input.value.startsWith('09')) {
+        input.classList.add('border-red-500');
+        errorElement.classList.remove('hidden');
+        return false;
+    } else {
+        input.classList.remove('border-red-500');
+        errorElement.classList.add('hidden');
+        return true;
+    }
+}
+
+// Validate GCash Account Number (11 digits, starts with 09)
+function validateGcashNumber(input) {
+    const errorElement = document.getElementById('gcashAccountNumberError');
+    input.value = input.value.replace(/\D/g, '');
+    if (input.value.length !== 11 || !input.value.startsWith('09')) {
+        input.classList.add('border-red-500');
+        errorElement.classList.remove('hidden');
+        return false;
+    } else {
+        input.classList.remove('border-red-500');
+        errorElement.classList.add('hidden');
+        return true;
+    }
+}
+
+// Validate Zip Code (exactly 4 digits)
+function validateZipCode(input) {
+    const errorElement = document.getElementById('zipCodeError');
+    // Remove all non-digit characters
+    input.value = input.value.replace(/\D/g, '');
+    if (input.value.length !== 4) {
         input.classList.add('border-red-500');
         errorElement.classList.remove('hidden');
         return false;

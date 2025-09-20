@@ -16,6 +16,73 @@ use Yajra\DataTables\DataTables;
 
 class CashierApplicantController extends Controller implements HasMiddleware
 {
+    /**
+     * Show the refund form for a rejected applicant.
+     */
+    public function showRefundForm($id)
+    {
+        $applicant = Applicant::findOrFail($id);
+        if ($applicant->payment_status !== 'rejected') {
+            abort(404, 'Refund only available for rejected payments.');
+        }
+        return view('cashier.refund', compact('applicant'));
+    }
+  
+    public function sendRefund(Request $request, $id)
+    {
+        $applicant = Applicant::findOrFail($id);
+        if ($applicant->payment_status !== 'rejected') {
+            abort(404, 'Refund only available for rejected payments.');
+        }
+
+        $validated = $request->validate([
+            'refund_amount' => 'required|numeric|min:0',
+            'remarks' => 'nullable|string|max:500',
+            'refund_receipt' => 'required|image|mimes:jpeg,png|max:5120', // Added
+        ]);
+
+        // Handle refund receipt upload
+        if ($request->hasFile('refund_receipt')) {
+            $file = $request->file('refund_receipt');
+            $filename = uniqid('refund_receipt_') . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/refund_receipts'), $filename);
+            $refundReceiptPath = $filename;
+        } else {
+            return redirect()->back()->with('error', 'Refund receipt is required.');
+        }
+
+        // Update applicant record
+        $applicant->payment_status = 'refunded';
+        $applicant->refund_amount = $validated['refund_amount'];
+        $applicant->refund_remarks = $validated['remarks'] ?? null;
+        $applicant->refunded_at = now();
+        $applicant->refund_receipt_path = $refundReceiptPath; // Save receipt path
+        $applicant->save();
+
+        $this->logPaymentActivity(
+            $applicant,
+            'refunded',
+            'Payment refunded to applicant',
+            [
+                'cashier_id' => auth()->id(),
+                'refund_amount' => $validated['refund_amount'],
+                'remarks' => $validated['remarks'] ?? null,
+                'refunded_at' => now()->toDateTimeString()
+            ]
+        );
+
+        // Send email with receipt
+        Mail::to($applicant->email_address)
+            ->send(new \App\Mail\PaymentRefundedMail(
+                $applicant, 
+                $validated['refund_amount'], 
+                $validated['remarks'] ?? null,
+                $refundReceiptPath
+            ));
+
+        return redirect()->route('cashier.rejected')->with('success', 'Refund processed and applicant notified.');
+    }
+
     public static function middleware(): array
     {
         return [

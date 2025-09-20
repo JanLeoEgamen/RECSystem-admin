@@ -278,6 +278,15 @@
                                             </svg>
                                             <span class="text-green-600 group-hover:text-white text-sm">Restore</span>
                                         </button>
+                                        <a href="/cashier/${payment.id}/refund" 
+                                            class="group flex items-center bg-red-100 hover:bg-red-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition" 
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+                                            </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Refund</span>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

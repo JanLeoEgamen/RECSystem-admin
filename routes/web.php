@@ -405,6 +405,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/cashier/{id}/reject', [CashierApplicantController::class, 'reject'])->name('cashier.reject');
     Route::get('/cashier/verified', [CashierApplicantController::class, 'verified'])->name('cashier.verified');
     Route::get('/cashier/rejected', [CashierApplicantController::class, 'rejected'])->name('cashier.rejected');
+    Route::get('/cashier/{id}/refund', [CashierApplicantController::class, 'showRefundForm'])->name('cashier.refund');
+    Route::post('/cashier/{id}/refund', [CashierApplicantController::class, 'sendRefund'])->name('cashier.sendRefund');
     Route::post('/cashier/{id}/restore', [CashierApplicantController::class, 'restore'])->name('cashier.restore');
 
     //renewal
