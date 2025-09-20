@@ -14,6 +14,7 @@ use App\Http\Controllers\EventAnnouncementController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\LicensingComplianceController;
 use App\Http\Controllers\MainCarouselController;
+use App\Http\Controllers\ManualController;
 use App\Http\Controllers\MarkeeController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MembershipAnalyticsController;
@@ -461,8 +462,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/memberfiles', [MemberFileController::class, 'destroy'])->name('memberfiles.destroy');
     Route::get('/memberfiles/{id}/view', [MemberFileController::class, 'view'])->name('memberfiles.view');
     Route::get('/memberfiles/{id}/download/{uploadId}', [MemberFileController::class, 'downloadUpload'])->name('memberfiles.download');
-
-
 });
 
 Route::fallback(function () {
