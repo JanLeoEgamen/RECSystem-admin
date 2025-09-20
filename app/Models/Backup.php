@@ -16,4 +16,8 @@ class Backup extends Model
         'status',
         'error'
     ];
+
+       protected $casts = [
+        'size' => 'integer',
+    ];
 }

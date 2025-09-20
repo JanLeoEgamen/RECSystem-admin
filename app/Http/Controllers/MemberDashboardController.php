@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
+use App\Models\MemberFile;
+use App\Models\MemberFileUpload; 
+
 class MemberDashboardController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
@@ -470,6 +473,99 @@ public function downloadDocument($id)
     
     abort(404);
 }
+
+// Add these methods to your existing MemberDashboardController
+    public function myFiles()
+    {
+        $member = auth()->user()->member;
+        $files = $member->files()
+            ->with(['assigner', 'latestUpload'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('member.myfiles', compact('files'));
+    }
+
+    public function viewFile($id)
+    {
+        $member = auth()->user()->member;
+        $file = $member->files()
+            ->with(['assigner', 'uploads'])
+            ->findOrFail($id);
+
+        return view('member.view-file', compact('file'));
+    }
+
+    public function uploadFile(Request $request, $id)
+    {
+        $member = auth()->user()->member;
+        $file = $member->files()->findOrFail($id);
+
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx,jpeg,png,jpg,gif,txt|max:2048',
+            'notes' => 'nullable|string|max:500'
+        ]);
+
+        try {
+            $uploadedFile = $request->file('file');
+            $path = $uploadedFile->store('member_files', 'public');
+
+            $upload = new MemberFileUpload();
+            $upload->member_file_id = $file->id;
+            $upload->file_path = $path;
+            $upload->file_name = $uploadedFile->getClientOriginalName();
+            $upload->file_type = $uploadedFile->getClientMimeType();
+            $upload->file_size = $this->formatBytes($uploadedFile->getSize());
+            $upload->notes = $request->notes;
+            $upload->uploaded_at = now();
+            $upload->save();
+
+            logMemberActivity(
+                $member,
+                'file',
+                'uploaded',
+                "Uploaded file: {$upload->file_name} for assignment: {$file->title}",
+                [
+                    'file_id' => $file->id,
+                    'upload_id' => $upload->id,
+                    'file_name' => $upload->file_name
+                ]
+            );
+
+            return redirect()->route('member.view-file', $id)
+                ->with('success', 'File uploaded successfully.');
+
+        } catch (\Exception $e) {
+            Log::error("File upload error for assignment ID {$id}: " . $e->getMessage());
+            return redirect()->route('member.view-file', $id)
+                ->with('error', 'Failed to upload file. Please try again.');
+        }
+    }
+
+    public function downloadFile($id, $uploadId)
+    {
+        $member = auth()->user()->member;
+        $file = $member->files()->findOrFail($id);
+        $upload = MemberFileUpload::findOrFail($uploadId);
+        
+        if ($upload->member_file_id !== $file->id) {
+            abort(404);
+        }
+        
+        return Storage::disk('public')->download($upload->file_path, $upload->file_name);
+    }
+
+    // Add this helper method to the controller
+    private function formatBytes($bytes, $precision = 2): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
 
 
 }

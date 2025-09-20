@@ -27,7 +27,11 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-8 text-gray-900 dark:text-gray-100">
+<<<<<<< Updated upstream
                     <form action="{{ route('users.update', $user->id) }}" method="post" id="updateForm">
+=======
+                    <form id="updateForm" action="{{ route('users.update', $user->id) }}" method="post">
+>>>>>>> Stashed changes
                         @csrf
                         <div class="space-y-6">
                             <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
