@@ -1,28 +1,13 @@
+[file name]: refund-logs.blade.php
+[file content begin]
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <h2 class="font-semibold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
-                {{ __('Rejected Payments') }}
+                {{ __('Refund Logs') }}
             </h2>
 
-            <div class="flex flex-col md:flex-row justify-center md:justify-end w-full md:w-auto gap-3">
-                <a href="{{ route('cashier.refund-logs') }}" 
-                   class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#10b981] hover:border-[#10b981] 
-                          bg-[#10b981] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                          focus:ring-[#10b981] border border-white font-medium dark:border-[#3E3E3A] 
-                          dark:hover:bg-black dark:hover:border-[#10b981] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                          w-full md:w-auto text-center
-
-                          dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                          dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
-
-                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Refund Logs
-                </a>
-                
+            <div class="flex justify-center md:justify-end w-full md:w-auto">
                 <a href="{{ route('cashier.index') }}" 
                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                           bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
@@ -63,10 +48,12 @@
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
-                                    <option value="created_desc">Newest First</option>
-                                    <option value="created_asc">Oldest First</option>
+                                    <option value="refunded_desc">Newest First</option>
+                                    <option value="refunded_asc">Oldest First</option>
                                     <option value="name_asc">Name (A-Z)</option>
                                     <option value="name_desc">Name (Z-A)</option>
+                                    <option value="amount_desc">Amount (High to Low)</option>
+                                    <option value="amount_asc">Amount (Low to High)</option>
                                 </select>
                             </div>
                         </div>
@@ -97,7 +84,7 @@
                                     d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
                             </svg>
 
-                            <input type="text" id="mobileSearchInput" placeholder="Search Name  " 
+                            <input type="text" id="mobileSearchInput" placeholder="Search Name" 
                                 class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
                                 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
                         </div>
@@ -115,10 +102,12 @@
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="created_desc">Newest First</option>
-                                <option value="created_asc">Oldest First</option>
+                                <option value="refunded_desc">Newest First</option>
+                                <option value="refunded_asc">Oldest First</option>
                                 <option value="name_asc">Name (A-Z)</option>
                                 <option value="name_desc">Name (Z-A)</option>
+                                <option value="amount_desc">Amount (High to Low)</option>
+                                <option value="amount_asc">Amount (Low to High)</option>
                             </select>
                         </div>
 
@@ -129,16 +118,18 @@
 
                     <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                         <div class="min-w-[1000px]">
-                            <table id="rejectedPaymentsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
+                            <table id="refundLogsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
                                 <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
                                         <th class="px-6 py-3 text-center font-medium">#</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-name">Name</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-email">Email</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-reference">Reference #</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-receipt">Receipt</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-rejected">Date Rejected</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-amount">Refund Amount</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-receipt">Refund Receipt</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-remarks">Remarks</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-refunded">Date Refunded</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-cashier">Cashier</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -199,38 +190,38 @@
             }
         </style>
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-            
             $(document).ready(function () {
-                fetchRejectedPayments();
+                fetchRefundLogs();
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
-                    fetchRejectedPayments(1, $(this).val());
+                    fetchRefundLogs(1, $(this).val());
                 });
 
                 $('#perPage, #mobilePerPage').on('change', function () {
-                    fetchRejectedPayments(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
+                    fetchRefundLogs(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
                 $('#sortBy, #mobileSortBy').on('change', function() {
-                    fetchRejectedPayments(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
+                    fetchRefundLogs(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                function fetchRejectedPayments(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
-                    const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'created_desc';
+                function fetchRefundLogs(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
+                    const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'refunded_desc';
                     const [column, direction] = sortValue.split('_');
 
                     const sortMap = {
                         'name_asc': { sort: 'first_name', direction: 'asc' },
                         'name_desc': { sort: 'first_name', direction: 'desc' },
-                        'created_asc': { sort: 'created_at', direction: 'asc' },
-                        'created_desc': { sort: 'created_at', direction: 'desc' }
+                        'refunded_asc': { sort: 'refunded_at', direction: 'asc' },
+                        'refunded_desc': { sort: 'refunded_at', direction: 'desc' },
+                        'amount_asc': { sort: 'refund_amount', direction: 'asc' },
+                        'amount_desc': { sort: 'refund_amount', direction: 'desc' }
                     };
 
-                    const sortParams = sortMap[sortValue] || { sort: 'created_at', direction: 'desc' };
+                    const sortParams = sortMap[sortValue] || { sort: 'refunded_at', direction: 'desc' };
 
                     $.ajax({
-                        url: `{{ route('cashier.rejected') }}`,
+                        url: `{{ route('cashier.refund-logs') }}`,
                         type: 'GET',
                         data: {
                             page: page,
@@ -240,7 +231,7 @@
                             direction: sortParams.direction
                         },
                         success: function (response) {
-                            renderRejectedPayments(response.data, response.from);
+                            renderRefundLogs(response.data, response.from);
                             renderPagination(response);
                             
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
@@ -250,62 +241,32 @@
                     });
                 }
 
-                function renderRejectedPayments(payments, startIndex) {
-                    let tbody = $('#rejectedPaymentsTable tbody');
+                function renderRefundLogs(logs, startIndex) {
+                    let tbody = $('#refundLogsTable tbody');
                     tbody.empty();
                     
-                    payments.forEach((payment, index) => {
+                    logs.forEach((log, index) => {
                         const rowNumber = startIndex + index;
-                        const fullName = payment.first_name + ' ' + payment.last_name;
-                        const receiptUrl = payment.payment_proof_path 
-                            ? `{{ asset('images/payment_proofs/') }}/${payment.payment_proof_path}`
+                        const fullName = log.first_name + ' ' + log.last_name;
+                        const receiptUrl = log.refund_receipt_path 
+                            ? `{{ asset('images/refund_receipts/') }}/${log.refund_receipt_path}`
                             : '#';
                         
                         tbody.append(`
                             <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                 <td class="px-6 py-4 text-center">${rowNumber}</td>
                                 <td class="px-6 py-4 text-center column-name">${fullName}</td>
-                                <td class="px-6 py-4 text-center column-email">${payment.email_address}</td>
-                                <td class="px-6 py-4 text-center column-reference">${payment.reference_number}</td>
+                                <td class="px-6 py-4 text-center column-email">${log.email_address}</td>
+                                <td class="px-6 py-4 text-center column-reference">${log.reference_number}</td>
+                                <td class="px-6 py-4 text-center column-amount">₱${parseFloat(log.refund_amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                 <td class="px-6 py-4 text-center column-receipt">
-                                    ${payment.payment_proof_path 
+                                    ${log.refund_receipt_path 
                                         ? `<a href="${receiptUrl}" target="_blank" class="text-blue-600 hover:underline">View Receipt</a>` 
                                         : 'No receipt'}
                                 </td>
-                                <td class="px-6 py-4 text-center column-rejected">${payment.rejected_at}</td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex justify-center items-center space-x-2">
-                                        <a href="/cashier/${payment.id}/assess?from=rejected" 
-                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition" 
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                    d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <span class="text-blue-600 group-hover:text-white text-sm">Details</span>
-                                        </a>
-                                        <button onclick="restoreApplicant(${payment.id})" 
-                                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                                class="h-4 w-4 text-green-600 group-hover:text-white transition" 
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2" d="M4 4v16h16V4H4zm2 2h12v12H6V6z"/>
-                                            </svg>
-                                            <span class="text-green-600 group-hover:text-white text-sm">Restore</span>
-                                        </button>
-                                        <a href="/cashier/${payment.id}/refund" 
-                                            class="group flex items-center bg-red-100 hover:bg-red-500 px-3 py-2 rounded-full transition space-x-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                                class="h-4 w-4 text-red-600 group-hover:text-white transition" 
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
-                                            </svg>
-                                            <span class="text-red-600 group-hover:text-white text-sm">Refund</span>
-                                        </a>
-                                    </div>
-                                </td>
+                                <td class="px-6 py-4 text-center column-remarks">${log.refund_remarks || 'N/A'}</td>
+                                <td class="px-6 py-4 text-center column-refunded">${log.refunded_at_formatted}</td>
+                                <td class="px-6 py-4 text-center column-cashier">${log.cashier_name || 'N/A'}</td>
                             </tr>
                         `);
                     });
@@ -317,11 +278,11 @@
                     if (data.current_page > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRejectedPayments(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchRefundLogs(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 &laquo; First
                             </button>
-                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-极地-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRejectedPayments(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                            <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                                onclick="fetchRefundLogs(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Previous
                             </button>`;
                     }
@@ -331,7 +292,7 @@
                     const pagesToShow = 3;
 
                     let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
-                    let endPage = Math.min(totalPages, startPage + pages极地-Show - 1);
+                    let endPage = Math.min(totalPages, startPage + pagesToShow - 1);
 
                     if (endPage - startPage + 1 < pagesToShow) {
                         startPage = Math.max(1, endPage - pagesToShow + 1);
@@ -339,7 +300,7 @@
                     if (startPage > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchRejectedPayments(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePer极地').val())">
+                                onclick="fetchRefundLogs(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 1
                             </button>`;
                         if (startPage > 2) {
@@ -349,28 +310,28 @@
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchRejectedPayments(${i}, $('#searchInput').极地() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchRefundLogs(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${i}
                             </button>`;
                     }
                     if (endPage < totalPages) {
                         if (endPage < totalPages - 1) {
-                            paginationHtml += `<span极地="px-2 dark:text-white">...</span>`;
+                            paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
                         }
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : '极地-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchRejectedPayments(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                                onclick="fetchRefundLogs(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${totalPages}
                             </button>`;
                     }
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRejectedPayments(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchRefundLogs(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Next
                             </button>
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRejectedPayments($极地.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchRefundLogs(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Last &raquo;
                             </button>`;
                     }
@@ -378,44 +339,7 @@
                     $('#paginationLinks').html(paginationHtml);
                 }
 
-                window.restoreApplicant = function (id) {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "Do you want to restore this applicant to pending payments?",
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#10b981',
-                        cancelButtonColor: '#5e6ffb',
-                        confirmButtonText: 'Yes, restore it!',
-                        background: '#101966',
-                        color: '#fff'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.post('/cashier/' + id + '/restore', {
-                                _token: '{{ csrf_token() }}'
-                            }, function (res) {
-                                Swal.fire({
-                                    title: 'Restored!',
-                                    text: res.message,
-                                    icon: 'success',
-                                    background: '#101966',
-                                    color: '#fff'
-                                });
-                                fetchRejectedPayments();
-                            }).fail(function(xhr) {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Failed to restore payment: ' + (xhr.responseJSON?.message || 'Unknown error'),
-                                    icon: 'error',
-                                    background: '#101966',
-                                    color: '#fff'
-                                });
-                            }); 
-                        }
-                    });
-                }
-
-                window.fetchRejectedPayments = fetchRejectedPayments;
+                window.fetchRefundLogs = fetchRefundLogs;
             });
         </script>
     </x-slot>

@@ -262,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h2 class="text-2xl font-bold text-white">Application Form</h2>
                 <p class="text-blue-100 dark:text-blue-200 transition-colors duration-300">Please fill out all required fields</p>
                 @if($applicant && in_array($applicant->payment_status, ['rejected', 'refunded']))
+                
                     <div class="mt-3 p-3 bg-yellow-100 dark:bg-yellow-900 border border-yellow-300 dark:border-yellow-700 rounded-lg">
                         <p class="text-yellow-800 dark:text-yellow-200 text-sm">
                             <strong>Please check your email<br></strong><br>

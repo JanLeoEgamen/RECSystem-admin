@@ -417,6 +417,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cashier/{id}/refund', [CashierApplicantController::class, 'showRefundForm'])->name('cashier.refund');
     Route::post('/cashier/{id}/refund', [CashierApplicantController::class, 'sendRefund'])->name('cashier.sendRefund');
     Route::post('/cashier/{id}/restore', [CashierApplicantController::class, 'restore'])->name('cashier.restore');
+    Route::get('/cashier/refund-logs', [CashierApplicantController::class, 'refundLogs'])->name('cashier.refund-logs');
+    
 
 
     //payement method

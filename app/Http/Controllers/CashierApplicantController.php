@@ -57,6 +57,7 @@ class CashierApplicantController extends Controller implements HasMiddleware
         $applicant->refund_remarks = $validated['remarks'] ?? null;
         $applicant->refunded_at = now();
         $applicant->refund_receipt_path = $refundReceiptPath; // Save receipt path
+        $applicant->refunded_by = auth()->id();
         $applicant->save();
 
         $this->logPaymentActivity(
@@ -467,5 +468,88 @@ class CashierApplicantController extends Controller implements HasMiddleware
             'performed_by' => auth()->id(),
             'created_at' => now()
         ]);
+    }
+
+    public function refundLogs(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = Applicant::where('payment_status', 'refunded');
+
+            // Handle search
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('reference_number', 'like', "%$search%");
+                });
+            }
+
+            // Handle sorting
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'first_name':
+                    case 'name':
+                        $query->orderBy('first_name', $direction)
+                            ->orderBy('last_name', $direction);
+                        break;
+                        
+                    case 'refund_amount':
+                        $query->orderBy('refund_amount', $direction);
+                        break;
+                        
+                    case 'refunded_at':
+                    case 'refunded':
+                        $query->orderBy('refunded_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('refunded_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('refunded_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $applicants = $query->paginate($perPage);
+
+            $transformedApplicants = $applicants->getCollection()->map(function ($applicant) {
+                // Get cashier name if available
+                $cashierName = 'N/A';
+                if ($applicant->refunded_by) {
+                    $cashier = User::find($applicant->refunded_by);
+                    $cashierName = $cashier ? $cashier->name : 'N/A';
+                }
+
+                return [
+                    'id' => $applicant->id,
+                    'first_name' => $applicant->first_name,
+                    'last_name' => $applicant->last_name,
+                    'email_address' => $applicant->email_address,
+                    'reference_number' => $applicant->reference_number,
+                    'refund_amount' => $applicant->refund_amount,
+                    'refund_receipt_path' => $applicant->refund_receipt_path,
+                    'refund_remarks' => $applicant->refund_remarks,
+                    'refunded_at_formatted' => $applicant->refunded_at ? \Carbon\Carbon::parse($applicant->refunded_at)->format('M d, Y h:i A') : 'N/A',
+                    'cashier_name' => $cashierName,
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedApplicants,
+                'current_page' => $applicants->currentPage(),
+                'last_page' => $applicants->lastPage(),
+                'from' => $applicants->firstItem(),
+                'to' => $applicants->lastItem(),
+                'total' => $applicants->total(),
+            ]);
+        }
+
+        return view('cashier.refund-logs');
     }
 }
