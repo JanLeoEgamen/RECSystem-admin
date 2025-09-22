@@ -6,204 +6,7 @@
     <title>Join REC Inc. - Radio Engineering Circle</title>
     <link rel="icon" href="/images/Logo.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .hero-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-gradient::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="20%" cy="20%" r="200" fill="url(%23a)"/><circle cx="80%" cy="60%" r="150" fill="url(%23a)"/><circle cx="40%" cy="80%" r="180" fill="url(%23a)"/></svg>') no-repeat center center;
-            background-size: cover;
-            opacity: 0.3;
-            pointer-events: none;
-        }
-        
-        .floating {
-            animation: floating 6s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .feature-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            transform: translateY(20px);
-            opacity: 0;
-        }
-        
-        .feature-card.animate-in {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-        
-        .stat-number {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .testimonial-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            transition: all 0.4s ease;
-            transform: translateY(30px);
-            opacity: 0;
-        }
-        
-        .testimonial-card.animate-in {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        .testimonial-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        
-        .dark .testimonial-card {
-            background: rgba(31, 41, 55, 0.95);
-        }
-        
-        .portal-button {
-            display: block;
-            width: 100%;
-            max-width: 280px;
-            margin: 0 auto;
-            padding: 12px 24px;
-            text-align: center;
-            font-weight: 600;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            cursor: pointer;
-            position: relative;
-            z-index: 10;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .portal-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .portal-button:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .portal-button-primary {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-        
-        .portal-button-primary:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .member-portal-container {
-            position: relative;
-            z-index: 49;
-            pointer-events: auto;
-        }
-        
-        @media (max-width: 768px) {
-            .hero-content {
-                text-align: center;
-            }
-            
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .nav-website-btn {
-                display: none;
-            }
-        }
-        
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .reveal:nth-child(1) { transition-delay: 0.1s; }
-        .reveal:nth-child(2) { transition-delay: 0.2s; }
-        .reveal:nth-child(3) { transition-delay: 0.3s; }
-        .reveal:nth-child(4) { transition-delay: 0.4s; }
-    </style>
+    @vite(['resources/css/welcome.css', 'resources/js/welcome.js'])
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <nav class="bg-[#101966] dark:bg-gray-950 backdrop-blur-md shadow-lg fixed w-full top-0 z-50 transition-colors duration-300">
@@ -236,6 +39,24 @@
             </div>
         </div>
     </nav>
+
+    <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-50 hidden">
+        <div class="flex flex-col items-center">
+            <div class="relative w-24 h-24 flex items-center justify-center">
+                <div class="w-6 h-6 bg-[#5e6ffb] rounded-full z-10"></div>
+                <span class="absolute w-6 h-6 rounded-full border-4 border-[#101966] animate-wave"></span>
+                <span class="absolute w-6 h-6 rounded-full border-4 border-[#1A25A1] animate-wave delay-200"></span>
+                <span class="absolute w-6 h-6 rounded-full border-4 border-[#101966] animate-wave delay-400"></span>
+            </div>
+            <p class="mt-6 text-white font-medium">Please wait a moment...</p>
+            
+            <!-- progress bar -->
+            <div class="w-64 h-2 bg-gray-700 rounded-full mt-4 overflow-hidden">
+                <div id="loading-progress" class="h-full bg-blue-500 rounded-full transition-all duration-300"></div>
+            </div>
+        </div>
+    </div>
+
 
     <section id="hero" 
         class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 
@@ -289,7 +110,7 @@
                     </div>
                     
                     <div class="space-y-4">
-                        <a href="/login" class="portal-button portal-button-primary">
+                        <a href="/login" type="submit" class="portal-button portal-button-primary">
                             <div class="flex items-center justify-center space-x-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -721,80 +542,5 @@
     <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
     <script src="https://files.bpcontent.cloud/2025/01/12/14/20250112142449-BTWBU6OV.js"></script>
     <!-- END OF CHATBOT CALLING -->
-
-    <script>
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-
-        const radioWaves = document.querySelectorAll('.radio-wave');
-        const heroSection = document.getElementById('hero');
-        
-        function checkRadioWaveVisibility() {
-            const heroRect = heroSection.getBoundingClientRect();
-            const isHeroVisible = heroRect.bottom > 0 && heroRect.top < window.innerHeight;
-            
-            radioWaves.forEach(wave => {
-                wave.classList.toggle('hidden', !isHeroVisible);
-            });
-        }
-        
-        window.addEventListener('scroll', checkRadioWaveVisibility);
-        
-        checkRadioWaveVisibility();
-
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.classList.add('active');
-
-                        if (entry.target.classList.contains('feature-card')) {
-                            entry.target.classList.add('animate-in');
-                        }
-
-                        if (entry.target.classList.contains('testimonial-card')) {
-                            entry.target.classList.add('animate-in');
-                        }
-                    }, index * 100);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal').forEach(el => {
-            observer.observe(el);
-        });
-
-        document.querySelectorAll('.feature-card').forEach((el, index) => {
-            setTimeout(() => observer.observe(el), index * 50);
-        });
-
-        document.querySelectorAll('.testimonial-card').forEach((el, index) => {
-            setTimeout(() => observer.observe(el), index * 100);
-        });
-
-        if (window.innerWidth <= 768) {
-            document.querySelectorAll('.floating').forEach(el => {
-                el.classList.remove('floating');
-            });
-        }
-    </script>
 </body>
 </html>

@@ -49,6 +49,7 @@ use App\Http\Controllers\RenewalController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -56,38 +57,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use App\Http\Controllers\GlobalSearchController;
 
 // GLOBAL SEARCH
-Route::get('/global-search', function (\Illuminate\Http\Request $request) {
-    $q = strtolower($request->get('q', ''));
-    $results = [];
+Route::get('/global-search', [GlobalSearchController::class, 'search'])
+    ->name('global.search')
+    ->middleware('can:view admin dashboard');
 
-    foreach (Route::getRoutes() as $route) {
-        $name = $route->getName();
-
-        if (!$name) continue;
-
-        if (Str::contains(strtolower($name), $q)) {
-            try {
-                
-                $params = [];
-                if (Str::contains($name, '.edit')) {
-                    $params = [1]; 
-                }
-                $url = route($name, $params);
-
-                $results[] = [
-                    'label' => Str::headline($name),
-                    'route' => $name,
-                    'url'   => $url,
-                ];
-            } catch (\Exception $e) {
-            }
-        }
-    }
-
-    return response()->json($results);
-})->name('global.search')->middleware('can:view admin dashboard');
+Route::get('/global-search/categories', [GlobalSearchController::class, 'getCategories'])
+    ->name('global.search.categories')
+    ->middleware('can:view admin dashboard');
 
 Route::get('/', function () {
     return view('welcome');
@@ -104,6 +83,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/application/applicationSent', [ApplicantDashboardController::class, 'applicationSent'])->name('applicant.thankyou');
     });
     
+    //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -182,7 +162,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/faqs/{id}/edit', [FAQController::class, 'edit'])->name('faqs.edit');
     Route::post('/faqs/{id}', [FAQController::class, 'update'])->name('faqs.update');
     Route::delete('/faqs', [FAQController::class, 'destroy'])->name('faqs.destroy');
-    
+
+    //login
+    Route::get('/login', [LoginController::class, 'show'])->name('login');
+    Route::post('/login', [LoginController::class, 'store']);
     
     //main carousels
     Route::get('/main-carousels', [MainCarouselController::class, 'index'])->name('main-carousels.index');
@@ -456,7 +439,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/manual/{manual}', [ManualController::class, 'update'])->name('manual.update');
     Route::get('/manual/history', [ManualController::class, 'history'])->name('manual.history');
     
-
     // Member files
     Route::get('/memberfiles', [MemberFileController::class, 'index'])->name('memberfiles.index');
     Route::get('/memberfiles/create', [MemberFileController::class, 'create'])->name('memberfiles.create');

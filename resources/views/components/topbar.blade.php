@@ -1,4 +1,28 @@
 <!-- TOPBAR.BLADE.PHP -->
+ <style>
+/* Custom scrollbar for search results */
+.max-h-80 {
+    scrollbar-width: thin;
+    scrollbar-color: #5e6ffb transparent;
+}
+
+.max-h-80::-webkit-scrollbar {
+    width: 6px;
+}
+
+.max-h-80::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.max-h-80::-webkit-scrollbar-thumb {
+    background-color: #5e6ffb;
+    border-radius: 3px;
+}
+
+.max-h-80::-webkit-scrollbar-thumb:hover {
+    background-color: #4c5bdb;
+}
+</style>
 <!-- Alpine.js Root for Mobile Menu -->
 <div x-data="{ memberMenuOpen: false }" class="flex flex-col flex-1 overflow-hidden">
 
@@ -92,80 +116,166 @@
                 <div class="hidden sm:flex items-center relative">
 
                     <!-- Search Bar  -->
-                    <div x-data="{ query: '', results: [], loading: false }" class="relative mr-4" @click.away="results = []">
-                        <div class="relative">
-                            <!-- Search Icon -->
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                                <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" 
-                                    xmlns="http://www.w3.org/2000/svg" 
-                                    fill="none" 
-                                    viewBox="0 0 24 24" 
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                                </svg>
-                            </div>
+                    <div x-data="{ 
+    query: '', 
+    results: [], 
+    loading: false, 
+    showResults: false,
+    selectedIndex: -1
+}" class="relative mr-4" @click.away="showResults = false, selectedIndex = -1">
+    
+    <div class="relative">
+        <!-- Search Icon -->
+        <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+            </svg>
+        </div>
 
-                            <input 
-                                type="text" 
-                                x-model="query"
-                                @input.debounce.300ms="
-                                    if (query.length > 0) {
-                                        loading = true;
-                                        fetch('{{ route('global.search') }}?q=' + query)
-                                            .then(res => res.json())
-                                            .then(data => {
-                                                results = data;
-                                                loading = false;
-                                            })
-                                            .catch(() => loading = false);
-                                    } else {
-                                        results = [];
-                                    }
-                                "
-                                placeholder="Search..."
-                                class="pl-8 pr-8 py-1 rounded-md text-black dark:text-white text-sm 
-                                    focus:ring focus:ring-[#5e6ffb] 
-                                    dark:bg-gray-900 dark:border dark:border-gray-700 w-56"
-                            >
+        <input 
+            type="text" 
+            x-model="query"
+            @input.debounce.300ms="
+                if (query.length > 0) {
+                    loading = true;
+                    showResults = true;
+                    selectedIndex = -1;
+                    fetch('{{ route('global.search') }}?q=' + encodeURIComponent(query))
+                        .then(res => res.json())
+                        .then(data => {
+                            results = data;
+                            loading = false;
+                        })
+                        .catch(err => {
+                            console.error('Search error:', err);
+                            loading = false;
+                            results = [];
+                        });
+                } else {
+                    results = [];
+                    showResults = false;
+                    selectedIndex = -1;
+                }
+            "
+            @keydown.arrow-down.prevent="
+                if (results.length > 0) {
+                    selectedIndex = selectedIndex < results.length - 1 ? selectedIndex + 1 : 0;
+                }
+            "
+            @keydown.arrow-up.prevent="
+                if (results.length > 0) {
+                    selectedIndex = selectedIndex > 0 ? selectedIndex - 1 : results.length - 1;
+                }
+            "
+            @keydown.enter.prevent="
+                if (selectedIndex >= 0 && results[selectedIndex]) {
+                    window.location.href = results[selectedIndex].url;
+                }
+            "
+            @keydown.escape="showResults = false, selectedIndex = -1, query = ''"
+            @focus="if (query.length > 0) showResults = true"
+            placeholder="Search admin features..."
+            class="pl-8 pr-8 py-1 rounded-md text-black dark:text-white text-sm 
+                focus:ring focus:ring-[#5e6ffb] 
+                dark:bg-gray-900 dark:border dark:border-gray-700 w-56"
+        >
 
-                            <div x-show="loading" class="absolute right-2 top-2">
-                                <svg class="animate-spin h-4 w-4 text-[#5e6ffb] dark:text-gray-300" 
-                                    xmlns="http://www.w3.org/2000/svg" 
-                                    fill="none" 
-                                    viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                                </svg>
-                            </div>
+        <!-- Loading Indicator -->
+        <div x-show="loading" class="absolute right-2 top-2">
+            <svg class="animate-spin h-4 w-4 text-[#5e6ffb] dark:text-gray-300" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+        </div>
+
+        <!-- Clear Button -->
+        <button 
+            x-show="query.length > 0 && !loading" 
+            @click="query = '', results = [], showResults = false, selectedIndex = -1"
+            class="absolute right-2 top-1 p-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+            <svg class="h-3 w-3 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Results Dropdown -->
+    <div 
+        x-show="showResults && (results.length > 0 || (!loading && query.length > 0))" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-75"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="absolute left-0 mt-1 w-80 bg-white dark:bg-gray-800 shadow-lg rounded-md z-50 
+            max-h-80 overflow-y-auto border border-gray-200 dark:border-gray-700"
+    >
+        <!-- Results -->
+        <template x-if="results.length > 0">
+            <div class="py-1">
+                <template x-for="(item, index) in results" :key="item.route">
+                    <a 
+                        :href="item.url" 
+                        :class="{
+                            'bg-[#5e6ffb] text-white': selectedIndex === index,
+                            'hover:bg-gray-50 dark:hover:bg-gray-700': selectedIndex !== index
+                        }"
+                        @mouseenter="selectedIndex = index"
+                        @mouseleave="selectedIndex = -1"
+                        class="flex items-center px-3 py-2 text-sm transition-colors duration-150"
+                    >
+                        <div class="flex-1">
+                            <div class="font-medium" x-text="item.label"></div>
+                            <div class="text-xs opacity-70 capitalize" x-text="item.category.replace('-', ' ')"></div>
                         </div>
-
-                        <div 
-                            x-show="(results.length > 0 || (!loading && query.length > 0))" 
-                            class="absolute left-0 mt-1 w-56 bg-white dark:bg-gray-800 shadow-lg rounded-md z-50 
-                                max-h-60 overflow-y-auto scrollbar-left">
-                            <template x-if="results.length > 0">
-                                <div>
-                                    <template x-for="item in results" :key="item.route">
-                                        <a 
-                                            :href="item.url" 
-                                            class="block px-3 py-1 text-sm hover:bg-[#5e6ffb] hover:text-white dark:hover:bg-[#5e6ffb] dark:hover:text-white dark:text-white"
-                                            x-text="item.label"
-                                        ></a>
-                                    </template>
-                                </div>
+                        <div class="text-xs opacity-50">
+                            <template x-if="item.action === 'index'">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-200">View</span>
                             </template>
-
-                            <template x-if="results.length === 0 && !loading && query.length > 0">
-                                <div class="px-3 py-2 text-sm text-red-500 dark:text-red-400 font-medium flex items-center">
-                                    <svg class="h-4 w-4 mr-1 text-red-500 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                    Nothing found
-                                </div>
+                            <template x-if="item.action === 'create'">
+                                <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded dark:bg-green-900 dark:text-green-200">Create</span>
+                            </template>
+                            <template x-if="item.action === 'edit'">
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-200">Edit</span>
                             </template>
                         </div>
-                    </div>
+                    </a>
+                </template>
+            </div>
+        </template>
+
+        <!-- No Results -->
+        <template x-if="results.length === 0 && !loading && query.length > 0">
+            <div class="px-3 py-4 text-center">
+                <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No results found for "<span x-text="query"></span>"</p>
+                <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Try searching for: users, roles, permissions, articles, etc.</p>
+            </div>
+        </template>
+
+        <!-- Search Tips -->
+        <template x-if="query.length === 0">
+            <div class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
+                <div class="font-medium mb-1">Quick search tips:</div>
+                <div>• Use arrow keys to navigate</div>
+                <div>• Press Enter to select</div>
+                <div>• Press Esc to close</div>
+            </div>
+        </template>
+    </div>
+</div>
 
                     <img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/FFFFFF/user-shield.png" alt="admin" class="mr-2">
                     <span class="font-medium text-white dark:text-gray-200 mr-2">Super Admin</span>

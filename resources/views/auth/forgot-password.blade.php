@@ -7,211 +7,8 @@
     <title>{{ config('app.name', 'RECInc') }} - Password Reset</title>
     <link rel="icon" href="{{ asset('Application-logo/Logo.png') }}" type="image/x-icon" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style type="text/tailwindcss">
-        @layer utilities {
-            * {
-                font-family: 'Inter', sans-serif;
-            }
-            
-            .bg-gradient-blue {
-                background: linear-gradient(135deg, #101966 0%, #5e6ffb 25%, #1A25A1 50%, #101966 100%);
-            }
-
-            .radio-waves {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: -1;
-                overflow: hidden;
-            }
-            .wave {
-                position: absolute;
-                border: 2px solid rgba(255, 255, 255, 0.2);
-                border-radius: 1000px;
-                animation: waveAnimation 8s infinite ease-out;
-            }
-
-            .wave:nth-child(1) {
-                width: 300px;
-                height: 300px;
-                left: -150px;
-                top: -150px;
-                animation-delay: 0s;
-            }
-            .wave:nth-child(2) {
-                width: 500px;
-                height: 500px;
-                left: -250px;
-                top: -250px;
-                animation-delay: 1s;
-            }
-            .wave:nth-child(3) {
-                width: 700px;
-                height: 700px;
-                left: -350px;
-                top: -350px;
-                animation-delay: 2s;
-            }
-            .wave:nth-child(4) {
-                width: 900px;
-                height: 900px;
-                left: -450px;
-                top: -450px;
-                animation-delay: 3s;
-            }
-
-            .wave:nth-child(5) {
-                width: 300px;
-                height: 300px;
-                right: -150px;
-                bottom: -150px;
-                animation-delay: 0.5s;
-            }
-            .wave:nth-child(6) {
-                width: 500px;
-                height: 500px;
-                right: -250px;
-                bottom: -250px;
-                animation-delay: 1.5s;
-            }
-            .wave:nth-child(7) {
-                width: 700px;
-                height: 700px;
-                right: -350px;
-                bottom: -350px;
-                animation-delay: 2.5s;
-            }
-            .wave:nth-child(8) {
-                width: 900px;
-                height: 900px;
-                right: -450px;
-                bottom: -450px;
-                animation-delay: 3.5s;
-            }
-            @keyframes waveAnimation {
-                0% {
-                    transform: scale(0.5);
-                    opacity: 0;
-                }
-                50% {
-                    opacity: 0.4;
-                }
-                100% {
-                    transform: scale(1.5);
-                    opacity: 0;
-                }
-            }
-
-            .modern-btn {
-                background: linear-gradient(135deg, #1A25A1, #101966);
-                border: none;
-                border-radius: 12px;
-                color: white;
-                font-weight: 600;
-                padding: 14px 28px;
-                position: relative;
-                overflow: hidden;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                box-shadow: 0 8px 32px rgba(94, 111, 251, 0.3);
-            }
-
-            .modern-btn:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 12px 40px rgba(94, 111, 251, 0.4);
-            }
-
-            .modern-btn:active:not(:disabled) {
-                transform: translateY(0);
-            }
-
-            .modern-btn:disabled {
-                opacity: 0.7;
-                cursor: not-allowed;
-                transform: none;
-                box-shadow: 0 8px 32px rgba(94, 111, 251, 0.2);
-            }
-
-            .modern-btn::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-                transition: left 0.5s;
-            }
-
-            .modern-btn:hover:not(:disabled)::before {
-                left: 100%;
-            }
-
-            .glass-card {
-                background: rgba(255, 255, 255, 0.1);
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            }
-
-            .modern-input {
-                background: rgba(255, 255, 255, 0.1);
-                border: 2px solid rgba(255, 255, 255, 0.2);
-                border-radius: 12px;
-                color: white;
-                padding: 16px 20px;
-                transition: all 0.3s ease;
-                backdrop-filter: blur(10px);
-            }
-
-            .modern-input:focus {
-                outline: none;
-                border-color: #5e6ffb;
-                background: rgba(255, 255, 255, 0.15);
-                box-shadow: 0 0 0 4px rgba(94, 111, 251, 0.1);
-            }
-
-            .modern-input::placeholder {
-                color: rgba(255, 255, 255, 0.6);
-            }
-
-            .floating {
-                animation: floating 6s ease-in-out infinite;
-            }
-
-            @keyframes floating {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-10px); }
-            }
-
-            .slide-in {
-                animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            @keyframes slideIn {
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .slide-in:nth-child(1) { animation-delay: 0.1s; }
-            .slide-in:nth-child(2) { animation-delay: 0.2s; }
-            .slide-in:nth-child(3) { animation-delay: 0.3s; }
-            .slide-in:nth-child(4) { animation-delay: 0.4s; }
-            .slide-in:nth-child(5) { animation-delay: 0.5s; }
-            
-            .countdown-text {
-                color: rgba(255, 255, 255, 0.8);
-                font-size: 0.9rem;
-                margin-top: 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @vite(['resources/css/forgot-password.css', 'resources/js/forgot-password.js'])
 </head>
 <body class="bg-gradient-blue min-h-screen">
     <div class="radio-waves">
@@ -249,7 +46,7 @@
                 </div>
 
                 <a href="{{ url('/') }}" 
-                    class="pr-6 bg-white/20 hover:bg-white/30 text-white font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 dark:bg-gray-700/60 dark:hover:bg-gray-600/60 dark:text-gray-200">
+                    class="hidden sm:flex pr-6 bg-white/20 hover:bg-white/30 text-white font-medium px-4 py-2 rounded-full items-center space-x-2 transition-all duration-300 dark:bg-gray-700/60 dark:hover:bg-gray-600/60 dark:text-gray-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -265,6 +62,11 @@
         <div class="w-full max-w-md">
             <!-- Welcome Section -->
             <div class="text-center mb-8 slide-in">
+                <div class="floating mb-4">
+                    <div class="glass-card p-4 rounded-full inline-block">
+                        <i class="fas fa-key text-white text-4xl"></i>
+                    </div>
+                </div>
                 <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3 dark:text-white">Password Reset</h2>
                 <p class="text-white/80 text-lg dark:text-gray-300">Enter your email to receive reset instructions</p>
             </div>
@@ -274,12 +76,16 @@
                 
                 <!-- Information Text -->
                 <div class="mb-6 p-4 bg-[#101966] backdrop-blur-sm border border-blue-400/30 rounded-xl text-white/90 text-sm slide-in dark:bg-blue-600/20 dark:border-blue-500/30 text-justify">
-                    {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+                    <p class="flex items-start">
+                        <i class="fas fa-info-circle mt-1 mr-2"></i>
+                        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+                    </p>
                 </div>
 
                 <!-- Session Status -->
                 @if (session('status'))
-                    <div class="mb-6 p-4 bg-green-500/20 backdrop-blur-sm border border-green-400/30 rounded-xl text-white font-medium dark:bg-green-600/20 dark:border-green-500/30">
+                    <div class="success-notification mb-6 p-4 bg-green-500/20 backdrop-blur-sm border border-green-400/30 rounded-xl text-white font-medium dark:bg-green-600/20 dark:border-green-500/30 slide-in">
+                        <i class="fas fa-check-circle mr-2"></i>
                         {{ session('status') }}
                     </div>
                 @endif
@@ -287,33 +93,65 @@
                 <form method="POST" action="{{ route('password.email') }}" class="space-y-6" id="passwordResetForm">
                     @csrf
 
-                    <!-- Email Field -->
-                    <div class="slide-in">
-                        <label for="email" class="block text-white font-medium mb-3 text-sm dark:text-gray-200">Email Address</label>
-                        <input 
-                            id="email" 
-                            class="modern-input w-full text-white placeholder-white/60 dark:bg-gray-700/50 dark:border-gray-600 dark:placeholder-gray-400/60 dark:text-white" 
-                            type="email" 
-                            name="email" 
-                            value="{{ old('email') }}" 
-                            required 
-                            autofocus 
-                            placeholder="Enter your email address" 
-                        />
-                        @error('email')
-                            <p class="mt-2 text-sm text-red-300 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <!-- Email Field -->
+                <div class="slide-in">
+                    <label for="email" class="block text-white font-medium mb-3 text-sm flex items-center dark:text-gray-200">
+                        <!-- Email Icon -->
+                        <svg class="w-4 h-4 mr-2 text-white/70 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                        Email Address <span class="text-red-400 ml-1">*</span>
+                    </label>
+                    <input 
+                        id="email" 
+                        class="modern-input w-full text-white placeholder-white/60 dark:bg-gray-700/50 dark:border-gray-600 dark:placeholder-gray-400/60 dark:text-white" 
+                        type="email" 
+                        name="email" 
+                        value="{{ old('email') }}" 
+                        required 
+                        autofocus 
+                        placeholder="Enter your email address" 
+                    />
+                    @error('email')
+                        <p class="mt-2 text-sm text-red-300 dark:text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <!-- Submit Button -->
-                    <div class="slide-in">
-                        <button type="submit" 
-                                id="submitBtn"
-                                class="modern-btn w-full font-semibold text-lg dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-600">
-                            {{ __('Email Password Reset Link') }}
-                        </button>
-                        <div id="countdown" class="countdown-text text-center hidden">
-                            Please wait <span id="countdown-timer">60</span> seconds before requesting another email.
+
+                <!-- Submit Button -->
+                <div class="slide-in">
+                    <button type="submit" 
+                            id="submitBtn"
+                            class="modern-btn w-full font-semibold text-lg pulse dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-600">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        {{ __('Email Password Reset Link') }}
+                    </button>
+                </div>
+
+                    <!-- Enhanced Countdown Container -->
+                    <div id="countdownContainer" class="hidden slide-in">
+                        <div class="glass-card p-6 rounded-xl">
+                            <p class="text-white/90 mb-4 flex items-center justify-center text-sm">
+                                <i class="fas fa-clock mr-2 text-blue-300"></i>
+                                Please wait before requesting another reset email
+                            </p>
+                            
+                            <div class="flex justify-center items-center space-x-4 mb-4">
+                                <div class="text-center">
+                                    <div class="countdown-digit text-xl" id="minutes">01</div>
+                                    <div class="text-xs text-white/60 mt-1">Minutes</div>
+                                </div>
+                                <div class="text-xl text-white/60">:</div>
+                                <div class="text-center">
+                                    <div class="countdown-digit text-xl" id="seconds">00</div>
+                                    <div class="text-xs text-white/60 mt-1">Seconds</div>
+                                </div>
+                            </div>
+                            
+                            <div class="relative w-full h-2 bg-white/20 rounded-full overflow-hidden">
+                                <div id="progressBar" class="absolute h-2 progress-bar" style="width: 100%"></div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -324,6 +162,7 @@
                 <div class="text-center slide-in">
                     <a href="{{ route('login') }}" 
                        class="inline-flex items-center justify-center w-full px-6 py-3 border-2 border-white/30 rounded-xl text-white font-medium hover:bg-white/10 transition-all duration-300 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700/50">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
                         Back to Login
                     </a>
                 </div>
@@ -364,79 +203,5 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        // Add entrance animations on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const elements = document.querySelectorAll('.slide-in');
-            elements.forEach((el, index) => {
-                setTimeout(() => {
-                    el.style.animationDelay = `${index * 0.1}s`;
-                    el.classList.add('animate');
-                }, 100);
-            });
-            
-            // Check if we need to start a countdown (if user recently submitted a request)
-            checkExistingTimer();
-        });
-        
-        // Timer functionality to prevent spam
-        const TIMER_DURATION = 60; // 60 seconds
-        let countdownInterval = null;
-        
-        function checkExistingTimer() {
-            const endTime = localStorage.getItem('passwordResetTimer');
-            if (endTime) {
-                const remaining = Math.ceil((endTime - Date.now()) / 1000);
-                if (remaining > 0) {
-                    startCountdown(remaining);
-                } else {
-                    localStorage.removeItem('passwordResetTimer');
-                }
-            }
-        }
-        
-        function startCountdown(seconds = TIMER_DURATION) {
-            const submitBtn = document.getElementById('submitBtn');
-            const countdownEl = document.getElementById('countdown');
-            const countdownTimer = document.getElementById('countdown-timer');
-            
-            // Disable the button and show countdown
-            submitBtn.disabled = true;
-            countdownEl.classList.remove('hidden');
-            
-            // Store the end time in localStorage
-            const endTime = Date.now() + (seconds * 1000);
-            localStorage.setItem('passwordResetTimer', endTime);
-            
-            // Update the countdown every second
-            let timeLeft = seconds;
-            countdownTimer.textContent = timeLeft;
-            
-            countdownInterval = setInterval(() => {
-                timeLeft--;
-                countdownTimer.textContent = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    submitBtn.disabled = false;
-                    countdownEl.classList.add('hidden');
-                    localStorage.removeItem('passwordResetTimer');
-                }
-            }, 1000);
-        }
-        
-        // Add form submission handler
-        document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
-            // If button is already disabled, prevent submission
-            if (document.getElementById('submitBtn').disabled) {
-                e.preventDefault();
-                return;
-            }
-            
-            // Start the countdown timer
-            startCountdown();
-        });
-    </script>
 </body>
 </html>

@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .bg-gradient-blue {
+        background: linear-gradient(135deg, #101966 0%, #5e6ffb 25%, #1A25A1 50%, #101966 100%);
+    }
+
+    .radio-waves {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    .wave {
+        position: absolute;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 1000px;
+        animation: waveAnimation 8s infinite ease-out;
+    }
+
+    .wave:nth-child(1) {
+        width: 300px;
+        height: 300px;
+        left: -150px;
+        top: -150px;
+        animation-delay: 0s;
+    }
+    .wave:nth-child(2) {
+        width: 500px;
+        height: 500px;
+        left: -250px;
+        top: -250px;
+        animation-delay: 1s;
+    }
+    .wave:nth-child(3) {
+        width: 700px;
+        height: 700px;
+        left: -350px;
+        top: -350px;
+        animation-delay: 2s;
+    }
+    .wave:nth-child(4) {
+        width: 900px;
+        height: 900px;
+        left: -450px;
+        top: -450px;
+        animation-delay: 3s;
+    }
+
+    .wave:nth-child(5) {
+        width: 300px;
+        height: 300px;
+        right: -150px;
+        bottom: -150px;
+        animation-delay: 0.5s;
+    }
+    .wave:nth-child(6) {
+        width: 500px;
+        height: 500px;
+        right: -250px;
+        bottom: -250px;
+        animation-delay: 1.5s;
+    }
+    .wave:nth-child(7) {
+        width: 700px;
+        height: 700px;
+        right: -350px;
+        bottom: -350px;
+        animation-delay: 2.5s;
+    }
+    .wave:nth-child(8) {
+        width: 900px;
+        height: 900px;
+        right: -450px;
+        bottom: -450px;
+        animation-delay: 3.5s;
+    }
+    @keyframes waveAnimation {
+        0% {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+        50% {
+            opacity: 0.4;
+        }
+        100% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+    }
+
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        color: white;
+        padding: 16px 20px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .modern-input:focus {
+        outline: none;
+        border-color: #5e6ffb;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 4px rgba(94, 111, 251, 0.1);
+    }
+
+    .modern-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .floating {
+        animation: floating 6s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .slide-in {
+        animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    @keyframes slideIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .slide-in:nth-child(1) { animation-delay: 0.1s; }
+    .slide-in:nth-child(2) { animation-delay: 0.2s; }
+    .slide-in:nth-child(3) { animation-delay: 0.3s; }
+    .slide-in:nth-child(4) { animation-delay: 0.4s; }
+    .slide-in:nth-child(5) { animation-delay: 0.5s; }
+
+    .validation-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2px;
+    }
+
+    .validation-icon {
+        margin-right: 8px;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 0.6rem;
+        font-weight: bold;
+    }
+
+    .validation-icon.valid {
+        background-color: rgba(72, 187, 120, 0.2);
+        color: #48bb78;
+    }
+
+    .validation-icon.invalid {
+        background-color: rgba(245, 101, 101, 0.2);
+        color: #f56565;
+    }
+
+    .password-strength-meter {
+        height: 6px;
+        width: 100%;
+        margin-top: 8px;
+        border-radius: 3px;
+        background-color: rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        display: none;
+    }
+
+    .password-strength-meter-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 3px;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+   .password-strength-text {
+        font-size: 0.75rem;
+        margin-top: 4px;
+        text-align: right;
+        height: 16px;
+        display: none;
+    }
+
+    .validation-list {
+        margin-top: 8px;
+        padding-left: 16px;
+        font-size: 0.75rem;
+    }
+    
+    .password-validation-container {
+        position: relative;
+    }
+    
+    #passwordValidationTooltip {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: 100%;
+        z-index: 20;
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e2e8f0;
+    }
+    
+    #passwordValidationTooltip .text-sm {
+        color: #2d3748;
+        font-weight: 600;
+    }
+    
+    #passwordValidationTooltip .text-xs {
+        color: #4a5568;
+    }
+
+    .password-toggle {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .password-field:not(:placeholder-shown) + .password-toggle-container .password-toggle {
+        opacity: 1;
+    }
+    @media (max-width: 768px) {
+        #passwordValidationTooltip {
+            z-index: 50;
+        }
+    }
+
+    /* Radio Wave Loader */
+    @keyframes radio-wave {
+        0% {
+            transform: scale(1);
+            opacity: 0.8;
+        }
+        70% {
+            transform: scale(3);
+            opacity: 0.2;
+        }
+        100% {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    .animate-wave {
+        animation: radio-wave 2s infinite ease-out;
+    }
+
+    .delay-200 {
+        animation-delay: 0.4s;
+    }
+
+    .delay-400 {
+        animation-delay: 0.8s;
+    }

@@ -1,331 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>RECInc - Email Verification</title>
+    <link rel="icon" href="https://example.com/Application-logo/Logo.png" type="image/x-icon" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {"50":"#eff6ff","100":"#dbeafe","200":"#bfdbfe","300":"#93c5fd","400":"#60a5fa","500":"#3b82f6","600":"#2563eb","700":"#1d4ed8","800":"#1e40af","900":"#1e3a8a"}
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .countdown-digit {
-            background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-weight: bold;
-            box-shadow: 3px 3px 6px #d1d1d1, -3px -3px 6px #ffffff;
-        }
-        .dark .countdown-digit {
-            background: linear-gradient(145deg, #2d3748, #1a202c);
-            box-shadow: 3px 3px 6px #1a202c, -3px -3px 6px #2d3748;
-        }
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .progress-ring {
-            transition: stroke-dashoffset 0.5s;
-            transform: rotate(-90deg);
-        }
-    </style>
+    @vite(['resources/css/verify-email.css', 'resources/js/verify-email.js'])
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md mx-auto">
-        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-center">
-                <div class="flex justify-center mb-4">
-                    <div class="bg-white p-3 rounded-full">
-                        <i class="fas fa-envelope text-blue-500 text-3xl"></i>
+<body class="bg-gradient-blue min-h-screen">
+    <div class="radio-waves">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10">
+        <nav class="px-6 py-4">
+            <div class="flex items-center justify-between w-full">
+                <!-- Logo + Title -->
+                <div class="flex items-center space-x-6 pl-6">
+                    <div class="relative">
+                        <img src="{{ asset('Application-logo/Logo.png') }}" alt="REC Logo" class="w-12 h-12 sm:w-14 sm:h-14 object-contain">
+                        <div class="absolute -inset-2 bg-white/10 rounded-full blur-md"></div>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-lg sm:text-xl">
+                            Radio Engineering Circle Inc.
+                        </h1>
+                        <p class="text-white/70 text-sm">
+                            DZ1REC — Connecting Radio Enthusiasts
+                        </p>
                     </div>
                 </div>
-                <h1 class="text-2xl font-bold text-white">Verify Your Email</h1>
-                <p class="text-blue-100 mt-2">Secure access to your account</p>
             </div>
-            
-            <!-- Content -->
-            <div class="p-6">
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center px-6 py-8">
+        <div class="w-full max-w-md">
+            <!-- Welcome Section -->
+            <div class="text-center mb-8 slide-in">
+                <div class="floating mb-4">
+                    <div class="glass-card p-4 rounded-full inline-block">
+                        <i class="fas fa-envelope text-white text-4xl"></i>
+                    </div>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3">Verify Your Email</h2>
+                <p class="text-white/80 text-lg">Secure access to your member portal</p>
+            </div>
+
+            <!-- Verification Content -->
+            <div class="glass-card rounded-2xl p-8 slide-in">
+                <!-- Success Message (if verification link was sent) -->
                 @if (session('status') == 'verification-link-sent')
-                    <div class="mb-6 font-medium text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                    <div class="mb-6 font-medium text-sm success-message-dark backdrop-filter backdrop-blur-10 p-4 rounded-lg slide-in">
                         <i class="fas fa-check-circle mr-2"></i>
                         A new verification link has been sent to the email address you provided during registration.
                     </div>
                 @endif
 
-                <div class="mb-6 text-sm text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                    <p class="flex items-start">
-                        <i class="fas fa-info-circle text-blue-500 mt-1 mr-2"></i>
+                <!-- Info Message -->
+                <div class="mb-6 text-sm info-message backdrop-filter bg-[#101966] text-white/80 backdrop-blur-10 p-4 rounded-lg slide-in">
+                    <p class="flex items-start text-justify">
+                        <i class="fas fa-info-circle mt-1 mr-2"></i>
                         Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.
                     </p>
                 </div>
 
-                <div id="statusMessage" class="hidden mb-6 font-medium text-sm p-4 rounded-lg">
+                <!-- Status Message (for AJAX responses) -->
+                <div id="statusMessage" class="hidden mb-6 font-medium text-sm p-4 rounded-lg backdrop-filter backdrop-blur-10">
                     <i class="fas mr-2" id="statusIcon"></i>
                     <span id="statusText"></span>
                 </div>
 
-                <div class="mt-6 flex flex-col space-y-4">
-                    <!-- Resend Button with Countdown -->
-                    <div class="text-center">
+                <div class="space-y-6">
+                    <!-- Resend Button -->
+                    <div class="slide-in">
                         <form method="POST" action="{{ route('verification.send') }}" id="resendForm">
                             @csrf
-                            <button type="submit" id="resendButton" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 pulse flex items-center justify-center">
+                            <button type="submit" id="resendButton" 
+                                    class="modern-btn w-full font-semibold text-lg pulse">
                                 <i class="fas fa-paper-plane mr-2"></i>
                                 Resend Verification Email
                             </button>
                         </form>
-                        
-                        <div id="countdownContainer" class="hidden mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <p class="text-gray-600 dark:text-gray-300 mb-3 flex items-center justify-center">
-                                <i class="fas fa-clock mr-2 text-blue-500"></i>
+                    </div>
+
+                    <!-- Countdown Container -->
+                    <div id="countdownContainer" class="hidden slide-in">
+                        <div class="glass-card p-6 rounded-xl">
+                            <p class="text-white/90 mb-4 flex items-center justify-center text-sm">
+                                <i class="fas fa-clock mr-2 text-blue-300"></i>
                                 Please wait before requesting another email
                             </p>
                             
                             <div class="flex justify-center items-center space-x-4 mb-4">
                                 <div class="text-center">
-                                    <div class="countdown-digit text-xl text-gray-800 dark:text-white" id="minutes">02</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Minutes</div>
+                                    <div class="countdown-digit text-xl" id="minutes">02</div>
+                                    <div class="text-xs text-white/60 mt-1">Minutes</div>
                                 </div>
-                                <div class="text-xl text-gray-500 dark:text-gray-300">:</div>
+                                <div class="text-xl text-white/60">:</div>
                                 <div class="text-center">
-                                    <div class="countdown-digit text-xl text-gray-800 dark:text-white" id="seconds">00</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Seconds</div>
+                                    <div class="countdown-digit text-xl" id="seconds">00</div>
+                                    <div class="text-xs text-white/60 mt-1">Seconds</div>
                                 </div>
                             </div>
                             
-                            <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-full">
-                                <div id="progressBar" class="absolute h-2 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full" style="width: 100%"></div>
+                            <div class="relative w-full h-2 bg-white/20 rounded-full overflow-hidden">
+                                <div id="progressBar" class="absolute h-2 progress-bar" style="width: 100%"></div>
                             </div>
                         </div>
                     </div>
-                    
+
+                    <div class="my-6 border-t border-white/30"></div>
+
                     <!-- Log Out Button -->
-                    <div class="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="slide-in">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-300 flex items-center justify-center mx-auto">
+                            <button type="submit" 
+                                    class="inline-flex items-center justify-center w-full px-6 py-3 border-2 border-white/30 rounded-xl text-white font-medium hover:bg-white/10 transition-all duration-300">
                                 <i class="fas fa-sign-out-alt mr-2"></i>
-                                Log Out
+                                Back to Home
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
-            
-            <!-- Footer -->
-            <div class="bg-gray-50 dark:bg-gray-700/30 p-4 text-center text-xs text-gray-500 dark:text-gray-400">
-                <p>© 2023 REC-ON. All rights reserved.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 py-8">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center">
+                <div class="flex justify-center space-x-6 mb-6">
+                    <a href="#" class="group">
+                        <div class="glass-card p-3 rounded-full group-hover:bg-white/20 transition-all duration-300">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="#" class="group">
+                        <div class="glass-card p-3 rounded-full group-hover:bg-white/20 transition-all duration-300">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="#" class="group">
+                        <div class="glass-card p-3 rounded-full group-hover:bg-white/20 transition-all duration-300">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.40-1.439-1.40z"/>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <p class="text-white/70 text-sm">
+                    &copy; 2023 Radio Engineering Circle Inc. All rights reserved.
+                </p>
             </div>
         </div>
-        
-        <!-- Dark Mode Toggle -->
-        <div class="mt-6 text-center">
-            <button id="themeToggle" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-300">
-                <i class="fas fa-moon"></i> Toggle Dark Mode
-            </button>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const resendForm = document.getElementById('resendForm');
-            const resendButton = document.getElementById('resendButton');
-            const countdownContainer = document.getElementById('countdownContainer');
-            const minutesElement = document.getElementById('minutes');
-            const secondsElement = document.getElementById('seconds');
-            const progressBar = document.getElementById('progressBar');
-            const statusMessage = document.getElementById('statusMessage');
-            const statusText = document.getElementById('statusText');
-            const statusIcon = document.getElementById('statusIcon');
-            const themeToggle = document.getElementById('themeToggle');
-            
-            let countdownInterval;
-            const COUNTDOWN_TIME = 120; // 120 seconds = 2 minutes
-            
-            // Check if we need to start the countdown (if the button was recently clicked)
-            checkExistingCountdown();
-            
-            // Set up event listeners
-            resendForm.addEventListener('submit', handleResendSubmit);
-            themeToggle.addEventListener('click', toggleTheme);
-            
-            async function handleResendSubmit(e) {
-                e.preventDefault();
-                
-                // Show loading state
-                resendButton.disabled = true;
-                resendButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
-                
-                try {
-                    // Make an AJAX request to your backend endpoint
-                    const response = await fetch('{{ route("verification.send") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({}),
-                        credentials: 'same-origin'
-                    });
-                    
-                    if (response.ok) {
-                        // Show success message
-                        showStatus('A new verification link has been sent to the email address you provided during registration.', 'success');
-                        
-                        // Disable the button and show countdown
-                        resendButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Resend Verification Email';
-                        resendButton.disabled = true;
-                        resendButton.classList.remove('pulse');
-                        resendButton.classList.add('opacity-75', 'cursor-not-allowed');
-                        countdownContainer.classList.remove('hidden');
-                        
-                        // Store the timestamp in localStorage to persist across page refreshes
-                        const now = new Date().getTime();
-                        localStorage.setItem('resendCooldown', now);
-                        
-                        // Start the countdown
-                        startCountdown();
-                        
-                        // Reload the page to show the server-side status message
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000);
-                    } else {
-                        // Show error message
-                        showStatus('Failed to send verification email. Please try again.', 'error');
-                        resendButton.disabled = false;
-                        resendButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Resend Verification Email';
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showStatus('An error occurred. Please try again.', 'error');
-                    resendButton.disabled = false;
-                    resendButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Resend Verification Email';
-                }
-            }
-            
-            function showStatus(message, type) {
-                statusText.textContent = message;
-                statusMessage.classList.remove('hidden');
-                
-                if (type === 'success') {
-                    statusMessage.classList.remove('bg-red-50', 'text-red-600', 'dark:bg-red-900/20', 'dark:text-red-400');
-                    statusMessage.classList.add('bg-green-50', 'text-green-600', 'dark:bg-green-900/20', 'dark:text-green-400');
-                    statusIcon.classList.remove('fa-exclamation-circle');
-                    statusIcon.classList.add('fa-check-circle');
-                } else {
-                    statusMessage.classList.remove('bg-green-50', 'text-green-600', 'dark:bg-green-900/20', 'dark:text-green-400');
-                    statusMessage.classList.add('bg-red-50', 'text-red-600', 'dark:bg-red-900/20', 'dark:text-red-400');
-                    statusIcon.classList.remove('fa-check-circle');
-                    statusIcon.classList.add('fa-exclamation-circle');
-                }
-                
-                // Auto-hide after 5 seconds
-                setTimeout(() => {
-                    statusMessage.classList.add('hidden');
-                }, 5000);
-            }
-            
-            function startCountdown() {
-                let timeLeft = COUNTDOWN_TIME;
-                const totalTime = COUNTDOWN_TIME;
-                
-                updateCountdownDisplay(timeLeft);
-                
-                // Update the countdown every second
-                countdownInterval = setInterval(function() {
-                    timeLeft--;
-                    updateCountdownDisplay(timeLeft);
-                    
-                    // Update progress bar
-                    const progressPercent = (timeLeft / totalTime) * 100;
-                    progressBar.style.width = `${progressPercent}%`;
-                    
-                    if (timeLeft <= 0) {
-                        clearInterval(countdownInterval);
-                        resendButton.disabled = false;
-                        resendButton.classList.remove('opacity-75', 'cursor-not-allowed');
-                        resendButton.classList.add('pulse');
-                        countdownContainer.classList.add('hidden');
-                        localStorage.removeItem('resendCooldown');
-                    }
-                }, 1000);
-            }
-            
-            function updateCountdownDisplay(seconds) {
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = seconds % 60;
-                
-                minutesElement.textContent = minutes.toString().padStart(2, '0');
-                secondsElement.textContent = remainingSeconds.toString().padStart(2, '0');
-            }
-            
-            function checkExistingCountdown() {
-                const storedTime = localStorage.getItem('resendCooldown');
-                if (storedTime) {
-                    const now = new Date().getTime();
-                    const elapsedTime = Math.floor((now - parseInt(storedTime)) / 1000);
-                    const timeLeft = COUNTDOWN_TIME - elapsedTime;
-                    
-                    if (timeLeft > 0) {
-                        // Continue the countdown from where it left off
-                        resendButton.disabled = true;
-                        resendButton.classList.remove('pulse');
-                        resendButton.classList.add('opacity-75', 'cursor-not-allowed');
-                        countdownContainer.classList.remove('hidden');
-                        
-                        // Calculate progress
-                        const progressPercent = (timeLeft / COUNTDOWN_TIME) * 100;
-                        progressBar.style.width = `${progressPercent}%`;
-                        
-                        updateCountdownDisplay(timeLeft);
-                        startCountdown();
-                    } else {
-                        // Clear the stored time if it's expired
-                        localStorage.removeItem('resendCooldown');
-                    }
-                }
-            }
-            
-            function toggleTheme() {
-                const html = document.documentElement;
-                if (html.classList.contains('dark')) {
-                    html.classList.remove('dark');
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> Toggle Dark Mode';
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    html.classList.add('dark');
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Toggle Light Mode';
-                    localStorage.setItem('theme', 'dark');
-                }
-            }
-            
-            // Check for saved theme preference
-            if (localStorage.getItem('theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Toggle Light Mode';
-            }
-        });
-    </script>
+    </footer>
 </body>
 </html>
