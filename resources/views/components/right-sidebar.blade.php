@@ -51,7 +51,7 @@
             <div class="grid grid-cols-2 gap-3 md:gap-4">
                 <!-- Add Applicant -->
                 <div class="group sidebar-item animate" style="animation-delay: 0.15s">
-                    <a href="#"
+                    <a href="{{ route('applicants.showApplicantCreateForm') }}" 
                     class="action-card block p-2 md:p-3 bg-white/10 hover:bg-white/20 dark:bg-gray-800/40 dark:hover:bg-gray-700/50 rounded-lg border border-white/10 dark:border-gray-700 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 backdrop-blur-sm">
                         <div class="flex flex-col items-center text-center">
                             <div class="w-6 h-6 md:w-8 md:h-8 bg-emerald-500/20 dark:bg-emerald-600/30 rounded-md flex items-center justify-center mb-1 md:mb-2 group-hover:bg-emerald-500/30 dark:group-hover:bg-emerald-600/40 transition-colors">
@@ -67,7 +67,7 @@
 
                 <!-- Add Member -->
                 <div class="group sidebar-item animate" style="animation-delay: 0.2s">
-                    <a href="#"
+                    <a href="{{ route('members.showMemberCreateForm') }}" 
                     class="action-card block p-2 md:p-3 bg-white/10 hover:bg-white/20 dark:bg-gray-800/40 dark:hover:bg-gray-700/50 rounded-lg border border-white/10 dark:border-gray-700 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 backdrop-blur-sm">
                         <div class="flex flex-col items-center text-center">
                             <div class="w-6 h-6 md:w-8 md:h-8 bg-blue-500/20 dark:bg-blue-600/30 rounded-md flex items-center justify-center mb-1 md:mb-2 group-hover:bg-blue-500/30 dark:group-hover:bg-blue-600/40 transition-colors">

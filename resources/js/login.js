@@ -1,38 +1,49 @@
-// Password visibility toggle functionality
-function handlePasswordInput(input) {
-    const toggleButton = document.getElementById('password-toggle');
-    
-    if (input.value.length > 0) {
-        toggleButton.classList.add('show');
-    } else {
-        toggleButton.classList.remove('show');
-        
-        input.type = 'password';
-        document.getElementById('eye-icon').classList.remove('hidden');
-        document.getElementById('eye-slash-icon').classList.add('hidden');
-    }
-}
-
-function togglePasswordVisibility() {
+// login.js
+document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('password');
+    const toggleButton = document.getElementById('password-toggle');
     const eyeIcon = document.getElementById('eye-icon');
     const eyeSlashIcon = document.getElementById('eye-slash-icon');
-    
-    if (!passwordInput || !eyeIcon || !eyeSlashIcon) return;
-    
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        eyeIcon.classList.add('hidden');
-        eyeSlashIcon.classList.remove('hidden');
-    } else {
-        passwordInput.type = 'password';
+    const emailInput = document.getElementById("email");
+    const recaptchaWrapper = document.getElementById("recaptcha-wrapper");
+    const form = document.getElementById("login-form");
+    const loader = document.getElementById("loading-screen");
+
+    // --- Password visibility toggle ---
+    if (passwordInput && toggleButton && eyeIcon && eyeSlashIcon) {
+        // ensure initial state: toggle hidden
+        toggleButton.classList.remove('show');
         eyeIcon.classList.remove('hidden');
         eyeSlashIcon.classList.add('hidden');
-    }
-}
 
-// Initialize all functionality when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+        // show/hide toggle button only if input has value
+        passwordInput.addEventListener('input', (e) => {
+            if (e.target.value.trim().length > 0) {
+                toggleButton.classList.add('show');
+            } else {
+                toggleButton.classList.remove('show');
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeSlashIcon.classList.add('hidden');
+            }
+        });
+
+        // toggle visibility on button click
+        toggleButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.add('hidden');
+                eyeSlashIcon.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeSlashIcon.classList.add('hidden');
+            }
+        });
+    }
+
+    // --- Slide-in animations ---
     const elements = document.querySelectorAll('.slide-in');
     elements.forEach((el, index) => {
         setTimeout(() => {
@@ -41,11 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
 
-    // Show reCAPTCHA only when both email and password fields are filled
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const recaptchaWrapper = document.getElementById("recaptcha-wrapper");
-
+    // --- reCAPTCHA toggle ---
     function toggleRecaptcha() {
         if (emailInput.value.trim() !== "" && passwordInput.value.trim() !== "") {
             recaptchaWrapper.classList.remove("hidden");
@@ -56,24 +63,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    emailInput.addEventListener("input", toggleRecaptcha);
-    passwordInput.addEventListener("input", toggleRecaptcha);
+    if (emailInput && passwordInput && recaptchaWrapper) {
+        emailInput.addEventListener("input", toggleRecaptcha);
+        passwordInput.addEventListener("input", toggleRecaptcha);
+    }
 
-    // Show loader on login submit
-    const form = document.getElementById("login-form");
-    const loader = document.getElementById("loading-screen");
-    const submitBtn = document.getElementById("submit-btn");
-
-    if (form && loader && submitBtn) {
+    // --- Loader on submit ---
+    if (form && loader) {
         form.addEventListener("submit", (e) => {
-            const recaptchaResponse = grecaptcha.getResponse();
-            
-            if (!recaptchaResponse) {
-                e.preventDefault();
-                alert('Please complete the reCAPTCHA verification.');
-                return false;
+            // if reCAPTCHA is used
+            if (typeof grecaptcha !== 'undefined') {
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    e.preventDefault();
+                    alert('Please complete the reCAPTCHA verification.');
+                    return false;
+                }
             }
-            
             loader.classList.remove("hidden");
         });
     }

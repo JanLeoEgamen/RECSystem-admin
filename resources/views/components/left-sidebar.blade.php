@@ -671,7 +671,7 @@
             @canany(['view manual'])
             <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
                 @php
-                    $usersManualActive = request()->routeIs('manual.index');
+                    $usersManualActive = request()->routeIs('manual.view');
                 @endphp  
                 <button 
                     @click.stop="toggleDropdown('usersManual')" 
@@ -703,12 +703,25 @@
                      <div :class="{'dropdown-content open': isDropdownOpen('usersManual'), 'dropdown-content': !isDropdownOpen('usersManual')}"
                           class="ml-6 mt-2 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-2" >
                         @can('view manual')
-                            <x-nav-link :href="route('manual.index')" :active="request()->routeIs('manual.index')" 
+                            <x-nav-link :href="route('manual.view')" :active="request()->routeIs('manual.view')" 
                                 class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('manual.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
                                 transition-transform duration-300 hover:scale-105 active:scale-95">
                                 <img src="https://img.icons8.com/ios-filled/50/FFFFFF/goodnotes.png" 
                                 alt="Documents" class="w-4 h-4 mr-2 object-contain">
                                 <span>{{ __('Documentations') }}</span>
+                            </x-nav-link>
+                        @endcan
+                    </div>
+
+                    <div :class="{'dropdown-content open': isDropdownOpen('usersManual'), 'dropdown-content': !isDropdownOpen('usersManual')}"
+                          class="ml-6 mt-2 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-2" >
+                        @can('view manual')
+                            <x-nav-link :href="route('manual.index')" :active="request()->routeIs('manual.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('manual.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                <img src="https://img.icons8.com/ios-filled/50/FFFFFF/goodnotes.png" 
+                                alt="Documents" class="w-4 h-4 mr-2 object-contain">
+                                <span>{{ __('Documentations Maintenance') }}</span>
                             </x-nav-link>
                         @endcan
                     </div>

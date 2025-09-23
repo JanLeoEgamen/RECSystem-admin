@@ -11,93 +11,188 @@ class GlobalSearchController extends Controller
      * Predefined searchable routes with their display information
      */
     private array $searchableRoutes = [
-        // Event Announcements
-        'event-announcements' => [
-            'index' => ['label' => 'View Event Announcements', 'route' => 'event-announcements.index'],
-            'create' => ['label' => 'Create Event Announcement', 'route' => 'event-announcements.create'],
-            'edit' => ['label' => 'Edit Event Announcement', 'route' => 'event-announcements.edit', 'needs_param' => true],
+        // Activity Logs
+        'activity-logs' => [
+            'index' => ['label' => 'View Activity Logs', 'route' => 'activity-logs.index'],
         ],
-        
-        // Communities
-        'communities' => [
-            'index' => ['label' => 'View Communities', 'route' => 'communities.index'],
-            'create' => ['label' => 'Create Community', 'route' => 'communities.create'],
-            'edit' => ['label' => 'Edit Community', 'route' => 'communities.edit', 'needs_param' => true],
+
+        // Announcements
+        'announcements' => [
+            'index' => ['label' => 'View Announcements', 'route' => 'announcements.index'],
+            'create' => ['label' => 'Create Announcement', 'route' => 'announcements.create'],
         ],
-        
-        // Supporters
-        'supporters' => [
-            'index' => ['label' => 'View Supporters', 'route' => 'supporters.index'],
-            'create' => ['label' => 'Create Supporter', 'route' => 'supporters.create'],
-            'edit' => ['label' => 'Edit Supporter', 'route' => 'supporters.edit', 'needs_param' => true],
+
+        // Applicants
+        'applicants' => [
+            'index' => ['label' => 'View Applicants', 'route' => 'applicants.index'],
+            'create' => ['label' => 'Create Applicant', 'route' => 'applicants.showApplicantCreateForm'],
+            'approved' => ['label' => 'View Approved Applicants', 'route' => 'applicants.approved'],
+            'rejected' => ['label' => 'View Rejected Applicants', 'route' => 'applicants.rejected'],
         ],
-        
-        // FAQs
-        'faqs' => [
-            'index' => ['label' => 'View FAQs', 'route' => 'faqs.index'],
-            'create' => ['label' => 'Create FAQ', 'route' => 'faqs.create'],
-            'edit' => ['label' => 'Edit FAQ', 'route' => 'faqs.edit', 'needs_param' => true],
-        ],
-        
+
         // Articles
         'articles' => [
             'index' => ['label' => 'View Articles', 'route' => 'articles.index'],
             'create' => ['label' => 'Create Article', 'route' => 'articles.create'],
-            'edit' => ['label' => 'Edit Article', 'route' => 'articles.edit', 'needs_param' => true],
         ],
-        
-        // Markees
-        'markees' => [
-            'index' => ['label' => 'View Markees', 'route' => 'markees.index'],
-            'create' => ['label' => 'Create Markee', 'route' => 'markees.create'],
-            'edit' => ['label' => 'Edit Markee', 'route' => 'markees.edit', 'needs_param' => true],
-        ],
-        
-        // Membership Types
-        'membership-types' => [
-            'index' => ['label' => 'View Membership Types', 'route' => 'membership-types.index'],
-            'create' => ['label' => 'Create Membership Type', 'route' => 'membership-types.create'],
-            'edit' => ['label' => 'Edit Membership Type', 'route' => 'membership-types.edit', 'needs_param' => true],
-        ],
-        
+
         // Bureaus
         'bureaus' => [
             'index' => ['label' => 'View Bureaus', 'route' => 'bureaus.index'],
             'create' => ['label' => 'Create Bureau', 'route' => 'bureaus.create'],
-            'edit' => ['label' => 'Edit Bureau', 'route' => 'bureaus.edit', 'needs_param' => true],
         ],
-        
-        // Sections
-        'sections' => [
-            'index' => ['label' => 'View Sections', 'route' => 'sections.index'],
-            'create' => ['label' => 'Create Section', 'route' => 'sections.create'],
-            'edit' => ['label' => 'Edit Section', 'route' => 'sections.edit', 'needs_param' => true],
+
+        // Cashier
+        'cashier' => [
+            'index' => ['label' => 'View Cashier/Payments Table', 'route' => 'cashier.index'],
+            'verified' => ['label' => 'View Verified Payments', 'route' => 'cashier.verified'],
+            'rejected' => ['label' => 'View Rejected Payments', 'route' => 'cashier.rejected'],
         ],
-        
-        // Profile
-        'profile' => [
-            'edit' => ['label' => 'Edit Profile', 'route' => 'profile.edit'],
+
+        // Certificates
+        'certificates' => [
+            'index' => ['label' => 'View Certificates', 'route' => 'certificates.index'],
+            'create' => ['label' => 'Create Certificate', 'route' => 'certificates.create'],
         ],
-        
+
+        // Communities
+        'communities' => [
+            'index' => ['label' => 'View Communities', 'route' => 'communities.index'],
+            'create' => ['label' => 'Create Community', 'route' => 'communities.create'],
+        ],
+
+        // Dashboard
+        'dashboard' => [
+            'dashboard' => ['label' => 'View Dashboard', 'route' => 'dashboard'],
+        ],
+
+        // Documents
+        'documents' => [
+            'index' => ['label' => 'View Documents', 'route' => 'documents.index'],
+            'create' => ['label' => 'Create Document', 'route' => 'documents.create'],
+        ],
+
+        // Email Templates
+        'emails' => [
+            'index' => ['label' => 'View Email Templates', 'route' => 'emails.index'],
+            'create' => ['label' => 'Create Email Template', 'route' => 'emails.create'],
+            'compose' => ['label' => 'Compose Email', 'route' => 'emails.compose'],
+        ],
+
+        // Event Announcements
+        'event-announcements' => [
+            'index' => ['label' => 'View Event Announcements', 'route' => 'event-announcements.index'],
+            'create' => ['label' => 'Create Event Announcement', 'route' => 'event-announcements.create'],
+        ],
+
+        // FAQs
+        'faqs' => [
+            'index' => ['label' => 'View FAQs', 'route' => 'faqs.index'],
+            'create' => ['label' => 'Create FAQ', 'route' => 'faqs.create'],
+        ],
+
+        // Licenses
+        'licenses' => [
+            'index' => ['label' => 'View Licensed Members', 'route' => 'licenses.index'],
+            'unlicensed' => ['label' => 'View Unlicensed Members', 'route' => 'licenses.unlicensed'],
+        ],
+
+        // Main Carousels
+        'main-carousels' => [
+            'index' => ['label' => 'View Main Carousels', 'route' => 'main-carousels.index'],
+            'create' => ['label' => 'Create Main Carousel', 'route' => 'main-carousels.create'],
+        ],
+
+        // Manuals
+        'manual' => [
+            'index' => ['label' => 'View Manuals', 'route' => 'manual.index'],
+        ],
+
+        // Markees
+        'markees' => [
+            'index' => ['label' => 'View Marquees', 'route' => 'markees.index'],
+            'create' => ['label' => 'Create Marquees', 'route' => 'markees.create'],
+        ],
+
+        // Members
+        'members' => [
+            'index' => ['label' => 'View Members', 'route' => 'members.index'],
+            'create' => ['label' => 'Create Member', 'route' => 'members.showMemberCreateForm'],
+            'active' => ['label' => 'View Active Members', 'route' => 'members.active'],
+            'inactive' => ['label' => 'View Inactive Members', 'route' => 'members.inactive'],
+        ],
+
+        // Membership Types
+        'membership-types' => [
+            'index' => ['label' => 'View Membership Types', 'route' => 'membership-types.index'],
+            'create' => ['label' => 'Create Membership Type', 'route' => 'membership-types.create'],
+        ],
+
         // Permissions
         'permissions' => [
             'index' => ['label' => 'View Permissions', 'route' => 'permissions.index'],
             'create' => ['label' => 'Create Permission', 'route' => 'permissions.create'],
-            'edit' => ['label' => 'Edit Permission', 'route' => 'permissions.edit', 'needs_param' => true],
         ],
-        
+
+        // Profile
+        'profile' => [
+            'edit' => ['label' => 'Edit Profile', 'route' => 'profile.edit'],
+        ],
+
+        // Quizzes
+        'quizzes' => [
+            'index' => ['label' => 'View Exams/Quizzes', 'route' => 'quizzes.index'],
+            'create' => ['label' => 'Create Exam/Quiz', 'route' => 'quizzes.create'],
+        ],
+
+        // Renewal
+        'renew' => [
+            'index' => ['label' => 'View Renewal Requests', 'route' => 'renew.index'],
+            'history' => ['label' => 'View Renewal History', 'route' => 'renew.history'],
+        ],
+
+        // Reports
+        'reports' => [
+            'index' => ['label' => 'View Reports Dashboard', 'route' => 'reports.index'],
+            'membership' => ['label' => 'Membership Reports', 'route' => 'reports.membership'],
+            'applicants' => ['label' => 'Applicants Reports', 'route' => 'reports.applicants'],
+            'licenses' => ['label' => 'Licenses Reports', 'route' => 'reports.licenses'],
+            'custom' => ['label' => 'Custom Reports', 'route' => 'reports.custom'],
+        ],
+
         // Roles
         'roles' => [
             'index' => ['label' => 'View Roles', 'route' => 'roles.index'],
             'create' => ['label' => 'Create Role', 'route' => 'roles.create'],
-            'edit' => ['label' => 'Edit Role', 'route' => 'roles.edit', 'needs_param' => true],
         ],
-        
+
+        // Sections
+        'sections' => [
+            'index' => ['label' => 'View Sections', 'route' => 'sections.index'],
+            'create' => ['label' => 'Create Section', 'route' => 'sections.create'],
+        ],
+
+        // Supporters
+        'supporters' => [
+            'index' => ['label' => 'View Supporters', 'route' => 'supporters.index'],
+            'create' => ['label' => 'Create Supporter', 'route' => 'supporters.create'],
+        ],
+
+        // Surveys
+        'surveys' => [
+            'index' => ['label' => 'View Surveys', 'route' => 'surveys.index'],
+            'create' => ['label' => 'Create Survey', 'route' => 'surveys.create'],
+        ],
+
+        // User Logs
+        'user-logs' => [
+            'index' => ['label' => 'View User Logs', 'route' => 'login-logs.index'],
+        ],
+
         // Users
         'users' => [
             'index' => ['label' => 'View Users Table', 'route' => 'users.index'],
             'create' => ['label' => 'Create Users', 'route' => 'users.create'],
-            'edit' => ['label' => 'Edit Users', 'route' => 'users.edit', 'needs_param' => true],
         ],
     ];
 

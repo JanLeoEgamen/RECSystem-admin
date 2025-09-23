@@ -214,16 +214,16 @@
     animation-delay: 0.5s; 
 }
 
-/* Eye icon visibility animation */
 .eye-toggle {
-    opacity: 0;
-    transform: scale(0.8);
-    transition: all 0.2s ease-in-out;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
 }
 
 .eye-toggle.show {
-    opacity: 1;
-    transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Radio Wave Loader */

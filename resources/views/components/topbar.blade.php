@@ -1,6 +1,5 @@
 <!-- TOPBAR.BLADE.PHP -->
  <style>
-/* Custom scrollbar for search results */
 .max-h-80 {
     scrollbar-width: thin;
     scrollbar-color: #5e6ffb transparent;
@@ -179,7 +178,7 @@
             "
             @keydown.escape="showResults = false, selectedIndex = -1, query = ''"
             @focus="if (query.length > 0) showResults = true"
-            placeholder="Search admin features..."
+            placeholder="Search anything..."
             class="pl-8 pr-8 py-1 rounded-md text-black dark:text-white text-sm 
                 focus:ring focus:ring-[#5e6ffb] 
                 dark:bg-gray-900 dark:border dark:border-gray-700 w-56"

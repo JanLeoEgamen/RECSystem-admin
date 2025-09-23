@@ -337,7 +337,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/licenses/{id}', [LicenseController::class, 'show'])->name('licenses.show');
 
 
-        // Announcements
+    // Announcements
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
     Route::get('/announcements/create', [AnnouncementController::class, 'create'])->name('announcements.create');
     Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
@@ -403,7 +403,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cashier/refund-logs', [CashierApplicantController::class, 'refundLogs'])->name('cashier.refund-logs');
     
 
-
     //payement method
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment-methods.index');
     Route::get('/payment-methods/create', [PaymentMethodController::class, 'create'])->name('payment-methods.create');
@@ -434,10 +433,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('backups/cleanup', [BackupController::class, 'cleanup'])->name('backups.cleanup');
 
     //manual
+    Route::get('/manual', [ManualController::class, 'view'])->name('manual.view');
     Route::get('/manual/list', [ManualController::class, 'index'])->name('manual.index');
-    Route::get('/manual/{manual}/assess', [ManualController::class, 'edit'])->name('manual.edit');
+    Route::get('/manual/create', [ManualController::class, 'create'])->name('manual.create');
+    Route::post('/manual', [ManualController::class, 'store'])->name('manual.store');
+    Route::get('/manual/{manual}/edit', [ManualController::class, 'edit'])->name('manual.edit');
     Route::put('/manual/{manual}', [ManualController::class, 'update'])->name('manual.update');
-    Route::get('/manual/history', [ManualController::class, 'history'])->name('manual.history');
+    Route::delete('/manual/{manual}', [ManualController::class, 'destroy'])->name('manual.destroy');
+    Route::get('/manual/search/faq', [ManualController::class, 'searchFaq'])->name('manual.search.faq');
     
     // Member files
     Route::get('/memberfiles', [MemberFileController::class, 'index'])->name('memberfiles.index');
