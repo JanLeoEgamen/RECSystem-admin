@@ -125,9 +125,9 @@
                                 <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
                                         <th class="px-6 py-3 text-center font-medium">#</th>
-                                        <th class="px-6 py-3 text-left font-medium border-l dark:border-gray-700 border-white">Title</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Title</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Type</th>
-                                        <th class="px-6 py-3 text-left font-medium border-l dark:border-gray-700 border-white">Description</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Description</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Status</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Created</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
@@ -317,38 +317,44 @@
                         const row = `
                             <tr class="border-b dark:border-gray-700 table-row-animate table-row-hover">
                                 <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">${rowNumber}</td>
-                                <td class="px-6 py-4 border-l dark:border-gray-700 border-gray-200">
+                                <td class="px-6 py-4 dark:border-gray-700">
                                     <div class="flex items-center">
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900 dark:text-gray-100">${content.title}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-center border-l dark:border-gray-700 border-gray-200">
+                                <td class="px-6 py-4 text-center dark:border-gray-700">
                                     <span class="type-badge ${typeClass}">${typeDisplay}</span>
                                 </td>
-                                <td class="px-6 py-4 border-l dark:border-gray-700 border-gray-200">
+                                <td class="px-6 py-4  dark:border-gray-700 border-gray-200">
                                     <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">${content.description || 'No description'}</div>
                                 </td>
-                                <td class="px-6 py-4 text-center border-l dark:border-gray-700 border-gray-200">${statusBadge}</td>
-                                <td class="px-6 py-4 text-center border-l dark:border-gray-700 border-gray-200">
+                                <td class="px-6 py-4 text-center  dark:border-gray-700">${statusBadge}</td>
+                                <td class="px-6 py-4 text-center  dark:border-gray-700">
                                     <div class="text-sm text-gray-500 dark:text-gray-400">${createdDate}</div>
                                 </td>
-                                <td class="px-6 py-4 text-center border-l dark:border-gray-700 border-gray-200">
+                                <td class="px-6 py-4 text-center dark:border-gray-700">
                                     <div class="flex justify-center space-x-2">
                                         <a href="/manual/${content.id}/edit" 
-                                           class="text-blue-600 hover:text-blue-900 transition-colors duration-200"
-                                           title="Edit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                           class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
                                             </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
                                         </a>
                                         <button onclick="deleteManualContent(${content.id})" 
-                                                class="text-red-600 hover:text-red-900 transition-colors duration-200"
-                                                title="Delete">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
                                             </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
                                         </button>
                                     </div>
                                 </td>

@@ -11,7 +11,7 @@ class ManualController extends Controller
     /**
      * Display the manual view page (public view for users)
      */
-    public function view()
+    public function view(Request $request)
     {
         $tutorialVideos = ManualContent::active()
             ->byType(ManualContent::TYPE_TUTORIAL_VIDEO)
@@ -28,10 +28,11 @@ class ManualController extends Controller
             ->ordered()
             ->get();
 
+        // Paginate support contacts only - 6 per page
         $supportContacts = ManualContent::active()
             ->byType(ManualContent::TYPE_SUPPORT)
             ->ordered()
-            ->get();
+            ->paginate(6, ['*'], 'support_page'); // Use custom page name to avoid conflicts
 
         return view('manual.view', compact('tutorialVideos', 'faqs', 'userGuides', 'supportContacts'));
     }

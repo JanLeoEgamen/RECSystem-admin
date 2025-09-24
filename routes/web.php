@@ -403,7 +403,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cashier/refund-logs', [CashierApplicantController::class, 'refundLogs'])->name('cashier.refund-logs');
     
 
-    //payement method
+    //payments method
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment-methods.index');
     Route::get('/payment-methods/create', [PaymentMethodController::class, 'create'])->name('payment-methods.create');
     Route::post('/payment-methods', [PaymentMethodController::class, 'store'])->name('payment-methods.store');

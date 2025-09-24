@@ -36,6 +36,12 @@ class GlobalSearchController extends Controller
             'create' => ['label' => 'Create Article', 'route' => 'articles.create'],
         ],
 
+        // Back ups
+        'backups' => [
+            'index' => ['label' => 'View Back-ups Table', 'route' => 'backups.index'],
+            'create' => ['label' => 'Create Back-up', 'route' => 'backups.create'],
+        ],
+
         // Bureaus
         'bureaus' => [
             'index' => ['label' => 'View Bureaus', 'route' => 'bureaus.index'],
@@ -105,7 +111,9 @@ class GlobalSearchController extends Controller
 
         // Manuals
         'manual' => [
-            'index' => ['label' => 'View Manuals', 'route' => 'manual.index'],
+            'index' => ['label' => 'View List of Manuals', 'route' => 'manual.index'],
+            'create' => ['label' => 'Create Manual', 'route' => 'manual.create'],
+            'view' => ['label' => 'View Manual/Help Tab', 'route' => 'manual.view'],
         ],
 
         // Markees
@@ -126,6 +134,12 @@ class GlobalSearchController extends Controller
         'membership-types' => [
             'index' => ['label' => 'View Membership Types', 'route' => 'membership-types.index'],
             'create' => ['label' => 'Create Membership Type', 'route' => 'membership-types.create'],
+        ],
+
+        // Payment Methods
+        'payment-methods' => [
+            'index' => ['label' => 'View Payment Methods Table', 'route' => 'payment-methods.index'],
+            'create' => ['label' => 'Create Payment Method', 'route' => 'payment-methods.create'],
         ],
 
         // Permissions

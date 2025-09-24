@@ -75,11 +75,11 @@
             'main-carousels.index', 'markees.index', 'articles.index',
             'event-announcements.index', 'communities.index', 'supporters.index', 'faqs.index',
             'membership-types.index', 'bureaus.index', 'sections.index', 'applicants.index',
-            'reports.index', 'members.index', 'licenses.index', 'renew.index', 'cashier.index',
+            'reports.index', 'members.index', 'licenses.index', 'renew.index', 'cashier.index', 'payment-methods.index',
             'events.index', 'announcements.index', 'surveys.index',
             'quizzes.index', 'certificates.index',
             'emails.index', 'documents.index', 'activity-logs.index', 'login-logs.index',
-            'manual.index', 'profile.edit'   {{-- ✅ manual before profile --}}
+            'manual.index','manual.view', 'profile.edit', 'backups.index'
         ) 
             ? (
                 request()->routeIs('users.index', 'roles.index', 'permissions.index') 
@@ -102,12 +102,16 @@
                                                         request()->routeIs('activity-logs.index', 'login-logs.index')
                                                             ? 'auditTrail'
                                                             : (
-                                                                request()->routeIs('manual.index')   {{-- ✅ placed here --}}
+                                                                request()->routeIs('manual.view', 'manual.index') 
                                                                     ? 'usersManual'
                                                                     : (
-                                                                        request()->routeIs('profile.edit') 
+                                                                        request()->routeIs('profile.edit', 'backups.index') 
                                                                             ? 'profile'
-                                                                            : 'memberManagement'
+                                                                            : (
+                                                                                request()->routeIs('cashier.index', 'payment-methods.index')
+                                                                                    ? 'memberManagement,billings'
+                                                                                    : 'memberManagement'
+                                                                            )
                                                                     )
                                                             )            
                                                     )
@@ -118,8 +122,29 @@
             ) 
             : '' 
     }}',
-    isDropdownOpen(name) { return this.openDropdown === name },
-    toggleDropdown(name) { this.openDropdown = this.openDropdown === name ? null : name },
+    isDropdownOpen(name) { 
+        if (this.openDropdown.includes(',')) {
+            return this.openDropdown.split(',').includes(name);
+        }
+        return this.openDropdown === name;
+    },
+    toggleDropdown(name) { 
+        if (name === 'billings') {
+            if (this.isDropdownOpen('billings')) {
+                this.openDropdown = 'memberManagement';
+            } else {
+                this.openDropdown = 'memberManagement,billings';
+            }
+        } else if (name === 'memberManagement') {
+            if (this.isDropdownOpen('memberManagement')) {
+                this.openDropdown = '';
+            } else {
+                this.openDropdown = 'memberManagement';
+            }
+        } else {
+            this.openDropdown = this.openDropdown === name ? '' : name;
+        }
+    },
     openedViaMenu: {{ request()->has('from_menu') ? 'true' : 'false' }}
 }"
     x-transition:enter="transform transition-transform duration-300 ease-out"
@@ -326,13 +351,14 @@
             </div>
             @endcanany
 
-            @canany(['view membership types', 'view bureau-section', 'view sections', 'view applicants', 'view members', 'view licenses', 'view renewals', 'view payments'])
+            @canany(['view membership types', 'view bureau-section', 'view sections', 'view applicants', 'view members', 'view licenses', 'view renewals', 'view payments', 'view payment methods'])
             <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
                 @php
                     $memberEngagementActive = request()->routeIs(
                         'membership-types.index', 'bureau-section.index', 'sections.index',
                         'sections.index', 'applicants.index', 'reports.index',
-                        'members.index', 'licenses.index','renew.index', 'cashier.index'
+                        'members.index', 'licenses.index','renew.index', 'cashier.index',
+                        'payment-methods.index'
                     );
                 @endphp
                 <button 
@@ -425,14 +451,49 @@
                             <span>{{ __('Renewal Request') }}</span>
                         </x-nav-link>
                     @endcan
-                    @can('view payments')
-                        <x-nav-link :href="route('cashier.index')" :active="request()->routeIs('cashier.index')" 
-                        class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('cashier.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
-                        transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/sf-black-filled/64/FFFFFF/checkout.png" class="w-4 h-4 mr-2 object-contain, alt="FAQs">
-                            <span>{{ __('Cashier') }}</span>
-                        </x-nav-link>
+
+                    <!-- Billings Section with Sublayer -->
+                    @can('view payments', 'payment-methods')
+                        <div class="relative">
+                            <button 
+                                @click.stop="toggleDropdown('billings')" 
+                                class="w-full flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 
+                                {{ request()->routeIs('cashier.index', 'payment-methods.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                <img src="https://img.icons8.com/sf-black-filled/64/FFFFFF/checkout.png" class="w-4 h-4 mr-2 object-contain" alt="Billings">
+                                <span class="flex-1 text-left">{{ __('Billings') }}</span>
+                                <svg 
+                                    class="ml-1 h-3 w-3" 
+                                    :class="{'rotate-180': isDropdownOpen('billings')}" 
+                                    fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" 
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <div :class="{'dropdown-content open': isDropdownOpen('billings'), 'dropdown-content': !isDropdownOpen('billings')}"
+                                class="ml-6 mt-1 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-1">
+                                @can('view payments')
+                                <x-nav-link :href="route('cashier.index')" :active="request()->routeIs('cashier.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('cashier.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                    <img src="https://img.icons8.com/?size=100&id=WxLJjqwqRFj2&format=png&color=FFFFFF" class="w-4 h-4 mr-2 object-contain" alt="Cashier">
+                                    <span>{{ __('Cashier') }}</span>
+                                </x-nav-link>
+                                @endcan
+
+                                @can('view payment methods')
+                                <x-nav-link :href="route('payment-methods.index')" :active="request()->routeIs('payment-methods.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('payment-methods.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                    <img src="https://img.icons8.com/?size=100&id=8294&format=png&color=FFFFFF" class="w-4 h-4 mr-2 object-contain" alt="Payment Methods">
+                                    <span>{{ __('Payment Methods') }}</span>
+                                </x-nav-link>
+                                @endcan
+                            </div>
+                        </div>
                     @endcan
+
                     @can('view reports')
                         <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.index')" 
                         class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('reports.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
@@ -667,11 +728,10 @@
                 </div>
             @endcanany 
 
-
             @canany(['view manual'])
             <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
                 @php
-                    $usersManualActive = request()->routeIs('manual.view');
+                    $usersManualActive = request()->routeIs('manual.view', 'manual.index');
                 @endphp  
                 <button 
                     @click.stop="toggleDropdown('usersManual')" 
@@ -700,28 +760,25 @@
                     </svg>
                     </button>
 
-                     <div :class="{'dropdown-content open': isDropdownOpen('usersManual'), 'dropdown-content': !isDropdownOpen('usersManual')}"
+                    <div :class="{'dropdown-content open': isDropdownOpen('usersManual'), 'dropdown-content': !isDropdownOpen('usersManual')}"
                           class="ml-6 mt-2 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-2" >
                         @can('view manual')
                             <x-nav-link :href="route('manual.view')" :active="request()->routeIs('manual.view')" 
-                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('manual.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('manual.view') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
                                 transition-transform duration-300 hover:scale-105 active:scale-95">
-                                <img src="https://img.icons8.com/ios-filled/50/FFFFFF/goodnotes.png" 
+                                <img src="https://img.icons8.com/?size=100&id=jzjIY4jdjSwR&format=png&color=FFFFFF" 
                                 alt="Documents" class="w-4 h-4 mr-2 object-contain">
                                 <span>{{ __('Documentations') }}</span>
                             </x-nav-link>
                         @endcan
-                    </div>
 
-                    <div :class="{'dropdown-content open': isDropdownOpen('usersManual'), 'dropdown-content': !isDropdownOpen('usersManual')}"
-                          class="ml-6 mt-2 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-2" >
                         @can('view manual')
                             <x-nav-link :href="route('manual.index')" :active="request()->routeIs('manual.index')" 
                                 class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('manual.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
                                 transition-transform duration-300 hover:scale-105 active:scale-95">
-                                <img src="https://img.icons8.com/ios-filled/50/FFFFFF/goodnotes.png" 
-                                alt="Documents" class="w-4 h-4 mr-2 object-contain">
-                                <span>{{ __('Documentations Maintenance') }}</span>
+                                <img src="https://img.icons8.com/?size=100&id=58137&format=png&color=FFFFFF" 
+                                alt="Manuals Maintenance" class="w-4 h-4 mr-2 object-contain">
+                                <span>{{ __('Manuals Maintenance') }}</span>
                             </x-nav-link>
                         @endcan
                     </div>
@@ -730,7 +787,7 @@
         
             <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
                 @php
-                    $profileActive = request()->routeIs('profile.edit');
+                    $profileActive = request()->routeIs('profile.edit', 'backups.index');
                 @endphp
 
                 <button 
@@ -761,6 +818,16 @@
                             alt="Profile" class="w-4 h-4 mr-2 object-contain">
                         <span>{{ __('Profile') }}</span>
                     </x-nav-link>
+            
+                    @can('view back-ups')
+                    <x-nav-link :href="route('backups.index')" :active="request()->routeIs('backups.index')" 
+                        class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('backups.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                        transition-transform duration-300 hover:scale-105 active:scale-95">
+                        <img src="https://img.icons8.com/?size=100&id=2965&format=png&color=FFFFFF" 
+                        alt="System Back-Up" class="w-4 h-4 mr-2 object-contain">
+                        <span>{{ __('System Back-Ups') }}</span>
+                    </x-nav-link>
+                    @endcan
                 </div>
             </div>
         </nav>

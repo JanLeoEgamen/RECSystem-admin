@@ -27,60 +27,91 @@
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label for="mode_of_payment_name" class="text-sm font-medium">Payment Method Name</label>
+                                <label for="mode_of_payment_name" class="text-sm font-medium text-gray-900 dark:text-gray-100">Payment Method Name</label>
                                 <div class="my-3">    
                                     <input value="{{ old('mode_of_payment_name') }}" name="mode_of_payment_name" id="mode_of_payment_name" 
                                         placeholder="e.g., GCash, PayPal, Bank Transfer" type="text" 
-                                        class="border-gray-300 shadow-sm w-full rounded-lg">
+                                        class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
+                                            bg-white dark:bg-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-500 dark:placeholder-gray-400
+                                            focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
+                                            dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
+                                            transition-colors duration-200">
                                     @error('mode_of_payment_name')
-                                    <p class="text-red-400 font-medium"> {{ $message }} </p>
+                                    <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
                                     @enderror
                                 </div>
                             </div>
 
                             <div>
-                                <label for="account_name" class="text-sm font-medium">Account Name</label>
+                                <label for="account_name" class="text-sm font-medium text-gray-900 dark:text-gray-100">Account Name</label>
                                 <div class="my-3">    
                                     <input value="{{ old('account_name') }}" name="account_name" id="account_name" 
                                         placeholder="Account holder name" type="text" 
-                                        class="border-gray-300 shadow-sm w-full rounded-lg">
+                                        class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
+                                            bg-white dark:bg-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-500 dark:placeholder-gray-400
+                                            focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
+                                            dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
+                                            transition-colors duration-200">
                                     @error('account_name')
-                                    <p class="text-red-400 font-medium"> {{ $message }} </p>
+                                    <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
                                     @enderror
                                 </div>
                             </div>
 
                             <div>
-                                <label for="account_number" class="text-sm font-medium">Account Number</label>
+                                <label for="account_number" class="text-sm font-medium text-gray-900 dark:text-gray-100">Account Number</label>
                                 <div class="my-3">    
                                     <input value="{{ old('account_number') }}" name="account_number" id="account_number" 
                                         placeholder="Account number or details" type="text" 
-                                        class="border-gray-300 shadow-sm w-full rounded-lg">
+                                        class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
+                                            bg-white dark:bg-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-500 dark:placeholder-gray-400
+                                            focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
+                                            dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
+                                            transition-colors duration-200">
                                     @error('account_number')
-                                    <p class="text-red-400 font-medium"> {{ $message }} </p>
+                                    <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
                                     @enderror
                                 </div>
                             </div>
                             
-
                             <div>
-                                <label for="mode_of_payment_qr_image" class="text-sm font-medium">QR Code Image</label>
+                                <label for="mode_of_payment_qr_image" class="text-sm font-medium text-gray-900 dark:text-gray-100">QR Code Image</label>
                                 <div class="my-3">    
                                     <input type="file" name="mode_of_payment_qr_image" id="mode_of_payment_qr_image" 
-                                        class="border-gray-300 shadow-sm w-full rounded-lg">
+                                        accept="image/*"
+                                        class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
+                                            bg-white dark:bg-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            file:mr-4 file:py-2 file:px-4
+                                            file:rounded-lg file:border-0
+                                            file:text-sm file:font-medium
+                                            file:bg-[#5e6ffb] file:text-white
+                                            hover:file:bg-[#4c63d2]
+                                            dark:file:bg-[#5e6ffb] dark:file:text-white
+                                            dark:hover:file:bg-[#4c63d2]
+                                            focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
+                                            dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
+                                            transition-colors duration-200">
                                     @error('mode_of_payment_qr_image')
-                                    <p class="text-red-400 font-medium"> {{ $message }} </p>
+                                    <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
                                     @enderror
-                                    <p class="text-xs text-gray-500 mt-1">Upload QR code image for this payment method (optional)</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload QR code image for this payment method (optional)</p>
                                 </div>
                             </div>
                         </div>
-                    <div class="my-3 flex items-center">
-                        <input type="hidden" name="is_published" value="0">
-                        <input type="checkbox" name="is_published" id="is_published" class="rounded" value="1" 
-                            {{ old('is_published', isset($paymentMethod) ? $paymentMethod->is_published : true) ? 'checked' : '' }}>
-                        <label for="is_published" class="ml-2">Published</label>
-                    </div>
+
+                        <div class="my-3 flex items-center">
+                            <input type="hidden" name="is_published" value="0">
+                            <input type="checkbox" name="is_published" id="is_published" class="rounded" value="1" 
+                                {{ old('is_published', isset($paymentMethod) ? $paymentMethod->is_published : true) ? 'checked' : '' }}>
+                            <label for="is_published" class="ml-2">Published</label>
+                        </div>
 
                         <div class="mt-6">
                             <button type="submit" 
