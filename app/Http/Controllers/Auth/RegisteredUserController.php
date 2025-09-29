@@ -45,6 +45,12 @@ class RegisteredUserController extends Controller
                     }
                 }
             ],
+            'middle_name' => [
+                'nullable',
+                'string',
+                'max:50',
+                'regex:/^[\pL\s\-.]+$/u'
+            ],
             'last_name' => [
                 'required',
                 'string',
@@ -83,6 +89,7 @@ class RegisteredUserController extends Controller
             ],
         ], [
             'first_name.regex' => 'First name may only contain letters, spaces and hyphens',
+            'middle_name.regex' => 'Middle name may only contain letters, spaces and hyphens',
             'last_name.regex' => 'Last name may only contain letters, spaces and hyphens',
             'birthdate.before_or_equal' => 'You must be at least 18 years old to register',
             'birthdate.after_or_equal' => 'Please enter a valid birthdate',
@@ -91,6 +98,7 @@ class RegisteredUserController extends Controller
 
         $user = User::create([
             'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
             'birthdate' => $request->birthdate,
             'email' => $request->email,

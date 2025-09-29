@@ -4,6 +4,16 @@
     font-family: 'Inter', sans-serif;
 }
 
+@font-face {
+    font-family: "Dax-Regular";
+    src: url("https://db.onlinewebfonts.com/t/a52678f563c78c6fc954b7ace30bc8e5.eot");
+    src: url("https://db.onlinewebfonts.com/t/a52678f563c78c6fc954b7ace30bc8e5.eot?#iefix")format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/a52678f563c78c6fc954b7ace30bc8e5.woff2")format("woff2"),
+    url("https://db.onlinewebfonts.com/t/a52678f563c78c6fc954b7ace30bc8e5.woff")format("woff"),
+    url("https://db.onlinewebfonts.com/t/a52678f563c78c6fc954b7ace30bc8e5.ttf")format("truetype"),
+    url("https://db.onlinewebfonts.com/t/a52678f563c78c6fc954b7ace30bc8e5.svg#Dax-Regular")format("svg");
+}
+
 .hero-gradient {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: relative;

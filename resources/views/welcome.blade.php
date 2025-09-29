@@ -18,11 +18,11 @@
                         class="h-10 w-10 object-contain transform transition-transform duration-300 hover:scale-110">
                     
                     <div>
-                        <h1 class="text-xl font-bold text-gray-200 dark:text-gray-100">
+                        <h1 class="text-xl font-bold text-gray-200 dark:text-gray-100" style="font-family: 'Dax-Regular';">
                             Radio Engineering Circle Inc.
                         </h1>
                         <p class="text-sm text-gray-400 dark:text-gray-400">
-                            DZ1REC — Connecting Radio Enthusiasts
+                            DZ1REC — <em>Connecting Radio Enthusiasts</em>
                         </p>
                     </div>
                 </div>         
@@ -178,8 +178,8 @@
                     <p class="text-gray-600 dark:text-gray-300 mb-6">Easily manage your profile, view membership status, and update your information all in one place.</p>
                     <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
                         <li>• Profile management</li>
-                        <li>• Status tracking</li>
                         <li>• Document uploads</li>
+                        <li>• Status tracking</li>      
                     </ul>
                 </div>
 
@@ -194,12 +194,12 @@
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Event Access</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Event <br> Access</h3>
                     <p class="text-gray-600 dark:text-gray-300 mb-6">Register for workshops, seminars, and technical sessions. Never miss an important event again.</p>
                     <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
-                        <li>• Event calendar</li>
-                        <li>• Easy registration</li>
                         <li>• Reminders & notifications</li>
+                        <li>• Event Announcements</li>
+                        <li>• Easy registration</li>                    
                     </ul>
                 </div>
 
@@ -216,10 +216,10 @@
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Digital Certificates</h3>
                     <p class="text-gray-600 dark:text-gray-300 mb-6">Download and share your membership certificates and achievement badges instantly.</p>
-                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                    <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">                       
+                        <li>• Customizable templates</li>
                         <li>• Instant downloads</li>
-                        <li>• Verification codes</li>
-                        <li>• Achievement tracking</li>
+                        <li>• Secure storage</li>                                              
                     </ul>
                 </div>
 
@@ -234,12 +234,12 @@
                                 d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Latest Updates</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Latest <br> Updates</h3>
                     <p class="text-gray-600 dark:text-gray-300 mb-6">Stay informed with real-time announcements, news, and important updates from REC leadership.</p>
                     <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-2">
-                        <li>• Real-time notifications</li>
-                        <li>• Newsletter access</li>
                         <li>• Priority announcements</li>
+                        <li>• Real-time notifications</li>               
+                        <li>• News Updates</li>                  
                     </ul>
                 </div>
 
@@ -382,7 +382,7 @@
                         "REC has been instrumental in my career growth. The networking opportunities and technical resources are invaluable."
                     </p>
                     <h4 class="font-bold text-gray-900 dark:text-gray-100">John Dela Cruz</h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Senior RF Engineer</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">President</p>
                 </div>
                 
                 <!-- Card 2 -->
@@ -399,7 +399,7 @@
                         "The community support is amazing. I've learned more in the past year than I did in the previous five years combined."
                     </p>
                     <h4 class="font-bold text-gray-900 dark:text-gray-100">Maria Santos</h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Electronics Technician</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Executive Vice-President</p>
                 </div>
                 
                 <!-- Card 3 -->
@@ -416,7 +416,7 @@
                         "The digital portal makes everything so convenient. I can access all my certificates and event registrations in one place."
                     </p>
                     <h4 class="font-bold text-gray-900 dark:text-gray-100">Robert Aquino</h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Amateur Radio Operator</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Corporate Secretary</p>
                 </div>
             </div>
         </div>
@@ -462,7 +462,7 @@
 
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md 
                                 border border-gray-200 dark:border-gray-700">
-                        <div class="text-3xl lg:text-4xl font-black text-[#5e6ffb] dark:text-[#5e6ffb] mb-2">50+</div>
+                        <div class="text-3xl lg:text-4xl font-black text-[#5e6ffb] dark:text-[#5e6ffb] mb-2">15 +</div>
                         <div class="text-gray-700 dark:text-gray-300">Cities Reached</div>
                     </div>
                 </div>
@@ -485,15 +485,15 @@
                     <div class="flex items-center space-x-4 mb-6">
                         <img src="/images/Logo.png" alt="REC Logo" class="h-12 w-12 object-contain">
                         <div>
-                            <h3 class="text-xl font-bold">Radio Engineering Circle Inc.</h3>
-                            <p class="text-gray-400 dark:text-gray-500">Connecting Radio Enthusiasts Since 1998</p>
+                            <h3 class="text-xl font-bold"    style="font-family: 'Dax-Regular';">Radio Engineering Circle Inc.</h3>
+                            <p class="text-gray-400 dark:text-gray-500">Connecting Radio Enthusiasts Since 2016</p>
                         </div>
                     </div>
                     <p class="text-gray-400 dark:text-gray-500 mb-6 max-w-md">
                         Advancing radio engineering through education, collaboration, and innovation. Join our community of passionate professionals and hobbyists.
                     </p>
                     <div class="flex space-x-4">
-                        <a href="#" class="bg-blue-600 p-3 rounded-full hover:bg-blue-700 transition-colors">
+                        <a href="https://www.facebook.com/REC.org.ph" class="bg-blue-600 p-3 rounded-full hover:bg-blue-700 transition-colors">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
                             </svg>
@@ -501,11 +501,6 @@
                         <a href="#" class="bg-red-600 p-3 rounded-full hover:bg-red-700 transition-colors">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="bg-pink-600 p-3 rounded-full hover:bg-pink-700 transition-colors">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                             </svg>
                         </a>
                     </div>
@@ -525,22 +520,26 @@
                     <h4 class="text-lg font-bold mb-6">Support</h4>
                     <ul class="space-y-3">
                         <li><a href="#" class="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">Help Center</a></li>
-                        <li><a href="#" class="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">Contact Us</a></li>
-                        <li><a href="#" class="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="https://www.facebook.com/REC.org.ph" class="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">Contact Us</a></li>
                         <li><a href="https://centralized-website.rec.org.ph/rec-home-page" target="_blank" class="text-gray-400 dark:text-gray-500 hover:text-white transition-colors">Main Website</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="border-t border-gray-400 dark:border-gray-700 mt-12 pt-8 text-center">
-                <p class="text-gray-400 dark:text-gray-500">&copy; 2024 Radio Engineering Circle Inc. All rights reserved.</p>
+                <p class="text-gray-400 dark:text-gray-500">&copy; 2016 Radio Engineering Circle Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <!-- CHATBOT INTEGRATION EMBEDDED CODE -->
-    <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
-    <script src="https://files.bpcontent.cloud/2025/01/12/14/20250112142449-BTWBU6OV.js"></script>
+    <!-- <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2025/01/12/14/20250112142449-BTWBU6OV.js"></script> -->
+
+    
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2025/09/26/05/20250926053639-SRHW57JT.js" defer></script>
+    
     <!-- END OF CHATBOT CALLING -->
 </body>
 </html>

@@ -245,7 +245,7 @@
                     <div class="header-container pt-16"> 
 
                         <!-- Breadcrumbs -->
-                         @can('view admin dashboard')
+                        @can('view admin dashboard')
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <x-breadcrumbs />
                         </div>
@@ -275,8 +275,9 @@
     </div>
 
     <!-- CHATBOT INTEGRATION EMBEDDED CODE -->
-    <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
-    <script src="https://files.bpcontent.cloud/2025/01/12/14/20250112142449-BTWBU6OV.js"></script>
+    
+  
+    
     <!-- END OF CHATBOT CALLING -->
     
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>

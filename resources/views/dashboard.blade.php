@@ -116,9 +116,95 @@
         setInterval(updateDashboardTime, 1000);
     </script>
 
+    @cannot('superadmin')
+    <!-- Welcome Design for Non-Superadmin Roles -->
+    <div class="py-8 animate-fade-in-down" style="animation-delay: 0.2s;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative overflow-hidden bg-gradient-to-br from-[#101966] via-[#5e6ffb] to-[#1A25A1] rounded-2xl shadow-2xl">
+                <!-- Radio Wave Pattern -->
+                <div class="absolute inset-0 opacity-10">
+                    <svg class="w-full h-full" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Top-right radio waves -->
+                        <g transform="translate(320, 50)">
+                            <circle cx="0" cy="0" r="20" stroke="white" stroke-width="2" fill="none" opacity="0.3"/>
+                            <circle cx="0" cy="0" r="35" stroke="white" stroke-width="1.5" fill="none" opacity="0.25"/>
+                            <circle cx="0" cy="0" r="50" stroke="white" stroke-width="1" fill="none" opacity="0.2"/>
+                            <circle cx="0" cy="0" r="65" stroke="white" stroke-width="0.8" fill="none" opacity="0.15"/>
+                            <!-- Central transmitter dot -->
+                            <circle cx="0" cy="0" r="4" fill="white" opacity="0.4"/>
+                        </g>
+                        
+                        <!-- Bottom-left radio waves -->
+                        <g transform="translate(80, 350)">
+                            <circle cx="0" cy="0" r="25" stroke="white" stroke-width="2" fill="none" opacity="0.25"/>
+                            <circle cx="0" cy="0" r="40" stroke="white" stroke-width="1.5" fill="none" opacity="0.2"/>
+                            <circle cx="0" cy="0" r="55" stroke="white" stroke-width="1" fill="none" opacity="0.15"/>
+                            <circle cx="0" cy="0" r="70" stroke="white" stroke-width="0.8" fill="none" opacity="0.1"/>
+                            <!-- Central transmitter dot -->
+                            <circle cx="0" cy="0" r="4" fill="white" opacity="0.3"/>
+                        </g>
+                    </svg>
+                </div>
+                
+                <!-- Content -->
+                <div class="relative z-10 px-8 py-12 text-center">
+                    <div class="mb-6">
+                        <div class="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 rounded-full backdrop-blur-sm">
+                            <div class="w-3 h-3 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                            <span class="text-white font-semibold text-lg">
+                                {{ ucfirst(auth()->user()->getRoleNames()->first()) }} Dashboard
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xl text-white text-opacity-90 mb-8 max-w-2xl mx-auto leading-relaxed">
+                        You're successfully logged in to the Radio Engineering Circle Inc. management system. 
+                        Everything is running smoothly and ready for your operations.
+                    </p>
+                    
+                    <!-- Status Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                        <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-20">
+                            <div class="flex items-center justify-center w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg mx-auto mb-4">
+                                <svg class="w-6 h-6 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-white font-semibold mb-2">System Status</h3>
+                            <p class="text-white text-opacity-80 text-sm">All systems operational</p>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-20">
+                            <div class="flex items-center justify-center w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg mx-auto mb-4">
+                                <svg class="w-6 h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-white font-semibold mb-2">Security</h3>
+                            <p class="text-white text-opacity-80 text-sm">Your session is secure</p>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-20">
+                            <div class="flex items-center justify-center w-12 h-12 bg-purple-500 bg-opacity-20 rounded-lg mx-auto mb-4">
+                                <svg class="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-white font-semibold mb-2">Performance</h3>
+                            <p class="text-white text-opacity-80 text-sm">Running at optimal speed</p>
+                        </div>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+    @endcannot
 
     <div class="py-6 animate-fade-in-down" style="animation-delay: 0.2s;">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @role('superadmin')
             <!-- Row 1: CARDS -->
             <div class=" grid-row row-1 mb-6 grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Total Members -->
@@ -235,9 +321,10 @@
                         </div>
                     </div>
                 </a>
-
             </div>
+            @endcan
 
+            @role('superadmin')
             <!-- Row 2: Applicant Report and Membership Growth Analysis -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Applicant Report -->
@@ -307,7 +394,6 @@
                     </div>
                 </div>
 
-
                 <!-- Membership Growth Analysis -->
                 <div class="card dark:bg-gray-800 lg:col-span-2 h-full flex flex-col">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center mb-2">
@@ -330,8 +416,9 @@
                     </div>
                 </div>
             </div>
+            @endrole
 
-
+            @role('superadmin')
             <!-- Row 3: Bar Chart and Line Chart -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Membership Type Distribution -->
@@ -372,8 +459,9 @@
                     </div>
                 </div>
             </div>
+            @endrole
 
-
+            @role('superadmin')
             <!-- Row 4: Recent Members and Memberships Expiring Soon -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Recent Members -->
@@ -457,6 +545,7 @@
                     </div>
                 </div>
             </div>
+            @endrole
         </div>
     </div>
 

@@ -8,7 +8,7 @@ use App\Models\MemberActivityLog;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Routing\Controllers\Middleware as RouteMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -16,9 +16,19 @@ use Yajra\DataTables\DataTables;
 
 class CashierApplicantController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view payments', only: ['index', 'verified', 'rejected', 'refundLogs']),
+            new Middleware('permission:assess payments', only: ['verify', 'reject', 'assess', 'restore']),
+            new Middleware('permission:delete payments', only: ['destroy']),
+        ];
+    }
+
     /**
      * Show the refund form for a rejected applicant.
      */
+    
     public function showRefundForm($id)
     {
         $applicant = Applicant::findOrFail($id);
@@ -82,15 +92,6 @@ class CashierApplicantController extends Controller implements HasMiddleware
             ));
 
         return redirect()->route('cashier.rejected')->with('success', 'Refund processed and applicant notified.');
-    }
-
-    public static function middleware(): array
-    {
-        return [
-            new RouteMiddleware('permission:view payements', only: ['index']),
-            new RouteMiddleware('permission:verify payments', only: ['verify']),
-            new RouteMiddleware('permission:delete payments', only: ['destroy']),
-        ];
     }
 
     public function index(Request $request)

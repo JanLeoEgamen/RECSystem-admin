@@ -7,14 +7,84 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
     
-    const hasSuccessStatus = document.querySelector('.bg-green-500\\/20');
-    if (hasSuccessStatus) {
-        checkExistingTimer();
-    }
+    // Check if we should disable the email field and start timer
+    checkExistingTimer();
+    checkEmailLockState();
 });
 
 const TIMER_DURATION = 60;
 let countdownInterval = null;
+
+function checkEmailLockState() {
+    const emailLocked = localStorage.getItem('passwordResetEmailLocked');
+    const lockedEmail = localStorage.getItem('passwordResetLockedEmail');
+    const lockTime = localStorage.getItem('passwordResetLockTime');
+    
+    if (emailLocked === 'true' && lockedEmail && lockTime) {
+        const currentTime = Date.now();
+        const lockDuration = 60 * 1000; 
+        const timeElapsed = currentTime - parseInt(lockTime);
+        const timeRemaining = lockDuration - timeElapsed;
+        
+        if (timeRemaining > 0) {
+            disableEmailField(lockedEmail, timeRemaining);
+        } else {
+            enableEmailField();
+            clearLockState();
+        }
+    }
+}
+
+function disableEmailField(email, duration) {
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const countdownContainer = document.getElementById('countdownContainer');
+    
+    if (emailInput) {
+        emailInput.value = email;
+        emailInput.disabled = true;
+        emailInput.classList.add('disabled-input');
+    }
+    
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('pulse');
+    }
+    
+    if (countdownContainer) {
+        countdownContainer.classList.remove('hidden');
+    }
+    
+    // Start countdown with the remaining time in seconds
+    startCountdown(Math.ceil(duration / 1000));
+}
+
+function enableEmailField() {
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const countdownContainer = document.getElementById('countdownContainer');
+    
+    if (emailInput) {
+        emailInput.disabled = false;
+        emailInput.classList.remove('disabled-input');
+    }
+    
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.add('pulse');
+    }
+    
+    if (countdownContainer) {
+        countdownContainer.classList.add('hidden');
+    }
+}
+
+function clearLockState() {
+    localStorage.removeItem('passwordResetEmailLocked');
+    localStorage.removeItem('passwordResetLockedEmail');
+    localStorage.removeItem('passwordResetLockTime');
+    localStorage.removeItem('passwordResetTimer');
+}
 
 function checkExistingTimer() {
     const endTime = localStorage.getItem('passwordResetTimer');
@@ -35,6 +105,8 @@ function startCountdown(seconds = TIMER_DURATION) {
     const secondsElement = document.getElementById('seconds');
     const progressBar = document.getElementById('progressBar');
     
+    if (!submitBtn || !countdownContainer) return;
+    
     submitBtn.disabled = true;
     submitBtn.classList.remove('pulse');
     countdownContainer.classList.remove('hidden');
@@ -47,19 +119,23 @@ function startCountdown(seconds = TIMER_DURATION) {
     
     updateCountdownDisplay(timeLeft);
     
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+    
     countdownInterval = setInterval(() => {
         timeLeft--;
         updateCountdownDisplay(timeLeft);
         
         const progressPercent = (timeLeft / totalTime) * 100;
-        progressBar.style.width = `${progressPercent}%`;
+        if (progressBar) {
+            progressBar.style.width = `${progressPercent}%`;
+        }
         
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            submitBtn.disabled = false;
-            submitBtn.classList.add('pulse');
-            countdownContainer.classList.add('hidden');
-            localStorage.removeItem('passwordResetTimer');
+            enableEmailField();
+            clearLockState();
         }
     }, 1000);
     
@@ -67,18 +143,29 @@ function startCountdown(seconds = TIMER_DURATION) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
         
-        minutesElement.textContent = minutes.toString().padStart(2, '0');
-        secondsElement.textContent = remainingSeconds.toString().padStart(2, '0');
+        if (minutesElement && secondsElement) {
+            minutesElement.textContent = minutes.toString().padStart(2, '0');
+            secondsElement.textContent = remainingSeconds.toString().padStart(2, '0');
+        }
     }
 }
 
 document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
-    if (document.getElementById('submitBtn').disabled) {
+    const submitBtn = document.getElementById('submitBtn');
+    const emailInput = document.getElementById('email');
+    
+    if (submitBtn.disabled) {
         e.preventDefault();
         return;
     }
     
-    const submitBtn = document.getElementById('submitBtn');
+    // Store email lock state
+    if (emailInput) {
+        localStorage.setItem('passwordResetEmailLocked', 'true');
+        localStorage.setItem('passwordResetLockedEmail', emailInput.value);
+        localStorage.setItem('passwordResetLockTime', Date.now());
+    }
+    
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
     submitBtn.classList.remove('pulse');
@@ -86,6 +173,7 @@ document.getElementById('passwordResetForm').addEventListener('submit', function
     localStorage.setItem('passwordResetRequested', Date.now());
 });
 
+// Handle successful form submission
 window.addEventListener('load', function() {
     const hasSuccessStatus = document.querySelector('.bg-green-500\\/20');
     const recentRequest = localStorage.getItem('passwordResetRequested');
@@ -93,13 +181,15 @@ window.addEventListener('load', function() {
     if (hasSuccessStatus && recentRequest) {
         localStorage.removeItem('passwordResetRequested');
         
+        // Start countdown and disable email field
+        const emailInput = document.getElementById('email');
+        if (emailInput) {
+            disableEmailField(emailInput.value, TIMER_DURATION * 1000);
+        }
+        
         setTimeout(() => {
             slideUpSuccessNotification(hasSuccessStatus);
         }, 5000);
-        
-        setTimeout(() => {
-            startCountdown();
-        }, 500);
     }
 });
 
@@ -137,3 +227,14 @@ function slideUpSuccessNotification(element) {
         }
     }, 1600);
 }
+
+// Clear lock state when navigating away from the page
+window.addEventListener('beforeunload', function() {
+    // Only clear if the form wasn't just submitted
+    const recentRequest = localStorage.getItem('passwordResetRequested');
+    if (!recentRequest) {
+        localStorage.removeItem('passwordResetEmailLocked');
+        localStorage.removeItem('passwordResetLockedEmail');
+        localStorage.removeItem('passwordResetLockTime');
+    }
+});

@@ -111,7 +111,7 @@
                     @endunlessrole
                 @endcannot
 
-         
+                @role('Super Admin')
                 @can('view admin dashboard')
                 <div class="hidden sm:flex items-center relative">
                     <!-- Search Bar  -->
@@ -299,10 +299,11 @@
                     <span class="font-medium text-white dark:text-gray-200 mr-2">Super Admin</span>
                 </div>
                 @endcan
+                @endrole
 
                 <!-- Member Portal Links + Profile Icon Dropdown -->
                 @role('Member')
-                <!-- Desktop/Tablet view -->
+                <!-- Desktop/Tablet view --> 
                 <div class="hidden sm:flex sm:ml-auto sm:mr-4 items-center space-x-4">
                     <nav class="flex gap-4 md:gap-6">
                         @foreach ([
@@ -368,6 +369,7 @@
 
 
                 <!-- Right Sidebar Toggle (Admin only) -->
+                @role('superadmin')
                 @can('view admin dashboard')
                 <button 
                     @click="
@@ -392,88 +394,143 @@
                     >
                 </button>
                 @endcan
+                @endrole
             </div>
         </div>
     </header>
 
     <!-- Mobile Right Slide-in Menu (Member Only) -->
-    @role('Member')
+    
+@role('Member')
     <div 
         class="fixed inset-0 z-50 flex justify-end sm:hidden"
         x-show="memberMenuOpen"
-        x-transition.opacity
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
     >
-        <!-- Backdrop -->
-        <div class="flex-1 bg-black/30 backdrop-blur-sm" @click="memberMenuOpen = false"></div>
+       
 
-        <!-- Slide-in Menu -->
+        <!-- Modern Slide-in Menu -->
         <div 
-            class="w-64 bg-[#101966] dark:bg-gray-900 h-full p-4 flex flex-col space-y-2 transform transition-transform duration-300 right-sidebar-shadow"
+            class="w-80 bg-gradient-to-b from-[#101966] via-[#1a2077] to-[#101966] dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 h-full flex flex-col shadow-2xl"
             x-show="memberMenuOpen"
-            x-transition:enter="translate-x-full"
+            x-transition:enter="transform transition ease-out duration-300"
+            x-transition:enter-start="translate-x-full"
             x-transition:enter-end="translate-x-0"
-            x-transition:leave="translate-x-0"
+            x-transition:leave="transform transition ease-in duration-200"
+            x-transition:leave-start="translate-x-0"
             x-transition:leave-end="translate-x-full"
         >
-            <div class="flex justify-end mb-4">
-                <button @click="memberMenuOpen = false" class="text-white dark:text-gray-200 hover:text-[#5e6ffb] transition-colors duration-200">
-                    ✕
+            <!-- Header Section -->
+            <div class="flex items-center justify-between p-6 border-b border-white/10 dark:border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                        <img src="https://img.icons8.com/ios-glyphs/30/ffffff/user--v1.png" class="h-6 w-6"/>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-lg">{{ Auth::user()->first_name }}</p>
+                        <p class="text-blue-200 dark:text-gray-300 text-sm">Member Portal</p>
+                    </div>
+                </div>
+                <button 
+                    @click="memberMenuOpen = false" 
+                    class="p-2 rounded-full bg-white/10 hover:bg-white/20 dark:bg-gray-700 dark:hover:bg-gray-600 text-white transition-all duration-200 hover:rotate-90"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
 
-            @unless(auth()->user()->member->isExpired())
-                @foreach ([
-                    'member.dashboard' => 'Dashboard',
-                    'member.membership-details' => 'My Membership',
-                    'member.announcements' => 'Announcements',
-                    'member.surveys' => 'Surveys',
-                    'member.events' => 'Events',
-                    'member.quizzes' => 'Reviewers',
-                    'member.certificates.index' => 'Certificates',
-                    'member.documents' => 'Documents',
-                    'members.activity_logs' => 'My Logs',
-                ] as $route => $label)
-                    <x-nav-link 
-                        :href="$route === 'members.activity_logs' 
-                            ? route($route, Auth::user()->member->id) 
-                            : route($route)"
-                        :active="request()->routeIs($route)" 
-                        class="member-nav-link px-3 py-1 text-sm whitespace-nowrap rounded-md dark:text-gray-200"
-                    >
-                        {{ __($label) }}
-                    </x-nav-link>
-                @endforeach
-            @else
-                <!-- Optionally show a message when membership is expired -->
-                <div class="px-3 py-2 text-sm text-white bg-red-600 rounded-md">
-                    Your membership has expired. Please renew to access these features.
-                </div>
-            @endunless
+            <!-- Navigation Section -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-1">
+                @unless(auth()->user()->member->isExpired())
+                    @php
+                        $menuItems = [
+                            'member.dashboard' => ['label' => 'Dashboard', 'icon' => 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M3 7l9 6 9-6'],
+                            'member.membership-details' => ['label' => 'My Membership', 'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
+                            'member.announcements' => ['label' => 'Announcements', 'icon' => 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z'],
+                            'member.surveys' => ['label' => 'Surveys', 'icon' => 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+                            'member.events' => ['label' => 'Events', 'icon' => 'M8 7V3a1 1 0 012 0v4m0 0a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h4zM16 7V3a1 1 0 012 0v4m0 0a1 1 0 01-1 1h-4a1 1 0 01-1-1V7a1 1 0 011-1h4zM8 15v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1zM16 15v4a1 1 0 01-1 1h-2a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1z'],
+                            'member.quizzes' => ['label' => 'Reviewers', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
+                            'member.certificates.index' => ['label' => 'Certificates', 'icon' => 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'],
+                            'member.documents' => ['label' => 'Documents', 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                            'members.activity_logs' => ['label' => 'My Logs', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
+                        ];
+                    @endphp
 
-            <!-- Mobile Profile Icon + Dropdown Links -->
-            <div class="mt-4 border-t border-white/20 dark:border-gray-700 pt-2 space-y-2">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="flex items-center space-x-2 w-full px-3 py-2 text-white dark:text-gray-200 hover:text-[#5e6ffb] transition">
-                            <img src="https://img.icons8.com/ios-glyphs/30/ffffff/user--v1.png" class="h-5 w-5"/>
-                            <span>{{ Auth::user()->first_name }}</span>
-                        </button>
-                    </x-slot>
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+                    @foreach ($menuItems as $route => $item)
+                        <x-nav-link 
+                            :href="$route === 'members.activity_logs' 
+                                ? route($route, Auth::user()->member->id) 
+                                : route($route)"
+                            :active="request()->routeIs($route)" 
+                            class="flex items-center space-x-3 w-full px-4 py-3 text-sm text-white dark:text-gray-200 hover:bg-white/10 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group {{ request()->routeIs($route) ? 'bg-white/20 dark:bg-gray-700 border-l-4 border-white' : '' }}"
+                            @click="memberMenuOpen = false"
+                        >
+                            <div class="flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200 {{ request()->routeIs($route) ? 'text-white' : 'text-blue-200 dark:text-gray-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}" />
+                                </svg>
+                            </div>
+                            <span class="font-medium">{{ __($item['label']) }}</span>
+                            @if(request()->routeIs($route))
+                                <div class="ml-auto">
+                                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                                </div>
+                            @endif
+                        </x-nav-link>
+                    @endforeach
+                @else
+                    <!-- Enhanced Expired Message -->
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 p-4 rounded-xl shadow-lg border border-red-400">
+                        <div class="flex items-center space-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                            <div>
+                                <p class="text-white font-semibold text-sm">Membership Expired</p>
+                                <p class="text-red-100 text-xs mt-1">Please renew to access member features.</p>
+                            </div>
+                        </div>
+                    </div>
+                @endunless
+            </div>
+
+            <!-- Footer Section with Profile Actions -->
+            <div class="border-t border-white/10 dark:border-gray-700 p-4 space-y-2">
+                <x-nav-link 
+                    :href="route('profile.edit')" 
+                    class="flex items-center space-x-3 w-full px-4 py-3 text-sm text-white dark:text-gray-200 hover:bg-white/10 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    @click="memberMenuOpen = false"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-200 dark:text-gray-400 group-hover:text-white transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="font-medium">Profile Settings</span>
+                </x-nav-link>
+
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <button 
+                        type="submit"
+                        class="flex items-center space-x-3 w-full px-4 py-3 text-sm text-white dark:text-gray-200 hover:bg-red-500/20 dark:hover:bg-red-600/20 rounded-lg transition-all duration-200 group"
+                        @click="memberMenuOpen = false"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-300 group-hover:text-red-400 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span class="font-medium">Log Out</span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
-    @endrole
+@endrole
 
 </div>

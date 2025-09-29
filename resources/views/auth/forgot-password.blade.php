@@ -198,7 +198,7 @@
                     </a>
                 </div>
                 <p class="text-white/70 text-sm dark:text-gray-400">
-                    &copy; {{ date('Y') }} Radio Engineering Circle Inc. All rights reserved.
+                    &copy; 2016 Radio Engineering Circle Inc. All rights reserved.
                 </p>
             </div>
         </div>

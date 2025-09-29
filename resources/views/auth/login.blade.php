@@ -107,6 +107,7 @@
                             autocomplete="username"
                             placeholder="Enter your email address" 
                         />
+                        <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-200" />
                     </div>
 
                     <!-- Password Field -->
@@ -151,6 +152,7 @@
                                 </svg>                              
                             </button>
                         </div>
+                        <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-200" />
                     </div>
 
                     <!-- Remember Me & Forgot Password -->
@@ -242,7 +244,7 @@
                     </a>
                 </div>
                 <p class="text-white/70 text-sm">
-                    &copy; 2023 Radio Engineering Circle Inc. All rights reserved.
+                    &copy; 2016 Radio Engineering Circle Inc. All rights reserved.
                 </p>
             </div>
         </div>

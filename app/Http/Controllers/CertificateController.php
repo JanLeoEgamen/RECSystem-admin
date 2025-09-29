@@ -108,7 +108,7 @@ class CertificateController extends Controller implements HasMiddleware
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:3',
             'content' => 'required|min:10',
-            'signatories' => 'required|array|min:1',
+            'signatories' => 'required|array|min:1|max:3', // Add max:3 here
             'signatories.*.name' => 'required|string',
             'signatories.*.position' => 'nullable|string',
         ]);
@@ -153,7 +153,7 @@ class CertificateController extends Controller implements HasMiddleware
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:3',
             'content' => 'required|min:10',
-            'signatories' => 'required|array|min:1',
+            'signatories' => 'required|array|min:1|max:3', // Add max:3 here
             'signatories.*.name' => 'required|string',
             'signatories.*.position' => 'nullable|string',
         ]);
@@ -232,29 +232,40 @@ class CertificateController extends Controller implements HasMiddleware
         $options->set([
             'isRemoteEnabled' => true,
             'defaultFont' => 'DejaVu Sans',
-            'dpi' => 150, // Optimal for email attachments
-            'isPhpEnabled' => true,
+            'dpi' => 96, // Reduced for faster generation
+            'isPhpEnabled' => false, // Security improvement
             'marginTop' => '0',
             'marginRight' => '0',
             'marginBottom' => '0',
             'marginLeft' => '0',
-            'isHtml5ParserEnabled' => true, 
+            'isHtml5ParserEnabled' => true,
+            'debugKeepTemp' => false,
+            'debugCss' => false,
+            'debugLayout' => false,
+            'debugLayoutLines' => false,
+            'debugLayoutBlocks' => false,
+            'debugLayoutInline' => false,
+            'debugLayoutPaddingBox' => false,
         ]);
 
         $dompdf = new Dompdf($options);
 
-        $html = view('certificates.jcertificate', [
-            'certificate' => $certificate,
-            'member' => $member,
-            'issueDate' => now()->format('F j, Y'),
-        ])->render();
+        try {
+            $html = view('certificates.jcertificate', [
+                'certificate' => $certificate,
+                'member' => $member,
+                'issueDate' => now()->format('F j, Y'),
+            ])->render();
 
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->set_option('enable_css_page_break', false);
-        $dompdf->render();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
 
-        return $dompdf;
+            return $dompdf;
+        } catch (\Exception $e) {
+            Log::error('PDF Generation Error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
 
@@ -323,47 +334,39 @@ class CertificateController extends Controller implements HasMiddleware
 
     public function resendCertificate($certificateId, $memberId)
     {
-        $certificate = Certificate::findOrFail($certificateId);
-        $member = Member::findOrFail($memberId);
+        try {
+            $certificate = Certificate::findOrFail($certificateId);
+            $member = Member::findOrFail($memberId);
 
-        // Find the latest certificate issuance
-        $latestIssue = $certificate->members()
-            ->where('member_id', $memberId)
-            ->latest('issued_at')
-            ->first();
+            // Find the latest certificate issuance
+            $latestIssue = $certificate->members()
+                ->where('member_id', $memberId)
+                ->latest('issued_at')
+                ->first();
 
-        if (!$latestIssue) {
-            // No record exists, generate PDF and attach record
-            $dompdf = $this->generatePdf($certificateId, $memberId);
-            $pdfContent = $dompdf->output();
-
-            $filename = "certificates/{$certificateId}/member_{$memberId}_" . now()->format('YmdHis') . '.pdf';
-            Storage::disk('public')->put($filename, $pdfContent);
-
-            $certificate->members()->attach($memberId, [
-                'issued_at' => now(),
-                'pdf_path' => $filename,
-            ]);
-        } else {
-            $filename = $latestIssue->pivot->pdf_path;
-
-            // Regenerate PDF if file is missing
-            if (!Storage::disk('public')->exists($filename)) {
-                $dompdf = $this->generatePdf($certificateId, $memberId);
-                $pdfContent = $dompdf->output();
-                Storage::disk('public')->put($filename, $pdfContent);
+            if (!$latestIssue) {
+                // No record exists, create one without PDF generation for faster response
+                $certificate->members()->attach($memberId, [
+                    'issued_at' => now(),
+                    'pdf_path' => null,
+                    'sent_at' => now(),
+                ]);
+            } else {
+                // Update sent_at timestamp
+                $certificate->members()->updateExistingPivot($memberId, [
+                    'sent_at' => now(),
+                ]);
             }
+
+            // Dispatch the job for background processing
+            SendCertificateJob::dispatch($certificateId, $memberId);
+
+            return redirect()->back()->with('success', 'Certificate resend has been queued and will be processed shortly.');
+            
+        } catch (\Exception $e) {
+            Log::error('Resend Certificate Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to resend certificate. Please try again.');
         }
-
-        // Dispatch a job to send the certificate email asynchronously (better for retries and responsiveness)
-        SendCertificateJob::dispatch($certificateId, $memberId);
-
-        // Update sent_at timestamp now, or inside the job if preferred
-        $certificate->members()->updateExistingPivot($memberId, [
-            'sent_at' => now(),
-        ]);
-
-        return back()->with('success', 'Certificate resend has been queued and will be processed shortly.');
     }
 
     public function deleteMemberCertificate(Certificate $certificate, Member $member)
@@ -421,12 +424,24 @@ class CertificateController extends Controller implements HasMiddleware
 
     public function downloadCertificate($certificateId, $memberId = null)
     {
-        // Pass memberId optionally for personalized PDFs
-        $dompdf = $this->generatePdf($certificateId, $memberId);
-
-        return response($dompdf->output())
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="certificate_' . $certificateId . ($memberId ? "_member_{$memberId}" : '') . '.pdf"');
+        try {
+            // Pass memberId optionally for personalized PDFs
+            $dompdf = $this->generatePdf($certificateId, $memberId);
+            $output = $dompdf->output();
+            
+            $filename = 'certificate_' . $certificateId . ($memberId ? "_member_{$memberId}" : '') . '.pdf';
+            
+            return response($output, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Content-Length' => strlen($output),
+                'Cache-Control' => 'no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('PDF Generation Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to generate PDF. Please try again.');
+        }
     }
 
 

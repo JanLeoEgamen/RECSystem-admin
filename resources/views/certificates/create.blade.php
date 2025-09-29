@@ -66,7 +66,7 @@
                             </button>
 
                             <div class="mt-6">
-                                <button type="submit" 
+                                <button type="button" id="createCertificateButton"
                                     class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                                         bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
                                         focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
@@ -87,11 +87,35 @@
     <x-slot name="script">
         <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <style>
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        </style>
         <script>
             CKEDITOR.replace('content');
 
             let signatoryCount = 1;
-            document.getElementById('add-signatory').addEventListener('click', function() {
+            const MAX_SIGNATORIES = 3;
+
+            $('#add-signatory').click(function() {
+                const currentCount = $('.signatory-row').length;
+                
+                if (currentCount >= MAX_SIGNATORIES) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Maximum Reached",
+                        text: `You can only add up to ${MAX_SIGNATORIES} signatories.`,
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
                 const newRow = `
                     <div class="signatory-row flex items-center space-x-4 mb-2">
                         <input type="text" name="signatories[${signatoryCount}][name]" placeholder="Name" class="border-gray-300 shadow-sm rounded-lg w-1/3" required>
@@ -103,33 +127,111 @@
                         </button>
                     </div>
                 `;
-                document.getElementById('signatories-container').insertAdjacentHTML('beforeend', newRow);
+                $('#signatories-container').append(newRow);
                 signatoryCount++;
-            });
-
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-signatory') || e.target.closest('.remove-signatory')) {
-                    const signatoryRows = document.querySelectorAll('.signatory-row');
-                    if (signatoryRows.length > 1) {
-                        const rowToRemove = e.target.closest('.signatory-row');
-                        rowToRemove.remove();
-                    } else {
-                        alert('At least one signatory is required.');
-                    }
+                
+                // Hide add button if max reached
+                if ($('.signatory-row').length >= MAX_SIGNATORIES) {
+                    $('#add-signatory').hide();
                 }
             });
 
-            document.getElementById('createCertificateForm').addEventListener('submit', function(e) {
+            $(document).on('click', '.remove-signatory', function() {
+                if ($('.signatory-row').length > 1) {
+                    $(this).closest('.signatory-row').remove();
+                    // Show add button if below max
+                    if ($('.signatory-row').length < MAX_SIGNATORIES) {
+                        $('#add-signatory').show();
+                    }
+                } else {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Cannot Remove",
+                        text: "At least one signatory is required.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                }
+            });
+
+            $('#createCertificateButton').click(function(e) {
                 e.preventDefault();
+
+                for (let instance in CKEDITOR.instances) {
+                    CKEDITOR.instances[instance].updateElement();
+                }
+
+                const title = $('input[name="title"]').val().trim();
+                const content = CKEDITOR.instances.content.getData().trim();
+                
+                if (!title) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Missing Title",
+                        text: "Please provide a certificate title.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                if (!content) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Missing Content",
+                        text: "Please provide certificate content.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                let hasValidSignatory = false;
+                $('.signatory-row input[name*="[name]"]').each(function() {
+                    if ($(this).val().trim()) {
+                        hasValidSignatory = true;
+                        return false; 
+                    }
+                });
+
+                if (!hasValidSignatory) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Missing Signatory",
+                        text: "Please provide at least one signatory name.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                // Validate signatory count
+                const signatoryCount = $('.signatory-row').length;
+                if (signatoryCount > MAX_SIGNATORIES) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Too Many Signatories",
+                        text: `You can only have up to ${MAX_SIGNATORIES} signatories.`,
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
                 Swal.fire({
-                    title: "Are you sure?",
-                    text: "Do you want to create this certificate template?",
-                    icon: "warning",
+                    title: 'Create Certificate Template?',
+                    text: "Are you sure you want to create this certificate template?",
+                    icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: "#5e6ffb",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, create it!",
-                    cancelButtonText: "Cancel",
+                    confirmButtonColor: '#5e6ffb',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, create it!',
+                    cancelButtonText: 'Cancel',
                     background: '#101966',
                     color: '#fff'
                 }).then((result) => {
@@ -143,7 +245,7 @@
                                 Swal.showLoading();
                             },
                             willClose: () => {
-                                e.target.submit();
+                                document.getElementById('createCertificateForm').submit();
                             },
                             background: '#101966',
                             color: '#fff',
@@ -158,7 +260,7 @@
                     icon: "success",
                     title: "Created!",
                     text: "{{ session('success') }}",
-                    confirmButtonColor: "#5e6ffb",
+                    confirmButtonColor: "#101966",
                     background: '#101966',
                     color: '#fff'
                 });

@@ -117,23 +117,23 @@
                         <!-- Middle Name -->
                         <div>
                             <label for="middle_name" class="block text-white font-medium mb-3 text-sm">
-                                Middle Name <span class="text-red-400">*</span>
+                                Middle Name <span class="text-gray-400 text-xs">(Optional)</span>
                             </label>
                             <input 
                                 id="middle_name" 
                                 class="modern-input w-full text-white placeholder-white/60" 
                                 type="text" 
                                 name="middle_name" 
-                                value="{{ old('middle_name') }}" 
+                                value="{{ old('middle_name') }}"
                                 autocomplete="additional-name"
-                                placeholder="Ex. Santos" 
+                                placeholder="Ex. Santos (Optional)" 
                                 pattern="[A-Za-z. ]+"
                                 oninput="validateName(this)"
                             />
                             <div class="mt-2 text-sm text-red-300">{{ $errors->first('middle_name') }}</div>
                             <div id="middle_name_error" class="text-sm mt-1 h-5 text-red-300"></div>
                         </div>
-
+                        
                         <!-- Last Name -->
                         <div>
                             <label for="last_name" class="block text-white font-medium mb-3 text-sm">
@@ -401,7 +401,7 @@
                     </a>
                 </div>
                 <p class="text-white/70 text-sm">
-                    &copy; {{ date('Y') }} Radio Engineering Circle Inc. All rights reserved.
+                    &copy; 2016 Radio Engineering Circle Inc. All rights reserved.
                 </p>
             </div>
         </div>

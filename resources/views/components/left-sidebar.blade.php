@@ -453,7 +453,8 @@
                     @endcan
 
                     <!-- Billings Section with Sublayer -->
-                    @can('view payments', 'payment-methods')
+                    @can('view payments')
+                        @can('view payment methods')
                         <div class="relative">
                             <button 
                                 @click.stop="toggleDropdown('billings')" 
@@ -492,6 +493,7 @@
                                 @endcan
                             </div>
                         </div>
+                        @endcan
                     @endcan
 
                     @can('view reports')

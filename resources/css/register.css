@@ -113,6 +113,10 @@
         backdrop-filter: blur(10px);
     }
 
+    .modern-input[type="date"] {
+    color-scheme: dark;
+    }
+
     .modern-input:focus {
         outline: none;
         border-color: #5e6ffb;

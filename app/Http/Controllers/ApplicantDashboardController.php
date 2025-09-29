@@ -84,10 +84,13 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
         $existingApplicant = Applicant::where('user_id', Auth::user()->id)->first();
         $isResubmission = $existingApplicant && in_array($existingApplicant->payment_status, ['rejected', 'refunded']);
 
-        // Validate the request data
-        $validatedData = $request->validate([
+        // Get the current user to check if they provided a middle name during registration
+        $user = Auth::user();
+        $userProvidedMiddleName = !empty($user->middle_name);
+
+        // Define validation rules
+        $validationRules = [
             'firstName' => 'required|string|max:255',
-            'middleName' => 'nullable|string|max:255',
             'lastName' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:10',
             'sex' => 'required|string|max:10',
@@ -117,7 +120,22 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             'gcashAccountName' => 'required|string|max:255',
             'gcashAccountNumber' => 'required|string|regex:/^09[0-9]{9}$/', 
             'paymentProof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-        ]);
+        ];
+
+        // Conditionally add middle name validation
+        $user = Auth::user();
+        $userProvidedMiddleName = !empty($user->middle_name);
+
+        if ($userProvidedMiddleName) {
+            // If user provided middle name during registration, it's optional in the application form
+            $validationRules['middleName'] = 'nullable|string|max:255';
+        } else {
+            // If user didn't provide middle name during registration, it's required in the application form
+            $validationRules['middleName'] = 'required|string|max:255';
+        }
+
+        // Validate the request data
+        $validatedData = $request->validate($validationRules);
 
         try {
             $regionName = DB::table('ref_psgc_region')
@@ -137,7 +155,7 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
                 ->value('psgc_brgy_code');
 
             // Handle file upload
-                if ($request->hasFile('paymentProof')) {
+            if ($request->hasFile('paymentProof')) {
                 $file = $request->file('paymentProof');
                 $filename = uniqid('receipt_') . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('images/payment_proofs'), $filename);
@@ -149,7 +167,7 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             // Prepare data for insertion
             $data = [
                 'first_name' => $validatedData['firstName'],
-                'middle_name' => $validatedData['middleName'],
+                'middle_name' => $validatedData['middleName'] ?? null, // Use null if not provided
                 'last_name' => $validatedData['lastName'],
                 'suffix' => $validatedData['suffix'],
                 'sex' => $validatedData['sex'],
@@ -187,6 +205,7 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             ];
 
             Log::info('Prepared data for insertion:', $data);
+            
             if ($isResubmission) {
                 // Update existing applicant record
                 $existingApplicant->update($data);
@@ -253,6 +272,7 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
                 ->withInput();
         }
     }
+
 
     public function applicationSent()
     {

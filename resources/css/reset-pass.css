@@ -116,20 +116,13 @@
     box-shadow: 0 8px 32px rgba(94, 111, 251, 0.3);
 }
 
-.modern-btn:hover:not(:disabled) {
+.modern-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 40px rgba(94, 111, 251, 0.4);
 }
 
-.modern-btn:active:not(:disabled) {
+.modern-btn:active {
     transform: translateY(0);
-}
-
-.modern-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: 0 8px 32px rgba(94, 111, 251, 0.2);
 }
 
 .modern-btn::before {
@@ -143,7 +136,7 @@
     transition: left 0.5s;
 }
 
-.modern-btn:hover:not(:disabled)::before {
+.modern-btn:hover::before {
     left: 100%;
 }
 
@@ -175,6 +168,12 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
+.modern-input:disabled {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+}
+
 .floating {
     animation: floating 6s ease-in-out infinite;
 }
@@ -201,130 +200,210 @@
     }
 }
 
-.slide-in:nth-child(1) { animation-delay: 0.1s; }
-.slide-in:nth-child(2) { animation-delay: 0.2s; }
-.slide-in:nth-child(3) { animation-delay: 0.3s; }
-.slide-in:nth-child(4) { animation-delay: 0.4s; }
-.slide-in:nth-child(5) { animation-delay: 0.5s; }
-
-.countdown-digit {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-weight: bold;
-    color: white;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+.slide-in:nth-child(1) { 
+    animation-delay: 0.1s; 
 }
 
-.progress-bar {
-    background: linear-gradient(90deg, #5e6ffb, #1A25A1);
-    border-radius: 9999px;
-    transition: width 0.5s ease;
+.slide-in:nth-child(2) { 
+    animation-delay: 0.2s; 
 }
 
-.pulse {
-    animation: pulse 2s infinite;
+.slide-in:nth-child(3) { 
+    animation-delay: 0.3s; 
 }
 
-@keyframes pulse {
-    0% { 
-        transform: scale(1); 
-    }
-    50% { 
-        transform: scale(1.05); 
-    }
-    100% { 
-        transform: scale(1); 
-    }
+.slide-in:nth-child(4) { 
+    animation-delay: 0.4s; 
 }
 
-.success-notification {
-    transition: all 0.3s ease-in-out;
-    will-change: transform, height, opacity;
+.slide-in:nth-child(5) { 
+    animation-delay: 0.5s; 
 }
 
-.success-notification:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
+/* Password Toggle Visibility Fix */
+.password-toggle {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
-@keyframes slideUpCollapse {
+.password-toggle.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Radio Wave Loader */
+@keyframes radio-wave {
     0% {
-        transform: translateY(0) scaleY(1);
-        height: auto;
-        opacity: 1;
+        transform: scale(1);
+        opacity: 0.8;
     }
-    50% {
-        opacity: 0.5;
+    70% {
+        transform: scale(3);
+        opacity: 0.2;
     }
     100% {
-        transform: translateY(-100%) scaleY(0);
-        height: 0;
+        transform: scale(4);
         opacity: 0;
-        margin: 0;
-        padding-top: 0;
-        padding-bottom: 0;
     }
 }
 
-.slide-up-notification {
-    animation: slideUpCollapse 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.animate-wave {
+    animation: radio-wave 2s infinite ease-out;
+}
+
+.delay-200 {
+    animation-delay: 0.4s;
+}
+
+.delay-400 {
+    animation-delay: 0.8s;
+}
+
+/* Error message styling */
+.error-message {
+    color: #fecaca;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .glass-card {
+        padding: 1.5rem;
+    }
+    
+    .modern-input {
+        padding: 14px 16px;
+    }
+}
+
+/* Password Validation Styles */
+.validation-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.validation-icon {
+    margin-right: 6px;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.5rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.validation-icon.valid {
+    background-color: rgba(72, 187, 120, 0.3);
+    color: #48bb78;
+}
+
+.validation-icon.invalid {
+    background-color: rgba(245, 101, 101, 0.3);
+    color: #f56565;
+}
+
+.password-strength-meter {
+    height: 4px;
+    width: 100%;
+    margin-top: 8px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
     overflow: hidden;
-    transform-origin: top;
+    display: none;
 }
 
-.disabled-input {
-    opacity: 0.7;
-    cursor: not-allowed;
-    background-color: rgba(75, 85, 99, 0.3) !important;
+.password-strength-meter-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    transition: width 0.3s ease, background-color 0.3s ease;
 }
 
-.disabled-input:focus {
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    background: rgba(75, 85, 99, 0.3) !important;
-    box-shadow: none !important;
+.password-strength-text {
+    font-size: 0.7rem;
+    margin-top: 2px;
+    text-align: right;
+    height: 14px;
+    display: none;
 }
 
-/* Enhanced countdown styling */
-#countdownContainer {
-    transition: all 0.3s ease-in-out;
+.password-validation-container {
+    position: relative;
 }
 
-.countdown-digit {
-    background: rgba(255, 255, 255, 0.1);
+#passwordValidationTooltip {
+    position: relative;
+    z-index: 9999;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    padding: 8px 12px;
-    font-weight: bold;
-    color: white;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    min-width: 50px;
-    text-align: center;
+    padding: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.progress-bar {
-    background: linear-gradient(90deg, #5e6ffb, #1A25A1);
-    border-radius: 9999px;
-    transition: width 1s linear;
+#passwordValidationTooltip .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
 }
 
-/* Email field lock state indicator */
-.email-locked-message {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-top: 8px;
+#passwordValidationTooltip .validation-item {
+    margin-bottom: 0;
+}
+
+/* Strength meter colors */
+.strength-weak {
+    background-color: #f56565;
+}
+
+.strength-medium {
+    background-color: #ecc94b;
+}
+
+.strength-strong {
+    background-color: #48bb78;
+}
+
+/* Text colors */
+.text-weak {
+    color: #f56565;
+}
+
+.text-medium {
+    color: #ecc94b;
+}
+
+.text-strong {
+    color: #48bb78;
+}
+
+/* Password Match Text Styles */
+#passwordMatchText {
+    transition: all 0.3s ease;
+}
+
+.text-red-400 {
+    color: #f56565;
+}
+
+.text-green-400 {
+    color: #48bb78;
+}
+
+/* Ensure proper spacing */
+.slide-in.mt-4 {
+    margin-top: 1rem;
+}
+
+/* Make sure the match text is visible */
+.text-sm.mt-1.h-5 {
+    min-height: 1.25rem;
+    margin-top: 0.25rem;
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
-
-.email-locked-message i {
-    color: #5e6ffb;
-}       

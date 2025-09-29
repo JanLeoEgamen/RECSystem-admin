@@ -1,3 +1,4 @@
+@role('Super Admin')
 @can('view admin dashboard')
 <!-- Right Sidebar -->
 <aside 
@@ -414,3 +415,4 @@
 }
 </style>
 @endcan
+@endrole

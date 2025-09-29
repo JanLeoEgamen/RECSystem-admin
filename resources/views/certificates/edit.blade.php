@@ -99,8 +99,23 @@
             CKEDITOR.replace('content');
 
             let signatoryCount = {{ count($certificate->signatories) }};
+            const MAX_SIGNATORIES = 3;
             
             $('#add-signatory').click(function() {
+                const currentCount = $('.signatory-row').length;
+                
+                if (currentCount >= MAX_SIGNATORIES) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Maximum Reached",
+                        text: `You can only add up to ${MAX_SIGNATORIES} signatories.`,
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
                 const newRow = `
                     <div class="signatory-row flex items-center space-x-4 mb-2">
                         <input type="text" name="signatories[${signatoryCount}][name]" placeholder="Name" class="border-gray-300 shadow-sm rounded-lg w-1/3" required>
@@ -114,11 +129,20 @@
                 `;
                 $('#signatories-container').append(newRow);
                 signatoryCount++;
+                
+                // Hide add button if max reached
+                if ($('.signatory-row').length >= MAX_SIGNATORIES) {
+                    $('#add-signatory').hide();
+                }
             });
 
             $(document).on('click', '.remove-signatory', function() {
                 if ($('.signatory-row').length > 1) {
                     $(this).closest('.signatory-row').remove();
+                    // Show add button if below max
+                    if ($('.signatory-row').length < MAX_SIGNATORIES) {
+                        $('#add-signatory').show();
+                    }
                 } else {
                     Swal.fire({
                         icon: "warning",
@@ -128,6 +152,13 @@
                         background: '#101966',
                         color: '#fff'
                     });
+                }
+            });
+
+            // Hide add button on page load if max already reached
+            $(document).ready(function() {
+                if ($('.signatory-row').length >= MAX_SIGNATORIES) {
+                    $('#add-signatory').hide();
                 }
             });
 
@@ -178,6 +209,20 @@
                         icon: "warning",
                         title: "Missing Signatory",
                         text: "Please provide at least one signatory name.",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                    return;
+                }
+
+                // Validate signatory count
+                const signatoryCount = $('.signatory-row').length;
+                if (signatoryCount > MAX_SIGNATORIES) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Too Many Signatories",
+                        text: `You can only have up to ${MAX_SIGNATORIES} signatories.`,
                         confirmButtonColor: "#101966",
                         background: '#101966',
                         color: '#fff'
