@@ -25,16 +25,16 @@ class AddressController extends Controller
         }
     }
 
-    public function showApplicantCreateForm()
-    {
-        try {
-            $regions = $this->getRegions();
-            return view('applicants.create', compact('regions'));
-        } catch (\Exception $e) {
-            Log::error('Applicant create form error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to load applicant creation form. Please try again.');
-        }
-    }
+    // public function showApplicantCreateForm()
+    // {
+    //     try {
+    //         $regions = $this->getRegions();
+    //         return view('applicants.create', compact('regions'));
+    //     } catch (\Exception $e) {
+    //         Log::error('Applicant create form error: ' . $e->getMessage());
+    //         return redirect()->back()->with('error', 'Failed to load applicant creation form. Please try again.');
+    //     }
+    // }
 
     public function showApplicantEditForm($id)
     {

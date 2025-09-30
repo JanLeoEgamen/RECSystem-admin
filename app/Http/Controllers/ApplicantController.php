@@ -124,10 +124,10 @@ class ApplicantController extends Controller implements HasMiddleware
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        return view('applicants.create');
-    }
+    // public function create()
+    // {
+    //     return view('applicants.create');
+    // }
 
 
     public function show(string $id)
@@ -178,9 +178,9 @@ class ApplicantController extends Controller implements HasMiddleware
             'gcash_number' => 'required|string|regex:/^09[0-9]{9}$/',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->route('applicants.create')->withInput()->withErrors($validator);
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->route('applicants.create')->withInput()->withErrors($validator);
+        // }
 
         $applicant = new Applicant();
         $applicant->status = 'Pending';

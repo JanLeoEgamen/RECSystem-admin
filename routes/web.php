@@ -248,7 +248,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Applicants
     Route::get('/applicants', [ApplicantController::class, 'index'])->name('applicants.index');
-    Route::get('/applicants/create', [AddressController::class, 'showApplicantCreateForm'])->name('applicants.showApplicantCreateForm');
+    // Route::get('/applicants/create', [AddressController::class, 'showApplicantCreateForm'])->name('applicants.showApplicantCreateForm');
     Route::post('/applicants', [ApplicantController::class, 'store'])->name('applicants.store');
     Route::get('/applicants/{id}/edit', [AddressController::class, 'showApplicantEditForm'])->name('applicants.edit');
     Route::post('/applicants/{id}', [ApplicantController::class, 'update'])->name('applicants.update');

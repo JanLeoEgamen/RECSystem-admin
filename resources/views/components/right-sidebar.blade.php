@@ -1,4 +1,4 @@
-@role('Super Admin')
+@role('superadmin')
 @can('view admin dashboard')
 <!-- Right Sidebar -->
 <aside 
@@ -50,22 +50,8 @@
             
             <!-- Action Grid -->
             <div class="grid grid-cols-2 gap-3 md:gap-4">
-                <!-- Add Applicant -->
-                <div class="group sidebar-item animate" style="animation-delay: 0.15s">
-                    <a href="{{ route('applicants.showApplicantCreateForm') }}" 
-                    class="action-card block p-2 md:p-3 bg-white/10 hover:bg-white/20 dark:bg-gray-800/40 dark:hover:bg-gray-700/50 rounded-lg border border-white/10 dark:border-gray-700 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 backdrop-blur-sm">
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-emerald-500/20 dark:bg-emerald-600/30 rounded-md flex items-center justify-center mb-1 md:mb-2 group-hover:bg-emerald-500/30 dark:group-hover:bg-emerald-600/40 transition-colors">
-                                <svg class="w-3 h-3 md:w-4 md:h-4 text-emerald-300 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                </svg>
-                            </div>
-                            <span class="text-white dark:text-gray-200 font-medium text-xs">Add Applicant</span>
-                        </div>
-                    </a>
-                </div>
-
+                <!-- DELETED ADD APPLICANT CAUSE ITS BEEN HIDDEN -->
+                
                 <!-- Add Member -->
                 <div class="group sidebar-item animate" style="animation-delay: 0.2s">
                     <a href="{{ route('members.showMemberCreateForm') }}" 
@@ -79,6 +65,24 @@
                             </div>
                             <span class="text-white dark:text-gray-200 font-medium text-xs">
                                 Add<span class="block md:hidden"></span><span class="hidden md:inline"> </span>Member
+                            </span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Add Report -->
+                <div class="group sidebar-item animate" style="animation-delay: 0.2s">
+                    <a href="{{ route('reports.index') }}" 
+                    class="action-card block p-2 md:p-3 bg-white/10 hover:bg-white/20 dark:bg-gray-800/40 dark:hover:bg-gray-700/50 rounded-lg border border-white/10 dark:border-gray-700 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 backdrop-blur-sm">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-blue-500/20 dark:bg-blue-600/30 rounded-md flex items-center justify-center mb-1 md:mb-2 group-hover:bg-blue-500/30 dark:group-hover:bg-blue-600/40 transition-colors">
+                                <svg class="w-3 h-3 md:w-4 md:h-4 text-blue-300 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-white dark:text-gray-200 font-medium text-xs">
+                                Create<span class="block md:hidden"></span><span class="hidden md:inline"> </span>Report
                             </span>
                         </div>
                     </a>

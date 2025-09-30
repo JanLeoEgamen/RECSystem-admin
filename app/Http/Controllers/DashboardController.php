@@ -25,20 +25,28 @@ class DashboardController extends Controller implements HasMiddleware
         $user = $request->user();
         $fullName = $user->first_name . ' ' . $user->last_name;
 
-        $sectionIds = DB::table('user_bureau_section')
-            ->where('user_id', $user->id)
-            ->whereNotNull('section_id')
-            ->pluck('section_id');
+        //NEWLY ADDED LOGIC THAT DASHBOARD CARDS AND CHARTS WILL BE FILTERED BASED ON USER'S ACCESSIBLE SECTIONS
+        if ($user->hasRole('superadmin')) {
+        // Superadmin sees all members without filtering
+        $memberQuery = Member::query();
+        } else {
+            // Regular users see only members in their accessible sections
+            $sectionIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNotNull('section_id')
+                ->pluck('section_id');
 
-        $bureauIds = DB::table('user_bureau_section')
-            ->where('user_id', $user->id)
-            ->whereNull('section_id')
-            ->pluck('bureau_id');
+            $bureauIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNull('section_id')
+                ->pluck('bureau_id');
 
-        $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
-        $accessibleSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+            $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+            $accessibleSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
 
-        $memberQuery = Member::whereIn('section_id', $accessibleSectionIds);
+            $memberQuery = Member::whereIn('section_id', $accessibleSectionIds);
+        }
+
         $totalMembers = (clone $memberQuery)->count();
 
         $activeMembers = (clone $memberQuery)->where('status', 'Active')

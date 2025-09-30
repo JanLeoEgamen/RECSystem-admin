@@ -111,7 +111,7 @@
                     @endunlessrole
                 @endcannot
 
-                @role('Super Admin')
+                @role('superadmin')
                 @can('view admin dashboard')
                 <div class="hidden sm:flex items-center relative">
                     <!-- Search Bar  -->
