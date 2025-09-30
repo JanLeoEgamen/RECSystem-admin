@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
@@ -145,5 +146,62 @@ class User extends Authenticatable implements MustVerifyEmail
             ->dontSubmitEmptyLogs();
     }
     
+    public function isPasswordInHistory($newPassword)
+    {
+        // Get last 5 passwords from password history (excluding current password)
+        $passwordHistory = $this->passwordHistory()
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Check against the last 5 historical passwords
+        foreach ($passwordHistory as $oldPassword) {
+            if (Hash::check($newPassword, $oldPassword->password)) {
+                return true;
+            }
+        }
+
+        // Also check current password (this should be the first check that fails in NewPasswordController)
+        if (Hash::check($newPassword, $this->password)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Add password to history
+     */
+    public function addPasswordToHistory($password)
+    {
+        // Add the new password to history
+        $this->passwordHistory()->create([
+            'password' => $password, // This should already be hashed when passed in
+        ]);
+
+        // Get all password histories ordered by creation date (newest first)
+        $allHistories = $this->passwordHistory()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // If we have more than 5 entries, delete the excess oldest ones
+        if ($allHistories->count() > 5) {
+            // Get the IDs of entries beyond the first 5 (the oldest ones)
+            $entriesToDelete = $allHistories->slice(5)->pluck('id')->toArray();
+            
+            // Delete the oldest entries
+            if (!empty($entriesToDelete)) {
+                $this->passwordHistory()->whereIn('id', $entriesToDelete)->delete();
+            }
+        }
+    }
+
+    /**
+     * Password history relationship
+     */
+    public function passwordHistory()
+    {
+        return $this->hasMany(PasswordHistory::class);
+    }
 
 }

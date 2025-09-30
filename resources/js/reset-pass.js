@@ -74,41 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Password visibility toggle for current password field
-    const currentPasswordInput = document.getElementById('current_password');
-    const currentPasswordToggle = document.getElementById('current-password-toggle');
-
-    if (currentPasswordInput && currentPasswordToggle) {
-        const eyeIcon = currentPasswordToggle.querySelector('#current-password-eye-icon');
-        const eyeSlashIcon = currentPasswordToggle.querySelector('#current-password-eye-slash-icon');
-        
-        // Show/hide toggle button only if input has value
-        currentPasswordInput.addEventListener('input', (e) => {
-            if (e.target.value.trim().length > 0) {
-                currentPasswordToggle.classList.add('show');
-            } else {
-                currentPasswordToggle.classList.remove('show');
-                currentPasswordInput.type = 'password';
-                eyeIcon.classList.add('hidden');
-                eyeSlashIcon.classList.remove('hidden');
-            }
-        });
-
-        // Toggle visibility on button click
-        currentPasswordToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (currentPasswordInput.type === 'password') {
-                currentPasswordInput.type = 'text';
-                eyeIcon.classList.remove('hidden');
-                eyeSlashIcon.classList.add('hidden');
-            } else {
-                currentPasswordInput.type = 'password';
-                eyeIcon.classList.add('hidden');
-                eyeSlashIcon.classList.remove('hidden');
-            }
-        });
-    }
-
     // --- Slide-in animations ---
     const elements = document.querySelectorAll('.slide-in');
     elements.forEach((el, index) => {
@@ -141,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('password_confirmation').value;
+            const email = document.getElementById('email').value;
             
             // Password validation
             const hasMinLength = password.length >= 8;
@@ -203,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loader.classList.remove("hidden");
             }
 
+            // In the form submission try block, replace the entire response handling with:
             try {
                 // Create FormData from the form
                 const formData = new FormData(form);
@@ -216,7 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
                     }
                 });
 
@@ -224,93 +192,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     loader.classList.add("hidden");
                 }
 
-                if (response.ok) {
-                    // Check if it's a redirect response (successful password reset)
-                    if (response.redirected || response.url.includes('/login')) {
-                        await Swal.fire({
-                            icon: 'success',
-                            title: 'Password Reset Successful!',
-                            html: `
-                                <div class="text-center">
-                                    <p class="mb-4 text-lg">Your password has been successfully reset!</p>
-                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                                        <div class="flex items-center justify-center mb-2">
-                                            <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            <span class="text-green-800 font-medium">Security Enhanced</span>
-                                        </div>
-                                        <p class="text-green-700 text-sm">
-                                            Your account security has been updated. Please log in with your new password.
-                                        </p>
-                                    </div>
-                                    <p class="text-gray-600">You will be redirected to the login page.</p>
-                                </div>
-                            `,
-                            confirmButtonColor: '#101966',
-                            confirmButtonText: 'Continue to Login',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false
-                        });
-                        
-                        // Redirect to login page
-                        window.location.href = '/login';
-                        return;
-                    }
+                // Laravel will automatically return JSON for validation errors
+                const result = await response.json();
 
-                    // If we get here, check the response for JSON
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        await Swal.fire({
-                            icon: 'success',
-                            title: 'Password Reset Successful!',
-                            html: `
-                                <div class="text-center">
-                                    <p class="mb-4 text-lg">Your password has been successfully reset!</p>
-                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                                        <div class="flex items-center justify-center mb-2">
-                                            <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            <span class="text-green-800 font-medium">Security Enhanced</span>
-                                        </div>
-                                        <p class="text-green-700 text-sm">
-                                            Your account security has been updated. Please log in with your new password.
-                                        </p>
+                if (response.ok) {
+                    // Success - redirect to login
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Password Reset Successful!',
+                        html: `
+                            <div class="text-center">
+                                <p class="mb-4 text-lg">Your password has been successfully reset!</p>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                                    <div class="flex items-center justify-center mb-2">
+                                        <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span class="text-green-800 font-medium">Security Enhanced</span>
                                     </div>
-                                    <p class="text-gray-600">You will be redirected to the login page.</p>
+                                    <p class="text-green-700 text-sm">
+                                        Your account security has been updated. Please log in with your new password.
+                                    </p>
                                 </div>
-                            `,
-                            confirmButtonColor: '#101966',
-                            confirmButtonText: 'Continue to Login',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false
-                        });
-                        
-                        if (result.redirect) {
-                            window.location.href = result.redirect;
-                        } else {
-                            window.location.href = '/login';
-                        }
-                    } else {
-                        // Handle server-side validation errors
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Password Reset Failed',
-                            text: result.status || 'An error occurred while resetting your password. Please try again.',
-                            confirmButtonColor: '#101966',
-                            confirmButtonText: 'Try Again'
-                        });
-                    }
-                } else {
-                    // Handle HTTP errors
-                    const text = await response.text();
-                    const doc = new DOMParser().parseFromString(text, 'text/html');
-                    const errorMessages = doc.querySelectorAll('.error-message');
+                                <p class="text-gray-600">You will be redirected to the login page.</p>
+                            </div>
+                        `,
+                        confirmButtonColor: '#101966',
+                        confirmButtonText: 'Continue to Login',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    });
                     
-                    if (errorMessages.length > 0) {
-                        const errors = Array.from(errorMessages).map(el => el.textContent.trim());
+                    window.location.href = '/login';
+                } else {
+                    // Handle validation errors from JSON response
+                    if (result.errors) {
+                        const errorMessages = Object.values(result.errors).flat();
                         
                         Swal.fire({
                             icon: 'error',
@@ -319,10 +236,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="text-left">
                                     <p class="mb-2">Please fix the following issues:</p>
                                     <ul class="list-disc pl-5 space-y-1">
-                                        ${errors.map(error => `<li class="text-red-600">${error}</li>`).join('')}
+                                        ${errorMessages.map(error => `<li class="text-red-600">${error}</li>`).join('')}
                                     </ul>
                                 </div>
                             `,
+                            confirmButtonColor: '#101966',
+                            confirmButtonText: 'Try Again'
+                        });
+                    } else if (result.message) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Password Reset Failed',
+                            text: result.message,
                             confirmButtonColor: '#101966',
                             confirmButtonText: 'Try Again'
                         });
@@ -343,26 +268,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 console.error('Password reset error:', error);
                 
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Connection Error',
-                    html: `
-                        <div class="text-center">
-                            <p class="mb-4">Unable to connect to the server. Please check your internet connection and try again.</p>
-                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                                <div class="flex items-center justify-center mb-2">
-                                    <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                    </svg>
-                                    <span class="text-red-800 font-medium">Network Issue</span>
+                // Check if it's a JSON parse error (meaning server returned HTML instead of JSON)
+                if (error instanceof SyntaxError) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Response Error',
+                        html: `
+                            <div class="text-center">
+                                <p class="mb-4">The server returned an unexpected response. This might be a temporary issue.</p>
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-center mb-2">
+                                        <svg class="w-6 h-6 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        <span class="text-yellow-800 font-medium">Response Format Issue</span>
+                                    </div>
+                                    <p class="text-yellow-700 text-sm">
+                                        Please try submitting the form again.
+                                    </p>
                                 </div>
-                                <p class="text-red-700 text-sm">If the problem persists, please contact support.</p>
                             </div>
-                        </div>
-                    `,
-                    confirmButtonColor: '#101966',
-                    confirmButtonText: 'Try Again'
-                });
+                        `,
+                        confirmButtonColor: '#101966',
+                        confirmButtonText: 'Try Again'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Connection Error',
+                        html: `
+                            <div class="text-center">
+                                <p class="mb-4">Unable to connect to the server. Please check your internet connection and try again.</p>
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-center mb-2">
+                                        <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        <span class="text-red-800 font-medium">Network Issue</span>
+                                    </div>
+                                    <p class="text-red-700 text-sm">If the problem persists, please contact support.</p>
+                                </div>
+                            </div>
+                        `,
+                        confirmButtonColor: '#101966',
+                        confirmButtonText: 'Try Again'
+                    });
+                }
             }
         });
     }
