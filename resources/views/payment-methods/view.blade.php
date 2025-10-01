@@ -86,6 +86,25 @@
                             @endif
                         </dd>
                     </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
+                            <dd class="mt-1 text-sm">
+                                @if($paymentMethod->is_published)
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-200">Published</span>
+                                @else
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-200">Draft</span>
+                                @endif
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Amount</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {{ $paymentMethod->amount ? '₱' . number_format($paymentMethod->amount, 2) : 'N/A' }}
+                            </dd>
+                        </div>
+                        <div>
+
                     <div class="mt-8 flex space-x-4">
                         <a href="{{ route('payment-methods.edit', $paymentMethod->id) }}" 
                            class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 

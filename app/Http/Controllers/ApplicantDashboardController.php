@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ApplicationSubmittedSuccessfully;
 use App\Models\Applicant;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +41,10 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             ->select('PSGC_REG_CODE', 'PSGC_REG_DESC')
             ->get();
 
+        // Load payment methods
+        $paymentMethods = PaymentMethod::where('is_published', true)->get(); 
+
+
         // For rejected/refunded payments, allow access to form with pre-populated data
         if ($applicant && in_array($applicant->payment_status, ['rejected', 'refunded'])) {
             // Load the specific province, municipality, and barangay data
@@ -66,11 +71,11 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             }
 
             // Pass all data to the view
-            return view('applicant.applicant-dashboard', compact('regions', 'applicant', 'province', 'municipality', 'barangay'));
+            return view('applicant.applicant-dashboard', compact('regions', 'applicant', 'province', 'municipality', 'barangay', 'paymentMethods'));
         }
 
         // For new applicants or other cases
-        return view('applicant.applicant-dashboard', compact('regions', 'applicant'));
+        return view('applicant.applicant-dashboard', compact('regions', 'applicant', 'paymentMethods'));
     }
 
     public function store(Request $request)
@@ -114,12 +119,18 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             'hasLicense' => 'nullable|string|in:on,0',
             'licenseClass' => 'required_if:hasLicense,on|nullable|string|max:100',
             'licenseNumber' => 'required_if:hasLicense,on|nullable|string|max:100',
+            'callsign' => 'nullable|string|max:50',
             'expirationDate' => 'required_if:hasLicense,on|nullable|date',
             'isStudent' => 'nullable|string',
-            'gcashRefNumber' => 'required|string|max:100',
-            'gcashAccountName' => 'required|string|max:255',
-            'gcashAccountNumber' => 'required|string|regex:/^09[0-9]{9}$/', 
-            'paymentProof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'studentNumber' => 'nullable|string|max:50', 
+            'school' => 'nullable|string|max:255', 
+            'program' => 'nullable|string|max:255', 
+            'yearLevel' => 'nullable|string|max:50', 
+            'gcashRefNumber' => 'required_if:isStudent,null|string|max:100',
+            'gcashAccountName' => 'required_if:isStudent,null|string|max:255',
+            'gcashAccountNumber' => 'required_if:isStudent,null|string|regex:/^09[0-9]{9}$/',
+            'paymentProof' => 'required_if:isStudent,null|image|mimes:jpeg,png,jpg|max:5120',
+            'dataPrivacyConsent' => 'required|accepted', 
         ];
 
         // Conditionally add middle name validation
@@ -164,6 +175,12 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
                 $paymentProofPath = $filename; // Just "receipt_123abc.png"
             }
 
+            // Handle payment status based on student status
+            $isStudent = $request->has('isStudent');
+            $paymentStatus = $isStudent ? 'waived' : 'pending';
+            $referenceNumber = $isStudent ? 'STUDENT_WAIVED' : $validatedData['gcashRefNumber'];
+
+
             // Prepare data for insertion
             $data = [
                 'first_name' => $validatedData['firstName'],
@@ -191,15 +208,21 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
                 'has_license' => $request->has('hasLicense') ? 1 : 0,
                 'license_class' => $validatedData['licenseClass'] ?? null,
                 'license_number' => $validatedData['licenseNumber'] ?? null,
+                'callsign' => $validatedData['callsign'] ?? null,
                 'license_expiration_date' => $validatedData['expirationDate'] ?? null,
-                'reference_number' => $validatedData['gcashRefNumber'],
-                'gcash_name' => $validatedData['gcashAccountName'],
-                'gcash_number' => $validatedData['gcashAccountNumber'],
-                'payment_proof_path' => $paymentProofPath,
+                'reference_number' => $referenceNumber,
+                'gcash_name' => $isStudent ? null : $validatedData['gcashAccountName'],
+                'gcash_number' => $isStudent ? null : $validatedData['gcashAccountNumber'],
+                'payment_proof_path' => $isStudent ? null : $paymentProofPath,
                 'status' => 'Pending',
-                'payment_status' => 'pending', // Default status for new applicants
+                'payment_status' => $paymentStatus, // Use 'waived' for students
                 'user_id' => Auth::user()->id,
                 'is_student' => $request->has('isStudent') ? 1 : 0,
+                'student_number' => $validatedData['studentNumber'] ?? null, 
+                'school' => $validatedData['school'] ?? null,
+                'program' => $validatedData['program'] ?? null, 
+                'year_level' => $validatedData['yearLevel'] ?? null,
+                'data_privacy_consent' => $request->has('dataPrivacyConsent') ? 1 : 0, 
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

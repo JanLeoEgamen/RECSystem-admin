@@ -18,6 +18,7 @@ class PaymentMethod extends Model
         'account_number',
         'mode_of_payment_qr_image',
         'is_published',
+        'amount',
     ];
 
     // Activity logs

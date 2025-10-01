@@ -48,6 +48,11 @@ class Applicant extends Model
         'zip_code',
         'street_address',
         'is_student',
+        'student_number', // Add this
+        'school', // Add this
+        'program', // Add this
+        'year_level', // Add this
+        'data_privacy_consent',
         'created_at',
         'updated_at'
     ];
@@ -69,7 +74,7 @@ class Applicant extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['status', 'last_name', 'first_name', 'middle_name', 'suffix', 'sex', 'birthdate', 'civil_status', 'citizenship', 'blood_type', 'cellphone_no', 'telephone_no', 'has_license', 'email_address', 'emergency_contact', 'emergency_contact_number', 'relationship', 'reference_number', 'payment_proof_path', 'payment_status', 'license_class', 'license_number', 'callsign', 'license_expiration_date', 'user_id', 'region', 'province', 'municipality', 'barangay', 'house_building_number_name', 'zip_code', 'street_address', 'is_student'])
+            ->logOnly(['status', 'last_name', 'first_name', 'middle_name', 'suffix', 'sex', 'birthdate', 'civil_status', 'citizenship', 'blood_type', 'cellphone_no', 'telephone_no', 'has_license', 'email_address', 'emergency_contact', 'emergency_contact_number', 'relationship', 'reference_number', 'payment_proof_path', 'payment_status', 'license_class', 'license_number', 'callsign', 'license_expiration_date', 'user_id', 'region', 'province', 'municipality', 'barangay', 'house_building_number_name', 'zip_code', 'street_address', 'is_student','student_number', 'school', 'program', 'year_level', 'data_privacy_consent'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "Applicant has been {$eventName}")
             ->useLogName('applicant')

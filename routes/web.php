@@ -58,15 +58,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use App\Http\Controllers\GlobalSearchController;
+use App\Http\Controllers\StudentApplicantController;
 
 // GLOBAL SEARCH
 Route::get('/global-search', [GlobalSearchController::class, 'search'])
     ->name('global.search')
-    ->middleware('can:view admin dashboard');
+    ->middleware('can:view global search');
 
 Route::get('/global-search/categories', [GlobalSearchController::class, 'getCategories'])
     ->name('global.search.categories')
-    ->middleware('can:view admin dashboard');
+    ->middleware('can:view global search');
 
 Route::get('/', function () {
     return view('welcome');
@@ -81,6 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/application', [ApplicantDashboardController::class, 'index'])->name('applicant.dashboard');
         Route::post('/application', [ApplicantDashboardController::class, 'store'])->name('applicant.store');
         Route::get('/application/applicationSent', [ApplicantDashboardController::class, 'applicationSent'])->name('applicant.thankyou');
+        Route::get('/data-privacy', function () {
+        return view('applicant.data-privacy');
+        })->name('data.privacy');
+
     });
     
     //profile
@@ -260,6 +265,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/applicants/rejected/list', [ApplicantController::class, 'rejected'])->name('applicants.rejected');
     Route::post('/applicants/{id}/restore', [ApplicantController::class, 'restore'])->name('applicants.restore');
     Route::get('/applicants/approved/list', [ApplicantController::class, 'approved'])->name('applicants.approved');
+
+
+    // Student Applicants
+    Route::get('/student-applicants', [StudentApplicantController::class, 'index'])->name('student-applicants.index');
+    Route::get('/student-applicants/{id}', [StudentApplicantController::class, 'show'])->name('student-applicants.show');
+    Route::get('/student-applicants/{id}/assess', [StudentApplicantController::class, 'assess'])->name('student-applicants.assess');
+    Route::post('/student-applicants/{id}/approve', [StudentApplicantController::class, 'approve'])->name('student-applicants.approve');
+    Route::post('/student-applicants/{id}/reject', [StudentApplicantController::class, 'reject'])->name('student-applicants.reject');
+    Route::get('/student-applicants/rejected/list', [StudentApplicantController::class, 'rejected'])->name('student-applicants.rejected');
+    Route::post('/student-applicants/{id}/restore', [StudentApplicantController::class, 'restore'])->name('student-applicants.restore');
+    Route::get('/student-applicants/approved/list', [StudentApplicantController::class, 'approved'])->name('student-applicants.approved');
+
 
     // Members
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');

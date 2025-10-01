@@ -36,7 +36,9 @@ class PaymentMethodController extends Controller implements HasMiddleware
                     $query->where(function ($q) use ($request) {
                         $q->where('mode_of_payment_name', 'like', '%' . $request->search . '%')
                           ->orWhere('account_name', 'like', '%' . $request->search . '%')
-                          ->orWhere('account_number', 'like', '%' . $request->search . '%');
+                          ->orWhere('account_number', 'like', '%' . $request->search . '%')
+                          ->orWhere('amount', 'like', '%' . $request->search . '%'); 
+
                     });
                 }
 
@@ -53,6 +55,7 @@ class PaymentMethodController extends Controller implements HasMiddleware
                         'mode_of_payment_name' => $paymentMethod->mode_of_payment_name,
                         'account_name' => $paymentMethod->account_name,
                         'account_number' => $paymentMethod->account_number,
+                        'amount' => $paymentMethod->amount,
                         'is_published' => $paymentMethod->is_published,
                         'mode_of_payment_qr_image' => $paymentMethod->mode_of_payment_qr_image 
                             ? Storage::disk('public')->url($paymentMethod->mode_of_payment_qr_image) 
@@ -103,6 +106,7 @@ class PaymentMethodController extends Controller implements HasMiddleware
             $paymentMethod->account_name = $validated['account_name'];
             $paymentMethod->account_number = $validated['account_number'];
             $paymentMethod->is_published = $validated['is_published'] ?? true;
+            $paymentMethod->amount = $validated['amount'] ?? null;
 
 
             if ($request->hasFile('mode_of_payment_qr_image')) {
@@ -153,6 +157,7 @@ class PaymentMethodController extends Controller implements HasMiddleware
             $paymentMethod->mode_of_payment_name = $validated['mode_of_payment_name'];
             $paymentMethod->account_name = $validated['account_name'];
             $paymentMethod->account_number = $validated['account_number'];
+            $paymentMethod->amount = $validated['amount'] ?? $paymentMethod->amount;
             $paymentMethod->is_published = $validated['is_published'] ?? $paymentMethod->is_published;
 
 
@@ -239,6 +244,7 @@ public function view($id)
             'account_name' => 'required|string|min:2|max:100',
             'account_number' => 'required|string|min:2|max:100',
             'is_published' => 'sometimes|boolean',
+            'amount' => 'nullable|numeric|min:0', 
             'mode_of_payment_qr_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
@@ -266,8 +272,12 @@ public function view($id)
                 
             case 'account_number':
                 $query->orderBy('account_number', $direction);
+                break; 
+                        
+            case 'amount': // Add this case
+                $query->orderBy('amount', $direction);
                 break;
-                
+
             case 'created':
             case 'created_at':
                 $query->orderBy('created_at', $direction);

@@ -1,12 +1,58 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="{{ __('Payment Methods') }}">
-            <x-slot name="createButton">
-                <x-create-button 
-                    :route="route('payment-methods.create')" 
-                    permission="create payment methods" />
-            </x-slot>
-        </x-page-header>
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+    
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
+                {{ __('Student Applicants') }}
+            </h2>
+
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto text-center sm:text-right">
+                @can('view student applicants')
+                <a href="{{ route('student-applicants.approved') }}" 
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium  
+                            rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center
+
+                            dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                            class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M15 19a6 6 0 00-12 0m12 0h0M9 11a4 4 0 100-8 4 4 0 000 8z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M16 11l2 2 4-4" />
+                        </svg>
+                        Approved Students
+                </a>
+
+                <a href="{{ route('student-applicants.rejected') }}" 
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium  
+                            rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center
+
+                            dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                            class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M15 19a6 6 0 00-12 0m12 0h0M9 11a4 4 0 100-8 4 4 0 000 8z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M18 12l4 4m0-4l-4 4" />
+                        </svg>
+                        Disapproved Students
+                </a>
+                @endcan
+            </div>
+        </div>
+
     </x-slot>
 
     <div class="py-12">
@@ -31,12 +77,14 @@
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
                                     <option value="created_desc">Default</option>
-                                    <option value="mode_of_payment_name_asc">Payment Method (A-Z)</option>
-                                    <option value="mode_of_payment_name_desc">Payment Method (Z-A)</option>
-                                    <option value="account_name_asc">Account Name (A-Z)</option>
-                                    <option value="account_name_desc">Account Name (Z-A)</option>
-                                    <option value="amount_asc">Amount (Low to High)</option>
-                                    <option value="amount_desc">Amount (High to Low)</option>
+                                    <option value="full_name_asc">Name (A-Z)</option>
+                                    <option value="full_name_desc">Name (Z-A)</option>
+                                    <option value="sex_asc">Sex (A-Z)</option>
+                                    <option value="sex_desc">Sex (Z-A)</option>
+                                    <option value="birthdate_asc">Birthdate (Oldest)</option>
+                                    <option value="birthdate_desc">Birthdate (Youngest)</option>
+                                    <option value="school_asc">School (A-Z)</option>
+                                    <option value="school_desc">School (Z-A)</option>
                                     <option value="created_asc">Created (Oldest First)</option>
                                 </select>
                             </div>
@@ -44,7 +92,7 @@
 
                         <div class="flex items-center space-x-4">
                             <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> payment methods
+                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
                             </div>
                             <div class="relative w-48">
                                 <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
@@ -54,7 +102,7 @@
                                 </svg>
 
                                 <input type="text" id="searchInput" 
-                                    placeholder="Search payment methods" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
+                                    placeholder="Search Name or School" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
                                     dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
                             </div>
                         </div>
@@ -68,7 +116,7 @@
                                     d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
                             </svg>
 
-                            <input type="text" id="mobileSearchInput" placeholder="Search payment methods" 
+                            <input type="text" id="mobileSearchInput" placeholder="Search Name or School" 
                                 class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
                                 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
                         </div>
@@ -87,12 +135,14 @@
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
                                 <option value="created_desc">Default</option>
-                                <option value="mode_of_payment_name_asc">Payment Method (A-Z)</option>
-                                <option value="mode_of_payment_name_desc">Payment Method (Z-A)</option>
-                                <option value="account_name_asc">Account Name (A-Z)</option>
-                                <option value="account_name_desc">Account Name (Z-A)</option>
-                                <option value="amount_asc">Amount (Low to High)</option> <!-- Add this line -->
-                                <option value="amount_desc">Amount (High to Low)</option> <!-- Add this line -->
+                                <option value="full_name_asc">Name (A-Z)</option>
+                                <option value="full_name_desc">Name (Z-A)</option>
+                                <option value="sex_asc">Sex (A-Z)</option>
+                                <option value="sex_desc">Sex (Z-A)</option>
+                                <option value="birthdate_asc">Birthdate (Oldest)</option>
+                                <option value="birthdate_desc">Birthdate (Youngest)</option>
+                                <option value="school_asc">School (A-Z)</option>
+                                <option value="school_desc">School (Z-A)</option>
                                 <option value="created_asc">Created (Oldest First)</option>
                             </select>
                         </div>
@@ -104,15 +154,15 @@
 
                     <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                         <div class="min-w-[1000px]">
-                            <table id="paymentMethodsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
+                            <table id="studentApplicantsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
                                 <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
                                         <th class="px-6 py-3 text-center font-medium">#</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-mode_of_payment_name">Payment Method</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-account_name">Account Name</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-account_number">Account Number</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-amount">Amount</th> 
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-is_published">Status</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-full_name">Full Name</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-sex">Sex</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-birthdate">Birthdate</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-school">School</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-student_number">Student No.</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-created">Created</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
                                     </tr>
@@ -189,35 +239,35 @@
             }
         </style>
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
-                fetchPaymentMethods();
-
+                fetchStudentApplicants();
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
-                    fetchPaymentMethods(1, $(this).val());
+                    fetchStudentApplicants(1, $(this).val());
                 });
 
                 $('#perPage, #mobilePerPage').on('change', function () {
-                    fetchPaymentMethods(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
+                    fetchStudentApplicants(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
 
                 $('#sortBy, #mobileSortBy').on('change', function() {
-                    fetchPaymentMethods(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
+                    fetchStudentApplicants(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                function fetchPaymentMethods(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
+                function fetchStudentApplicants(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
                     const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'created_desc';
                     const [column, direction] = sortValue.split('_');
 
                     const sortMap = {
-                        'mode_of_payment_name_asc': { sort: 'mode_of_payment_name', direction: 'asc' },
-                        'mode_of_payment_name_desc': { sort: 'mode_of_payment_name', direction: 'desc' },
-                        'account_name_asc': { sort: 'account_name', direction: 'asc' },
-                        'account_name_desc': { sort: 'account_name', direction: 'desc' },
-                        'amount_asc': { sort: 'amount', direction: 'asc' },
-                        'amount_desc': { sort: 'amount', direction: 'desc' }, 
+                        'full_name_asc': { sort: 'full_name', direction: 'asc' },
+                        'full_name_desc': { sort: 'full_name', direction: 'desc' },
+                        'sex_asc': { sort: 'sex', direction: 'asc' },
+                        'sex_desc': { sort: 'sex', direction: 'desc' },
+                        'birthdate_asc': { sort: 'birthdate', direction: 'asc' },
+                        'birthdate_desc': { sort: 'birthdate', direction: 'desc' },
+                        'school_asc': { sort: 'school', direction: 'asc' },
+                        'school_desc': { sort: 'school', direction: 'desc' },
                         'created_asc': { sort: 'created_at', direction: 'asc' },
                         'created_desc': { sort: 'created_at', direction: 'desc' }
                     };
@@ -225,7 +275,7 @@
                     const sortParams = sortMap[sortValue] || { sort: 'created_at', direction: 'desc' };
 
                     $.ajax({
-                        url: `{{ route('payment-methods.index') }}`,
+                        url: `{{ route('student-applicants.index') }}`,
                         type: 'GET',
                         data: {
                             page: page,
@@ -235,7 +285,7 @@
                             direction: sortParams.direction
                         },
                         success: function (response) {
-                            renderPaymentMethods(response.data, response.from);
+                            renderStudentApplicants(response.data, response.from);
                             renderPagination(response);
                             
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
@@ -245,75 +295,54 @@
                     });
                 }
 
-function renderPaymentMethods(paymentMethods, startIndex) {
-    let tbody = $('#paymentMethodsTable tbody');
-    tbody.empty();
-    
-    paymentMethods.forEach((paymentMethod, index) => {
-        const rowNumber = startIndex + index;
-        
-        let qrCodeHtml = 'N/A';
-        
-        let row = `
-            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
-                <td class="px-6 py-4 text-center">${rowNumber}</td>
-                <td class="px-6 py-4 text-center column-mode_of_payment_name">${paymentMethod.mode_of_payment_name}</td>
-                <td class="px-6 py-4 text-center column-account_name">${paymentMethod.account_name}</td>
-                <td class="px-6 py-4 text-center column-account_number">${paymentMethod.account_number}</td>
-                <td class="px-6 py-4 text-center column-amount">${paymentMethod.amount ? '₱' + parseFloat(paymentMethod.amount).toFixed(2) : 'N/A'}</td> <!-- Add this line -->
-                <td class="px-6 py-4 text-center column-is_published">
-                    ${paymentMethod.is_published 
-                        ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-200">Published</span>'
-                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-200">Draft</span>'}
-                </td>
+                function renderStudentApplicants(applicants, startIndex) {
+                    let tbody = $('#studentApplicantsTable tbody');
+                    tbody.empty();
+                    
+                    applicants.forEach((applicant, index) => {
+                        const rowNumber = startIndex + index;
 
-                <td class="px-6 py-4 text-center column-created">${paymentMethod.created_at}</td>
-                <td class="px-6 py-4 text-center">
-                    <div class="flex justify-center items-center space-x-2">
-                        <!-- View Button -->
-                        <a href="/payment-methods/${paymentMethod.id}/view" 
-                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            <span class="text-green-600 group-hover:text-white text-sm">View</span>
-                        </a>
-                        
-                        <!-- Edit Button -->
-                        <a href="/payment-methods/${paymentMethod.id}/edit" 
-                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                            </svg>
-                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
-                        </a>
-                        
-                        <!-- Delete Button -->
-                        <button onclick="deletePaymentMethod(${paymentMethod.id})" 
-                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-        tbody.append(row);
-    });
-}
+                        let row = `
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
+                                <td class="px-6 py-4 text-center">${rowNumber}</td>
+                                <td class="px-6 py-4 text-center column-full_name">${applicant.full_name}</td>
+                                <td class="px-6 py-4 text-center column-sex">${applicant.sex}</td>
+                                <td class="px-6 py-4 text-center column-birthdate">${applicant.birthdate}</td>
+                                <td class="px-6 py-4 text-center column-school">${applicant.school}</td>
+                                <td class="px-6 py-4 text-center column-student_number">${applicant.student_number}</td>
+                                <td class="px-6 py-4 text-center column-created">${applicant.created_at}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        ${applicant.can_view ? `
+                                        <a href="/student-applicants/${applicant.id}" 
+                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">View</span>
+                                        </a>
+                                        ` : ''}
+                                        ${applicant.can_assess ? `
+                                        <a href="/student-applicants/${applicant.id}/assess" 
+                                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span class="text-green-600 group-hover:text-white text-sm">Assess</span>
+                                        </a>
+                                        ` : ''}
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(row);
+                    });
+                }
 
                 function renderPagination(data) {
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
@@ -321,11 +350,11 @@ function renderPaymentMethods(paymentMethods, startIndex) {
                     if (data.current_page > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchPaymentMethods(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchStudentApplicants(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 &laquo; First
                             </button>
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchPaymentMethods(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchStudentApplicants(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Previous
                             </button>`;
                     }
@@ -343,7 +372,7 @@ function renderPaymentMethods(paymentMethods, startIndex) {
                     if (startPage > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchPaymentMethods(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchStudentApplicants(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 1
                             </button>`;
                         if (startPage > 2) {
@@ -353,7 +382,7 @@ function renderPaymentMethods(paymentMethods, startIndex) {
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchPaymentMethods(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchStudentApplicants(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${i}
                             </button>`;
                     }
@@ -363,18 +392,18 @@ function renderPaymentMethods(paymentMethods, startIndex) {
                         }
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchPaymentMethods(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchStudentApplicants(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${totalPages}
                             </button>`;
                     }
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchPaymentMethods(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchStudentApplicants(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Next
                             </button>
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchPaymentMethods(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchStudentApplicants(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Last &raquo;
                             </button>`;
                     }
@@ -382,55 +411,7 @@ function renderPaymentMethods(paymentMethods, startIndex) {
                     $('#paginationLinks').html(paginationHtml);
                 }
 
-                window.deletePaymentMethod = function (id) {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#5e6ffb',
-                        confirmButtonText: 'Yes, delete it!',
-                        background: '#101966',
-                        color: '#fff',
-                        customClass: {
-                                icon: 'swal-icon-red-bg'
-                            }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: '{{ route("payment-methods.destroy") }}',
-                                type: 'DELETE',
-                                data: { id: id },
-                                dataType: 'json',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                success: function (response) {
-                                    Swal.fire({
-                                        title: 'Deleted!',
-                                        text: 'Payment method has been deleted successfully.',
-                                        icon: 'success',
-                                        background: '#101966',
-                                        color: '#fff'
-                                    });
-                                    fetchPaymentMethods();
-                                },
-                                error: function() {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: 'Something went wrong while deleting the payment method.',
-                                        icon: 'error',
-                                        background: '#101966',
-                                        color: '#fff'
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-
-                window.fetchPaymentMethods = fetchPaymentMethods;
+                window.fetchStudentApplicants = fetchStudentApplicants;
             });
         </script>
     </x-slot>

@@ -5,9 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\ManualContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ManualController extends Controller
+class ManualController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view manual', only: ['index']),
+            new Middleware('permission:edit manual', only: ['edit', 'update']),
+            new Middleware('permission:create manual', only: ['create', 'store']),
+            new Middleware('permission:delete manual', only: ['destroy']),
+        ];
+    }
+
     /**
      * Display the manual view page (public view for users)
      */

@@ -113,6 +113,18 @@
                             <label for="is_published" class="ml-2">Published</label>
                         </div>
 
+                    <div>
+                        <label for="amount" class="text-sm font-medium">Amount</label>
+                        <div class="my-3">    
+                            <input value="{{ old('amount') }}" name="amount" id="amount" 
+                                placeholder="0.00" type="number" step="0.01" min="0"
+                                class="border-gray-300 shadow-sm w-full rounded-lg">
+                            @error('amount')
+                            <p class="text-red-400 font-medium"> {{ $message }} </p>
+                            @enderror
+                        </div>
+                    </div>
+
                         <div class="mt-6">
                             <button type="submit" 
                                 class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
