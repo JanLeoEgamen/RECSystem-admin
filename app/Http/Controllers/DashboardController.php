@@ -49,13 +49,22 @@ class DashboardController extends Controller implements HasMiddleware
 
         $totalMembers = (clone $memberQuery)->count();
 
-        $activeMembers = (clone $memberQuery)->where('status', 'Active')
+        $activeMembers = (clone $memberQuery)
+            ->where('status', 'Active')
             ->where(function ($query) {
                 $query->where('is_lifetime_member', true)
                     ->orWhere('membership_end', '>=', now());
             })->count();
 
-        $inactiveMembers = $totalMembers - $activeMembers;
+        $inactiveMembers = (clone $memberQuery)
+            ->where(function ($query) {
+                $query->where('status', 'Inactive')
+                    ->orWhere(function($q) {
+                        $q->where('status', 'Active')
+                        ->where('is_lifetime_member', false)
+                        ->where('membership_end', '<', now());
+                    });
+            })->count();
 
         $expiringSoon = (clone $memberQuery)->where('is_lifetime_member', false)
             ->whereBetween('membership_end', [now(), now()->addDays(30)])

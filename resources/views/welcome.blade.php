@@ -375,13 +375,13 @@
                     <div class="flex items-center justify-center mb-6">
                         <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full 
                                     flex items-center justify-center text-white font-bold text-xl shadow-md">
-                            JD
+                            PH
                         </div>
                     </div>
                     <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
-                        "REC has been instrumental in my career growth. The networking opportunities and technical resources are invaluable."
+                        
                     </p>
-                    <h4 class="font-bold text-gray-900 dark:text-gray-100">John Dela Cruz</h4>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100">Patrick Jiorgen U. Hulipas</h4>
                     <p class="text-sm text-gray-500 dark:text-gray-400">President</p>
                 </div>
                 
@@ -392,13 +392,13 @@
                     <div class="flex items-center justify-center mb-6">
                         <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-blue-600 rounded-full 
                                     flex items-center justify-center text-white font-bold text-xl shadow-md">
-                            MS
+                            KB
                         </div>
                     </div>
                     <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
-                        "The community support is amazing. I've learned more in the past year than I did in the previous five years combined."
+                        
                     </p>
-                    <h4 class="font-bold text-gray-900 dark:text-gray-100">Maria Santos</h4>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100">Krizzie Keith Marie R. Benzon</h4>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Executive Vice-President</p>
                 </div>
                 
@@ -409,13 +409,13 @@
                     <div class="flex items-center justify-center mb-6">
                         <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full 
                                     flex items-center justify-center text-white font-bold text-xl shadow-md">
-                            RA
+                            JC
                         </div>
                     </div>
                     <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
-                        "The digital portal makes everything so convenient. I can access all my certificates and event registrations in one place."
+                       
                     </p>
-                    <h4 class="font-bold text-gray-900 dark:text-gray-100">Robert Aquino</h4>
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100">John R.  Dela Cruz</h4>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Corporate Secretary</p>
                 </div>
             </div>
@@ -533,12 +533,15 @@
     </footer>
 
     <!-- CHATBOT INTEGRATION EMBEDDED CODE -->
-    <!-- <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
-    <script src="https://files.bpcontent.cloud/2025/01/12/14/20250112142449-BTWBU6OV.js"></script> -->
+    <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2025/01/12/14/20250112142449-BTWBU6OV.js"></script>
 
+    <!-- Announcement Modal -->
+    @include('components.announcement-modal')
+    <!-- END OF ANNOUNCEMENT MODAL -->
     
-    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js"></script>
-    <script src="https://files.bpcontent.cloud/2025/09/26/05/20250926053639-SRHW57JT.js" defer></script>
+    <!-- <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2025/09/26/05/20250926053639-SRHW57JT.js" defer></script> -->
     
     <!-- END OF CHATBOT CALLING -->
 </body>

@@ -156,7 +156,7 @@ class StudentApplicantController extends Controller implements HasMiddleware
         $sections = Section::whereHas('bureau', function($query) {
             $query->whereIn('bureau_name', ['Student']);
         })->get();
-        a
+        
         // Get the names from reference tables using the stored codes
         $regionName = DB::table('ref_psgc_region')->where('psgc_reg_code', $applicant->region)->value('psgc_reg_desc');
         $provinceName = DB::table('ref_psgc_province')->where('psgc_prov_code', $applicant->province)->value('psgc_prov_desc');

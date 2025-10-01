@@ -74,7 +74,7 @@
             'users.index', 'roles.index', 'permissions.index',
             'main-carousels.index', 'markees.index', 'articles.index',
             'event-announcements.index', 'communities.index', 'supporters.index', 'faqs.index',
-            'membership-types.index', 'bureaus.index', 'sections.index', 'applicants.index',
+            'membership-types.index', 'bureaus.index', 'sections.index', 'applicants.index', 'student-applicants.index',
             'reports.index', 'members.index', 'licenses.index', 'renew.index', 'cashier.index', 'payment-methods.index',
             'events.index', 'announcements.index', 'surveys.index',
             'quizzes.index', 'certificates.index',
@@ -110,7 +110,11 @@
                                                                             : (
                                                                                 request()->routeIs('cashier.index', 'payment-methods.index')
                                                                                     ? 'memberManagement,billings'
-                                                                                    : 'memberManagement'
+                                                                                    : (
+                                                                                        request()->routeIs('student-applicants.index')
+                                                                                            ? 'memberManagement,applicants'
+                                                                                            : 'memberManagement'
+                                                                                    )
                                                                             )
                                                                     )
                                                             )            
@@ -134,6 +138,12 @@
                 this.openDropdown = 'memberManagement';
             } else {
                 this.openDropdown = 'memberManagement,billings';
+            }
+        } else if (name === 'applicants') {
+            if (this.isDropdownOpen('applicants')) {
+                this.openDropdown = 'memberManagement';
+            } else {
+                this.openDropdown = 'memberManagement,applicants';
             }
         } else if (name === 'memberManagement') {
             if (this.isDropdownOpen('memberManagement')) {
@@ -420,12 +430,42 @@
                         </x-nav-link>
                     @endcan
                     @can('view applicants')
-                        <x-nav-link :href="route('applicants.index')" :active="request()->routeIs('applicants.index')" 
-                        class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
-                        transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/material-rounded/24/FFFFFF/parse-resume.png"  class="w-4 h-4 mr-2 object-contain, alt="Events">
-                            <span>{{ __('Applicants') }}</span>
-                        </x-nav-link>
+                        <div class="relative">
+                            <button 
+                                @click.stop="toggleDropdown('applicants')" 
+                                class="w-full flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 
+                                {{ request()->routeIs('applicants.index', 'student-applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                <img src="https://img.icons8.com/material-rounded/24/FFFFFF/parse-resume.png" class="w-4 h-4 mr-2 object-contain" alt="Applicants">
+                                <span class="flex-1 text-left">{{ __('Applicants') }}</span>
+                                <svg 
+                                    class="ml-1 h-3 w-3" 
+                                    :class="{'rotate-180': isDropdownOpen('applicants')}" 
+                                    fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" 
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <div :class="{'dropdown-content open': isDropdownOpen('applicants'), 'dropdown-content': !isDropdownOpen('applicants')}"
+                                class="ml-6 mt-1 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-1">
+                                <x-nav-link :href="route('applicants.index')" :active="request()->routeIs('applicants.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                    <img src="https://img.icons8.com/material-rounded/24/FFFFFF/parse-resume.png" class="w-4 h-4 mr-2 object-contain" alt="General Applicants">
+                                    <span>{{ __('Total Applicants') }}</span>
+                                </x-nav-link>
+
+                                @can('view student applicants')
+                                <x-nav-link :href="route('student-applicants.index')" :active="request()->routeIs('student-applicants.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('student-applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                    <img src="https://img.icons8.com/material-rounded/24/FFFFFF/student-male.png" class="w-4 h-4 mr-2 object-contain" alt="Student Applicants">
+                                    <span>{{ __('Student Applicants') }}</span>
+                                </x-nav-link>
+                                @endcan
+                            </div>
+                        </div>
                     @endcan
                     @can('view members')
                         <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.index')" 
