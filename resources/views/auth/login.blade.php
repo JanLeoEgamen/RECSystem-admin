@@ -39,6 +39,25 @@
         </div>
     </div>
 
+    <!-- Lockout Timer Modal -->
+    <div id="lockout-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Too Many Attempts</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">Please wait before trying again.</p>
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div id="lockout-timer" class="text-2xl font-bold text-red-600 dark:text-red-400">05:00</div>
+            </div>
+            <button id="close-lockout-modal" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">
+                OK
+            </button>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="relative z-10">
         <nav class="px-6 py-4">
@@ -106,6 +125,8 @@
                             autofocus 
                             autocomplete="username"
                             placeholder="Enter your email address" 
+                            value="{{ old('email') }}"
+                            @if(session('lockout_time')) disabled @endif
                         />
                         <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-200" />
                     </div>
@@ -128,12 +149,14 @@
                                 autocomplete="current-password"
                                 placeholder="Enter your password"
                                 oninput="handlePasswordInput(this)"
+                                @if(session('lockout_time')) disabled @endif
                             />
                             <button type="button" 
                                     id="password-toggle"
                                     class="absolute inset-y-0 right-4 flex items-center justify-center text-white/60 hover:text-white transition-colors eye-toggle"
                                     onclick="togglePasswordVisibility()"
-                                    aria-label="Toggle password visibility">
+                                    aria-label="Toggle password visibility"
+                                    @if(session('lockout_time')) disabled @endif>
                                 <!-- Open eye -->
                                 <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -163,6 +186,7 @@
                                 type="checkbox" 
                                 class="rounded bg-white/20 border-white/30 text-purple-600 focus:ring-purple-400 focus:ring-offset-0" 
                                 name="remember"
+                                @if(session('lockout_time')) disabled @endif
                             >
                             <span class="ml-3 text-sm text-white/90">Remember me</span>
                         </label>
@@ -191,11 +215,13 @@
                         <button dusk="login-button" 
                                 type="submit" 
                                 class="modern-btn w-full font-semibold text-lg dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-600 flex items-center justify-center"
-                                id="submit-btn">
+                                id="submit-btn"
+                                @if(session('lockout_time')) disabled @endif>
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                             </svg>
-                            Sign In
+                            <span id="submit-text">Sign In</span>
+                            <span id="submit-loading" class="hidden">Please wait...</span>
                         </button>
                     </div>
                 </form>
@@ -205,7 +231,8 @@
                 <!-- Registration Link -->
                 <div class="text-center slide-in">
                     <a href="{{ route('register') }}"
-                    class="inline-flex items-center justify-center w-full px-6 py-3 border-2 border-white/30 rounded-xl text-white font-medium hover:bg-white/10 transition-all duration-300">
+                    class="inline-flex items-center justify-center w-full px-6 py-3 border-2 border-white/30 rounded-xl text-white font-medium hover:bg-white/10 transition-all duration-300"
+                    @if(session('lockout_time')) style="pointer-events: none; opacity: 0.5;" @endif>
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path>
                         </svg>
@@ -249,5 +276,164 @@
             </div>
         </div>
     </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lockoutTime = {{ session('lockout_seconds', 0) }}; // Use lockout_seconds instead
+        const errorMessage = "{{ $errors->first('email') }}";
+        
+        console.log('Lockout time:', lockoutTime);
+        console.log('Error message:', errorMessage);
+        
+        // Check if there's a lockout from session OR from error message
+        let actualLockoutTime = lockoutTime;
+        
+        // If no session lockout but error message indicates lockout, extract time
+        if (lockoutTime === 0 && errorMessage.includes('Too many login attempts')) {
+            const timeMatch = errorMessage.match(/(\d+)/);
+            if (timeMatch) {
+                const minutes = parseInt(timeMatch[1]);
+                actualLockoutTime = minutes * 60; // Convert minutes to seconds
+                console.log('Extracted lockout time from message:', actualLockoutTime);
+            }
+        }
+        
+        // If we still don't have a time but there's a lockout message, use 5 minutes (300 seconds)
+        if (actualLockoutTime === 0 && errorMessage.includes('Too many login attempts')) {
+            actualLockoutTime = 300; // 5 minutes in seconds
+            console.log('Using default lockout time:', actualLockoutTime);
+        }
+        
+        if (actualLockoutTime > 0) {
+            console.log('Showing lockout timer for:', actualLockoutTime, 'seconds');
+            showLockoutTimer(actualLockoutTime);
+            disableForm();
+        } else {
+            console.log('No lockout detected');
+        }
+
+        // Handle form submission to show loading
+        const loginForm = document.getElementById('login-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitText = document.getElementById('submit-text');
+        const submitLoading = document.getElementById('submit-loading');
+
+        if (loginForm && !actualLockoutTime) {
+            loginForm.addEventListener('submit', function(e) {
+                submitText.classList.add('hidden');
+                submitLoading.classList.remove('hidden');
+                submitBtn.disabled = true;
+            });
+        }
+
+        // Close lockout modal
+        const closeBtn = document.getElementById('close-lockout-modal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                document.getElementById('lockout-modal').classList.add('hidden');
+            });
+        }
+    });
+
+    function showLockoutTimer(seconds) {
+        const modal = document.getElementById('lockout-modal');
+        const timer = document.getElementById('lockout-timer');
+        
+        modal.classList.remove('hidden');
+        
+        let timeLeft = seconds;
+        console.log('Starting timer with:', timeLeft, 'seconds');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            timer.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            console.log('Time left:', timeLeft, 'seconds');
+            
+            if (timeLeft > 0) {
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            } else {
+                console.log('Timer finished');
+                modal.classList.add('hidden');
+                enableForm();
+                // Remove the session data by refreshing
+                window.location.href = '{{ route("login") }}';
+            }
+        }
+        
+        updateTimer();
+    }
+
+    function disableForm() {
+        const inputs = document.querySelectorAll('#login-form input, #login-form button, #login-form a');
+        inputs.forEach(input => {
+            input.disabled = true;
+            if (input.tagName === 'A') {
+                input.style.pointerEvents = 'none';
+                input.style.opacity = '0.5';
+            }
+        });
+        
+        // Also disable the form itself to prevent submission
+        const form = document.getElementById('login-form');
+        if (form) {
+            form.style.pointerEvents = 'none';
+            form.style.opacity = '0.7';
+        }
+        
+        console.log('Form disabled');
+    }
+
+    function enableForm() {
+        const inputs = document.querySelectorAll('#login-form input, #login-form button, #login-form a');
+        inputs.forEach(input => {
+            input.disabled = false;
+            if (input.tagName === 'A') {
+                input.style.pointerEvents = 'auto';
+                input.style.opacity = '1';
+            }
+        });
+        
+        // Re-enable the form
+        const form = document.getElementById('login-form');
+        if (form) {
+            form.style.pointerEvents = 'auto';
+            form.style.opacity = '1';
+        }
+        
+        // Reset submit button text
+        const submitText = document.getElementById('submit-text');
+        const submitLoading = document.getElementById('submit-loading');
+        if (submitText && submitLoading) {
+            submitText.classList.remove('hidden');
+            submitLoading.classList.add('hidden');
+        }
+        
+        console.log('Form enabled');
+    }
+
+    // Your existing password functions
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+        const eyeSlashIcon = document.getElementById('eye-slash-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.add('hidden');
+            eyeSlashIcon.classList.remove('hidden');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('hidden');
+            eyeSlashIcon.classList.add('hidden');
+        }
+    }
+
+    function handlePasswordInput(input) {
+        // Your existing password input handling
+    }
+</script>
 </body>
 </html>

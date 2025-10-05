@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendBulkEmailJob;
 use App\Models\EmailLog;
 use App\Models\EmailTemplate;
+use App\Models\Member;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -190,7 +192,7 @@ class EmailController extends Controller implements HasMiddleware
 
     public function compose()
     {
-        $members = User::all(); // or use a separate Member model
+        $members = Member::all(); // or use a separate Member model
         $templates = EmailTemplate::all();
         return view('emails.send', compact('members', 'templates'));
     }
@@ -198,94 +200,65 @@ class EmailController extends Controller implements HasMiddleware
     public function send(Request $request)
     {
         $request->validate([
-            'member_ids' => 'required|array',
-            'member_ids.*' => 'exists:users,id', // validate each member ID exists
             'template' => 'required|string',
             'attachments.*' => 'file|max:10240',
             'custom_subject' => 'required_if:template,custom',
             'custom_message_body' => 'required_if:template,custom',
         ]);
 
-        // Handle "select all" case if you have that option
-        if (in_array('all', $request->member_ids)) {
-            $members = User::all();
+        // Handle member selection logic
+        if ($request->has('select_all') && $request->select_all == '1') {
+            // Select all members
+            $members = Member::all();
+            $memberIds = $members->pluck('id')->toArray();
         } else {
-            $members = User::whereIn('id', $request->member_ids)->get();
+            // Validate and get selected members
+            $request->validate([
+                'member_ids' => 'required|array|min:1',
+                'member_ids.*' => 'exists:members,id',
+            ]);
+            
+            $memberIds = $request->member_ids;
+            $members = Member::whereIn('id', $memberIds)->get();
         }
 
-        if ($request->template === 'custom') {
-            $subject = $request->custom_subject;
-            $messageContent = nl2br(e($request->custom_message_body));
-        } else {
-            $template = EmailTemplate::findOrFail($request->template);
-            $subject = $template->name;
-            $messageContent = $template->body;
-        }
-
-        foreach ($members as $member) {
-            try {
-                $savedAttachments = [];
-
-                if ($request->hasFile('attachments')) {
-                    foreach ($request->file('attachments') as $file) {
-                        $path = $file->store('attachments', 'public');
-                        $savedAttachments[] = [
-                            'name' => $file->getClientOriginalName(),
-                            'path' => $path,
-                        ];
-                    }
-                }
-
-                Mail::send('emails.template', [
-                    'user' => $member,
-                    'custom_message' => $request->custom_message,
-                    'subject' => $subject,
-                    'messageContent' => $messageContent
-                ], function ($message) use ($member, $subject, $request) {
-                    $message->to($member->email, $member->name)
-                            ->subject($subject);
-
-                    if ($request->hasFile('attachments')) {
-                        foreach ($request->file('attachments') as $file) {
-                            $message->attach($file->getRealPath(), [
-                                'as' => $file->getClientOriginalName(),
-                                'mime' => $file->getClientMimeType(),
-                            ]);
-                        }
-                    }
-                });
-
-                EmailLog::create([
-                    'recipient_email' => $member->email,
-                    'recipient_name' => $member->name ?? ($member->first_name . ' ' . $member->last_name),
-                    'template_id' => $request->template === 'custom' ? null : $request->template,
-                    'subject' => $subject,
-                    'body' => $messageContent,
-                    'status' => 'sent',
-                    'error_message' => null,
-                    'sent_at' => now(),
-                    'sent_by' => Auth::id(),
-                    'attachments' => $savedAttachments,
-                ]);
-            } catch (\Exception $e) {
-                EmailLog::create([
-                    'recipient_email' => $member->email,
-                    'recipient_name' => $member->name ?? ($member->first_name . ' ' . $member->last_name),
-                    'template_id' => $request->template === 'custom' ? null : $request->template,
-                    'subject' => $subject,
-                    'body' => $messageContent,
-                    'status' => 'failed',
-                    'error_message' => $e->getMessage(),
-                    'sent_at' => now(),
-                    'sent_by' => Auth::id(),
-                    'attachments' => $savedAttachments ?? null,
-                ]); 
-
-                Log::error('Email failed: ' . $e->getMessage());
+        // Process attachments ONCE (more efficient)
+        $savedAttachments = [];
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('attachments', 'public');
+                $savedAttachments[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                ];
             }
         }
 
-        return redirect()->back()->with('success', 'Emails sent successfully!');
+        // Get template data ONCE
+        if ($request->template === 'custom') {
+            $subject = $request->custom_subject;
+            $messageContent = nl2br(e($request->custom_message_body));
+            $templateId = null;
+        } else {
+            $template = EmailTemplate::findOrFail($request->template);
+            $subject = $template->subject;
+            $messageContent = $template->body;
+            $templateId = $template->id;
+        }
+
+        // Dispatch jobs for each member
+        foreach ($members as $member) {
+            SendBulkEmailJob::dispatch(
+                $member->id, 
+                $subject, 
+                $messageContent, 
+                $templateId, 
+                $savedAttachments, 
+                Auth::id()
+            );
+        }
+
+        return redirect()->back()->with('success', "{$members->count()} emails queued for sending!");
     }
 
     public function destroy(Request $request)

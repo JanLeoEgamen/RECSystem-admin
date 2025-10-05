@@ -58,6 +58,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use App\Http\Controllers\GlobalSearchController;
+use App\Http\Controllers\LockedAccountsController;
 use App\Http\Controllers\StudentApplicantController;
 
 // GLOBAL SEARCH
@@ -171,6 +172,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //login
     Route::get('/login', [LoginController::class, 'show'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
+
+    // Locked Accounts Routes
+    Route::get('/locked-accounts', [LockedAccountsController::class, 'index'])->name('locked-accounts.index');
+    Route::post('/locked-accounts/unlock', [LockedAccountsController::class, 'unlock'])->name('locked-accounts.unlock');
     
     //main carousels
     Route::get('/main-carousels', [MainCarouselController::class, 'index'])->name('main-carousels.index');
@@ -338,6 +343,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/certificates/{id}/preview', [CertificateController::class, 'preview'])->name('certificates.preview');
     Route::get('/certificates/{certificate}/download/{member}', [CertificateController::class, 'download'])->name('certificates.download');
     Route::get('/certificates/{certificate}/download', [CertificateController::class, 'downloadCertificate'])->name('certificates.download-certificate');
+    
+    // Image download routes
+    Route::get('/certificates/{certificate}/download-image/{member?}', [CertificateController::class, 'downloadImage'])->name('certificates.download-image');
+    Route::get('/certificates/{certificate}/download-image/{member}/{format}', [CertificateController::class, 'downloadImage'])->name('certificates.download-image-format');
+    
     Route::get('/certificates/{id}/send', [CertificateController::class, 'send'])->name('certificates.send');
     Route::post('/certificates/{id}/send', [CertificateController::class, 'sendCertificate'])->name('certificates.send-certificate');
     Route::get('/certificates/{certificate}/resend/{member}', [CertificateController::class, 'resendCertificate'])->name('certificates.resend');

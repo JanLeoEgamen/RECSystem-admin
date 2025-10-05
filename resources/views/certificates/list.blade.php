@@ -258,6 +258,57 @@
                                             <span class="text-blue-600 group-hover:text-white text-sm">Preview</span>
                                         </a>
                                         
+                                        <!-- Download Dropdown -->
+                                        <div class="relative inline-block">
+                                            <button class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1" onclick="toggleDownloadMenu(${certificate.id})" title="Download in different formats">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 text-green-600 group-hover:text-white transition"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                <span class="text-green-600 group-hover:text-white text-sm">Download</span>
+                                                <svg class="h-3 w-3 text-green-600 group-hover:text-white transition" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                            <div id="download-menu-${certificate.id}" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+                                                <div class="px-3 py-2 text-xs text-gray-500 border-b">Choose download format:</div>
+                                                <a href="/certificates/${certificate.id}/download" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" title="Full design as PDF document">
+                                                    <div class="flex items-center space-x-2">
+                                                        <svg class="h-4 w-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4z"/>
+                                                        </svg>
+                                                        <div>
+                                                            <span class="font-medium">Download PDF</span>
+                                                            <div class="text-xs text-gray-500">Simple, fast format</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="/certificates/${certificate.id}/download-image/0" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" title="Full design with all images and styling">
+                                                    <div class="flex items-center space-x-2">
+                                                        <svg class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        <div>
+                                                            <span class="font-medium">Download PNG</span>
+                                                            <div class="text-xs text-gray-500">Perfect styling preserved</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="/certificates/${certificate.id}/download-image/0/jpeg" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" title="Full design, smaller file size">
+                                                    <div class="flex items-center space-x-2">
+                                                        <svg class="h-4 w-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        <div>
+                                                            <span class="font-medium">Download JPEG</span>
+                                                            <div class="text-xs text-gray-500">Smaller file size</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        
                                         <a href="/certificates/${certificate.id}/edit" 
                                             class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-3 py-2 rounded-full transition space-x-1">
                                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -403,6 +454,33 @@
                 }
 
                 window.fetchCertificates = fetchCertificates;
+
+                // Handle download dropdown menu
+                window.toggleDownloadMenu = function(id) {
+                    const menu = document.getElementById('download-menu-' + id);
+                    const isHidden = menu.classList.contains('hidden');
+                    
+                    // Close all other dropdown menus
+                    document.querySelectorAll('[id^="download-menu-"]').forEach(otherMenu => {
+                        otherMenu.classList.add('hidden');
+                    });
+                    
+                    // Toggle current menu
+                    if (isHidden) {
+                        menu.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                    }
+                };
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!event.target.closest('[onclick^="toggleDownloadMenu"]') && !event.target.closest('[id^="download-menu-"]')) {
+                        document.querySelectorAll('[id^="download-menu-"]').forEach(menu => {
+                            menu.classList.add('hidden');
+                        });
+                    }
+                });
             });
         </script>
     </x-slot>

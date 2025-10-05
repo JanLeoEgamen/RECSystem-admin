@@ -102,7 +102,7 @@
     <div class="email-container">
         <!-- Header with Logo -->
         <div class="header">
-            <img src="{{ asset('images/Rec-logo.jpg') }}" alt="Radio Engineering Circle">
+            <img src="{{ asset('images/rec.png') }}" alt="Radio Engineering Circle">
         </div>
 
         <!-- Main Content -->

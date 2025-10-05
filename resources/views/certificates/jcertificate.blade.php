@@ -20,10 +20,84 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 0;
-            margin-top: 8rem;
         }
+        
+        .certificate-container.standalone {
+            min-height: 100vh;
+            padding: 2rem;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .certificate-container.embedded {
+            min-height: auto;
+            padding: 2rem 0;
+            margin-top: 0;
+        }
+        
+        .certificate-container.embedded .certificate {
+            max-width: 100%;
+            width: 100%;
+            height: auto;
+            min-height: 60vh;
+        }
+        
+        /* Ensure consistent spacing between embedded and standalone modes */
+        .certificate-container.standalone .header-image {
+            margin-bottom: 0.5rem;
+        }
+        
+        .certificate-container.standalone .certificate-title span {
+            padding-bottom: 1mm;
+            margin-bottom: 5mm;
+        }
+        
+        .certificate-container.standalone .recipient-text {
+            margin-bottom: 1rem;
+        }
+
+        /* Ensure consistent rendering for image generation */
+.certificate-container.embedded .certificate {
+    width: 297mm !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    padding: 15mm !important;
+    box-shadow: none !important;
+}
+
+/* Force specific heights for image generation */
+.certificate-container.embedded .certificate-content {
+    height: 180mm !important;
+    overflow: visible !important;
+}
+
+/* Ensure consistent spacing for image generation */
+.certificate-container.embedded .certificate-title span {
+    padding-bottom: 1mm !important;
+    margin-bottom: 5mm !important;
+}
+
+.certificate-container.embedded .name-line {
+    margin-top: 8mm !important;
+    margin-bottom: 8mm !important;
+}
+
+.certificate-container.embedded .membership-text {
+    margin-top: 8mm !important;
+    margin-bottom: 8mm !important;
+}
+
+/* Disable responsive behavior for image generation */
+@media all {
+    .certificate-container.embedded .certificate {
+        width: 297mm !important;
+        height: 210mm !important;
+    }
+    
+    .certificate-container.embedded .certificate-title h2 {
+        font-size: 3.75rem !important;
+    }
+}
         
         .certificate {
             page-break-inside: avoid;
@@ -80,7 +154,7 @@
         .header-image {
             display: flex;
             justify-content: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
         
         .header-image img {
@@ -102,14 +176,14 @@
         
         .certificate-title span {
             display: inline-block;
-            padding-bottom: 3mm;
-            margin-bottom: 10mm;
+            padding-bottom: 1mm;
+            margin-bottom: 5mm;
         }
         
         .recipient-text {
             text-align: center;
             font-size: 1.25rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
         
         .name-line {
@@ -267,10 +341,11 @@
                 display: none;
             }
         }
+        
     </style>
 </head>
 <body>
-    <div class="certificate-container">
+    <div class="certificate-container {{ isset($embedded) && $embedded ? 'embedded' : 'standalone' }}">
         <div class="certificate">
             <div class="border-outer"></div>
             <div class="border-inner"></div>

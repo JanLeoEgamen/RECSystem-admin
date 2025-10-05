@@ -38,7 +38,7 @@ class ApplicantController extends Controller implements HasMiddleware
     public function index(Request $request)
         {
             if ($request->ajax()) {
-                $query = Applicant::where('status', 'Pending');
+                $query = Applicant::where('status', 'Pending')->where('is_student', false);
 
                 if ($request->has('search') && $request->search != '') {
                     $search = $request->search;

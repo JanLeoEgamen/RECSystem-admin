@@ -1,25 +1,22 @@
 <x-app-layout>
-    <x-slot name="header">
-        <x-page-header title="{{ __('Users') }}">
+     <x-slot name="header">
+        <x-page-header title="{{ __('Locked Accounts') }}">
             <x-slot name="createButton">
-                <div class="flex space-x-2">
-                    <!-- Locked Accounts Button -->
-                    @can('unlock accounts')
-                    <a href="{{ route('locked-accounts.index') }}" 
-                       class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                        Locked Accounts
-                    </a>
-                    @endcan
+                <a href="{{ route('users.index') }}" 
+                   class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium 
+                        rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0 text-center
 
-                    <!-- Existing Create Button -->
-                    <x-create-button 
-                        :route="route('users.create')" 
-                        permission="create users" />
-                </div>
+                        dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
+
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Users
+                </a>
             </x-slot>
         </x-page-header>
     </x-slot>
@@ -45,10 +42,10 @@
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
-                                    <option value="created_desc">Default</option>
+                                    <option value="locked_at_desc">Default</option>
                                     <option value="name_asc">Name (A-Z)</option>
                                     <option value="name_desc">Name (Z-A)</option>
-                                    <option value="created_asc">Created (Oldest First)</option>
+                                    <option value="locked_at_asc">Locked Date (Oldest First)</option>
                                 </select>
                             </div>
                         </div>
@@ -97,10 +94,10 @@
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="created_desc">Default</option>
+                                <option value="locked_at_desc">Default</option>
                                 <option value="name_asc">Name (A-Z)</option>
                                 <option value="name_desc">Name (Z-A)</option>
-                                <option value="created_asc">Created (Oldest First)</option>
+                                <option value="locked_at_asc">Locked Date (Oldest First)</option>
                             </select>
                         </div>
 
@@ -111,15 +108,16 @@
 
                     <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                         <div class="min-w-[1000px]">
-                            <table id="usersTable" class="w-full bg-white dark:bg-gray-800 text-sm">
-                                <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
+                            <table id="lockedAccountsTable" class="w-full bg-white dark:bg-gray-800 text-sm">
+                                <thead class="bg-red-600 dark:bg-red-700 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
                                         <th class="px-6 py-3 text-center font-medium">#</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-name">Name</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-email">Email</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-roles">Roles</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-attempts">Login Attempts</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-locked">Locked Date</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-assignments">Assignments</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-created">Created</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
                                     </tr>
                                 </thead>
@@ -158,31 +156,6 @@
 
     <x-slot name="script">
         <style>
-            .swal2-icon {
-                border: 4px solid #ff0000 !important;
-                background-color: transparent !important;
-                color: #ff0000 !important;
-            }
-
-            .swal2-icon.swal2-warning .swal2-icon-content,
-            .swal2-icon.swal2-error .swal2-icon-content,
-            .swal2-icon.swal2-success .swal2-icon-content,
-            .swal2-icon.swal2-info .swal2-icon-content,
-            .swal2-icon.swal2-question .swal2-icon-content {
-                color: #ff0000 !important;
-            }
-
-             @keyframes slideInLeft {
-                from {
-                    opacity: 0;
-                    transform: translateX(-100px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
-            }
-
             .table-row-animate {
                 opacity: 0;
                 animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -205,14 +178,14 @@
             }
             
             .table-row-hover:hover {
-                background-color: rgba(59, 130, 246, 0.08);
+                background-color: rgba(239, 68, 68, 0.08);
                 transform: translateX(5px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                border-left: 4px solid #3b82f6;
+                border-left: 4px solid #ef4444;
             }
 
             .table-row-hover:hover td:first-child {
-                border-left: 4px solid #3b82f6;
+                border-left: 4px solid #ef4444;
                 padding-left: calc(1.5rem - 4px);
             }
         </style>
@@ -220,32 +193,32 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
-                fetchUsers();
+                fetchLockedAccounts();
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
-                    fetchUsers(1, $(this).val());
+                    fetchLockedAccounts(1, $(this).val());
                 });
                 $('#perPage, #mobilePerPage').on('change', function () {
-                    fetchUsers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
+                    fetchLockedAccounts(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
                 });
                 $('#sortBy, #mobileSortBy').on('change', function() {
-                    fetchUsers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
+                    fetchLockedAccounts(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                function fetchUsers(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
-                    const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'created_desc';
+                function fetchLockedAccounts(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
+                    const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'locked_at_desc';
                     const [column, direction] = sortValue.split('_');
 
                     const sortMap = {
                         'name_asc': { sort: 'name', direction: 'asc' },
                         'name_desc': { sort: 'name', direction: 'desc' },
-                        'created_asc': { sort: 'created_at', direction: 'asc' },
-                        'created_desc': { sort: 'created_at', direction: 'desc' }
+                        'locked_at_asc': { sort: 'locked_at', direction: 'asc' },
+                        'locked_at_desc': { sort: 'locked_at', direction: 'desc' }
                     };
 
-                    const sortParams = sortMap[sortValue] || { sort: 'created_at', direction: 'desc' };
+                    const sortParams = sortMap[sortValue] || { sort: 'locked_at', direction: 'desc' };
 
                     $.ajax({
-                        url: `{{ route('users.index') }}`,
+                        url: `{{ route('locked-accounts.index') }}`,
                         type: 'GET',
                         data: {
                             page: page,
@@ -255,7 +228,7 @@
                             direction: sortParams.direction
                         },
                         success: function (response) {
-                            renderUsers(response.data, response.from);
+                            renderLockedAccounts(response.data, response.from);
                             renderPagination(response);
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
                             $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
@@ -264,65 +237,41 @@
                     });
                 }
 
-                function renderUsers(users, startIndex) {
-                    let tbody = $('#usersTable tbody');
+                function renderLockedAccounts(accounts, startIndex) {
+                    let tbody = $('#lockedAccountsTable tbody');
                     tbody.empty();
                     
-                    users.forEach((user, index) => {
+                    accounts.forEach((account, index) => {
                         const rowNumber = startIndex + index;
-                        const isSuperadmin = user.is_superadmin;
-                        const deleteButton = isSuperadmin ? '' : `
-                            @can('delete users')
-                                <button onclick="deleteUser(${user.id})" 
-                                    class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="h-4 w-4 text-red-600 group-hover:text-white transition"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                    <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
-                                </button>
-                            @endcan
-                        `;
-
+                        
                         let row = `
                             <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
                                 <td class="px-6 py-4 text-center">${rowNumber}</td>
-                                <td class="px-6 py-4 text-left column-name">${user.name}</td>
-                                <td class="px-6 py-4 text-left column-email">${user.email}</td>
-                                <td class="px-6 py-4 text-center column-roles">${user.roles}</td>
-                                <td class="px-6 py-4 text-left column-assignments">
-                                    ${user.assignments.length > 50 ? 
-                                        user.assignments.substring(0, 50) + '... <button onclick="showFullAssignments(\'' + escapeHtml(user.assignments) + '\')" class="text-blue-500 hover:text-blue-700 text-xs">View All</button>' : 
-                                        user.assignments}
+                                <td class="px-6 py-4 text-left column-name">${account.name}</td>
+                                <td class="px-6 py-4 text-left column-email">${account.email}</td>
+                                <td class="px-6 py-4 text-center column-roles">${account.roles}</td>
+                                <td class="px-6 py-4 text-center column-attempts">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        ${account.login_attempts} attempts
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 text-center column-created">${user.created}</td>
+                                <td class="px-6 py-4 text-center column-locked">${account.locked_at}</td>
+                                <td class="px-6 py-4 text-left column-assignments">
+                                    ${account.assignments.length > 50 ? 
+                                        account.assignments.substring(0, 50) + '... <button onclick="showFullAssignments(\'' + escapeHtml(account.assignments) + '\')" class="text-blue-500 hover:text-blue-700 text-xs">View All</button>' : 
+                                        account.assignments}
+                                </td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                @can('edit users')
-                                    <a href="/users/${user.id}/edit" 
-                                        class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                    <button onclick="unlockAccount(${account.id})" 
+                                        class="group flex items-center bg-green-100 hover:bg-green-600 px-3 py-2 rounded-full transition space-x-1">
                                             <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                                    d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                             </svg>
-                                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
-                                        </a>
-                                @endcan
-                                @can('delete users')
-                                    <button onclick="deleteUser(${user.id})" 
-                                        class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                            <span class="text-green-600 group-hover:text-white text-sm">Unlock</span>
                                     </button>
-                                @endcan                                    
                                 </td>
                             </tr>
                         `;
@@ -336,11 +285,11 @@
                     if (data.current_page > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchUsers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchLockedAccounts(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 &laquo; First
                             </button>
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchUsers(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchLockedAccounts(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Previous
                             </button>`;
                     }
@@ -357,8 +306,8 @@
                     }
                     if (startPage > 1) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchUsers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                            <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-red-600 text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                                onclick="fetchLockedAccounts(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 1
                             </button>`;
                         if (startPage > 2) {
@@ -367,8 +316,8 @@
                     }
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchUsers(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                            <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-red-600 text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                                onclick="fetchLockedAccounts(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${i}
                             </button>`;
                     }
@@ -377,19 +326,19 @@
                             paginationHtml += `<span class="px-2 dark:text-white">...</span>`;
                         }
                         paginationHtml += `
-                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchUsers(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                            <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-red-600 text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
+                                onclick="fetchLockedAccounts(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${totalPages}
                             </button>`;
                     }
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchUsers(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchLockedAccounts(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Next
                             </button>
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchUsers(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchLockedAccounts(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Last &raquo;
                             </button>`;
                     }
@@ -397,45 +346,41 @@
                     $('#paginationLinks').html(paginationHtml);
                 }
 
-                //SWEETALERT FOR THE DELETE BUTTON
-                window.deleteUser = function (id) {
+                window.unlockAccount = function (id) {
                     Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
+                        title: 'Unlock Account?',
+                        text: "This will allow the user to login again.",
+                        icon: 'question',
                         showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#5e6ffb',
-                        confirmButtonText: 'Yes, delete it!',
+                        confirmButtonColor: '#10b981',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Yes, unlock it!',
                         background: '#101966',
-                        color: '#fff',
-                        customClass: {
-                                icon: 'swal-icon-red-bg'
-                            }
+                        color: '#fff'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
-                                url: '{{ route("users.destroy") }}',
-                                type: 'DELETE',
-                                data: { id: id },
-                                dataType: 'json',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                url: '{{ route("locked-accounts.unlock") }}',
+                                type: 'POST',
+                                data: { 
+                                    id: id,
+                                    _token: '{{ csrf_token() }}'
                                 },
+                                dataType: 'json',
                                 success: function (response) {
                                     if (response.status) {
                                         Swal.fire({
-                                            title: 'Deleted!',
-                                            text: 'User has been deleted successfully.',
+                                            title: 'Unlocked!',
+                                            text: 'Account has been unlocked successfully.',
                                             icon: 'success',
                                             background: '#101966',
                                             color: '#fff'
                                         });
-                                        fetchUsers();
+                                        fetchLockedAccounts();
                                     } else {
                                         Swal.fire({
                                             title: 'Error!',
-                                            text: response.message || 'Cannot delete superadmin user.',
+                                            text: response.message || 'Failed to unlock account.',
                                             icon: 'error',
                                             background: '#101966',
                                             color: '#fff'
@@ -443,7 +388,7 @@
                                     }
                                 },
                                 error: function(xhr) {
-                                    let errorMessage = 'Something went wrong while deleting the user.';
+                                    let errorMessage = 'Something went wrong while unlocking the account.';
                                     if (xhr.responseJSON && xhr.responseJSON.message) {
                                         errorMessage = xhr.responseJSON.message;
                                     }
@@ -478,7 +423,7 @@
                     document.getElementById('assignmentsModal').classList.remove('hidden');
                 };
 
-                window.fetchUsers = fetchUsers;
+                window.fetchLockedAccounts = fetchLockedAccounts;
                 
                 function escapeHtml(unsafe) {
                     return unsafe
