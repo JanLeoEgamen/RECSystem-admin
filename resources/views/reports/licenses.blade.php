@@ -29,6 +29,56 @@
         </div>
     </x-slot>
 
+    <style>
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-slide-in-from-left {
+            animation: slideInFromLeft 0.5s ease-out forwards;
+        }
+
+        .animate-slide-in-from-right {
+            animation: slideInFromRight 0.5s ease-out forwards;
+        }
+
+        /* Staggered animation delay for each row */
+        tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        tbody tr:nth-child(5) { animation-delay: 0.5s; }
+        tbody tr:nth-child(6) { animation-delay: 0.6s; }
+        tbody tr:nth-child(7) { animation-delay: 0.7s; }
+        tbody tr:nth-child(8) { animation-delay: 0.8s; }
+        tbody tr:nth-child(9) { animation-delay: 0.9s; }
+        tbody tr:nth-child(10) { animation-delay: 1.0s; }
+        tbody tr:nth-child(n+11) { animation-delay: 1.1s; }
+
+        /* Custom green-150 for hover effect */
+        .hover\:bg-green-150:hover {
+            background-color: #d1fae5;
+        }
+    </style>
+
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -39,7 +89,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <!-- Total Members -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-indigo-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,7 +104,7 @@
                         </div>
 
                         <!-- Licensed Members -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-green-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +119,7 @@
                         </div>
 
                         <!-- Unlicensed Members -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-red-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,36 +143,36 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
+                            <thead class="bg-[#101966] dark:bg-gray-900">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bureau/Section</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Licensed Members</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Unlicensed Members</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Members</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Bureau/Section</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Licensed Members</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Unlicensed Members</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total Members</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($bureaus as $bureau)
-                                <tr class="bg-gray-50 dark:bg-gray-700">
+                                <tr class="bg-blue-200 dark:bg-gray-700 hover:bg-blue-400 dark:hover:bg-gray-600 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-left">
                                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $bureau->bureau_name }}</td>
-                                    <td class="px-6 py-4">{{ $bureau->bureau_licensed_count }}</td>
-                                    <td class="px-6 py-4">{{ $bureau->bureau_unlicensed_count }}</td>
-                                    <td class="px-6 py-4 font-medium">{{ $bureau->bureau_members_count }}</td>
+                                    <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $bureau->bureau_licensed_count }}</td>
+                                    <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $bureau->bureau_unlicensed_count }}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $bureau->bureau_members_count }}</td>
                                 </tr>
                                 @foreach($bureau->sections as $section)
-                                <tr>
+                                <tr class="hover:bg-indigo-100 dark:hover:bg-gray-600 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-right">
                                     <td class="px-6 py-4 pl-10 text-gray-600 dark:text-gray-300">{{ $section->section_name }}</td>
-                                    <td class="px-6 py-4">{{ $section->licensed_members_count }}</td>
-                                    <td class="px-6 py-4">{{ $section->unlicensed_members_count }}</td>
-                                    <td class="px-6 py-4">{{ $section->total_members_count }}</td>
+                                    <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $section->licensed_members_count }}</td>
+                                    <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $section->unlicensed_members_count }}</td>
+                                    <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $section->total_members_count }}</td>
                                 </tr>
                                 @endforeach
                                 @endforeach
-                                <tr class="bg-gray-100 dark:bg-gray-700 font-semibold">
-                                    <td class="px-6 py-4">Grand Total</td>
-                                    <td class="px-6 py-4">{{ $licensedMembers }}</td>
-                                    <td class="px-6 py-4">{{ $unlicensedMembers }}</td>
-                                    <td class="px-6 py-4">{{ $totalMembers }}</td>
+                                <tr class="bg-green-100 dark:bg-green-800 font-semibold hover:bg-green-150 dark:hover:bg-green-700 transition-all duration-300 ease-in-out">
+                                    <td class="px-6 py-4 text-green-800 dark:text-green-100">Grand Total</td>
+                                    <td class="px-6 py-4 text-green-800 dark:text-green-100">{{ $licensedMembers }}</td>
+                                    <td class="px-6 py-4 text-green-800 dark:text-green-100">{{ $unlicensedMembers }}</td>
+                                    <td class="px-6 py-4 text-green-800 dark:text-green-100">{{ $totalMembers }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -137,24 +187,24 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
+                            <thead style="background-color: #101966;">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rec #</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Callsign</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Membership Type</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bureau</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Section</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">License Expiration</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Rec #</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Callsign</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Membership Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Bureau</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Section</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">License Expiration</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($bureaus as $bureau)
                                     @foreach($bureau->sections as $section)
                                         @foreach($section->members->whereNotNull('license_number') as $member)
-                                        <tr>
+                                        <tr class="hover:bg-green-50 dark:hover:bg-green-900 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-left">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $member->id }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 font-medium">
                                                 {{ $member->last_name }}, {{ $member->first_name }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
@@ -195,23 +245,23 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
+                            <thead class="bg-[#101966] dark:bg-gray-900">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rec #</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Callsign</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Membership Type</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bureau</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Section</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Rec #</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Callsign</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Membership Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Bureau</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Section</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($bureaus as $bureau)
                                     @foreach($bureau->sections as $section)
                                         @foreach($section->members->whereNull('license_number') as $member)
-                                        <tr>
+                                        <tr class="hover:bg-red-50 dark:hover:bg-red-900 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-right">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $member->id }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 font-medium">
                                                 {{ $member->last_name }}, {{ $member->first_name }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">

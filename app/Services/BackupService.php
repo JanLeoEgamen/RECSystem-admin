@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Backup;
+use App\Services\ZipService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
 use Exception;
 use Carbon\Carbon;
 
@@ -13,11 +15,13 @@ class BackupService
     protected $backupPath;
     protected $fileName;
     protected $fullPath;
+    protected $zipService;
     protected $excludedTables = [
     ];
 
-    public function __construct()
+    public function __construct(ZipService $zipService)
     {
+        $this->zipService = $zipService;
         $this->backupPath = 'backups/' . date('Y') . '/' . date('m') . '/' . date('d');
         $this->fileName = 'backup-' . Carbon::now()->format('Y-m-d-H-i-s') . '.sql';
         $this->fullPath = $this->backupPath . '/' . $this->fileName;
@@ -183,7 +187,24 @@ class BackupService
             throw new Exception('Backup file not found.');
         }
         
-        return Storage::disk('public')->download($backup->path, $backup->name);
+        try {
+            // Create a temporary password-protected ZIP file
+            $tempZipPath = $this->zipService->createTemporaryPasswordProtectedZip(
+                $backup->path, 
+                $backup->name
+            );
+            
+            // Create download response with the ZIP file
+            $zipFileName = pathinfo($backup->name, PATHINFO_FILENAME) . '.zip';
+            
+            return response()->download($tempZipPath, $zipFileName, [
+                'Content-Type' => 'application/zip',
+                'Content-Disposition' => 'attachment; filename="' . $zipFileName . '"'
+            ])->deleteFileAfterSend(true);
+            
+        } catch (Exception $e) {
+            throw new Exception('Failed to create password-protected backup download: ' . $e->getMessage());
+        }
     }
     
     public function getBackupContent(Backup $backup): string

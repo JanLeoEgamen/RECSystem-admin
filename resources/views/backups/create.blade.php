@@ -33,6 +33,25 @@
                             </div>
                         </div>
 
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
+                            <div class="flex items-start">
+                                <svg class="h-6 w-6 text-blue-600 dark:text-blue-400 mr-3 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 1.732c1.732.732 3.732.732 5.464 0l.732-2.732L12 16V8.732c-.732-.732-1.732-.732-2.464 0L9 10.732 7.268 9c-.732-.732-1.732-.732-2.464 0L4 9.732V16.268l.732.732c.732.732 1.732.732 2.464 0L8 15.732l1.732 1.732c.732.732 1.732.732 2.464 0L13 16.732l1.732 1.732c.732.732 1.732.732 2.464 0L18 17.732V9l-.732-.732c-.732-.732-1.732-.732-2.464 0L14 9.732 12.268 8c-.732-.732-1.732-.732-2.464 0z" />
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-medium text-blue-800 dark:text-blue-200">Security Notice</h3>
+                                    <p class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                        <strong>Password Protection:</strong> All backup downloads are automatically protected with a password-encrypted ZIP file 
+                                        to ensure the security of your sensitive database content. 
+                                        <br><br>
+                                        <strong>Download Password:</strong> <code class="bg-blue-200 dark:bg-blue-800 px-2 py-1 rounded text-blue-900 dark:text-blue-100 font-mono">@recdb09</code>
+                                        <br><br>
+                                        Please store this password securely and use it to extract the backup file after download.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <form action="{{ route('backups.store') }}" method="POST">
                             @csrf
                             

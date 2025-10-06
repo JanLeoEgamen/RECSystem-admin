@@ -58,7 +58,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use App\Http\Controllers\GlobalSearchController;
-use App\Http\Controllers\LockedAccountsController;
 use App\Http\Controllers\StudentApplicantController;
 
 // GLOBAL SEARCH
@@ -172,10 +171,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //login
     Route::get('/login', [LoginController::class, 'show'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
-
-    // Locked Accounts Routes
-    Route::get('/locked-accounts', [LockedAccountsController::class, 'index'])->name('locked-accounts.index');
-    Route::post('/locked-accounts/unlock', [LockedAccountsController::class, 'unlock'])->name('locked-accounts.unlock');
     
     //main carousels
     Route::get('/main-carousels', [MainCarouselController::class, 'index'])->name('main-carousels.index');

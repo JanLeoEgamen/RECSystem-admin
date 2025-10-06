@@ -1,25 +1,10 @@
 <x-app-layout>
-    <x-slot name="header">
+     <x-slot name="header">
         <x-page-header title="{{ __('Users') }}">
             <x-slot name="createButton">
-                <div class="flex space-x-2">
-                    <!-- Locked Accounts Button -->
-                    @can('unlock accounts')
-                    <a href="{{ route('locked-accounts.index') }}" 
-                       class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                        Locked Accounts
-                    </a>
-                    @endcan
-
-                    <!-- Existing Create Button -->
-                    <x-create-button 
-                        :route="route('users.create')" 
-                        permission="create users" />
-                </div>
+                <x-create-button 
+                    :route="route('users.create')" 
+                    permission="create users" />
             </x-slot>
         </x-page-header>
     </x-slot>

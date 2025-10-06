@@ -34,9 +34,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'member_id',
-        'login_attempts',
-        'is_locked',     
-        'locked_at', 
     ];
 
     /**
@@ -59,8 +56,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_locked' => 'boolean', 
-            'locked_at' => 'datetime', 
         ];
     }
     
@@ -141,11 +136,10 @@ class User extends Authenticatable implements MustVerifyEmail
     // logs
     use LogsActivity;
     protected static $logOnlyDirty = true;
-    
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['last_name', 'first_name', 'birthdate', 'email', 'member_id', 'is_locked', 'login_attempts'])
+            ->logOnly(['last_name', 'first_name', 'birthdate', 'email', 'member_id'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "User has been {$eventName}")
             ->useLogName('user')
@@ -167,7 +161,7 @@ class User extends Authenticatable implements MustVerifyEmail
             }
         }
 
-        // Also check current password (this should be the fi   rst check that fails in NewPasswordController)
+        // Also check current password (this should be the first check that fails in NewPasswordController)
         if (Hash::check($newPassword, $this->password)) {
             return true;
         }
@@ -208,29 +202,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function passwordHistory()
     {
         return $this->hasMany(PasswordHistory::class);
-    }
-
-    public function resetLoginAttempts()
-    {
-        $this->update([
-            'login_attempts' => 0,
-            'is_locked' => false,
-            'locked_at' => null
-        ]);
-    }
-
-    public function incrementLoginAttempts()
-    {
-        $this->increment('login_attempts');
-        
-        if ($this->login_attempts >= 3) {
-            $this->update([
-                'is_locked' => true,
-                'locked_at' => now()
-            ]);
-        }
-        
-        return $this;
     }
 
 }

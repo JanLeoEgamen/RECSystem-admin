@@ -1,82 +1,356 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Activity Logs Report</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs Report - {{ now()->format('Y-m-d') }}</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .title { font-size: 24px; font-weight: bold; }
-        .subtitle { font-size: 14px; color: #666; }
-        .search-info { margin-bottom: 15px; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th, .table td { border: 1px solid #ddd; padding: 8px; }
-        .table th { background-color: #f2f2f2; text-align: left; }
-        .table tr:nth-child(even) { background-color: #f9f9f9; }
-        .footer { margin-top: 30px; font-size: 12px; text-align: right; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-        .badge-old { background-color: #fee2e2; color: #b91c1c; }
-        .badge-new { background-color: #dcfce7; color: #166534; }
-        .arrow { color: #6b7280; }
+        @page {
+            size: A4 landscape;
+            margin: 20mm;
+        }
+        
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .org-header {
+            text-align: center;
+            padding: 0 20px 30px 20px;
+            border-bottom: 3px solid #1e3a8a;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px auto;
+            display: block;
+        }
+        
+        .org-type {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+        
+        .org-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin: 0 0 15px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .org-details {
+            font-size: 11px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 3px;
+        }
+        
+        .org-contact {
+            font-size: 11px;
+            color: #4b5563;
+            margin-top: 8px;
+        }
+        
+        .report-title {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .report-title h1 {
+            margin: 0 0 5px 0;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1e3a8a;
+        }
+        
+        .report-title .subtitle {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        
+        .content {
+            padding: 0 20px;
+        }
+        
+        .filters {
+            background: #eff6ff;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .filters p {
+            margin: 0;
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 11px;
+        }
+        
+        .filters strong {
+            color: #1e3a8a;
+        }
+        
+        .summary {
+            padding: 15px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        
+        .privacy-notice {
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .privacy-notice h4 {
+            margin: 0 0 10px 0;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .privacy-notice p {
+            margin: 8px 0;
+            font-size: 10px;
+            line-height: 1.5;
+            font-weight: 200;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border: 2px solid #1e3a8a;
+        }
+        
+        table th, table td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #cbd5e1;
+        }
+        
+        table th {
+            background: #1e3a8a;
+            color: white;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        table tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        
+        .badge-old {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .badge-new {
+            background: #10b981;
+            color: white;
+        }
+        
+        .badge-created {
+            background: #10b981;
+            color: white;
+        }
+        
+        .badge-updated {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .badge-deleted {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .type-cell {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .user-cell {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .changes-cell {
+            text-align: left;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+        
+        .arrow {
+            color: #6b7280;
+            font-weight: 600;
+            margin: 0 5px;
+        }
+        
+        .timestamp-cell {
+            color: #4b5563;
+            font-size: 10px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #6b7280;
+            padding: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+        
+        .footer p {
+            margin: 3px 0;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="title">Activity Logs Report</div>
-        <div class="subtitle">Generated on: {{ $currentDate }}</div>
-    </div>
-
-    @if($searchTerm)
-        <div class="search-info">
-            <strong>Search Term:</strong> {{ $searchTerm }}
+    <div class="container">
+        <div class="org-header">
+            @php
+                $logoPath = public_path('images/Logo.png');
+                $logoBase64 = '';
+                if (file_exists($logoPath)) {
+                    $logoData = file_get_contents($logoPath);
+                    $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+                }
+            @endphp
+            @if($logoBase64)
+                <img src="{{ $logoBase64 }}" alt="REC Logo" class="logo">
+            @endif
+            <div class="org-type">Non-profit organization</div>
+            <h1 class="org-name">RADIO ENGINEERING CIRCLE INC.</h1>
+            <div class="org-details">
+                Room 407 Building A, Polytechnic University of the Philippines-Taguig Campus,
+            </div>
+            <div class="org-details">
+                General Santos Avenue, Lower Bicutan, Taguig, Philippines
+            </div>
+            <div class="org-contact">
+                0917 541 883 | radio@rec.org.ph | rec.org.ph
+            </div>
         </div>
-    @endif
+        
+        <div class="report-title">
+            <h1>Activity Logs Report</h1>
+            <div class="subtitle">Printed on: {{ $currentDate }}</div>
+        </div>
 
-    <div class="summary">
-        <strong>Total Activities:</strong> {{ $totalActivities }}
-    </div>
+        <div class="content">
+            @if($searchTerm)
+            <div class="filters">
+                <p><strong>Applied Filter:</strong> {{ $searchTerm }}</p>
+            </div>
+            @endif
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Type</th>
-                <th>Action</th>
-                <th>User</th>
-                <th>Changes</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($activities as $activity)
-            <tr>
-                <td>{{ ucfirst($activity->log_name) }}</td>
-                <td>{{ ucfirst($activity->description) }}</td>
-                <td>{{ $activity->causer ? $activity->causer->first_name.' '.$activity->causer->last_name : 'System' }}</td>
-                <td>
-                    @foreach($activity->formatted_properties as $property)
-                        <div style="margin-bottom: 5px;">
-                            <strong>{{ $property['field'] }}:</strong>
-                            @if($activity->description === 'updated')
-                                <span class="badge badge-old">{{ $property['old'] ?? '(empty)' }}</span>
-                                <span class="arrow">→</span>
-                                <span class="badge badge-new">{{ $property['new'] ?? '(empty)' }}</span>
-                            @elseif($activity->description === 'created')
-                                <span class="badge badge-new">{{ $property['new'] ?? '(empty)' }}</span>
-                            @elseif($activity->description === 'deleted')
-                                <span class="badge badge-old">{{ $property['old'] ?? '(empty)' }}</span>
+            <div class="privacy-notice">
+                <h4>⚠️ Data Privacy Act Compliance Notice</h4>
+                <p>Republic Act No. 10173 - Data Privacy Act of 2012: This report contains sensitive personal and organizational data that is strictly confidential and protected under Philippine law.</p>
+            </div>
+            
+            <div class="summary">
+                Total Activities Found: {{ $totalActivities }}
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                        <th>User</th>
+                        <th>Changes</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($activities as $index => $activity)
+                    <tr>
+                        <td style="font-weight: 600; color: #6b7280;">{{ $index + 1 }}</td>
+                        <td class="type-cell">{{ ucfirst($activity->log_name) }}</td>
+                        <td>
+                            <span class="badge badge-{{ $activity->description }}">
+                                {{ ucfirst($activity->description) }}
+                            </span>
+                        </td>
+                        <td class="user-cell">
+                            @if($activity->causer)
+                                {{ $activity->causer->first_name }} {{ $activity->causer->last_name }}
                             @else
-                                {{ is_array($property['value']) ? json_encode($property['value']) : ($property['value'] ?? '(empty)') }}
+                                <em style="color: #9ca3af;">System Generated</em>
                             @endif
-                        </div>
+                        </td>
+                        <td class="changes-cell">
+                            @foreach($activity->formatted_properties as $property)
+                                <div style="margin-bottom: 5px;">
+                                    <strong>{{ $property['field'] }}:</strong>
+                                    @if($activity->description === 'updated')
+                                        <span class="badge badge-old">{{ $property['old'] ?? '(empty)' }}</span>
+                                        <span class="arrow">→</span>
+                                        <span class="badge badge-new">{{ $property['new'] ?? '(empty)' }}</span>
+                                    @elseif($activity->description === 'created')
+                                        <span class="badge badge-new">{{ $property['new'] ?? '(empty)' }}</span>
+                                    @elseif($activity->description === 'deleted')
+                                        <span class="badge badge-old">{{ $property['old'] ?? '(empty)' }}</span>
+                                    @else
+                                        {{ is_array($property['value']) ? json_encode($property['value']) : ($property['value'] ?? '(empty)') }}
+                                    @endif
+                                </div>
+                            @endforeach
+                        </td>
+                        <td class="timestamp-cell">{{ $activity->created_at->format('M j, Y g:i A') }}</td>
+                    </tr>
                     @endforeach
-                </td>
-                <td>{{ $activity->created_at->format('M j, Y g:i A') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                </tbody>
+            </table>
 
-    <div class="footer">
-        Report generated by {{ config('app.name') }}
+            <div class="footer">
+                <p>Report generated by Radio Engineering Circle Inc. </p>
+                <p>Generated on {{ $currentDate }} • Activity Logs Report</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>

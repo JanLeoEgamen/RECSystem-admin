@@ -29,6 +29,56 @@
         </div>
     </x-slot>
 
+    <style>
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-slide-in-from-left {
+            animation: slideInFromLeft 0.5s ease-out forwards;
+        }
+
+        .animate-slide-in-from-right {
+            animation: slideInFromRight 0.5s ease-out forwards;
+        }
+
+        /* Staggered animation delay for each row */
+        tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        tbody tr:nth-child(5) { animation-delay: 0.5s; }
+        tbody tr:nth-child(6) { animation-delay: 0.6s; }
+        tbody tr:nth-child(7) { animation-delay: 0.7s; }
+        tbody tr:nth-child(8) { animation-delay: 0.8s; }
+        tbody tr:nth-child(9) { animation-delay: 0.9s; }
+        tbody tr:nth-child(10) { animation-delay: 1.0s; }
+        tbody tr:nth-child(n+11) { animation-delay: 1.1s; }
+
+        /* Custom green-150 for hover effect */
+        .hover\:bg-green-150:hover {
+            background-color: #d1fae5;
+        }
+    </style>
+
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -39,7 +89,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Total Applicants -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-indigo-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,7 +104,7 @@
                         </div>
 
                         <!-- Approved -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-green-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +119,7 @@
                         </div>
 
                         <!-- Pending -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-yellow-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,7 +134,7 @@
                         </div>
 
                         <!-- Rejected -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-red-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,7 +142,7 @@
                                     </svg>
                                 </div>
                                 <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Rejected</p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Disapproaved</p>
                                     <p class="text-2xl font-semibold text-gray-700 dark:text-gray-200">{{ $rejectedApplicants }}</p>
                                 </div>
                             </div>
@@ -108,39 +158,39 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-[#101966]">
+                            <thead class="bg-[#101966] dark:bg-gray-900">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Full Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date Applied</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date Approved</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Section</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Bureau</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Full Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Date Applied</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Date Approved</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Section</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Bureau</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Membership Type</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($approved as $applicant)
-                                <tr class="hover:bg-[#5e6ffb] hover:text-black">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <tr class="hover:bg-green-50 dark:hover:bg-green-900 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-left">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 font-medium">
                                         {{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->created_at->format('m/d/Y') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         @if($applicant->member && $applicant->member->created_at)
                                             {{ $applicant->member->created_at->format('m/d/Y') }}
                                         @else
                                             N/A
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->member->section->section_name ?? 'N/A' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->member->section->bureau->bureau_name ?? 'N/A' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->member->membershipType->type_name ?? 'N/A' }}
                                     </td>
                                 </tr>
@@ -164,19 +214,19 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-[#101966]">
+                            <thead class="bg-[#101966] dark:bg-gray-900">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Full Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Full Name</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date Applied</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($pending as $applicant)
-                                <tr class="hover:bg-[#5e6ffb] hover:text-black">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <tr class="hover:bg-yellow-50 dark:hover:bg-yellow-900 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-right">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 font-medium">
                                         {{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->created_at->format('m/d/Y') }}
                                     </td>
                                 </tr>
@@ -196,27 +246,27 @@
             <!-- Rejected Applicants Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Rejected Applicants ({{ $rejectedApplicants }})</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Disapproved Applicants ({{ $rejectedApplicants }})</h3>
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-[#101966]">
+                            <thead class="bg-[#101966] dark:bg-gray-900">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Full Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date Applied</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date Rejected</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Full Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Date Applied</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date of Disapproval</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($rejected as $applicant)
-                                <tr class="hover:bg-[#5e6ffb] hover:text-black">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <tr class="hover:bg-red-50 dark:hover:bg-red-900 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-left">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 font-medium">
                                         {{ $applicant->last_name }}, {{ $applicant->first_name }} {{ $applicant->middle_name ? $applicant->middle_name[0].'.' : '' }} {{ $applicant->suffix ?? '' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->created_at->format('m/d/Y') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $applicant->updated_at->format('m/d/Y') }}
                                     </td>
                                 </tr>

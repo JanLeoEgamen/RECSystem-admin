@@ -55,10 +55,10 @@
                     " 
                     class="p-2 rounded-md text-white dark:text-gray-200 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#5e6ffb]"
                 >
-                    <svg x-show="!sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg x-show="!sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-                    <svg x-show="sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg x-show="sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -190,7 +190,7 @@
                             >
 
                             <!-- Loading Indicator -->
-                            <div x-show="loading" class="absolute right-2 top-2">
+                            <div x-show="loading" class="absolute right-2 top-2" style="display: none;">
                                 <svg class="animate-spin h-4 w-4 text-[#5e6ffb] dark:text-[#7c8dfb]" 
                                     xmlns="http://www.w3.org/2000/svg" 
                                     fill="none" 
@@ -209,6 +209,7 @@
                                     hover:bg-gray-200 dark:hover:bg-gray-600
                                     hover:text-gray-600 dark:hover:text-gray-300
                                     transition-colors duration-200"
+                                style="display: none;"
                             >
                                 <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -231,6 +232,7 @@
                                 shadow-xl dark:shadow-2xl
                                 rounded-md
                                 backdrop-blur-sm"
+                            style="display: none;"
                         >
                             <!-- Results -->
                             <template x-if="results.length > 0">
@@ -383,15 +385,12 @@
                     class="p-1 rounded-md hover:bg-white/10 focus:outline-none transition-colors duration-150"
                     :class="{ 'bg-white/10': rightSidebarOpen }"
                 >
-                    <img 
-                        width="24" 
-                        height="24" 
-                        :src="rightSidebarOpen ? 
-                            'https://img.icons8.com/material-rounded/24/5e6ffb/left-navigation-toolbar.png' : 
-                            'https://img.icons8.com/material-rounded/24/FFFFFF/left-navigation-toolbar.png'" 
-                        class="transform transition-transform duration-200"
-                        :class="{ 'rotate-180': rightSidebarOpen }"
-                    >
+                    <svg x-show="!rightSidebarOpen" class="w-4 h-4 md:w-5 md:h-5 text-white transform transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <svg x-show="rightSidebarOpen" class="w-4 h-4 md:w-5 md:h-5 text-[#5E6FFB] transform transition-transform duration-200 rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
                 </button>
                 @endcan
                 @endrole

@@ -23,6 +23,21 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-message></x-message>
 
+            <!-- Security Notice -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 1.732c1.732.732 3.732.732 5.464 0l.732-2.732L12 16V8.732c-.732-.732-1.732-.732-2.464 0L9 10.732 7.268 9c-.732-.732-1.732-.732-2.464 0L4 9.732V16.268l.732.732c.732.732 1.732.732 2.464 0L8 15.732l1.732 1.732c.732.732 1.732.732 2.464 0L13 16.732l1.732 1.732c.732.732 1.732.732 2.464 0L18 17.732V9l-.732-.732c-.732-.732-1.732-.732-2.464 0L14 9.732 12.268 8c-.732-.732-1.732-.732-2.464 0z" />
+                    </svg>
+                    <div>
+                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                            <strong>🔒 Security Notice:</strong> All backup downloads are password-protected ZIP files. 
+                            Use password: <code class="bg-blue-200 dark:bg-blue-800 px-1 py-0.5 rounded text-blue-900 dark:text-blue-100 font-mono text-xs">@recdb09</code> to extract files.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
@@ -295,7 +310,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
-                                            <span class="text-green-600 group-hover:text-white text-sm">Download</span>
+                                            <span class="text-green-600 group-hover:text-white text-sm">Download ZIP</span>
                                         </a>
                                         ` : ''}
 

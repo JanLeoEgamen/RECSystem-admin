@@ -1,9 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
+        <div class="flex justify-between items-center"> 
             <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
                 {{ __('Custom Report Generator') }}
             </h2>
+            <a href="{{ route('reports.index') }}" 
+                class="bg-white text-[#101966] hover:bg-[#101966] hover:text-white px-4 py-2 rounded-md flex items-center justify-center font-medium border border-white hover:border-white transition w-full md:w-auto">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                Back to Reports
+            </a>
         </div>
     </x-slot>
 

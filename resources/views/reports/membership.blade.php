@@ -29,6 +29,56 @@
         </div>
     </x-slot>
 
+    <style>
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-slide-in-from-left {
+            animation: slideInFromLeft 0.5s ease-out forwards;
+        }
+
+        .animate-slide-in-from-right {
+            animation: slideInFromRight 0.5s ease-out forwards;
+        }
+
+        /* Staggered animation delay for each row */
+        tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        tbody tr:nth-child(5) { animation-delay: 0.5s; }
+        tbody tr:nth-child(6) { animation-delay: 0.6s; }
+        tbody tr:nth-child(7) { animation-delay: 0.7s; }
+        tbody tr:nth-child(8) { animation-delay: 0.8s; }
+        tbody tr:nth-child(9) { animation-delay: 0.9s; }
+        tbody tr:nth-child(10) { animation-delay: 1.0s; }
+        tbody tr:nth-child(n+11) { animation-delay: 1.1s; }
+
+        /* Custom green-150 for hover effect */
+        .hover\:bg-green-150:hover {
+            background-color: #d1fae5;
+        }
+    </style>
+
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -39,7 +89,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <!-- Total Members -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-indigo-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,7 +104,7 @@
                         </div>
 
                         <!-- Active Members -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-green-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +119,7 @@
                         </div>
 
                         <!-- Inactive Members -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-red-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,7 +134,7 @@
                         </div>
 
                         <!-- Total Bureaus -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-blue-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -99,7 +149,7 @@
                         </div>
 
                         <!-- Total Sections -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="bg-blue-50 border border-blue-500 dark:bg-gray-700 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-purple-500 rounded-md p-2">
                                     <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,59 +173,59 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-[#101966]">
+                            <thead class="bg-[#101966] dark:bg-gray-900">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Bureau/Section</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Active</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Inactive</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Bureau/Section</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Active</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Inactive</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($bureaus as $bureau)
-                                <tr class="bg-[#393E85]/70 dark:bg-gray-700 hover:bg-[#5e6ffb] group">
-                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-white group-hover:text-black">
+                                <tr class="bg-blue-100 dark:bg-gray-700 hover:bg-blue-300 dark:hover:bg-gray-600 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-left">
+                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-gray-900 dark:text-white">
                                         {{ $bureau->bureau_name }} (Bureau)
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-white group-hover:text-black">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-200">
                                         {{ $bureau->active_members_count }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-white group-hover:text-black">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-200">
                                         {{ $bureau->inactive_members_count }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-white group-hover:text-black">
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                         {{ $bureau->total_members_count }}
                                     </td>
                                 </tr>
                                 @foreach($bureau->sections as $section)
-                                <tr class="hover:bg-[#5e6ffb]">
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300 pl-10">
+                                <tr class="hover:bg-indigo-100 dark:hover:bg-gray-600 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-right">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-300 pl-10">
                                         {{ $section->section_name }} (Section)
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-200">
                                         {{ $section->active_members_count }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-200">
                                         {{ $section->inactive_members_count }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-200">
                                         {{ $section->total_members_count }}
                                     </td>
                                 </tr>
                                 @endforeach
                                 @endforeach
                                 <!-- Totals Row -->
-                                <tr class="bg-green-600 font-semibold">
-                                    <td class="px-6 py-4 whitespace-nowrap text-white">
+                                <tr class="bg-green-100 dark:bg-green-800 font-semibold hover:bg-green-150 dark:hover:bg-green-700 transition-all duration-300 ease-in-out">
+                                    <td class="px-6 py-4 whitespace-nowrap text-green-800 dark:text-green-100">
                                         Grand Total
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-green-800 dark:text-green-100">
                                         {{ $activeMembers }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-green-800 dark:text-green-100">
                                         {{ $inactiveMembers }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-green-800 dark:text-green-100">
                                         {{ $totalMembers }}
                                     </td>
                                 </tr>
@@ -192,25 +242,25 @@
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-[#101966]">
+                            <thead class="bg-[#101966] dark:bg-gray-900">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Rec #</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Callsign</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Validity</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Membership Type</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Bureau</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Rec #</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Callsign</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Validity</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Membership Type</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider border-r border-white border-opacity-30">Bureau</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Section</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($members as $member)
-                                <tr>
+                                <tr class="hover:bg-blue-50 dark:hover:bg-blue-900 transition-all duration-300 ease-in-out transform hover:scale-105 animate-slide-in-from-left">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $member->rec_number }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 font-medium">
                                         {{ $member->last_name }}, {{ $member->first_name }} {{ $member->middle_name ? $member->middle_name[0].'.' : '' }} {{ $member->suffix ?? '' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">

@@ -256,7 +256,21 @@
     </style>
 </head>
 <body>
+    @php
+        $logoPath = public_path('images/Logo.png');
+        $logoBase64 = '';
+        if (file_exists($logoPath)) {
+            $logoData = file_get_contents($logoPath);
+            $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+        }
+    @endphp
+
     <div class="header">
+        @if($logoBase64)
+            <div style="text-align: center; margin-bottom: 10px;">
+                <img src="{{ $logoBase64 }}" alt="Logo" style="height: 60px; width: auto;">
+            </div>
+        @endif
         <p class="org-subtitle">Non-profit organization</p>
         <h1 class="org-name">RADIO ENGINEERING CIRCLE INC.</h1>
         <p class="org-details">Room 407 Building A, Polytechnic University of the Philippines-Taguig Campus,<br>
