@@ -43,7 +43,6 @@
                                 @enderror
                             </div>
 
-
                             <span class="text-sm font-medium">Content</span>
                             <div class="my-3">    
                                 <textarea id="content" name="content" class="border-gray-300 shadow-sm w-full rounded-lg">{{ old('content') }}</textarea>
@@ -74,6 +73,79 @@
                                 </svg>
                                 Add Signatory
                             </button>
+
+                            <span class="text-sm font-medium mt-6 block">Assign to Members</span>
+
+                            <!-- Add Section Filter Dropdown -->
+                            <div class="my-3">
+                                <label for="section-filter" class="block text-sm font-medium mb-2">Filter by Section:</label>
+                                <select id="section-filter" class="border-gray-300 shadow-sm rounded-lg w-full md:w-1/3">
+                                    <option value="all">All Sections</option>
+                                    @foreach($sections as $section)
+                                        <option value="section-{{ $section->id }}">
+                                            {{ $section->section_name }} 
+                                            @if($section->bureau)
+                                                ({{ $section->bureau->bureau_name }})
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="my-3">
+                                <div class="relative">
+                                    <select name="members[]" id="members-select" multiple class="hidden">
+                                        @foreach($members as $member)
+                                            <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}
+                                                data-section="section-{{ $member->section_id }}">
+                                                {{ $member->first_name }} {{ $member->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div id="members-dropdown" class="w-full mt-1">
+                                        <div class="relative">
+                                            <input type="text" id="members-search" placeholder="Search members..." 
+                                                class="w-full border-gray-300 shadow-sm rounded-lg pl-10 pr-4 py-2">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div id="members-options" class="mt-1 max-h-60 overflow-y-auto border border-gray-300 rounded-lg hidden">
+                                            <div class="p-2">
+                                                <div class="flex items-center mb-2">
+                                                    <input type="checkbox" id="select-all-members" class="rounded mr-2">
+                                                    <label for="select-all-members" class="text-sm">Select All Visible Members</label>
+                                                </div>
+                                                <div class="space-y-1" id="members-options-container">
+                                                    @foreach($members as $member)
+                                                        <div class="flex items-center member-option" 
+                                                            data-value="{{ $member->id }}" 
+                                                            data-section="section-{{ $member->section_id }}">
+                                                            <input type="checkbox" id="member-{{ $member->id }}" 
+                                                                value="{{ $member->id }}" class="rounded mr-2 member-checkbox"
+                                                                {{ in_array($member->id, old('members', [])) ? 'checked' : '' }}>
+                                                            <label for="member-{{ $member->id }}" class="text-sm">
+                                                                {{ $member->first_name }} {{ $member->last_name }}
+                                                                @if($member->section)
+                                                                    <span class="text-xs text-gray-500 ml-2">
+                                                                        ({{ $member->section->section_name }})
+                                                                    </span>
+                                                                @endif
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="selected-members" class="mt-2 flex flex-wrap gap-2"></div>
+                                    </div>
+                                </div>
+                                @error('members')
+                                <p class="text-red-400 font-medium"> {{ $message }} </p>
+                                @enderror
+                            </div>
 
                             <div class="mt-6">
                                 <button type="button" id="createCertificateButton"
@@ -163,6 +235,130 @@
                         color: '#fff'
                     });
                 }
+            });
+
+            // Members dropdown functionality
+            const membersSelect = document.getElementById('members-select');
+            const membersSearch = document.getElementById('members-search');
+            const membersOptions = document.getElementById('members-options');
+            const selectedMembers = document.getElementById('selected-members');
+            const selectAll = document.getElementById('select-all-members');
+            const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+            const sectionFilter = document.getElementById('section-filter');
+            
+            // Initialize selected members display
+            updateSelectedMembers();
+            
+            // Section filter functionality
+            sectionFilter.addEventListener('change', function() {
+                const selectedSection = this.value;
+                const memberOptions = document.querySelectorAll('.member-option');
+                
+                memberOptions.forEach(option => {
+                    if (selectedSection === 'all' || option.dataset.section === selectedSection) {
+                        option.style.display = 'flex';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+                
+                // Update select all checkbox state for visible options
+                updateSelectAllState();
+            });
+
+            // Update select all checkbox based on visible options
+            function updateSelectAllState() {
+                const visibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox');
+                const checkedVisibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox:checked');
+                
+                selectAll.checked = visibleCheckboxes.length > 0 && 
+                                visibleCheckboxes.length === checkedVisibleCheckboxes.length;
+            }
+
+            // Toggle dropdown on search input focus
+            membersSearch.addEventListener('focus', () => {
+                membersOptions.classList.remove('hidden');
+            });
+            
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#members-dropdown')) {
+                    membersOptions.classList.add('hidden');
+                }
+            });
+            
+            // Filter members based on search input
+            membersSearch.addEventListener('input', () => {
+                const searchTerm = membersSearch.value.toLowerCase();
+                document.querySelectorAll('.member-option').forEach(option => {
+                    const label = option.querySelector('label').textContent.toLowerCase();
+                    option.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+                });
+                
+                setTimeout(updateSelectAllState, 100);
+            });
+            
+            // Update selected members and hidden select
+            function updateSelectedMembers() {
+                // Clear current selections
+                selectedMembers.innerHTML = '';
+                Array.from(membersSelect.options).forEach(option => {
+                    option.selected = false;
+                });
+                
+                // Add selected members
+                document.querySelectorAll('.member-checkbox:checked').forEach(checkbox => {
+                    const memberId = checkbox.value;
+                    const memberName = checkbox.nextElementSibling.textContent;
+                    
+                    // Update hidden select
+                    const option = membersSelect.querySelector(`option[value="${memberId}"]`);
+                    if (option) option.selected = true;
+                    
+                    // Add to selected members display
+                    const badge = document.createElement('div');
+                    badge.className = 'bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded flex items-center';
+                    badge.innerHTML = `
+                        ${memberName}
+                        <button type="button" class="ml-1 text-blue-500 hover:text-blue-700" data-value="${memberId}">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    `;
+                    selectedMembers.appendChild(badge);
+                    
+                    // Add event to remove button
+                    badge.querySelector('button').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const checkboxToUncheck = document.querySelector(`.member-checkbox[value="${memberId}"]`);
+                        if (checkboxToUncheck) {
+                            checkboxToUncheck.checked = false;
+                            updateSelectedMembers();
+                        }
+                    });
+                });
+                
+                // Update select all checkbox
+                selectAll.checked = document.querySelectorAll('.member-checkbox:checked').length === memberCheckboxes.length;
+            }
+            
+            // Handle individual member selection
+            memberCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateSelectedMembers();
+                    updateSelectAllState();
+                });
+            });
+
+            
+            // Handle select all functionality
+            selectAll.addEventListener('change', () => {
+                const visibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox');
+                visibleCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAll.checked;
+                });
+                updateSelectedMembers();
             });
 
             $('#createCertificateButton').click(function(e) {
@@ -311,7 +507,7 @@
                 }
             }
 
-            // Initialize on page load - FIXED: This runs when page loads
+            // Initialize on page load
             document.addEventListener('DOMContentLoaded', function() {
                 const titleInput = document.getElementById('title');
                 if (titleInput) {

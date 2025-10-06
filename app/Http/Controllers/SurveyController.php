@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Survey;
 use App\Models\SurveyQuestion;
 use App\Models\Member;
+use App\Models\Section;
 use App\Models\SurveyResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SurveyController extends Controller implements HasMiddleware
 {
@@ -101,9 +105,49 @@ class SurveyController extends Controller implements HasMiddleware
 
     public function create()
     {
-        $members = Member::all();
-        return view('surveys.create', compact('members'));
+        try {
+            $user = auth()->user();
+            
+            // Get members based on user's bureau/section access
+            $query = Member::with(['section']);
+            
+            if (!$user->can('view all members')) {
+                $sectionIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNotNull('section_id')
+                    ->pluck('section_id');
+                
+                $bureauIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNull('section_id')
+                    ->pluck('bureau_id');
+                
+                $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                
+                $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                
+                $query->whereIn('section_id', $allSectionIds);
+            }
+
+            $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+            
+            // Get sections for filter dropdown
+            $sectionsQuery = Section::with('bureau');
+            if (!$user->can('view all members')) {
+                $sectionsQuery->whereIn('id', $allSectionIds);
+            }
+            $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+
+            return view('surveys.create', compact('members', 'sections'));
+
+        } catch (\Exception $e) {
+            Log::error('Survey create form error: ' . $e->getMessage());
+            return redirect()->route('surveys.index')
+                ->with('error', 'Failed to load survey creation form. Please try again.');
+        }
     }
+
+
 
     public function store(Request $request)
     {
@@ -157,9 +201,52 @@ class SurveyController extends Controller implements HasMiddleware
 
     public function edit($id)
     {
-        $survey = Survey::with(['questions', 'members'])->findOrFail($id);
-        $members = Member::all();
-        return view('surveys.edit', compact('survey', 'members'));
+        try {
+            $user = auth()->user();
+            $survey = Survey::with(['questions', 'members:id'])->findOrFail($id);
+            
+            // Get members based on user's bureau/section access (same logic as create method)
+            $query = Member::with(['section']);
+            
+            if (!$user->can('view all members')) {
+                $sectionIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNotNull('section_id')
+                    ->pluck('section_id');
+                
+                $bureauIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNull('section_id')
+                    ->pluck('bureau_id');
+                
+                $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                
+                $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                
+                $query->whereIn('section_id', $allSectionIds);
+            }
+
+            $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+            
+            // Get sections for filter dropdown
+            $sectionsQuery = Section::with('bureau');
+            if (!$user->can('view all members')) {
+                $sectionsQuery->whereIn('id', $allSectionIds);
+            }
+            $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+            
+            return view('surveys.edit', compact('survey', 'members', 'sections'));
+
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Survey not found for editing: {$id}");
+            return redirect()->route('surveys.index')
+                ->with('error', 'Survey not found.');
+
+        } catch (\Exception $e) {
+            Log::error('Survey edit form error: ' . $e->getMessage());
+            return redirect()->route('surveys.index')
+                ->with('error', 'Failed to load survey edit form. Please try again.');
+        }
     }
 
     public function update(Request $request, $id)

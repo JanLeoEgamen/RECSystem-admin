@@ -6,9 +6,12 @@ use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\Member;
 use App\Models\QuizResponse;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -124,9 +127,97 @@ class QuizController extends Controller implements HasMiddleware
 
     public function create()
     {
-        $members = Member::all();
-        return view('quizzes.create', compact('members'));
+        try {
+            $user = auth()->user();
+            
+            // Get members based on user's bureau/section access
+            $query = Member::with(['section']);
+            
+            if (!$user->can('view all members')) {
+                $sectionIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNotNull('section_id')
+                    ->pluck('section_id');
+                
+                $bureauIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNull('section_id')
+                    ->pluck('bureau_id');
+                
+                $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                
+                $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                
+                $query->whereIn('section_id', $allSectionIds);
+            }
+
+            $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+            
+            // Get sections for filter dropdown
+            $sectionsQuery = Section::with('bureau');
+            if (!$user->can('view all members')) {
+                $sectionsQuery->whereIn('id', $allSectionIds);
+            }
+            $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+
+            return view('quizzes.create', compact('members', 'sections'));
+
+        } catch (\Exception $e) {
+            Log::error('Quiz create form error: ' . $e->getMessage());
+            return redirect()->route('quizzes.index')
+                ->with('error', 'Failed to load quiz creation form. Please try again.');
+        }
     }
+
+    public function edit($id)
+    {
+    try {
+        $user = auth()->user();
+        $quiz = Quiz::with(['questions', 'members:id'])->findOrFail($id);
+        
+        // Get members based on user's bureau/section access (same logic as create method)
+        $query = Member::with(['section']);
+        
+        if (!$user->can('view all members')) {
+            $sectionIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNotNull('section_id')
+                ->pluck('section_id');
+            
+            $bureauIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNull('section_id')
+                ->pluck('bureau_id');
+            
+            $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+            
+            $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+            
+            $query->whereIn('section_id', $allSectionIds);
+        }
+
+        $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+        
+        // Get sections for filter dropdown
+        $sectionsQuery = Section::with('bureau');
+        if (!$user->can('view all members')) {
+            $sectionsQuery->whereIn('id', $allSectionIds);
+        }
+        $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+        
+        return view('quizzes.edit', compact('quiz', 'members', 'sections'));
+
+    } catch (ModelNotFoundException $e) {
+        Log::warning("Quiz not found for editing: {$id}");
+        return redirect()->route('quizzes.index')
+            ->with('error', 'Quiz not found.');
+
+    } catch (\Exception $e) {
+        Log::error('Quiz edit form error: ' . $e->getMessage());
+        return redirect()->route('quizzes.index')
+            ->with('error', 'Failed to load quiz edit form. Please try again.');
+    }
+}
 
     public function store(Request $request)
     {
@@ -190,12 +281,7 @@ class QuizController extends Controller implements HasMiddleware
             ->with('success', 'Quiz created successfully');
     }
 
-    public function edit($id)
-    {
-        $quiz = Quiz::with(['questions', 'members'])->findOrFail($id);
-        $members = Member::all();
-        return view('quizzes.edit', compact('quiz', 'members'));
-    }
+
 
     public function update(Request $request, $id)
     {

@@ -71,6 +71,8 @@
 
             <!-- Enhanced Stats Cards Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                @can('view members')
+                
                 <!-- Total Members Card -->
                 <div class="animate-slide-in delay-100">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-green-100 dark:border-gray-700 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-2 group">
@@ -157,7 +159,9 @@
                         </div>
                     </div>
                 </div>
-
+                @endcan
+                @can('view applicants')
+                    
                 <!-- Total Applicants Card -->
                 <div class="animate-slide-in delay-400">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-orange-100 dark:border-gray-700 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:-translate-y-2 group">
@@ -186,6 +190,7 @@
                         </div>
                     </div>
                 </div>
+                @endcan
             </div>
 
             <!-- Organizational Structure Section -->
@@ -201,48 +206,75 @@
                         <p class="text-blue-100 mt-1">Bureaus and their sections overview</p>
                     </div>
                     <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            @foreach($bureausWithSections as $index => $bureau)
-                            <div>
-                                <div class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-5 border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:shadow-md hover:scale-105 group">
-                                    <div class="flex items-center mb-4">
-                                        <div class="bg-[#101966] rounded-lg p-3 group-hover:bg-blue-600 transition-colors duration-300">
-                                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                            </svg>
-                                        </div>
-                                        <div class="ml-4">
-                                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-[#101966] dark:group-hover:text-blue-400 transition-colors duration-300">
-                                                {{ $bureau->bureau_name }}
-                                            </h4>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $bureau->sections_count }} {{ Str::plural('section', $bureau->sections_count) }}
-                                            </p>
-                                        </div>
-                                    </div>
+                        @if($bureausWithSections->isEmpty())
+                            <!-- Empty State -->
+                            <div class="text-center py-12">
+                                <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                                    <svg class="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Organizational Data Available</h4>
+                                <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                                    There are no bureaus or sections to display based on your current access permissions.
+                                </p>
+                            </div>
+                        @else
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                @foreach($bureausWithSections as $bureau)
+                                    @php
+                                        $hasSections = $bureau->sections && $bureau->sections->count() > 0;
+                                        $sectionsCount = $hasSections ? $bureau->sections->count() : 0;
+                                    @endphp
                                     
-                                    <div class="space-y-2">
-                                        @foreach($bureau->sections as $section)
-                                        <div class="flex items-center p-2 bg-white dark:bg-gray-800 rounded-lg transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 group/section">
-                                            <div class="mr-3 group-hover/section:scale-110 transition-transform duration-200">
-                                                <svg class="w-4 h-4 text-blue-400 group-hover/section:text-[#101966] transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    <div class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-5 border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:shadow-md group">
+                                        <div class="flex items-center mb-4">
+                                            <div class="bg-[#101966] rounded-lg p-3 group-hover:bg-blue-600 transition-colors duration-300">
+                                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                                 </svg>
                                             </div>
-                                            <span class="text-sm text-gray-700 dark:text-gray-300 group-hover/section:text-[#101966] dark:group-hover/section:text-blue-400 transition-colors duration-200">
-                                                {{ $section->section_name }}
-                                            </span>
+                                            <div class="ml-4 flex-1 min-w-0">
+                                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-[#101966] dark:group-hover:text-blue-400 transition-colors duration-300 truncate">
+                                                    {{ $bureau->bureau_name }}
+                                                </h4>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {{ $sectionsCount }} {{ Str::plural('section', $sectionsCount) }}
+                                                </p>
+                                            </div>
                                         </div>
-                                        @endforeach
+                                        
+                                        @if($hasSections)
+                                            <div class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                                                @foreach($bureau->sections as $section)
+                                                    <div class="flex items-center p-2 bg-white dark:bg-gray-800 rounded-lg transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 group/section">
+                                                        <div class="mr-3 group-hover/section:scale-110 transition-transform duration-200 flex-shrink-0">
+                                                            <svg class="w-4 h-4 text-blue-400 group-hover/section:text-[#101966] transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                                            </svg>
+                                                        </div>
+                                                        <span class="text-sm text-gray-700 dark:text-gray-300 group-hover/section:text-[#101966] dark:group-hover/section:text-blue-400 transition-colors duration-200 truncate">
+                                                            {{ $section->section_name }}
+                                                        </span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <!-- No sections in this bureau -->
+                                            <div class="text-center py-4">
+                                                <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">No sections available</p>
+                                            </div>
+                                        @endif
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
-                            @endforeach
-                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
-
             <!-- Reports Access Section -->
             <div>
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">

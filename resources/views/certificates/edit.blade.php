@@ -78,6 +78,97 @@
                                 </svg>Add Signatory
                             </button>
 
+                            <span class="text-sm font-medium mt-6 block">Assign to Members</span>
+
+                            <!-- Add Section Filter Dropdown -->
+                            <div class="my-3">
+                                <label for="section-filter" class="block text-sm font-medium mb-2">Filter by Section:</label>
+                                <select id="section-filter" class="border-gray-300 shadow-sm rounded-lg w-full md:w-1/3">
+                                    <option value="all">All Sections</option>
+                                    @foreach($sections as $section)
+                                        <option value="section-{{ $section->id }}">
+                                            {{ $section->section_name }} 
+                                            @if($section->bureau)
+                                                ({{ $section->bureau->bureau_name }})
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="my-3">
+                                <div class="relative">
+                                    <select name="members[]" id="members-select" multiple class="hidden">
+                                        @foreach($members as $member)
+                                            <option value="{{ $member->id }}" {{ in_array($member->id, old('members', $certificate->members->pluck('id')->toArray())) ? 'selected' : '' }}
+                                                data-section="section-{{ $member->section_id }}">
+                                                {{ $member->first_name }} {{ $member->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div id="members-dropdown" class="w-full mt-1">
+                                        <div class="relative">
+                                            <input type="text" id="members-search" placeholder="Search members..." 
+                                                class="w-full border-gray-300 shadow-sm rounded-lg pl-10 pr-4 py-2">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div id="members-options" class="mt-1 max-h-60 overflow-y-auto border border-gray-300 rounded-lg hidden">
+                                            <div class="p-2">
+                                                <div class="flex items-center mb-2">
+                                                    <input type="checkbox" id="select-all-members" class="rounded mr-2">
+                                                    <label for="select-all-members" class="text-sm">Select All Visible Members</label>
+                                                </div>
+                                                <div class="space-y-1" id="members-options-container">
+                                                    @foreach($members as $member)
+                                                        <div class="flex items-center member-option" 
+                                                             data-value="{{ $member->id }}" 
+                                                             data-section="section-{{ $member->section_id }}">
+                                                            <input type="checkbox" id="member-{{ $member->id }}" 
+                                                                value="{{ $member->id }}" class="rounded mr-2 member-checkbox"
+                                                                {{ in_array($member->id, old('members', $certificate->members->pluck('id')->toArray())) ? 'checked' : '' }}>
+                                                            <label for="member-{{ $member->id }}" class="text-sm">
+                                                                {{ $member->first_name }} {{ $member->last_name }}
+                                                                @if($member->section)
+                                                                    <span class="text-xs text-gray-500 ml-2">
+                                                                        ({{ $member->section->section_name }})
+                                                                    </span>
+                                                                @endif
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="selected-members" class="mt-2 flex flex-wrap gap-2">
+                                            @foreach($members as $member)
+                                                @if(in_array($member->id, old('members', $certificate->members->pluck('id')->toArray())))
+                                                    <div class="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded flex items-center" data-value="{{ $member->id }}">
+                                                        {{ $member->first_name }} {{ $member->last_name }}
+                                                        @if($member->section)
+                                                            <span class="text-xs text-blue-600 ml-1">
+                                                                ({{ $member->section->section_name }})
+                                                            </span>
+                                                        @endif
+                                                        <button type="button" class="ml-1 text-blue-500 hover:text-blue-700 remove-member" data-value="{{ $member->id }}">
+                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                @error('members')
+                                <p class="text-red-400 font-medium"> {{ $message }} </p>
+                                @enderror
+                            </div>
+
                             <div class="mt-6">
                                 <button type="button" id="updateCertificateButton"
                                     class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
@@ -99,11 +190,10 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <x-slot name="script">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             CKEDITOR.replace('content');
 
@@ -169,6 +259,146 @@
                 if ($('.signatory-row').length >= MAX_SIGNATORIES) {
                     $('#add-signatory').hide();
                 }
+            });
+
+            // Members dropdown functionality
+            const membersSelect = document.getElementById('members-select');
+            const membersSearch = document.getElementById('members-search');
+            const membersOptions = document.getElementById('members-options');
+            const selectedMembers = document.getElementById('selected-members');
+            const selectAll = document.getElementById('select-all-members');
+            const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+            const sectionFilter = document.getElementById('section-filter');
+            
+            // Initialize selected members display
+            updateSelectedMembers();
+            
+            // Toggle dropdown on search input focus
+            membersSearch.addEventListener('focus', () => {
+                membersOptions.classList.remove('hidden');
+            });
+            
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#members-dropdown')) {
+                    membersOptions.classList.add('hidden');
+                }
+            });
+            
+            // Filter members based on search input
+            membersSearch.addEventListener('input', () => {
+                const searchTerm = membersSearch.value.toLowerCase();
+                document.querySelectorAll('.member-option').forEach(option => {
+                    const label = option.querySelector('label').textContent.toLowerCase();
+                    const isSectionMatch = sectionFilter.value === 'all' || option.dataset.section === sectionFilter.value;
+                    option.style.display = label.includes(searchTerm) && isSectionMatch ? 'flex' : 'none';
+                });
+                updateSelectAllState();
+            });
+            
+            // Section filter functionality
+            sectionFilter.addEventListener('change', function() {
+                const selectedSection = this.value;
+                const searchTerm = membersSearch.value.toLowerCase();
+                
+                document.querySelectorAll('.member-option').forEach(option => {
+                    const label = option.querySelector('label').textContent.toLowerCase();
+                    const isSectionMatch = selectedSection === 'all' || option.dataset.section === selectedSection;
+                    const isSearchMatch = label.includes(searchTerm);
+                    
+                    option.style.display = isSectionMatch && isSearchMatch ? 'flex' : 'none';
+                });
+                
+                updateSelectAllState();
+            });
+            
+            // Update selected members and hidden select
+            function updateSelectedMembers() {
+                // Clear current selections in hidden select
+                Array.from(membersSelect.options).forEach(option => {
+                    option.selected = false;
+                });
+                
+                // Update hidden select with currently selected members
+                document.querySelectorAll('.member-checkbox:checked').forEach(checkbox => {
+                    const memberId = checkbox.value;
+                    const option = membersSelect.querySelector(`option[value="${memberId}"]`);
+                    if (option) option.selected = true;
+                });
+                
+                // Update selected members display
+                const selectedMembersContainer = document.getElementById('selected-members');
+                selectedMembersContainer.innerHTML = '';
+                
+                document.querySelectorAll('.member-checkbox:checked').forEach(checkbox => {
+                    const memberId = checkbox.value;
+                    const memberName = checkbox.nextElementSibling.textContent.split(' (')[0]; // Remove section from display
+                    const sectionInfo = checkbox.closest('.member-option').querySelector('span')?.textContent || '';
+                    
+                    const badge = document.createElement('div');
+                    badge.className = 'bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded flex items-center';
+                    badge.innerHTML = `
+                        ${memberName} ${sectionInfo}
+                        <button type="button" class="ml-1 text-blue-500 hover:text-blue-700 remove-member" data-value="${memberId}">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    `;
+                    selectedMembersContainer.appendChild(badge);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-member').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const memberId = this.getAttribute('data-value');
+                        const checkbox = document.querySelector(`.member-checkbox[value="${memberId}"]`);
+                        if (checkbox) {
+                            checkbox.checked = false;
+                            updateSelectedMembers();
+                            updateSelectAllState();
+                        }
+                    });
+                });
+            }
+            
+            // Update select all checkbox based on visible options
+            function updateSelectAllState() {
+                const visibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox');
+                const checkedVisibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox:checked');
+                
+                selectAll.checked = visibleCheckboxes.length > 0 && 
+                                   visibleCheckboxes.length === checkedVisibleCheckboxes.length;
+            }
+            
+            // Handle individual member selection
+            memberCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateSelectedMembers();
+                    updateSelectAllState();
+                });
+            });
+            
+            // Handle select all functionality (only visible members)
+            selectAll.addEventListener('change', () => {
+                const visibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox');
+                visibleCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAll.checked;
+                });
+                updateSelectedMembers();
+            });
+
+            // Add event listeners to existing remove buttons
+            document.querySelectorAll('#selected-members .remove-member').forEach(button => {
+                button.addEventListener('click', function() {
+                    const memberId = this.getAttribute('data-value');
+                    const checkbox = document.querySelector(`.member-checkbox[value="${memberId}"]`);
+                    if (checkbox) {
+                        checkbox.checked = false;
+                        updateSelectedMembers();
+                        updateSelectAllState();
+                    }
+                });
             });
 
             $('#updateCertificateButton').click(function(e) {
@@ -294,50 +524,50 @@
             @endif
 
             function validateWordCount(input) {
-    const text = input.value.trim();
-    const wordCount = text === '' ? 0 : text.split(/\s+/).length;
-    const wordCountElement = document.getElementById('word-count');
-    
-    wordCountElement.textContent = `Words: ${wordCount}/5`;
-    
-    if (wordCount > 5) {
-        wordCountElement.classList.add('text-red-500');
-        wordCountElement.classList.remove('text-gray-500');
-    } else {
-        wordCountElement.classList.remove('text-red-500');
-        wordCountElement.classList.add('text-gray-500');
-    }
-    
-    // Optional: Prevent typing beyond 5 words
-    if (wordCount > 5) {
-        const words = text.split(/\s+/).slice(0, 5);
-        input.value = words.join(' ');
-        // Recalculate after truncation
-        validateWordCount(input);
-    }
-}
+                const text = input.value.trim();
+                const wordCount = text === '' ? 0 : text.split(/\s+/).length;
+                const wordCountElement = document.getElementById('word-count');
+                
+                wordCountElement.textContent = `Words: ${wordCount}/5`;
+                
+                if (wordCount > 5) {
+                    wordCountElement.classList.add('text-red-500');
+                    wordCountElement.classList.remove('text-gray-500');
+                } else {
+                    wordCountElement.classList.remove('text-red-500');
+                    wordCountElement.classList.add('text-gray-500');
+                }
+                
+                // Optional: Prevent typing beyond 5 words
+                if (wordCount > 5) {
+                    const words = text.split(/\s+/).slice(0, 5);
+                    input.value = words.join(' ');
+                    // Recalculate after truncation
+                    validateWordCount(input);
+                }
+            }
 
-// Initialize on page load - FIXED: This runs when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    const titleInput = document.getElementById('title');
-    if (titleInput) {
-        // Trigger validation for pre-populated value
-        validateWordCount(titleInput);
-        
-        // Also validate on form submit
-        const form = titleInput.closest('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const currentWordCount = titleInput.value.trim().split(/\s+/).length;
-                if (currentWordCount > 5) {
-                    e.preventDefault();
-                    alert('Title cannot exceed 5 words. Please shorten your title.');
-                    titleInput.focus();
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const titleInput = document.getElementById('title');
+                if (titleInput) {
+                    // Trigger validation for pre-populated value
+                    validateWordCount(titleInput);
+                    
+                    // Also validate on form submit
+                    const form = titleInput.closest('form');
+                    if (form) {
+                        form.addEventListener('submit', function(e) {
+                            const currentWordCount = titleInput.value.trim().split(/\s+/).length;
+                            if (currentWordCount > 5) {
+                                e.preventDefault();
+                                alert('Title cannot exceed 5 words. Please shorten your title.');
+                                titleInput.focus();
+                            }
+                        });
+                    }
                 }
             });
-        }
-    }
-});
         </script>
     </x-slot>
 </x-app-layout>

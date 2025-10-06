@@ -13,10 +13,12 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CertificateMail;
+use App\Models\Section;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\DB;
 
 class CertificateController extends Controller implements HasMiddleware
 {
@@ -31,78 +33,166 @@ class CertificateController extends Controller implements HasMiddleware
     }
 
     public function index(Request $request)
-{
-    if ($request->ajax()) {
-        $query = Certificate::with(['user', 'signatories']);
+    {
+        if ($request->ajax()) {
+            $query = Certificate::with(['user', 'signatories']);
 
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%$search%")
-                  ->orWhere('content', 'like', "%$search%")
-                  ->orWhereHas('user', function($q) use ($search) {
-                      $q->where('first_name', 'like', "%$search%")
-                        ->orWhere('last_name', 'like', "%$search%");
-                  })
-                  ->orWhereHas('signatories', function($q) use ($search) {
-                      $q->where('name', 'like', "%$search%");
-                  });
-            });
-        }
-
-        if ($request->has('sort') && $request->has('direction')) {
-            $sort = $request->sort;
-            $direction = $request->direction;
-            
-            switch ($sort) {
-                case 'title':
-                    $query->orderBy('title', $direction);
-                    break;
-                    
-                case 'created':
-                    $query->orderBy('created_at', $direction);
-                    break;
-                    
-                default:
-                    $query->orderBy('created_at', 'desc');
-                    break;
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%$search%")
+                    ->orWhere('content', 'like', "%$search%")
+                    ->orWhereHas('user', function($q) use ($search) {
+                        $q->where('first_name', 'like', "%$search%")
+                            ->orWhere('last_name', 'like', "%$search%");
+                    })
+                    ->orWhereHas('signatories', function($q) use ($search) {
+                        $q->where('name', 'like', "%$search%");
+                    });
+                });
             }
-        } else {
-            $query->orderBy('created_at', 'desc');
+
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'title':
+                        $query->orderBy('title', $direction);
+                        break;
+                        
+                    case 'created':
+                        $query->orderBy('created_at', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $certificates = $query->paginate($perPage);
+
+            $transformedCertificates = $certificates->getCollection()->map(function ($certificate) {
+                return [
+                    'id' => $certificate->id,
+                    'title' => $certificate->title,
+                    'content' => Str::limit(strip_tags($certificate->content), 50),
+                    'signatories' => $certificate->signatories->pluck('name')->join(', '),
+                    'author' => $certificate->user->first_name . ' ' . $certificate->user->last_name,
+                    'created_at' => $certificate->created_at->format('d M, Y'),
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedCertificates,
+                'current_page' => $certificates->currentPage(),
+                'last_page' => $certificates->lastPage(),
+                'from' => $certificates->firstItem(),
+                'to' => $certificates->lastItem(),
+                'total' => $certificates->total(),
+            ]);
         }
-
-        $perPage = $request->input('perPage', 10);
-        $certificates = $query->paginate($perPage);
-
-        $transformedCertificates = $certificates->getCollection()->map(function ($certificate) {
-            return [
-                'id' => $certificate->id,
-                'title' => $certificate->title,
-                'content' => Str::limit(strip_tags($certificate->content), 50),
-                'signatories' => $certificate->signatories->pluck('name')->join(', '),
-                'author' => $certificate->user->first_name . ' ' . $certificate->user->last_name,
-                'created_at' => $certificate->created_at->format('d M, Y'),
-            ];
-        });
-
-        return response()->json([
-            'data' => $transformedCertificates,
-            'current_page' => $certificates->currentPage(),
-            'last_page' => $certificates->lastPage(),
-            'from' => $certificates->firstItem(),
-            'to' => $certificates->lastItem(),
-            'total' => $certificates->total(),
-        ]);
+        
+        return view('certificates.list');
     }
-    
-    return view('certificates.list');
-}
 
     public function create()
     {
-        return view('certificates.create');
+        try {
+            $user = auth()->user();
+            
+            // Get members based on user's bureau/section access
+            $query = Member::with(['section']);
+            
+            if (!$user->can('view all members')) {
+                $sectionIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNotNull('section_id')
+                    ->pluck('section_id');
+                
+                $bureauIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNull('section_id')
+                    ->pluck('bureau_id');
+                
+                $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                
+                $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                
+                $query->whereIn('section_id', $allSectionIds);
+            }
+
+            $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+            
+            // Get sections for filter dropdown
+            $sectionsQuery = Section::with('bureau');
+            if (!$user->can('view all members')) {
+                $sectionsQuery->whereIn('id', $allSectionIds);
+            }
+            $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+
+            return view('certificates.create', compact('members', 'sections'));
+
+        } catch (\Exception $e) {
+            Log::error('Certificate create form error: ' . $e->getMessage());
+            return redirect()->route('certificates.index')
+                ->with('error', 'Failed to load certificate creation form. Please try again.');
+        }
     }
 
+    public function edit(string $id)
+    {
+        try {
+            $user = auth()->user();
+            $certificate = Certificate::with(['signatories', 'members:id'])->findOrFail($id);
+            
+            // Get members based on user's bureau/section access
+            $query = Member::with(['section']);
+            
+            if (!$user->can('view all members')) {
+                $sectionIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNotNull('section_id')
+                    ->pluck('section_id');
+                
+                $bureauIds = DB::table('user_bureau_section')
+                    ->where('user_id', $user->id)
+                    ->whereNull('section_id')
+                    ->pluck('bureau_id');
+                
+                $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                
+                $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                
+                $query->whereIn('section_id', $allSectionIds);
+            }
+
+            $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+            
+            // Get sections for filter dropdown
+            $sectionsQuery = Section::with('bureau');
+            if (!$user->can('view all members')) {
+                $sectionsQuery->whereIn('id', $allSectionIds);
+            }
+            $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+
+            return view('certificates.edit', compact('certificate', 'members', 'sections'));
+
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Certificate not found for editing: {$id}");
+            return redirect()->route('certificates.index')
+                ->with('error', 'Certificate not found.');
+
+        } catch (\Exception $e) {
+            Log::error("Certificate edit form error for ID {$id}: " . $e->getMessage());
+            return redirect()->route('certificates.index')
+                ->with('error', 'Failed to load certificate edit form. Please try again.');
+        }
+    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -138,13 +228,7 @@ class CertificateController extends Controller implements HasMiddleware
             ->with('success', 'Certificate template created successfully');
     }
 
-    public function edit(string $id)
-    {
-        $certificate = Certificate::with('signatories')->findOrFail($id);
-        return view('certificates.edit', [
-            'certificate' => $certificate
-        ]);
-    }
+
 
     public function update(Request $request, string $id)
     {

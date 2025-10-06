@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Announcement;
 use App\Models\Member;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -85,17 +87,49 @@ class AnnouncementController extends Controller implements HasMiddleware
         }
     }
 
-    public function create()
-    {
-        try {
-            $members = Member::all(['id', 'first_name', 'last_name']);
-            return view('announcements.create', compact('members'));
-        } catch (\Exception $e) {
-            Log::error('Announcement create form error: ' . $e->getMessage());
-            return redirect()->route('announcements.index')
-                ->with('error', 'Failed to load announcement creation form. Please try again.');
+public function create()
+{
+    try {
+        $user = auth()->user();
+        
+        // Get members based on user's bureau/section access
+        $query = Member::with(['section']);
+        
+        if (!$user->can('view all members')) {
+            $sectionIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNotNull('section_id')
+                ->pluck('section_id');
+            
+            $bureauIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNull('section_id')
+                ->pluck('bureau_id');
+            
+            $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+            
+            $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+            
+            $query->whereIn('section_id', $allSectionIds);
         }
+
+        $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+        
+        // Get sections for filter dropdown
+        $sectionsQuery = Section::with('bureau');
+        if (!$user->can('view all members')) {
+            $sectionsQuery->whereIn('id', $allSectionIds);
+        }
+        $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+
+        return view('announcements.create', compact('members', 'sections'));
+
+    } catch (\Exception $e) {
+        Log::error('Announcement create form error: ' . $e->getMessage());
+        return redirect()->route('announcements.index')
+            ->with('error', 'Failed to load announcement creation form. Please try again.');
     }
+}
 
     public function store(Request $request)
     {
@@ -125,25 +159,55 @@ class AnnouncementController extends Controller implements HasMiddleware
         }
     }
 
-    public function edit($id)
-    {
-        try {
-            $announcement = Announcement::with('members:id')->findOrFail($id);
-            $members = Member::all(['id', 'first_name', 'last_name']);
+public function edit($id)
+{
+    try {
+        $user = auth()->user();
+        $announcement = Announcement::with('members:id')->findOrFail($id);
+        
+        // Get members based on user's bureau/section access (same logic as create method)
+        $query = Member::with(['section']);
+        
+        if (!$user->can('view all members')) {
+            $sectionIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNotNull('section_id')
+                ->pluck('section_id');
             
-            return view('announcements.edit', compact('announcement', 'members'));
-
-        } catch (ModelNotFoundException $e) {
-            Log::warning("Announcement not found for editing: {$id}");
-            return redirect()->route('announcements.index')
-                ->with('error', 'Announcement not found.');
-
-        } catch (\Exception $e) {
-            Log::error('Announcement edit form error: ' . $e->getMessage());
-            return redirect()->route('announcements.index')
-                ->with('error', 'Failed to load announcement edit form. Please try again.');
+            $bureauIds = DB::table('user_bureau_section')
+                ->where('user_id', $user->id)
+                ->whereNull('section_id')
+                ->pluck('bureau_id');
+            
+            $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+            
+            $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+            
+            $query->whereIn('section_id', $allSectionIds);
         }
+
+        $members = $query->get(['id', 'first_name', 'last_name', 'section_id']);
+        
+        // Get sections for filter dropdown
+        $sectionsQuery = Section::with('bureau');
+        if (!$user->can('view all members')) {
+            $sectionsQuery->whereIn('id', $allSectionIds);
+        }
+        $sections = $sectionsQuery->get(['id', 'section_name', 'bureau_id']);
+        
+        return view('announcements.edit', compact('announcement', 'members', 'sections'));
+
+    } catch (ModelNotFoundException $e) {
+        Log::warning("Announcement not found for editing: {$id}");
+        return redirect()->route('announcements.index')
+            ->with('error', 'Announcement not found.');
+
+    } catch (\Exception $e) {
+        Log::error('Announcement edit form error: ' . $e->getMessage());
+        return redirect()->route('announcements.index')
+            ->with('error', 'Failed to load announcement edit form. Please try again.');
     }
+}
 
     public function update(Request $request, $id)
     {

@@ -62,11 +62,29 @@
                             </div>
 
                             <span class="text-sm font-medium mt-6 block">Assign to Members</span>
+
+                            <!-- Add Section Filter Dropdown -->
+                            <div class="my-3">
+                                <label for="section-filter" class="block text-sm font-medium mb-2">Filter by Section:</label>
+                                <select id="section-filter" class="border-gray-300 shadow-sm rounded-lg w-full md:w-1/3">
+                                    <option value="all">All Sections</option>
+                                    @foreach($sections as $section)
+                                        <option value="section-{{ $section->id }}">
+                                            {{ $section->section_name }} 
+                                            @if($section->bureau)
+                                                ({{ $section->bureau->bureau_name }})
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div class="my-3">
                                 <div class="relative">
                                     <select name="members[]" id="members-select" multiple class="hidden">
                                         @foreach($members as $member)
-                                            <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}>
+                                            <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}
+                                                data-section="section-{{ $member->section_id }}">
                                                 {{ $member->first_name }} {{ $member->last_name }}
                                             </option>
                                         @endforeach
@@ -85,15 +103,23 @@
                                             <div class="p-2">
                                                 <div class="flex items-center mb-2">
                                                     <input type="checkbox" id="select-all-members" class="rounded mr-2">
-                                                    <label for="select-all-members" class="text-sm">Select All Members</label>
+                                                    <label for="select-all-members" class="text-sm">Select All Visible Members</label>
                                                 </div>
-                                                <div class="space-y-1">
+                                                <div class="space-y-1" id="members-options-container">
                                                     @foreach($members as $member)
-                                                        <div class="flex items-center member-option" data-value="{{ $member->id }}">
+                                                        <div class="flex items-center member-option" 
+                                                            data-value="{{ $member->id }}" 
+                                                            data-section="section-{{ $member->section_id }}">
                                                             <input type="checkbox" id="member-{{ $member->id }}" 
-                                                                value="{{ $member->id }}" class="rounded mr-2 member-checkbox">
+                                                                value="{{ $member->id }}" class="rounded mr-2 member-checkbox"
+                                                                {{ in_array($member->id, old('members', [])) ? 'checked' : '' }}>
                                                             <label for="member-{{ $member->id }}" class="text-sm">
                                                                 {{ $member->first_name }} {{ $member->last_name }}
+                                                                @if($member->section)
+                                                                    <span class="text-xs text-gray-500 ml-2">
+                                                                        ({{ $member->section->section_name }})
+                                                                    </span>
+                                                                @endif
                                                             </label>
                                                         </div>
                                                     @endforeach
@@ -262,7 +288,37 @@
                 const selectedMembers = document.getElementById('selected-members');
                 const selectAll = document.getElementById('select-all-members');
                 const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                const sectionFilter = document.getElementById('section-filter');
                 
+                // Initialize selected members display
+                updateSelectedMembers();
+                
+                // Section filter functionality
+                sectionFilter.addEventListener('change', function() {
+                    const selectedSection = this.value;
+                    const memberOptions = document.querySelectorAll('.member-option');
+                    
+                    memberOptions.forEach(option => {
+                        if (selectedSection === 'all' || option.dataset.section === selectedSection) {
+                            option.style.display = 'flex';
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+                    
+                    // Update select all checkbox state for visible options
+                    updateSelectAllState();
+                });
+
+                // Update select all checkbox based on visible options
+                function updateSelectAllState() {
+                    const visibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox');
+                    const checkedVisibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox:checked');
+                    
+                    selectAll.checked = visibleCheckboxes.length > 0 && 
+                                    visibleCheckboxes.length === checkedVisibleCheckboxes.length;
+                }
+
                 // Toggle dropdown on search input focus
                 membersSearch.addEventListener('focus', () => {
                     membersOptions.classList.remove('hidden');
@@ -282,6 +338,8 @@
                         const label = option.querySelector('label').textContent.toLowerCase();
                         option.style.display = label.includes(searchTerm) ? 'flex' : 'none';
                     });
+                    
+                    setTimeout(updateSelectAllState, 100);
                 });
                 
                 // Update selected members and hidden select
@@ -329,17 +387,19 @@
                     selectAll.checked = document.querySelectorAll('.member-checkbox:checked').length === memberCheckboxes.length;
                 }
                 
-                // Initialize selected members
-                updateSelectedMembers();
-                
                 // Handle individual member selection
                 memberCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateSelectedMembers);
+                    checkbox.addEventListener('change', function() {
+                        updateSelectedMembers();
+                        updateSelectAllState();
+                    });
                 });
+
                 
                 // Handle select all functionality
                 selectAll.addEventListener('change', () => {
-                    memberCheckboxes.forEach(checkbox => {
+                    const visibleCheckboxes = document.querySelectorAll('.member-option[style*="flex"] .member-checkbox');
+                    visibleCheckboxes.forEach(checkbox => {
                         checkbox.checked = selectAll.checked;
                     });
                     updateSelectedMembers();
