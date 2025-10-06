@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <h2 class="font-semibold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
-                Certificate Preview: {{ $certificate->title }}
+                Certificate Preview
             </h2>
 
             <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
@@ -80,6 +80,19 @@
                     </svg>
                     Edit Certificate
                 </a>
+
+                <a href="{{ route('certificates.index') }}" 
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0">
+
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Certificates
+                </a> 
             </div>
         </div>
     </x-slot>
@@ -88,13 +101,34 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="certificate-preview border-2 border-gray-200 p-8">
-                        @include('certificates.jcertificate', [
-                            'certificate' => $certificate,
-                            'member' => null,
-                            'issueDate' => now()->format('F j, Y'),
-                            'embedded' => true
-                        ])
+                    <!-- Mobile View Message -->
+                    <div class="block md:hidden">
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
+                                Desktop View Required
+                            </h3>
+                            <p class="text-blue-700 dark:text-blue-300 mb-4">
+                                To view the certificate preview, please use a desktop or switch to desktop site view for the best experience.
+                            </p>
+                            <p class="text-sm text-blue-600 dark:text-blue-400">
+                                The certificate preview is optimized for larger screens to ensure proper formatting and readability.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Desktop View Certificate Preview -->
+                    <div class="hidden md:block">
+                        <div class="certificate-preview border-2 border-gray-200 p-8">
+                            @include('certificates.jcertificate', [
+                                'certificate' => $certificate,
+                                'member' => null,
+                                'issueDate' => now()->format('F j, Y'),
+                                'embedded' => true
+                            ])
+                        </div>
                     </div>
                 </div>
             </div>

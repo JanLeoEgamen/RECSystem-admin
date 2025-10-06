@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\QuizCompletionConfirmation;
 
 class MemberQuizController extends Controller implements HasMiddleware
 {
@@ -161,7 +162,7 @@ class MemberQuizController extends Controller implements HasMiddleware
         
         /***** EMAIL CONFIRMATION *****/
         Mail::to($user->email)->send(new QuizCompletionConfirmation(
-            $user->name,
+            $user->name ?? $user->email ?? 'Member',
             $quiz->title,
             $totalScore,
             $quiz->questions->sum('points'),

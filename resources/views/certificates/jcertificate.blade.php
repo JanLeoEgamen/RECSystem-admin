@@ -351,9 +351,7 @@
             <div class="border-inner"></div>
             
             <div class="certificate-content">
-                <div class="batch-number">
-                    <p>BATCH NUMBER</p>
-                </div>
+                <br>
                 <div class="header-image">
                     <img src="{{ asset('images/rec.png') }}" alt="Header Image">
                 </div>

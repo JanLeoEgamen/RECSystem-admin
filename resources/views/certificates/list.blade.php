@@ -119,6 +119,9 @@
         </div>
     </div>
 
+    <!-- Dropdown Portal Container -->
+    <div id="dropdown-portal" style="position: fixed; top: 0; left: 0; z-index: 10000; pointer-events: none;"></div>
+
     <x-slot name="script">
         <style>
             .swal2-icon {
@@ -177,6 +180,22 @@
             .table-row-hover:hover td:first-child {
                 border-left: 4px solid #3b82f6;
                 padding-left: calc(1.5rem - 4px);
+            }
+
+            /* Dropdown menu styles */
+            .dropdown-menu {
+                position: absolute !important;
+                z-index: 9999 !important;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+            }
+
+            .dropdown-container {
+                position: relative;
+                z-index: 50;
+            }
+
+            .dropdown-container.active {
+                z-index: 9999 !important;
             }
         </style>
 
@@ -259,7 +278,7 @@
                                         </a>
                                         
                                         <!-- Download Dropdown -->
-                                        <div class="relative inline-block">
+                                        <div class="relative inline-block dropdown-container" id="dropdown-container-${certificate.id}">
                                             <button class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1" onclick="toggleDownloadMenu(${certificate.id})" title="Download in different formats">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                     class="h-4 w-4 text-green-600 group-hover:text-white transition"
@@ -271,42 +290,6 @@
                                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                                 </svg>
                                             </button>
-                                            <div id="download-menu-${certificate.id}" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-200">
-                                                <div class="px-3 py-2 text-xs text-gray-500 border-b">Choose download format:</div>
-                                                <a href="/certificates/${certificate.id}/download" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" title="Full design as PDF document">
-                                                    <div class="flex items-center space-x-2">
-                                                        <svg class="h-4 w-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4z"/>
-                                                        </svg>
-                                                        <div>
-                                                            <span class="font-medium">Download PDF</span>
-                                                            <div class="text-xs text-gray-500">Simple, fast format</div>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                                <a href="/certificates/${certificate.id}/download-image/0" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" title="Full design with all images and styling">
-                                                    <div class="flex items-center space-x-2">
-                                                        <svg class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                                                        </svg>
-                                                        <div>
-                                                            <span class="font-medium">Download PNG</span>
-                                                            <div class="text-xs text-gray-500">Perfect styling preserved</div>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                                <a href="/certificates/${certificate.id}/download-image/0/jpeg" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" title="Full design, smaller file size">
-                                                    <div class="flex items-center space-x-2">
-                                                        <svg class="h-4 w-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                                                        </svg>
-                                                        <div>
-                                                            <span class="font-medium">Download JPEG</span>
-                                                            <div class="text-xs text-gray-500">Smaller file size</div>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
                                         </div>
                                         
                                         <a href="/certificates/${certificate.id}/edit" 
@@ -457,28 +440,194 @@
 
                 // Handle download dropdown menu
                 window.toggleDownloadMenu = function(id) {
-                    const menu = document.getElementById('download-menu-' + id);
-                    const isHidden = menu.classList.contains('hidden');
+                    const button = document.querySelector(`#dropdown-container-${id} button`);
+                    const portal = document.getElementById('dropdown-portal');
+                    const existingMenu = document.getElementById(`download-menu-${id}`);
                     
-                    // Close all other dropdown menus
-                    document.querySelectorAll('[id^="download-menu-"]').forEach(otherMenu => {
-                        otherMenu.classList.add('hidden');
-                    });
+                    // Close any existing dropdown
+                    portal.innerHTML = '';
                     
-                    // Toggle current menu
-                    if (isHidden) {
-                        menu.classList.remove('hidden');
-                    } else {
-                        menu.classList.add('hidden');
+                    if (existingMenu) {
+                        // Dropdown is already open, close it
+                        return;
                     }
+                    
+                    // Create dropdown menu
+                    const dropdown = document.createElement('div');
+                    dropdown.id = `download-menu-${id}`;
+                    dropdown.className = 'bg-white rounded-md shadow-xl border border-gray-200 dark:bg-gray-800 dark:border-gray-600';
+                    
+                    const updatePosition = () => {
+                        const rect = button.getBoundingClientRect();
+                        const isMobile = window.innerWidth <= 768;
+                        const viewportHeight = window.innerHeight;
+                        const viewportWidth = window.innerWidth;
+                        
+                        // Check if button is visible in viewport
+                        if (rect.bottom < 0 || rect.top > viewportHeight || rect.right < 0 || rect.left > viewportWidth) {
+                            dropdown.style.display = 'none';
+                            return;
+                        } else {
+                            dropdown.style.display = 'block';
+                        }
+                        
+                        // Mobile-responsive positioning
+                        if (isMobile) {
+                            dropdown.className = dropdown.className.replace(/w-\d+/, 'w-48');
+                            const dropdownWidth = 192; // w-48 = 12rem = 192px
+                            
+                            // Get table container bounds for mobile
+                            const tableContainer = document.querySelector('.overflow-x-auto');
+                            const containerRect = tableContainer ? tableContainer.getBoundingClientRect() : null;
+                            
+                            let left, right;
+                            
+                            if (containerRect) {
+                                // Position dropdown within table container bounds
+                                const containerLeft = containerRect.left + 8; // 8px padding from container edge
+                                const containerRight = containerRect.right - 8;
+                                const containerWidth = containerRight - containerLeft;
+                                
+                                // Try to center dropdown under button first
+                                let preferredLeft = rect.left - (dropdownWidth / 2) + (rect.width / 2);
+                                
+                                // Constrain to container bounds
+                                if (preferredLeft < containerLeft) {
+                                    left = containerLeft;
+                                } else if (preferredLeft + dropdownWidth > containerRight) {
+                                    left = containerRight - dropdownWidth;
+                                } else {
+                                    left = preferredLeft;
+                                }
+                                
+                                // Ensure minimum width if container is too narrow
+                                if (containerWidth < dropdownWidth) {
+                                    left = containerLeft;
+                                    dropdown.style.maxWidth = `${containerWidth}px`;
+                                } else {
+                                    dropdown.style.maxWidth = '';
+                                }
+                            } else {
+                                // Fallback to viewport bounds if container not found
+                                let left = rect.left - (dropdownWidth / 2) + (rect.width / 2);
+                                left = Math.max(16, Math.min(left, viewportWidth - dropdownWidth - 16));
+                            }
+                            
+                            let top = rect.bottom + 8;
+                            // If dropdown would go below viewport, show it above the button
+                            if (top + 120 > viewportHeight) { // Approximate dropdown height
+                                top = rect.top - 120 - 8;
+                            }
+                            
+                            dropdown.style.cssText = `
+                                position: fixed;
+                                top: ${top}px;
+                                left: ${left}px;
+                                z-index: 10000;
+                                pointer-events: auto;
+                                display: block;
+                                ${dropdown.style.maxWidth ? `max-width: ${dropdown.style.maxWidth};` : 'max-width: calc(100vw - 32px);'}
+                            `;
+                        } else {
+                            dropdown.className = dropdown.className.replace(/w-\d+/, 'w-56');
+                            const dropdownWidth = 224; // w-56 = 14rem = 224px
+                            let left = rect.right - dropdownWidth;
+                            
+                            // Ensure dropdown doesn't go off screen
+                            if (left < 16) {
+                                left = rect.left;
+                            }
+                            if (left + dropdownWidth > viewportWidth - 16) {
+                                left = viewportWidth - dropdownWidth - 16;
+                            }
+                            
+                            let top = rect.bottom + 8;
+                            // If dropdown would go below viewport, show it above the button
+                            if (top + 120 > viewportHeight) { // Approximate dropdown height
+                                top = rect.top - 120 - 8;
+                            }
+                            
+                            dropdown.style.cssText = `
+                                position: fixed;
+                                top: ${top}px;
+                                left: ${left}px;
+                                z-index: 10000;
+                                pointer-events: auto;
+                                display: block;
+                            `;
+                        }
+                    };
+                    
+                    dropdown.innerHTML = `
+                        <div class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-600">Choose download format:</div>
+                        <a href="/certificates/${id}/download-image/0" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" title="Full design with all images and styling">
+                            <div class="flex items-center space-x-2">
+                                <svg class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <span class="font-medium">Download PNG</span>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Perfect styling preserved</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="/certificates/${id}/download-image/0/jpeg" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" title="Full design, smaller file size">
+                            <div class="flex items-center space-x-2">
+                                <svg class="h-4 w-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <span class="font-medium">Download JPEG</span>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Smaller file size</div>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    
+                    portal.appendChild(dropdown);
+                    
+                    // Initial positioning
+                    updatePosition();
+                    
+                    // Store update function and add scroll listeners
+                    dropdown.updatePosition = updatePosition;
+                    
+                    // Add scroll listeners to update position
+                    const scrollContainer = document.querySelector('.overflow-x-auto');
+                    const addScrollListeners = () => {
+                        window.addEventListener('scroll', updatePosition, { passive: true });
+                        window.addEventListener('resize', updatePosition, { passive: true });
+                        if (scrollContainer) {
+                            scrollContainer.addEventListener('scroll', updatePosition, { passive: true });
+                        }
+                    };
+                    
+                    const removeScrollListeners = () => {
+                        window.removeEventListener('scroll', updatePosition);
+                        window.removeEventListener('resize', updatePosition);
+                        if (scrollContainer) {
+                            scrollContainer.removeEventListener('scroll', updatePosition);
+                        }
+                    };
+                    
+                    // Store cleanup function
+                    dropdown.cleanup = removeScrollListeners;
+                    
+                    addScrollListeners();
                 };
 
                 // Close dropdown when clicking outside
                 document.addEventListener('click', function(event) {
-                    if (!event.target.closest('[onclick^="toggleDownloadMenu"]') && !event.target.closest('[id^="download-menu-"]')) {
-                        document.querySelectorAll('[id^="download-menu-"]').forEach(menu => {
-                            menu.classList.add('hidden');
+                    const portal = document.getElementById('dropdown-portal');
+                    if (!event.target.closest('[onclick^="toggleDownloadMenu"]') && !event.target.closest('#dropdown-portal')) {
+                        // Clean up any scroll listeners before clearing portal
+                        const dropdowns = portal.querySelectorAll('[id^="download-menu-"]');
+                        dropdowns.forEach(dropdown => {
+                            if (dropdown.cleanup) {
+                                dropdown.cleanup();
+                            }
                         });
+                        portal.innerHTML = '';
                     }
                 });
             });

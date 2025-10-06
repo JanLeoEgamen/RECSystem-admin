@@ -78,7 +78,6 @@
            <!-- Welcome Section -->
             <div class="text-center mb-8 slide-in">
                 <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3 flex items-center justify-center">
-                    <span class="text-4xl mr-3">👋</span>
                     Welcome Back
                 </h2>
                 <p class="text-white/80 text-lg">Sign in to access your member portal</p>

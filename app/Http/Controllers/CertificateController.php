@@ -108,7 +108,7 @@ class CertificateController extends Controller implements HasMiddleware
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:3',
             'content' => 'required|min:10',
-            'signatories' => 'required|array|min:1|max:3', // Add max:3 here
+            'signatories' => 'required|array|min:1|max:2', // Add max:2 here
             'signatories.*.name' => 'required|string',
             'signatories.*.position' => 'nullable|string',
         ]);
@@ -153,7 +153,7 @@ class CertificateController extends Controller implements HasMiddleware
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:3',
             'content' => 'required|min:10',
-            'signatories' => 'required|array|min:1|max:3', // Add max:3 here
+            'signatories' => 'required|array|min:1|max:2', // Add max:2 here
             'signatories.*.name' => 'required|string',
             'signatories.*.position' => 'nullable|string',
         ]);

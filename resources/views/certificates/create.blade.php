@@ -28,11 +28,21 @@
                         <div>
                             <label for="title" class="text-sm font-medium">Title</label>
                             <div class="my-3">    
-                                <input value="{{ old('title') }}" name="title" id="title" placeholder="Enter certificate title" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
+                                <input 
+                                    value="{{ old('title', $certificate->title ?? '') }}" 
+                                    name="title" 
+                                    id="title" 
+                                    placeholder="Enter certificate title (max 5 words)" 
+                                    type="text" 
+                                    class="border-gray-300 shadow-sm w-1/2 rounded-lg"
+                                    oninput="validateWordCount(this)"
+                                >
+                                <p id="word-count" class="text-sm text-gray-500 mt-1">Words: 0/5</p>
                                 @error('title')
                                 <p class="text-red-400 font-medium"> {{ $message }} </p>
                                 @enderror
                             </div>
+
 
                             <span class="text-sm font-medium">Content</span>
                             <div class="my-3">    
@@ -99,7 +109,7 @@
             CKEDITOR.replace('content');
 
             let signatoryCount = 1;
-            const MAX_SIGNATORIES = 3;
+            const MAX_SIGNATORIES = 2;
 
             $('#add-signatory').click(function() {
                 const currentCount = $('.signatory-row').length;
@@ -276,6 +286,52 @@
                     color: '#fff'
                 });
             @endif
+
+            function validateWordCount(input) {
+                const text = input.value.trim();
+                const wordCount = text === '' ? 0 : text.split(/\s+/).length;
+                const wordCountElement = document.getElementById('word-count');
+                
+                wordCountElement.textContent = `Words: ${wordCount}/5`;
+                
+                if (wordCount > 5) {
+                    wordCountElement.classList.add('text-red-500');
+                    wordCountElement.classList.remove('text-gray-500');
+                } else {
+                    wordCountElement.classList.remove('text-red-500');
+                    wordCountElement.classList.add('text-gray-500');
+                }
+                
+                // Optional: Prevent typing beyond 5 words
+                if (wordCount > 5) {
+                    const words = text.split(/\s+/).slice(0, 5);
+                    input.value = words.join(' ');
+                    // Recalculate after truncation
+                    validateWordCount(input);
+                }
+            }
+
+            // Initialize on page load - FIXED: This runs when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                const titleInput = document.getElementById('title');
+                if (titleInput) {
+                    // Trigger validation for pre-populated value
+                    validateWordCount(titleInput);
+                    
+                    // Also validate on form submit
+                    const form = titleInput.closest('form');
+                    if (form) {
+                        form.addEventListener('submit', function(e) {
+                            const currentWordCount = titleInput.value.trim().split(/\s+/).length;
+                            if (currentWordCount > 5) {
+                                e.preventDefault();
+                                alert('Title cannot exceed 5 words. Please shorten your title.');
+                                titleInput.focus();
+                            }
+                        });
+                    }
+                }
+            });
         </script>
     </x-slot>
 </x-app-layout>
