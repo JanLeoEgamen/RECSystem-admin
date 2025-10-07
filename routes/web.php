@@ -142,12 +142,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/documents', [MemberDashboardController::class, 'documents'])->name('member.documents');
         Route::get('/documents/{id}', [MemberDashboardController::class, 'viewDocument'])->name('member.view-document');
         Route::get('/documents/{id}/download', [MemberDashboardController::class, 'downloadDocument'])->name('member.download-document');
-        Route::get('/my-activx`ity-logs', [MemberActivityLogController::class, 'myLogs'])->name('members.activity_logs');
         Route::get('/my-files', [MemberDashboardController::class, 'myFiles'])->name('member.my-files');
         Route::get('/view-file/{id}', [MemberDashboardController::class, 'viewFile'])->name('member.view-file');
         Route::post('/upload-file/{id}', [MemberDashboardController::class, 'uploadFile'])->name('member.upload-file');
         Route::get('/download-file/{id}/{uploadId}', [MemberDashboardController::class, 'downloadFile'])->name('member.download-file');
 
+    });
+
+    // Member routes that don't require active membership
+    Route::group([
+        'prefix' => 'member',
+        'middleware' => ['auth', 'verified'],
+    ], function () {
+        Route::get('/my-activity-logs', [MemberActivityLogController::class, 'myLogs'])->name('members.activity_logs');
     });
 
     // Renewal routes (accessible even if membership is expired)
