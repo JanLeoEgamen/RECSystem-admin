@@ -6,6 +6,7 @@ use App\Models\Member;
 use App\Models\Applicant;
 use App\Models\MembershipType;
 use App\Models\Section;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +15,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class MemberController extends Controller implements HasMiddleware
@@ -183,7 +185,7 @@ class MemberController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'applicant_id' => 'required|exists:applicants,id',
+            'applicant_id' => 'nullable|exists:applicants,id',
             'rec_number' => 'required|unique:members,rec_number',
             'membership_type_id' => 'required|exists:membership_types,id',
             'section_id' => 'nullable|exists:sections,id',
@@ -202,7 +204,7 @@ class MemberController extends Controller implements HasMiddleware
             // Contact Information
             'cellphone_no' => 'required',
             'telephone_no' => 'nullable',
-            'email_address' => 'required|email',
+            'email_address' => 'required|email|unique:users,email',
             
             // Emergency Contact
             'emergency_contact' => 'required',
@@ -214,7 +216,7 @@ class MemberController extends Controller implements HasMiddleware
             'membership_end' => 'required_if:is_lifetime_member,0|date|after:membership_start',
             'is_lifetime_member' => 'boolean',
             'last_renewal_date' => 'nullable|date',
-            'status' => 'required|in:Active,Inactive',
+            // 'status' => 'required|in:Active,Inactive',
 
             // License Information
             'license_class' => 'nullable',
@@ -230,24 +232,58 @@ class MemberController extends Controller implements HasMiddleware
             'province' => 'required',
             'municipality' => 'required',
             'barangay' => 'required',
+
+            // User Account Information
+            'password' => 'required|min:8|confirmed',
+            'password_confirmation' => 'required',
         ]);
 
         if ($validator->fails()) {
             return redirect()->route('members.showMemberCreateForm')->withInput()->withErrors($validator);
         }
 
-        $member = new Member();
-        $member->status = 'Active'; // Default status for new members
-        $this->saveMemberData($member, $request);
+        DB::beginTransaction();
 
-        // In store method (after member is created):
-        logMemberRegistration($member, 'New member registered', [
-            'membership_type' => $member->membershipType->type_name ?? 'N/A',
-            'membership_start' => $member->membership_start,
-            'membership_end' => $member->membership_end
-        ]);
+        try {
+            // Create User first
+            $user = new User();
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->middle_name = $request->middle_name;
+            $user->birthdate = $request->birthdate;
+            $user->email = $request->email_address;
+            $user->password = Hash::make($request->password);
+            $user->save();
 
-        return redirect()->route('members.index')->with('success', 'Member added successfully');
+            // Assign default role (you can modify this as needed)
+            $user->assignRole('member');
+
+            // Create Member
+            $member = new Member();
+            $member->status = 'Active';
+            $member->user_id = $user->id; // Link the member to the user
+            $this->saveMemberData($member, $request);
+
+            // Log the member registration
+            logMemberRegistration($member, 'New member registered', [
+                'membership_type' => $member->membershipType->type_name ?? 'N/A',
+                'membership_start' => $member->membership_start,
+                'membership_end' => $member->membership_end,
+                'user_account_created' => true
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('members.index')->with('success', 'Member and user account created successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating member and user: ' . $e->getMessage());
+            
+            return redirect()->route('members.create')
+                ->withInput()
+                ->with('error', 'Failed to create member and user account. Please try again.');
+        }
     }
 
     /**
@@ -292,7 +328,7 @@ class MemberController extends Controller implements HasMiddleware
             // Contact Information
             'cellphone_no' => 'required',
             'telephone_no' => 'nullable',
-            'email_address' => 'required|email',
+            'email_address' => 'required|email|unique:users,email,' . ($member->user_id ?? 'NULL'),
             
             // Emergency Contact
             'emergency_contact' => 'required',
@@ -320,20 +356,72 @@ class MemberController extends Controller implements HasMiddleware
             'province' => 'required',
             'municipality' => 'required',
             'barangay' => 'required',
+
+            // Optional password update
+            'password' => 'nullable|min:8|confirmed',
+            'password_confirmation' => 'nullable',
         ]);
 
         if ($validator->fails()) {
             return redirect()->route('members.edit', $id)->withInput()->withErrors($validator);
         }
 
-        $this->saveMemberData($member, $request);
+        DB::beginTransaction();
 
-        // In update method (after member is updated):
-        logMemberActivity($member, 'profile', 'updated', 'Member profile updated', [
-            'updated_fields' => $request->except(['_token', '_method'])
-        ]);
+        try {
+            // Update or create User
+            if ($member->user) {
+                // Update existing user
+                $user = $member->user;
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
+                $user->middle_name = $request->middle_name;
+                $user->birthdate = $request->birthdate;
+                $user->email = $request->email_address;
+                
+                if ($request->password) {
+                    $user->password = Hash::make($request->password);
+                }
+                
+                $user->save();
+            } else {
+                // Create new user if doesn't exist
+                $user = new User();
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
+                $user->middle_name = $request->middle_name;
+                $user->birthdate = $request->birthdate;
+                $user->email = $request->email_address;
+                $user->password = Hash::make($request->password ?? 'password123'); // Default password
+                $user->save();
+                
+                // Assign default role
+                $user->assignRole('member');
+                
+                // Link user to member
+                $member->user_id = $user->id;
+            }
 
-        return redirect()->route('members.index')->with('success', 'Member updated successfully');
+            $this->saveMemberData($member, $request);
+
+            // Log the member update
+            logMemberActivity($member, 'profile', 'updated', 'Member profile updated', [
+                'updated_fields' => $request->except(['_token', '_method', 'password', 'password_confirmation']),
+                'user_account_updated' => true
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('members.index')->with('success', 'Member updated successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating member: ' . $e->getMessage());
+            
+            return redirect()->route('members.edit', $id)
+                ->withInput()
+                ->with('error', 'Failed to update member. Please try again.');
+        }
     }
 
     /**
@@ -392,7 +480,7 @@ class MemberController extends Controller implements HasMiddleware
         $member->membership_end = $request->is_lifetime_member ? null : $request->membership_end;
         $member->is_lifetime_member = $request->is_lifetime_member ?? false;
         $member->last_renewal_date = $request->last_renewal_date ?? now();
-        $member->status = $request->status;
+        $member->status = $request->status ?? 'Active'; // Use provided status or default to 'Active'
 
         // License Information
         $member->license_class = $request->license_class;

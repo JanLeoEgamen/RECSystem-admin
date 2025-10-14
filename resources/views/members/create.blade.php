@@ -278,7 +278,19 @@
                                     @error('last_renewal_date')
                                     <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
                                     @enderror
-                                    </div>
+                                </div>
+                                <div>
+                                    <label for="status" class="block text-sm font-medium">Status *</label>
+                                    <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-white" required>
+                                        <option value="">Select Status</option>
+                                        <option value="Active" {{ old('status') == 'Active' ? 'selected' : 'selected' }}>Active</option>
+                                        <option value="Inactive" {{ old('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                    @error('status')
+                                    <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                             </div>
 
                             <div class="col-span-2">
@@ -370,6 +382,71 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <div class="col-span-2">
+                                <h3 class="text-xl font-semibold mb-4">User Account Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="password" class="block text-sm font-medium">Password *</label>
+                                        <div class="mt-1 relative">
+                                            <input id="password" name="password" type="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-white pr-10" onkeyup="validatePassword()" required>
+                                            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none" onclick="togglePasswordVisibility('password')">
+                                                <svg id="password-eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                <svg id="password-eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div id="password-requirements" class="text-xs mt-2 hidden">
+                                            <p class="text-gray-500 dark:text-gray-400">Password must contain:</p>
+                                            <ul class="list-disc pl-5 mt-1">
+                                                <li id="req-length" class="text-red-500">At least 8 characters</li>
+                                                <li id="req-uppercase" class="text-red-500">One uppercase letter</li>
+                                                <li id="req-lowercase" class="text-red-500">One lowercase letter</li>
+                                                <li id="req-number" class="text-red-500">One number</li>
+                                                <li id="req-special" class="text-red-500">One special character</li>
+                                            </ul>
+                                        </div>
+                                        @error('password')
+                                        <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label for="password_confirmation" class="block text-sm font-medium">Confirm Password *</label>
+                                        <div class="mt-1 relative">
+                                            <input id="password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-white pr-10" onkeyup="validatePasswordConfirmation()" required>
+                                            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none" onclick="togglePasswordVisibility('password_confirmation')">
+                                                <svg id="password_confirmation-eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                <svg id="password_confirmation-eye-slash-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div id="password-confirmation-message" class="text-xs mt-2 hidden"></div>
+                                        @error('password_confirmation')
+                                        <p class="text-red-400 font-medium text-sm">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                        <!-- Add Generate Password Button -->
+    <div class="mt-4">
+        <button type="button" id="generatePasswordBtn" 
+                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Generate Secure Password
+        </button>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Click to generate a strong password that meets all requirements</p>
+    </div>
+
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-6">
@@ -392,11 +469,163 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+
+// Password generation function
+function generateSecurePassword() {
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    
+    // Ensure we have at least one of each required character type
+    let password = '';
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += specialChars[Math.floor(Math.random() * specialChars.length)];
+    
+    // Fill the rest with random characters from all sets
+    const allChars = uppercase + lowercase + numbers + specialChars;
+    const remainingLength = 8 - password.length;
+    
+    for (let i = 0; i < remainingLength; i++) {
+        password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+    
+    // Shuffle the password to make it more random
+    password = password.split('').sort(() => Math.random() - 0.5).join('');
+    
+    return password;
+}
+
+// Function to handle password generation
+function handleGeneratePassword() {
+    const generatedPassword = generateSecurePassword();
+    
+    // Set the generated password in both fields
+    document.getElementById('password').value = generatedPassword;
+    document.getElementById('password_confirmation').value = generatedPassword;
+    
+    // Trigger validation to show the requirements are met
+    validatePassword();
+    validatePasswordConfirmation();
+    
+    // Show success message
+    Swal.fire({
+        icon: 'success',
+        title: 'Password Generated!',
+        text: 'A secure password has been generated and filled in both fields.',
+        confirmButtonColor: '#10B981',
+        background: '#101966',
+        color: '#fff',
+        timer: 2000,
+        showConfirmButton: true
+    });
+}
+
+// Add event listener to the generate password button
+document.getElementById('generatePasswordBtn').addEventListener('click', handleGeneratePassword);
+
+
+
+        function togglePasswordVisibility(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const eyeIcon = document.getElementById(`${fieldId}-eye-icon`);
+            const eyeSlashIcon = document.getElementById(`${fieldId}-eye-slash-icon`);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('hidden');
+                eyeSlashIcon.classList.add('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.add('hidden');
+                eyeSlashIcon.classList.remove('hidden');
+            }
+        }
+
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const requirements = document.getElementById('password-requirements');
+            
+            if (password.length > 0) {
+                requirements.classList.remove('hidden');
+            } else {
+                requirements.classList.add('hidden');
+                return;
+            }
+            
+            const hasMinLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            document.getElementById('req-length').className = hasMinLength ? 'text-green-500' : 'text-red-500';
+            document.getElementById('req-uppercase').className = hasUppercase ? 'text-green-500' : 'text-red-500';
+            document.getElementById('req-lowercase').className = hasLowercase ? 'text-green-500' : 'text-red-500';
+            document.getElementById('req-number').className = hasNumber ? 'text-green-500' : 'text-red-500';
+            document.getElementById('req-special').className = hasSpecialChar ? 'text-green-500' : 'text-red-500';
+            
+            if (document.getElementById('password_confirmation').value.length > 0) {
+                validatePasswordConfirmation();
+            }
+        }
+
+        function validatePasswordConfirmation() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            const messageElement = document.getElementById('password-confirmation-message');
+            
+            if (confirmPassword.length === 0) {
+                messageElement.classList.add('hidden');
+                return;
+            }   
+            
+            messageElement.classList.remove('hidden');
+            
+            if (password === confirmPassword) {
+                messageElement.innerHTML = '<p class="text-green-500">Passwords match!</p>';
+            } else {
+                messageElement.innerHTML = '<p class="text-red-500">Passwords do not match</p>';
+            }
+        }
+
         document.getElementById("applicationForm").addEventListener("submit", function(e) {
             e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            
+            const hasMinLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Password Requirements Not Met',
+                    text: 'Password must have at least 8 characters with uppercase, lowercase, number, and special character.',
+                    confirmButtonColor: '#101966'
+                });
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Passwords Do Not Match',
+                    text: 'Please confirm your password correctly.',
+                    confirmButtonColor: '#101966'
+                });
+                return false;
+            }
+            
             Swal.fire({
                 title: "Are you sure?",
-                text: "Do you want to create this member?",
+                text: "Do you want to create this member and user account?",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#5e6ffb",

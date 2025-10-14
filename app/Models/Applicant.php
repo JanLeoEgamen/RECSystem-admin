@@ -48,10 +48,10 @@ class Applicant extends Model
         'zip_code',
         'street_address',
         'is_student',
-        'student_number', // Add this
-        'school', // Add this
-        'program', // Add this
-        'year_level', // Add this
+        'student_number', 
+        'school', 
+        'program', 
+        'year_level', 
         'data_privacy_consent',
         'created_at',
         'updated_at'
