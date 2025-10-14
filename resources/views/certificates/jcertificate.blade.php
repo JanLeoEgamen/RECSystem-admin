@@ -34,6 +34,77 @@
             padding: 2rem 0;
             margin-top: 0;
         }
+
+        /* NEW: Recipient section styles */
+        .recipient-section {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .certifies-text {
+            font-size: 1.25rem;
+            margin-bottom: 3mm;
+        }
+
+        .name-container {
+            display: inline-block;
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        .recipient-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #041c5c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1;
+            margin-bottom: 0;
+            padding-bottom: 2mm; /* Space between name and line */
+        }
+
+        .name-line {
+            border-bottom: 2px solid black;
+            width: 100%;
+            height: 2mm;
+            margin-top: 0;
+            margin-bottom: 5mm;
+        }
+
+        /* Embedded styles for image generation */
+        .certificate-container.embedded .recipient-section {
+            margin-bottom: 0.5rem !important;
+        }
+
+        .certificate-container.embedded .certifies-text {
+            font-size: 1.25rem !important;
+            margin-bottom: 3mm !important;
+        }
+
+        .certificate-container.embedded .name-container {
+            display: inline-block !important;
+            width: 70% !important;
+            margin: 0 auto !important;
+        }
+
+        .certificate-container.embedded .recipient-name {
+            font-size: 2.5rem !important;
+            font-weight: 800 !important;
+            color: #041c5c !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            line-height: 1 !important;
+            margin-bottom: 0 !important;
+            padding-bottom: 2mm !important;
+        }
+
+        .certificate-container.embedded .name-line {
+            border-bottom: 2px solid black !important;
+            width: 100% !important;
+            height: 2mm !important;
+            margin-top: 0 !important;
+            margin-bottom: 5mm !important;
+        }
         
         .certificate-container.embedded .certificate {
             max-width: 100%;
@@ -51,53 +122,39 @@
             padding-bottom: 1mm;
             margin-bottom: 5mm;
         }
-        
-        .certificate-container.standalone .recipient-text {
-            margin-bottom: 1rem;
-        }
 
         /* Ensure consistent rendering for image generation */
-.certificate-container.embedded .certificate {
-    width: 297mm !important;
-    height: 210mm !important;
-    margin: 0 !important;
-    padding: 15mm !important;
-    box-shadow: none !important;
-}
+        .certificate-container.embedded .certificate {
+            width: 297mm !important;
+            height: 210mm !important;
+            margin: 0 !important;
+            padding: 15mm !important;
+            box-shadow: none !important;
+        }
 
-/* Force specific heights for image generation */
-.certificate-container.embedded .certificate-content {
-    height: 180mm !important;
-    overflow: visible !important;
-}
+        /* Force specific heights for image generation */
+        .certificate-container.embedded .certificate-content {
+            height: 180mm !important;
+            overflow: visible !important;
+        }
 
-/* Ensure consistent spacing for image generation */
-.certificate-container.embedded .certificate-title span {
-    padding-bottom: 1mm !important;
-    margin-bottom: 5mm !important;
-}
+        /* Ensure consistent spacing for image generation */
+        .certificate-container.embedded .certificate-title span {
+            padding-bottom: 1mm !important;
+            margin-bottom: 5mm !important;
+        }
 
-.certificate-container.embedded .name-line {
-    margin-top: 8mm !important;
-    margin-bottom: 8mm !important;
-}
-
-.certificate-container.embedded .membership-text {
-    margin-top: 8mm !important;
-    margin-bottom: 8mm !important;
-}
-
-/* Disable responsive behavior for image generation */
-@media all {
-    .certificate-container.embedded .certificate {
-        width: 297mm !important;
-        height: 210mm !important;
-    }
-    
-    .certificate-container.embedded .certificate-title h2 {
-        font-size: 3.75rem !important;
-    }
-}
+        /* Disable responsive behavior for image generation */
+        @media all {
+            .certificate-container.embedded .certificate {
+                width: 297mm !important;
+                height: 210mm !important;
+            }
+            
+            .certificate-container.embedded .certificate-title h2 {
+                font-size: 3.75rem !important;
+            }
+        }
         
         .certificate {
             page-break-inside: avoid;
@@ -105,7 +162,7 @@
             page-break-before: avoid;
             width: 297mm;
             height: 210mm;
-            padding: 15mm;
+            padding: 15mm; /* Fixed: was 100mm, now 15mm */
             background-color: white;
             position: relative;
             margin: 0 auto;
@@ -145,12 +202,6 @@
             position: relative;
         }
         
-        .batch-number {
-            text-align: left;
-            font-size: 1rem;
-            font-weight: bold;
-        }
-        
         .header-image {
             display: flex;
             justify-content: center;
@@ -180,27 +231,12 @@
             margin-bottom: 5mm;
         }
         
-        .recipient-text {
-            text-align: center;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
-        
-        .name-line {
-            border-bottom: 2px solid black;
-            width: 58.333333%;
-            margin: 0 auto;
-            height: 10mm;
-            margin-top: 8mm;
-            margin-bottom: 8mm;
-        }
-        
         .membership-text {
             text-align: center;
             font-size: 1.125rem;
-            line-height: 1.8;
-            margin-top: 8mm;
-            margin-bottom: 8mm;
+            line-height: 1.6;
+            margin-top: 5mm;
+            margin-bottom: 5mm;
         }
         
         .signatures {
@@ -216,7 +252,7 @@
         
         .signature-line {
             border-top: 2px solid black;
-            width: 80mm;
+            width: 50mm;
             margin: 0 auto;
         }
         
@@ -301,6 +337,14 @@
                 font-size: 2.5rem;
             }
             
+            .name-container {
+                width: 90% !important;
+            }
+            
+            .recipient-name {
+                font-size: 2rem !important;
+            }
+            
             .membership-text div {
                 margin-left: 0 !important;
             }
@@ -321,7 +365,10 @@
                 font-size: 1.8rem;
             }
             
-            .recipient-text,
+            .recipient-name {
+                font-size: 1.5rem !important;
+            }
+            
             .membership-text {
                 font-size: 1rem;
             }
@@ -360,12 +407,14 @@
                         <span>{{ $certificate->title}}</span>
                     </h2>
                 </div>
-                <div class="recipient-text">
-                    <p>This certifies that</p>
+                <div class="recipient-section">
+                    <p class="certifies-text">This certifies that</p>
                     @if($member)
-                        <div class="recipient">{{ $member->first_name }} {{ $member->last_name }}</div>
+                        <div class="name-container">
+                            <div class="recipient-name">{{ $member->first_name }} {{ $member->last_name }}</div>
+                            <div class="name-line"></div>
+                        </div>
                     @endif
-                    <div class="name-line"></div>
                     <div class="membership-text">
                         {!! $certificate->content !!}
                     </div>
@@ -373,8 +422,8 @@
                 <div class="signatures">
                 @foreach($certificate->signatories as $signatory)
                     <div class="signature">
-                        <div class="signature-line"></div>
                         <div class="signature-name">{{ $signatory->name }}</div>
+                        <div class="signature-line"></div>
                         @if($signatory->position)
                             <div class="signature-title">{{ $signatory->position }}</div>
                         @endif

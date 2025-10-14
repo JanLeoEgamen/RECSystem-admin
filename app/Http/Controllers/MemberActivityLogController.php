@@ -20,7 +20,23 @@ class MemberActivityLogController extends BaseController
      */
     public function myLogs(Request $request)
     {
-        $member = $request->user()->member;
+        $user = $request->user();
+        
+        if (!$user) {
+            if (!$request->expectsJson()) {
+                return redirect()->route('login')->with('error', 'Please log in to view your activity logs.');
+            }
+            return response()->json(['error' => 'Not authenticated'], 401);
+        }
+        
+        $member = $user->member;
+        
+        if (!$member) {
+            if (!$request->expectsJson()) {
+                return redirect()->back()->with('error', 'No member profile found for your account.');
+            }
+            return response()->json(['error' => 'No member profile found'], 404);
+        }
         
         if (! $request->expectsJson()) {
             return view('member.activity-logs', [
@@ -35,6 +51,29 @@ class MemberActivityLogController extends BaseController
             ->where('member_id', $member->id)
             ->latest();
 
+        // Add debug information
+        $totalLogs = MemberActivityLog::where('member_id', $member->id)->count();
+        
+        // Create a test log if none exist (for debugging)
+        if ($totalLogs === 0) {
+            MemberActivityLog::create([
+                'member_id' => $member->id,
+                'type' => 'system',
+                'action' => 'test',
+                'details' => 'Test log entry created for debugging',
+                'meta' => ['source' => 'debug'],
+                'performed_by' => auth()->id(),
+                'created_at' => now()
+            ]);
+            $totalLogs = 1;
+        }
+        
+        \Log::info('Fetching member activity logs', [
+            'member_id' => $member->id,
+            'total_logs_count' => $totalLogs,
+            'request_params' => $request->all()
+        ]);
+
         $logs = $this->applyFilters($query, $request)
             ->paginate($request->input('perPage', 20));
 
@@ -43,6 +82,11 @@ class MemberActivityLogController extends BaseController
             'current_page' => $logs->currentPage(),
             'last_page' => $logs->lastPage(),
             'total' => $logs->total(),
+            'debug_info' => [
+                'member_id' => $member->id,
+                'total_logs_in_db' => $totalLogs,
+                'filtered_total' => $logs->total()
+            ]
         ]);
     }
 

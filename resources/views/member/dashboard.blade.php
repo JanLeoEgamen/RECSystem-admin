@@ -7,91 +7,151 @@
         </div>
     </x-slot>
 
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+        }
+        .animate-fade-in { animation: fade-in 1.2s ease-out; }
+        .animate-slide-up { animation: slide-up 1.2s ease-out; }
+        .hover-lift { transition: all 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .dark .hover-lift:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pulse-glow { animation: pulse-glow 2s infinite; }
+        .card-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .card-gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .card-gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .card-gradient-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .card-gradient-6 { background: linear-gradient(135deg, #d29cffff 0%, #fed6e3 100%); }
+    </style>
 
-    <div class="py-12">
+    <div class="py-8 px-4 sm:px-6 lg:px-8 dark:bg-gray-900 min-h-screen">
         @if($isMembershipNearExpiry)
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-6">
-                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
-                    <p class="font-bold">Membership Expiring Soon</p>
-                    <p>Your membership will expire on {{ \Carbon\Carbon::parse(auth()->user()->member->membership_end)->format('F j, Y') }}. Please renew to avoid interruption of services.</p>
-                    <a href="{{ route('member.renew') }}" class="mt-2 inline-block text-sm font-medium text-yellow-700 hover:text-yellow-900">
-                        Renew Now →
-                    </a>
+            <div class="max-w-7xl mx-auto mb-8">
+                <div class="relative overflow-hidden bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl shadow-lg hover-lift" role="alert">
+                    <div class="absolute inset-0 bg-black opacity-10"></div>
+                    <div class="relative z-10 p-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="p-3 bg-white bg-opacity-20 rounded-full">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-white mb-2">Membership Expiring Soon</h3>
+                                <p class="text-white text-opacity-90 mb-4">Your membership will expire on {{ \Carbon\Carbon::parse(auth()->user()->member->membership_end)->format('F j, Y') }}. Please renew to avoid interruption of services.</p>
+                                <a href="{{ route('member.renew') }}" class="inline-flex items-center px-6 py-3 bg-white bg-opacity-20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-opacity-30 transition-all duration-300 hover:scale-105">
+                                    <span>Renew Now</span>
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decorative elements -->
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-10 rounded-full -mt-10 -mr-10"></div>
                 </div>
             </div>
         @endif
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
             <!-- Membership Information Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 lg:gap-8 mb-12">
                 <!-- REC Number Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
+                <div class="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover-lift animate-slide-up" style="animation-delay: 0.1s;">
+                    <div class="absolute inset-0 card-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-6 lg:p-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">REC Number</h3>
-                                <p class="text-2xl font-semibold text-gray-700 dark:text-gray-300">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors duration-300">REC Number</h3>
+                                <p class="text-2xl lg:text-3xl font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-300 truncate">
                                     {{ auth()->user()->member->rec_number ?? 'N/A' }}
                                 </p>
                             </div>
                         </div>
                     </div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
                 </div>
 
                 <!-- Membership Type Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
+                <div class="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover-lift animate-slide-up" style="animation-delay: 0.2s;">
+                    <div class="absolute inset-0 card-gradient-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-6 lg:p-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Membership Type</h3>
-                                <p class="text-2xl font-semibold text-gray-700 dark:text-gray-300">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors duration-300">Membership Type</h3>
+                                <p class="text-2xl lg:text-3xl font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-300 truncate">
                                     {{ auth()->user()->member->membershipType->type_name ?? 'N/A' }}
                                 </p>
                             </div>
                         </div>
                     </div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-600"></div>
                 </div>
 
                 <!-- Section Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                                </svg>
+                <div class="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover-lift animate-slide-up" style="animation-delay: 0.3s;">
+                    <div class="absolute inset-0 card-gradient-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-6 lg:p-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="p-4 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Section</h3>
-                                <p class="text-2xl font-semibold text-gray-700 dark:text-gray-300">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors duration-300">Section</h3>
+                                <p class="text-2xl lg:text-3xl font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-300 truncate">
                                     {{ auth()->user()->member->section->section_name ?? 'N/A' }}
                                 </p>
                             </div>
                         </div>
                     </div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-600"></div>
                 </div>
 
                 <!-- Membership Validity Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                <div class="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover-lift animate-slide-up" style="animation-delay: 0.4s;">
+                    <div class="absolute inset-0 card-gradient-5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-6 lg:p-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="p-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-600 text-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Membership Validity</h3>
-                                <p class="text-2xl font-semibold text-gray-700 dark:text-gray-300">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors duration-300">Membership Validity</h3>
+                                <p class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-300">
                                     @if(auth()->user()->member->is_lifetime_member)
                                         Lifetime
                                     @else
@@ -99,80 +159,175 @@
                                     @endif
                                 </p>
                                 @if(!auth()->user()->member->is_lifetime_member && auth()->user()->member->membership_end)
-                                    <p class="text-sm mt-1 {{ \Carbon\Carbon::parse(auth()->user()->member->membership_end)->isPast() ? 'text-red-500' : 'text-green-500' }}">
-                                        {{ \Carbon\Carbon::parse(auth()->user()->member->membership_end)->isPast() ? 'Expired' : 'Valid' }}
-                                    </p>
+                                    <div class="mt-2">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ \Carbon\Carbon::parse(auth()->user()->member->membership_end)->isPast() ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }} group-hover:bg-white group-hover:bg-opacity-20 group-hover:text-white transition-all duration-300">
+                                            @if(\Carbon\Carbon::parse(auth()->user()->member->membership_end)->isPast())
+                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                                </svg>
+                                                Expired
+                                            @else
+                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                </svg>
+                                                Valid
+                                            @endif
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
                         </div>
                     </div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-orange-600"></div>
                 </div>
 
                 <!-- Lifetime Member Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
+                <div class="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover-lift animate-slide-up" style="animation-delay: 0.5s;">
+                    <div class="absolute inset-0 card-gradient-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-6 lg:p-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg group-hover:shadow-xl transition-shadow duration-300 {{ auth()->user()->member->is_lifetime_member ? 'pulse-glow' : '' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Lifetime Member</h3>
-                                <p class="text-2xl font-semibold text-gray-700 dark:text-gray-300">
-                                    {{ auth()->user()->member->is_lifetime_member ? 'Yes' : 'No' }}
-                                </p>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors duration-300">Lifetime Member</h3>
+                                <div class="flex items-center space-x-2">
+                                    <p class="text-2xl lg:text-3xl font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-300">
+                                        {{ auth()->user()->member->is_lifetime_member ? 'Yes' : 'No' }}
+                                    </p>
+                                    @if(auth()->user()->member->is_lifetime_member)
+                                        <div class="flex items-center">
+                                            <svg class="w-6 h-6 text-yellow-400 group-hover:text-yellow-200" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-600"></div>
                 </div>
 
                 <!-- Status Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
+                <div class="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover-lift animate-slide-up" style="animation-delay: 0.6s;">
+                    <div class="absolute inset-0 card-gradient-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-6 lg:p-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="p-4 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Status</h3>
-                                <p class="text-2xl font-semibold text-gray-700 dark:text-gray-300">
-                                    {{ auth()->user()->member->status ?? 'N/A' }}
-                                </p>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white transition-colors duration-300">Status</h3>
+                                <div class="flex items-center space-x-2">
+                                    <p class="text-2xl lg:text-3xl font-bold text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors duration-300 truncate">
+                                        {{ auth()->user()->member->status ?? 'N/A' }}
+                                    </p>
+                                    @if(auth()->user()->member->status)
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-rose-600"></div>
                 </div>
             </div>
 
             <!-- Recent Announcements Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Recent Announcements</h3>
-                        <a href="{{ route('member.announcements') }}" class="text-sm text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">View All</a>
+            <div class="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-xl animate-slide-up" style="animation-delay: 0.7s;">
+                
+                <div class="relative z-10 p-6 lg:p-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl text-white shadow-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Recent Announcements</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Stay updated with the latest news</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('member.announcements') }}" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                            <span>View All</span>
+                            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </a>
                     </div>
+                    
                     @if(auth()->user()->member->announcements()->count() > 0)
                         <div class="space-y-4">
                             @foreach(auth()->user()->member->announcements()->orderBy('created_at', 'desc')->take(3)->get() as $announcement)
-                                <a href="{{ route('member.view-announcement', $announcement->id) }}" class="block p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="font-medium text-gray-900 dark:text-gray-100">{{ $announcement->title }}</h4>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ \Illuminate\Support\Str::limit($announcement->content, 100) }}</p>
+                                <a href="{{ route('member.view-announcement', $announcement->id) }}" class="group block relative overflow-hidden">
+                                    <div class="relative p-6 border-2 border border-blue-400 dark:border-gray-700 rounded-2xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg bg-blue-50 dark:bg-gray-700 hover:bg-white dark:hover:bg-gray-600">
+                                        <!-- Hover effect background -->
+                                        <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-blue-200 dark:from-blue-900 dark:to-purple-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                                        
+                                        <div class="relative z-10 flex justify-between items-start space-x-4">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-start space-x-3">
+                                                    <div class="flex-shrink-0 mt-1">
+                                                        <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full group-hover:scale-125 transition-transform duration-300"></div>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 truncate">
+                                                            {{ $announcement->title }}
+                                                        </h4>
+                                                        <p class="text-gray-600 dark:text-gray-300 mt-2 line-clamp-2 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
+                                                            {{ \Illuminate\Support\Str::limit($announcement->content, 120) }}
+                                                        </p>
+                                                        <div class="flex items-center space-x-4 mt-3">
+                                                            <span class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                                {{ $announcement->created_at->diffForHumans() }}
+                                                            </span>
+                                                            @if(!$announcement->pivot->is_read)
+                                                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-sm pulse-glow">
+                                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                                                                    </svg>
+                                                                    New
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex-shrink-0">
+                                                <div class="p-2 rounded-full bg-gray-200 dark:bg-gray-600 group-hover:bg-blue-100 dark:group-hover:bg-blue-800 transition-colors duration-300">
+                                                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $announcement->created_at->diffForHumans() }}</span>
                                     </div>
-                                    @if(!$announcement->pivot->is_read)
-                                        <span class="inline-block mt-2 px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-200">New</span>
-                                    @endif
                                 </a>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-500 dark:text-gray-400">No announcements yet.</p>
+                        <div class="text-center py-12">
+                            <div class="mx-auto w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-full flex items-center justify-center mb-4">
+                                <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No announcements yet</h3>
+                            <p class="text-gray-500 dark:text-gray-400">Check back later for important updates and news.</p>
+                        </div>
                     @endif
                 </div>
             </div>

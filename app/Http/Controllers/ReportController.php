@@ -58,7 +58,6 @@ class ReportController extends Controller implements HasMiddleware
             }
 
             $totalMembers = $memberQuery->count();
-            $totalBureaus = Bureau::count(); // Bureaus are accessible to all
             $totalApplicants = $applicantQuery->count();
             $totalSections = $sectionQuery->count();
 
@@ -75,6 +74,9 @@ class ReportController extends Controller implements HasMiddleware
                     return $bureau->sections && $bureau->sections->count() > 0;
                 });
             }
+
+            // Count accessible bureaus
+            $totalBureaus = $bureausWithSections->count();
 
             return view('reports.index', [
                 'totalMembers' => $totalMembers,
@@ -148,6 +150,13 @@ class ReportController extends Controller implements HasMiddleware
                 ->withCount('sections')
                 ->orderBy('bureau_name')
                 ->get();
+
+            // Filter out bureaus that have no accessible sections for limited users
+            if (!$user->can('view all members')) {
+                $bureaus = $bureaus->filter(function($bureau) {
+                    return $bureau->sections && $bureau->sections->count() > 0;
+                });
+            }
 
             // Calculate total sections count
             $totalSections = $bureaus->sum(function($bureau) {
@@ -367,6 +376,13 @@ class ReportController extends Controller implements HasMiddleware
             ])
             ->orderBy('bureau_name')
             ->get();
+
+            // Filter out bureaus that have no accessible sections for limited users
+            if (!$user->can('view all members')) {
+                $bureaus = $bureaus->filter(function($bureau) {
+                    return $bureau->sections && $bureau->sections->count() > 0;
+                });
+            }
 
             // Group licensed members by class in each section
             $bureaus->each(function($bureau) {
