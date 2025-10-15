@@ -9,15 +9,17 @@
 
             <div class="px-4 py-2 bg-[#101966] dark:bg-[#5e6ffb] rounded-full backdrop-blur-sm">
                 <span class="text-white text-sm font-medium">Member ID: {{ $member->id }}</span>
-            </div>
+            </div>  
         </div>
     </div>
 </x-slot>
 
+@vite('resources/css/activity-logs.css')
+
     <div class="py-8 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Privacy Reminder -->
-            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
+            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 animate-slide-up" style="animation-delay: 0.1s;">
                 <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
                         <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +35,7 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-slide-up" style="animation-delay: 0.2s;">
                     <div class="flex items-center">
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                             <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +49,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-green-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-green-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-slide-up" style="animation-delay: 0.3s;">
                     <div class="flex items-center">
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
                             <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,7 +63,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-slide-up" style="animation-delay: 0.4s;">
                     <div class="flex items-center">
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
                             <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +77,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-yellow-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 border-l-4 border-yellow-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-slide-up" style="animation-delay: 0.5s;">
                     <div class="flex items-center">
                         <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
                             <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +93,7 @@
             </div>
 
             <!-- Filters Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100 dark:border-gray-700">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 mb-8 border border-gray-100 dark:border-gray-700 animate-slide-up" style="animation-delay: 0.6s;">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-[#101966] dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
@@ -145,7 +147,7 @@
             </div>
 
             <!-- Activity Logs Table -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 animate-slide-up" style="animation-delay: 0.7s;">
                 <div class="px-4 sm:px-6 py-4 bg-gradient-to-r from-[#101966] to-[#2d3a8c]  dark:bg-gradient-to-r from-[#1A25A1] to-[#5e6ffb] border-b border-gray-200 dark:border-gray-600 relative">
                     <div class="absolute inset-x-0 bottom-0 h-px bg-white/20"></div>
                     <h3 class="text-base sm:text-lg font-semibold text-white flex items-center">
@@ -212,6 +214,15 @@
         </div>
     </div>
 
+    <!-- Floating Help Button -->
+    <div class="floating-btn">
+        <button onclick="showHelpModal()" class="interactive-btn p-4 bg-gradient-to-r from-[#101966] to-blue-600 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </button>
+    </div>
+
     <x-slot name="script">
         @if(!app()->runningUnitTests())
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -219,6 +230,33 @@
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         @endif
         <script>
+            // Help modal function
+            window.showHelpModal = function() {
+                Swal.fire({
+                    title: 'Activity Logs Help',
+                    html: `
+                        <div class="text-left space-y-4">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-900 dark:text-blue-200 mb-2">📊 Understanding Activity Logs</h4>
+                                <p class="text-sm text-blue-800 dark:text-blue-300">Activity logs track all your interactions within the system, including logins, document views, and other activities.</p>
+                            </div>
+                            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-green-900 dark:text-green-200 mb-2">🔍 Filtering Options</h4>
+                                <p class="text-sm text-green-800 dark:text-green-300">Use the filters above to narrow down logs by date range, activity type, or action performed.</p>
+                            </div>
+                            <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-amber-900 dark:text-amber-200 mb-2">🔒 Privacy & Security</h4>
+                                <p class="text-sm text-amber-800 dark:text-amber-300">Your activity logs are private and only accessible to you and authorized administrators for security purposes.</p>
+                            </div>
+                        </div>
+                    `,
+                    background: '#ffffff',
+                    color: '#374151',
+                    confirmButtonColor: '#101966',
+                    confirmButtonText: 'Got it!'
+                });
+            };
+
             const memberId = {{ $member->id }};
             let currentSortField = 'created_at_raw';
             let currentSortDirection = 'desc';
@@ -646,6 +684,27 @@
             .animate-fadeIn {
                 animation: fadeIn 0.3s ease-out forwards;
                 opacity: 0;
+            }
+            
+            /* Floating Help Button */
+            .floating-btn {
+                position: fixed;
+                bottom: 2rem;
+                left: 2rem;
+                z-index: 50;
+            }
+            
+            .interactive-btn {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            .interactive-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            
+            .interactive-btn:active {
+                transform: scale(0.95);
             }
             
             /* Custom scrollbar */

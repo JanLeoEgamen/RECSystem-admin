@@ -1,0 +1,211 @@
+/* Surveys specific animations and styles */
+@keyframes fade-in {
+    from { 
+        opacity: 0; 
+        transform: translateY(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slide-up {
+    0% { 
+        opacity: 0; 
+        transform: translateY(60px); 
+        visibility: hidden;
+    }
+    30% { 
+        opacity: 0; 
+        transform: translateY(40px); 
+        visibility: visible;
+    }
+    70% { 
+        opacity: 0.7; 
+        transform: translateY(10px); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+        visibility: visible;
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); 
+    }
+    50% { 
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); 
+    }
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.shimmer-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes countUp {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+/* Animation classes with smooth durations and ease-out timing */
+.animate-fade-in { 
+    animation: fade-in 2s ease-out; 
+}
+
+.animate-slide-up { 
+    opacity: 0;
+    visibility: hidden;
+    animation: slide-up 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+}
+
+.animate-slide-in-up {
+    animation: slideInUp 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+}
+
+.animate-count-up {
+    animation: countUp 0.8s ease-out forwards;
+}
+
+.animate-pulse-custom {
+    animation: pulse 2s infinite;
+}
+
+/* Hover effects for cards and containers */
+.hover-lift { 
+    transition: all 0.5s ease; 
+}
+
+.hover-lift:hover { 
+    transform: translateY(-8px); 
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15); 
+}
+
+.dark .hover-lift:hover { 
+    box-shadow: 0 25px 50px rgba(0,0,0,0.4); 
+}
+
+/* Pulse glow effect */
+.pulse-glow { 
+    animation: pulse-glow 3s infinite; 
+}
+
+.gradient-bg-blue {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-bg-green {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.gradient-bg-purple {
+    background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+}
+
+.gradient-bg-orange {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+.survey-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+
+.dark .survey-card {
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.9) 0%, rgba(31, 41, 55, 0.95) 100%);
+    border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+.survey-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.status-new {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    animation: pulse 2s infinite;
+}
+
+.status-completed {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.empty-state {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.95) 100%);
+    backdrop-filter: blur(10px);
+}
+
+.dark .empty-state {
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%);
+}
+
+/* Gradient card backgrounds */
+.card-gradient { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+}
+
+.card-gradient-2 { 
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+}
+
+.card-gradient-3 { 
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
+}
+
+.card-gradient-4 { 
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
+}
+
+.card-gradient-5 { 
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); 
+}
+
+.card-gradient-6 { 
+    background: linear-gradient(135deg, #d29cffff 0%, #fed6e3 100%); 
+}

@@ -257,66 +257,61 @@
                         const rowNumber = startIndex + index;
 
                         let row = `
-                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
-                                <td class="px-6 py-4 text-center">${rowNumber}</td>
-                                <td class="px-6 py-4 text-left column-title">${certificate.title}</td>
-                                <td class="px-6 py-4 text-left column-content">${certificate.content}</td>
-                                <td class="px-6 py-4 text-center column-signatories">${certificate.signatories}</td>
-                                <td class="px-6 py-4 text-center column-author">${certificate.author}</td>
-                                <td class="px-6 py-4 text-center column-created">${certificate.created_at}</td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex justify-center items-center space-x-2">
-                                        <a href="/certificates/${certificate.id}/preview" 
-                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                            <span class="text-blue-600 group-hover:text-white text-sm">Preview</span>
-                                        </a>
-                                        
-                                        <!-- Download Dropdown -->
-                                        <div class="relative inline-block dropdown-container" id="dropdown-container-${certificate.id}">
-                                            <button class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1" onclick="toggleDownloadMenu(${certificate.id})" title="Download in different formats">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="h-4 w-4 text-green-600 group-hover:text-white transition"
-                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
-                                                <span class="text-green-600 group-hover:text-white text-sm">Download</span>
-                                                <svg class="h-3 w-3 text-green-600 group-hover:text-white transition" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        
-                                        <a href="/certificates/${certificate.id}/edit" 
-                                            class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-3 py-2 rounded-full transition space-x-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4 text-indigo-600 group-hover:text-white transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                            </svg>
-                                            <span class="text-indigo-600 group-hover:text-white text-sm">Edit</span>
-                                        </a>
-                                        
-                                        <button onclick="deleteCertificate(${certificate.id})" 
-                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
+                        <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
+                            <td class="px-6 py-4 text-center">${rowNumber}</td>
+                            <td class="px-6 py-4 text-left column-title">${certificate.title}</td>
+                            <td class="px-6 py-4 text-left column-content">${certificate.content}</td>
+                            <td class="px-6 py-4 text-center column-signatories">${certificate.signatories}</td>
+                            <td class="px-6 py-4 text-center column-author">${certificate.author}</td>
+                            <td class="px-6 py-4 text-center column-created">${certificate.created_at}</td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex justify-center items-center space-x-2">
+                                    <a href="/certificates/${certificate.id}/preview" 
+                                        class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        <span class="text-blue-600 group-hover:text-white text-sm">Preview</span>
+                                    </a>
+
+                                    <button onclick="downloadCertificateAsImage(${certificate.id})" 
+                                        class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4 text-green-600 group-hover:text-white transition"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <span class="text-green-600 group-hover:text-white text-sm">Download</span>
+                                    </button>
+                                    
+                                    <a href="/certificates/${certificate.id}/edit" 
+                                        class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-3 py-2 rounded-full transition space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4 text-indigo-600 group-hover:text-white transition"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                        </svg>
+                                        <span class="text-indigo-600 group-hover:text-white text-sm">Edit</span>
+                                    </a>
+                                    
+                                    <button onclick="deleteCertificate(${certificate.id})" 
+                                        class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                        <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
                         tbody.append(row);
                     });
                 }
@@ -632,5 +627,147 @@
                 });
             });
         </script>
+        <script>
+        // Include html2canvas library
+        const html2canvasScript = document.createElement('script');
+        html2canvasScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        document.head.appendChild(html2canvasScript);
+
+        window.downloadCertificateAsImage = function(certificateId) {
+        // Show loading overlay
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        loadingDiv.innerHTML = `
+            <div class="bg-white rounded-lg p-6 text-center dark:bg-gray-800 dark:text-white">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                <p class="text-lg font-medium">Generating certificate image...</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Please wait</p>
+            </div>
+        `;
+        document.body.appendChild(loadingDiv);
+
+        // Use AJAX to get the certificate HTML
+        $.ajax({
+            url: `/certificates/${certificateId}/preview-content`,
+            type: 'GET',
+            success: function(html) {
+                // Create a temporary container for the certificate
+                const tempContainer = document.createElement('div');
+                tempContainer.style.position = 'fixed';
+                tempContainer.style.left = '-9999px';
+                tempContainer.style.top = '-9999px';
+                tempContainer.style.width = '297mm';
+                tempContainer.style.height = '210mm';
+                tempContainer.innerHTML = html;
+                document.body.appendChild(tempContainer);
+
+                // Wait a moment for images to load
+                setTimeout(() => {
+                    const certificateElement = tempContainer.querySelector('.certificate') || tempContainer;
+                    
+                    html2canvas(certificateElement, {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        logging: false
+                    }).then(canvas => {
+                        // Convert canvas to PNG and download
+                        const image = canvas.toDataURL('image/png');
+                        const downloadLink = document.createElement('a');
+                        const fileName = `certificate_${certificateId}.png`;
+                        
+                        downloadLink.href = image;
+                        downloadLink.download = fileName;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+
+                        // Clean up
+                        document.body.removeChild(tempContainer);
+                        document.body.removeChild(loadingDiv);
+                        
+                        // Show success message
+                        Swal.fire({
+                            title: 'Download Complete!',
+                            text: 'Certificate has been downloaded as PNG',
+                            icon: 'success',
+                            background: '#101966',
+                            color: '#fff',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        
+                    }).catch(error => {
+                        console.error('Error generating image:', error);
+                        document.body.removeChild(tempContainer);
+                        document.body.removeChild(loadingDiv);
+                        showDownloadError(certificateId);
+                    });
+                }, 500);
+            },
+            error: function() {
+                document.body.removeChild(loadingDiv);
+                showDownloadError(certificateId);
+            }
+        });
+    };
+
+        // Show download error and fallback
+        function showDownloadError(certificateId) {
+            Swal.fire({
+                title: 'Download Method',
+                html: `
+                    <p>Choose how you'd like to download the certificate:</p>
+                    <div class="mt-4 space-y-2">
+                        <button onclick="openPreviewForDownload(${certificateId})" 
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">
+                            📄 Open Preview Page
+                        </button>
+                        <p class="text-sm text-gray-600">Manually save using browser tools</p>
+                    </div>
+                `,
+                icon: 'info',
+                background: '#101966',
+                color: '#fff',
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                showConfirmButton: false
+            });
+        }
+
+        // Open preview page for manual download
+        function openPreviewForDownload(certificateId) {
+            window.open(`/certificates/${certificateId}/preview`, '_blank');
+            Swal.close();
+        }
+
+        // Add CSS for loading animation
+        const loadingStyles = document.createElement('style');
+        loadingStyles.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .animate-spin {
+                animation: spin 1s linear infinite;
+            }
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                color: white;
+            }
+        `;
+        document.head.appendChild(loadingStyles);
+
+    </script>
     </x-slot>
 </x-app-layout>

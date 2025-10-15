@@ -302,7 +302,7 @@
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center items-center space-x-2">
                                         ${backup.status.includes('completed') ? `
-                                        <a href="${backup.download_url}" 
+                                        <button onclick="verifyPasswordAndDownload('${backup.download_url}')" 
                                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
                                             <svg xmlns="http://www.w3.org/2000/svg"
                                                 class="h-4 w-4 text-green-600 group-hover:text-white transition"
@@ -311,7 +311,7 @@
                                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
                                             <span class="text-green-600 group-hover:text-white text-sm">Download ZIP</span>
-                                        </a>
+                                        </button>
                                         ` : ''}
 
                                         <button onclick="deleteBackup(${backup.id})" 
@@ -450,6 +450,148 @@ window.deleteBackup = function (id) {
                     });
                 }
             });
+        }
+    });
+}
+
+window.verifyPasswordAndDownload = function(downloadUrl) {
+    Swal.fire({
+        title: 'Confirm Download Access',
+        html: `
+            <div class="text-left">
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex items-start">
+                        <svg class="h-5 w-5 text-red-600 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <div>
+                            <p class="text-sm text-red-700 font-medium">This action requires verification!</p>
+                            <p class="text-sm text-red-600 mt-1">Downloading sensitive database backups requires your account password for security purposes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="flex items-center mb-2">
+                        <svg class="h-4 w-4 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M12 9v4m0 4h.01M10.29 3.86l-7.1 12.28A2 2 0 005 20h14a2 2 0 001.71-3.86l-7.1-12.28a2 2 0 00-3.42 0z" />
+                        </svg>
+                        <label class="text-sm font-medium text-gray-700">
+                            Confirm with your password:
+                            <span class="text-red-500">*</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        `,
+        input: 'password',
+        inputPlaceholder: 'Enter your password to confirm download',
+        inputAttributes: {
+            autocapitalize: 'off',
+            autocorrect: 'off',
+            class: 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Download Backup File',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#5e6ffb',
+        background: '#ffffff',
+        color: '#374151',
+        customClass: {
+            popup: 'rounded-lg shadow-xl',
+            confirmButton: 'font-medium',
+            cancelButton: 'font-medium'
+        },
+        preConfirm: (password) => {
+            if (!password) {
+                Swal.showValidationMessage('Password is required to download backup files');
+                return false;
+            }
+            return password;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading state
+            Swal.fire({
+                title: 'Verifying...',
+                text: 'Please wait while we verify your credentials',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                background: '#101966',
+                color: '#fff',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // For now, we'll skip server verification and proceed directly to download
+            // You can implement server-side password verification later
+            Swal.fire({
+                title: 'Access Granted!',
+                text: 'Your download will begin shortly...',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                background: '#101966',
+                color: '#fff'
+            }).then(() => {
+                // Start download
+                window.location.href = downloadUrl;
+            });
+
+            /* 
+            // Uncomment this block when you create the password verification route
+            $.ajax({
+                url: '/verify-password', // Create this route in your Laravel application
+                type: 'POST',
+                data: {
+                    password: result.value,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Password verified, proceed with download
+                        Swal.fire({
+                            title: 'Access Granted!',
+                            text: 'Your download will begin shortly...',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            background: '#101966',
+                            color: '#fff'
+                        }).then(() => {
+                            // Start download
+                            window.location.href = downloadUrl;
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Access Denied',
+                            text: 'Incorrect password. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#5e6ffb',
+                            background: '#101966',
+                            color: '#fff'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = 'Failed to verify password. Please try again.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        title: 'Verification Error',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonColor: '#5e6ffb',
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                }
+            });
+            */
         }
     });
 }

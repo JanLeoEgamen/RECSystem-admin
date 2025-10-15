@@ -146,7 +146,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/view-file/{id}', [MemberDashboardController::class, 'viewFile'])->name('member.view-file');
         Route::post('/upload-file/{id}', [MemberDashboardController::class, 'uploadFile'])->name('member.upload-file');
         Route::get('/download-file/{id}/{uploadId}', [MemberDashboardController::class, 'downloadFile'])->name('member.download-file');
-
+        Route::get('/certificates/{certificate}/preview-content', [MemberCertificateController::class, 'previewContent'])->name('member.certificates.preview-content');
     });
 
     // Member routes that don't require active membership
@@ -340,15 +340,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/certificates', [CertificateController::class, 'store'])->name('certificates.store');
     Route::get('/certificates/{id}/edit', [CertificateController::class, 'edit'])->name('certificates.edit');
     Route::put('/certificates/{id}', [CertificateController::class, 'update'])->name('certificates.update');
-    Route::delete('/certificates', [CertificateController::class, 'destroy'])->name('certificates.destroy');    
+    Route::delete('/certificates', [CertificateController::class, 'destroy'])->name('certificates.destroy');  
+    Route::get('/certificates/{id}/preview-content', [CertificateController::class, 'previewContent'])->name('certificates.preview-content');  
 
     Route::get('/certificates/{id}/preview', [CertificateController::class, 'preview'])->name('certificates.preview');
     Route::get('/certificates/{certificate}/download/{member}', [CertificateController::class, 'download'])->name('certificates.download');
     Route::get('/certificates/{certificate}/download', [CertificateController::class, 'downloadCertificate'])->name('certificates.download-certificate');
-    
-    // Image download routes
-    Route::get('/certificates/{certificate}/download-image/{member?}', [CertificateController::class, 'downloadImage'])->name('certificates.download-image');
-    Route::get('/certificates/{certificate}/download-image/{member}/{format}', [CertificateController::class, 'downloadImage'])->name('certificates.download-image-format');
     
     Route::get('/certificates/{id}/send', [CertificateController::class, 'send'])->name('certificates.send');
     Route::post('/certificates/{id}/send', [CertificateController::class, 'sendCertificate'])->name('certificates.send-certificate');

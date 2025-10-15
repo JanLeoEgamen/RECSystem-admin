@@ -1,0 +1,205 @@
+/* Announcements specific animations and styles */
+@keyframes fade-in {
+    from { 
+        opacity: 0; 
+        transform: translateY(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slide-up {
+    0% { 
+        opacity: 0; 
+        transform: translateY(60px) scale(0.95); 
+        visibility: hidden;
+    }
+    30% { 
+        opacity: 0; 
+        transform: translateY(40px) scale(0.97); 
+        visibility: visible;
+    }
+    70% { 
+        opacity: 0.7; 
+        transform: translateY(10px) scale(0.99); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+        visibility: visible;
+    }
+}
+
+@keyframes slideInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(60px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+@keyframes scaleIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.9) translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
+    }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.shimmer-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); 
+    }
+    50% { 
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); 
+    }
+}
+
+/* Animation classes with smooth durations and ease-out timing */
+.animate-fade-in { 
+    opacity: 0;
+    animation: fade-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+}
+
+.animate-slide-up { 
+    opacity: 0;
+    visibility: hidden;
+    animation: slide-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+}
+
+.animate-slide-in-up {
+    opacity: 0;
+    animation: slideInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-scale-in {
+    opacity: 0;
+    animation: scaleIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Content card styles */
+.content-card {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+}
+
+.dark .content-card {
+    background: rgba(31, 41, 55, 0.95);
+}
+
+/* Interactive button effects */
+.interactive-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.interactive-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.interactive-btn:hover::before {
+    left: 100%;
+}
+
+.interactive-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Gradient backgrounds */
+.gradient-bg-blue {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-bg-green {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.gradient-bg-purple {
+    background: linear-gradient(135deg, #a855f7 0%, #e879f9 100%);
+}
+
+.gradient-bg-orange {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+/* Pulse glow effect */
+.pulse-glow { 
+    animation: pulse-glow 3s infinite; 
+}
+
+/* Gradient card backgrounds */
+.card-gradient { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+}
+
+.card-gradient-2 { 
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+}
+
+.card-gradient-3 { 
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
+}
+
+.card-gradient-4 { 
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
+}
+
+.card-gradient-5 { 
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); 
+}
+
+.card-gradient-6 { 
+    background: linear-gradient(135deg, #d29cffff 0%, #fed6e3 100%); 
+}
+
+.card-overview-item {
+    transition: all 0.4s ease;
+}
+
+.card-overview-item:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.dark .card-overview-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}

@@ -7,32 +7,7 @@
         </div>
     </x-slot>
 
-    <style>
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slide-up {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
-        }
-        .animate-fade-in { animation: fade-in 1.2s ease-out; }
-        .animate-slide-up { animation: slide-up 1.2s ease-out; }
-        .hover-lift { transition: all 0.3s ease; }
-        .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .dark .hover-lift:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        .pulse-glow { animation: pulse-glow 2s infinite; }
-        .card-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .card-gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .card-gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .card-gradient-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-        .card-gradient-6 { background: linear-gradient(135deg, #d29cffff 0%, #fed6e3 100%); }
-    </style>
+    @vite('resources/css/dashboard.css')
 
     <div class="py-8 px-4 sm:px-6 lg:px-8 dark:bg-gray-900 min-h-screen">
         @if($isMembershipNearExpiry)
@@ -333,4 +308,72 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Help Button -->
+    <div class="floating-btn">
+        <button onclick="showHelpModal()" class="interactive-btn p-4 bg-gradient-to-r from-[#101966] to-blue-600 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Include required libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Help modal function
+        window.showHelpModal = function() {
+            Swal.fire({
+                title: 'Dashboard Help',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-900 dark:text-blue-200 mb-2">🏠 Welcome Home</h4>
+                            <p class="text-sm text-blue-800 dark:text-blue-300">Your dashboard provides an overview of your membership status, important information, and quick access to key features.</p>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-900 dark:text-green-200 mb-2">📋 Membership Info</h4>
+                            <p class="text-sm text-green-800 dark:text-green-300">View your REC number, membership type, section, validity period, and current status at a glance.</p>
+                        </div>
+                        <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
+                            <h4 class="font-semibold text-amber-900 dark:text-amber-200 mb-2">⚠️ Important Alerts</h4>
+                            <p class="text-sm text-amber-800 dark:text-amber-300">Pay attention to any alerts or notifications, especially regarding membership expiry or renewal requirements.</p>
+                        </div>
+                        <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                            <h4 class="font-semibold text-purple-900 dark:text-purple-200 mb-2">📢 Recent Announcements</h4>
+                            <p class="text-sm text-purple-800 dark:text-purple-300">Stay updated with the latest announcements and news from the organization directly from your dashboard.</p>
+                        </div>
+                    </div>
+                `,
+                background: '#ffffff',
+                color: '#374151',
+                confirmButtonColor: '#101966',
+                confirmButtonText: 'Got it!'
+            });
+        };
+    </script>
+
+    <style>
+        /* Floating Help Button */
+        .floating-btn {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 50;
+        }
+        
+        .interactive-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .interactive-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .interactive-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
 </x-app-layout>

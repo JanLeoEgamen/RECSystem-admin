@@ -45,4 +45,28 @@ class MemberCertificateController extends Controller
             'issuedAt' => $issuedAt
         ]);
     }
+    
+    public function previewContent(Certificate $certificate)
+    {
+        $member = Auth::user()->member;
+        
+        // Verify the member has this certificate
+        if (!$member->certificates()->where('certificate_id', $certificate->id)->exists()) {
+            abort(403, 'You do not have access to this certificate');
+        }
+        
+        // Get the issuance details
+        $issuedAt = $member->certificates()
+            ->where('certificate_id', $certificate->id)
+            ->first()
+            ->pivot
+            ->issued_at;
+            
+        return view('certificates.jcertificate', [
+            'certificate' => $certificate,
+            'member' => $member,
+            'issueDate' => $issuedAt,
+            'embedded' => true
+        ]);
+    }
 }

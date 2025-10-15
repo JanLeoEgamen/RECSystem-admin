@@ -16,8 +16,6 @@ use App\Mail\CertificateMail;
 use App\Models\Section;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Illuminate\Support\Facades\DB;
 
 class CertificateController extends Controller implements HasMiddleware
@@ -306,109 +304,16 @@ class CertificateController extends Controller implements HasMiddleware
         return view('certificates.preview', compact('certificate'));
     }
 
-
-    private function generatePdf($certificateId, $memberId = null)
+    public function previewContent($id)
     {
-        $certificate = Certificate::with('signatories')->findOrFail($certificateId);
-        $member = $memberId ? Member::findOrFail($memberId) : null;
-
-        // Increase execution time for PDF generation
-        set_time_limit(120);
-        ini_set('memory_limit', '512M');
-
-        $options = new Options();
-        $options->set([
-            'isRemoteEnabled' => false, // Disable remote resources for faster generation
-            'defaultFont' => 'DejaVu Sans',
-            'dpi' => 96, // Lower DPI for faster generation
-            'isPhpEnabled' => false,
-            'marginTop' => '5mm',
-            'marginRight' => '5mm', 
-            'marginBottom' => '5mm',
-            'marginLeft' => '5mm',
-            'isHtml5ParserEnabled' => false, // Disable for faster parsing
-            'isFontSubsettingEnabled' => false, // Disable for faster generation
-            'debugKeepTemp' => false,
-            'debugCss' => false,
-            'debugLayout' => false,
-            'debugLayoutLines' => false,
-            'debugLayoutBlocks' => false,
-            'debugLayoutInline' => false,
-            'debugLayoutPaddingBox' => false,
-            'chroot' => public_path(),
+        $certificate = Certificate::with('signatories')->findOrFail($id);
+        
+        return view('certificates.jcertificate', [
+            'certificate' => $certificate,
+            'member' => null,
+            'issueDate' => now()->format('F j, Y'),
+            'embedded' => true
         ]);
-
-        $dompdf = new Dompdf($options);
-
-        try {
-            // Use simple PDF template for faster generation
-            $viewName = 'certificates.simple-pdf';
-            
-            // Check if view exists, fallback if not
-            if (!view()->exists($viewName)) {
-                $viewName = 'certificates.pdf-certificate';
-                Log::warning('Simple PDF view not found, using fallback: ' . $viewName);
-            }
-            
-            Log::info('PDF Generation: Using view - ' . $viewName);
-            
-            $html = view($viewName, [
-                'certificate' => $certificate,
-                'member' => $member,
-                'issueDate' => now()->format('F j, Y'),
-            ])->render();
-
-            Log::info('PDF Generation: HTML rendered successfully, length: ' . strlen($html));
-
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'landscape');
-            
-            // Set time limit for rendering
-            set_time_limit(30);
-            $dompdf->render();
-
-            Log::info('PDF Generation: PDF rendered successfully');
-
-            return $dompdf;
-        } catch (\Exception $e) {
-            Log::error('PDF Generation Error: ' . $e->getMessage());
-            Log::error('PDF Generation Stack Trace: ' . $e->getTraceAsString());
-            throw $e;
-        }
-    }
-
-
-    public function download($certificateId, $memberId)
-    {
-        try {
-            // Set maximum execution time
-            set_time_limit(60);
-            
-            $certificate = Certificate::with('signatories')->findOrFail($certificateId);
-            $member = Member::findOrFail($memberId);
-
-            // Try simplified PDF generation
-            $dompdf = $this->generatePdf($certificateId, $memberId);
-            $output = $dompdf->output();
-            
-            $filename = 'certificate_' . $certificateId . '_member_' . $memberId . '.pdf';
-            
-            return response($output, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                'Content-Length' => strlen($output),
-                'Cache-Control' => 'no-cache, must-revalidate',
-                'Pragma' => 'no-cache',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('PDF Generation Failed for member, redirecting to image download: ' . $e->getMessage());
-            
-            // Fallback to image download
-            return redirect()->route('certificates.download-image', [
-                'certificate' => $certificateId,
-                'member' => $memberId
-            ])->with('info', 'PDF generation failed, downloading high-quality image instead.');
-        }
     }
 
     public function send($id)

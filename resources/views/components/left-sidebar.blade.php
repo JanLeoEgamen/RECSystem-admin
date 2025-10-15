@@ -90,36 +90,28 @@
                                         'supporters.index', 'faqs.index') 
                             ? 'websiteManagement' 
                             : (
-                                request()->routeIs('events.index', 'announcements.index', 'surveys.index') 
+                                request()->routeIs('events.index', 'announcements.index', 'surveys.index', 'quizzes.index', 'certificates.index', 'emails.index', 'documents.index') 
                                     ? 'memberEngagement' 
                                     : (
-                                        request()->routeIs('quizzes.index', 'certificates.index') 
-                                            ? 'assessments'
+                                        request()->routeIs('activity-logs.index', 'login-logs.index')
+                                            ? 'auditTrail'
                                             : (
-                                                request()->routeIs('emails.index', 'documents.index')
-                                                    ? 'integrations'
+                                                request()->routeIs('manual.view', 'manual.index') 
+                                                    ? 'usersManual'
                                                     : (
-                                                        request()->routeIs('activity-logs.index', 'login-logs.index')
-                                                            ? 'auditTrail'
+                                                        request()->routeIs('profile.edit', 'backups.index') 
+                                                            ? 'profile'
                                                             : (
-                                                                request()->routeIs('manual.view', 'manual.index') 
-                                                                    ? 'usersManual'
+                                                                request()->routeIs('cashier.index', 'payment-methods.index')
+                                                                    ? 'memberManagement,billings'
                                                                     : (
-                                                                        request()->routeIs('profile.edit', 'backups.index') 
-                                                                            ? 'profile'
-                                                                            : (
-                                                                                request()->routeIs('cashier.index', 'payment-methods.index')
-                                                                                    ? 'memberManagement,billings'
-                                                                                    : (
-                                                                                        request()->routeIs('student-applicants.index')
-                                                                                            ? 'memberManagement,applicants'
-                                                                                            : 'memberManagement'
-                                                                                    )
-                                                                            )
+                                                                        request()->routeIs('student-applicants.index')
+                                                                            ? 'memberManagement,applicants'
+                                                                            : 'memberManagement'
                                                                     )
-                                                            )            
+                                                            )
                                                     )
-                                            )
+                                            )            
                                     )
                             )
                     )
@@ -548,10 +540,10 @@
             </div>
             @endcanany
             
-            @canany(['view events', 'view announcements', 'view surveys'])
+            @canany(['view events', 'view announcements', 'view surveys', 'view quizzes', 'view certificates', 'view emails', 'view documents'])
             <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">  
                 @php
-                    $memberEngagementActive = request()->routeIs('events.index', 'announcements.index', 'surveys.index');
+                    $memberEngagementActive = request()->routeIs('events.index', 'announcements.index', 'surveys.index', 'quizzes.index', 'certificates.index', 'emails.index', 'documents.index');
                 @endphp
             <button 
                 @click.stop="toggleDropdown('memberEngagement')" 
@@ -569,7 +561,7 @@
 
                 <svg 
                     class="ml-1 h-4 w-4" 
-                    :class="{'rotate-180': isDropdownOpen('memberManagement')}" 
+                    :class="{'rotate-180': isDropdownOpen('memberEngagement')}" 
                     fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" 
                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
@@ -605,114 +597,54 @@
                             <span>{{ __('Surveys') }}</span>
                         </x-nav-link>
                     @endcan
+
+                    <!-- Assessments Section -->
+                    @canany(['view quizzes', 'view certificates'])
+                        @can('view quizzes')
+                            <x-nav-link :href="route('quizzes.index')" :active="request()->routeIs('quizzes.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('quizzes.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                <img src="https://img.icons8.com/ios-filled/50/FFFFFF/test.png" 
+                                    alt="Examination" class="w-4 h-4 mr-2 object-contain">
+                                <span>{{ __('Examination') }}</span>
+                            </x-nav-link>
+                        @endcan
+                        @can('view certificates')
+                            <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('certificates.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                <img src="https://img.icons8.com/ios-glyphs/50/FFFFFF/certificate.png" 
+                                    alt="Certificates" class="w-4 h-4 mr-2 object-contain">
+                                <span>{{ __('Certificates') }}</span>
+                            </x-nav-link>
+                        @endcan
+                    @endcanany
+
+                    <!-- Integrations Section -->
+                    @canany(['view emails', 'view documents'])
+                        @can('view emails')
+                            <x-nav-link :href="route('emails.index')" :active="request()->routeIs('emails.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('emails.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                <img src="https://img.icons8.com/external-tal-revivo-bold-tal-revivo/24/FFFFFF/external-category-emails-bundle-email-bold-tal-revivo.png" 
+                                    alt="Emails" class="w-4 h-4 mr-2 object-contain">
+                                <span>{{ __('Emails') }}</span>
+                            </x-nav-link>
+                        @endcan
+                        @can('view documents')
+                            <x-nav-link :href="route('documents.index')" :active="request()->routeIs('documents.index')" 
+                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('documents.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                transition-transform duration-300 hover:scale-105 active:scale-95">
+                                <img src="https://img.icons8.com/ios-filled/50/FFFFFF/documents.png" 
+                                    alt="Documents" class="w-4 h-4 mr-2 object-contain">
+                                <span>{{ __('Documents') }}</span>
+                            </x-nav-link>
+                        @endcan
+                    @endcanany
                 </div>
             </div>
             @endcanany
                   
-            @canany(['view quizzes', 'view certificates'])
-            <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
-                @php
-                    $assessmentsActive = request()->routeIs('quizzes.index', 'certificates.index');
-                 @endphp 
-                <button 
-                    @click.stop="toggleDropdown('assessments')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white dark:text-gray-200
-                        hover:bg-[#5E6FFB] transition-transform duration-300 
-                        hover:scale-105 active:scale-95 dark:hover:bg-gray-700 focus:outline-none
-                        {{ $assessmentsActive ? 'bg-[#4C5091] dark:bg-gray-700' : '' }}">
-                    <svg class="w-5 h-5 object-contain mr-3 transition-transform duration-300" 
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                    </svg>
-                    <span class="flex-1 text-left">
-                        {{ __('Assessments') }}
-                    </span>
-                    <svg 
-                        class="ml-1 h-4 w-4" 
-                        :class="{'rotate-180': isDropdownOpen('assessments')}" 
-                        fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" 
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div :class="{'dropdown-content open': isDropdownOpen('assessments'), 'dropdown-content': !isDropdownOpen('assessments')}"
-                    class="ml-6 mt-2 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-2" >
-                    @can('view quizzes')
-                        <x-nav-link :href="route('quizzes.index')" :active="request()->routeIs('quizzes.index')" 
-                            class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('quizzes.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
-                            transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/ios-filled/50/FFFFFF/test.png" 
-                                alt="Examination" class="w-4 h-4 mr-2 object-contain">
-                            <span>{{ __('Examination') }}</span>
-                        </x-nav-link>
-                    @endcan
-                    @can('view certificates')
-                        <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.index')" 
-                            class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('certificates.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
-                            transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/ios-glyphs/50/FFFFFF/certificate.png" 
-                                alt="Certificates" class="w-4 h-4 mr-2 object-contain">
-                            <span>{{ __('Certificates') }}</span>
-                        </x-nav-link>
-                    @endcan
-                </div>
-            </div>
-            @endcanany     
-
-              
-            @canany(['view emails', 'view documents'])
-            <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
-                @php
-                    $integrationsActive = request()->routeIs('emails.index', 'documents.index');
-                @endphp          
-                <button 
-                    @click.stop="toggleDropdown('integrations')" 
-                    class="w-full flex items-center justify-start px-3 py-3 text-sm font-medium rounded-md text-white dark:text-gray-200
-                        hover:bg-[#5E6FFB] transition-transform duration-300 
-                        hover:scale-105 active:scale-95 dark:hover:bg-gray-700 focus:outline-none
-                        {{ $integrationsActive ? 'bg-[#4C5091] dark:bg-gray-700' : '' }}">
-                   
-                    <img src="https://img.icons8.com/ios-filled/50/FFFFFF/webhook.png" 
-                    alt="Engagement Icon" class="w-5 h-5 object-contain mr-3" />   
-
-                    <span class="flex-1 text-left">
-                        {{ __('Integrations') }}
-                    </span>
-                    <svg 
-                        class="ml-1 h-4 w-4" 
-                        :class="{'rotate-180': isDropdownOpen('integrations')}" 
-                        fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" 
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div :class="{'dropdown-content open': isDropdownOpen('integrations'), 'dropdown-content': !isDropdownOpen('integrations')}"
-                    class="ml-6 mt-2 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-2" >
-                    @can('view emails')
-                        <x-nav-link :href="route('emails.index')" :active="request()->routeIs('emails.index')" 
-                            class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('emails.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
-                            transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/external-tal-revivo-bold-tal-revivo/24/FFFFFF/external-category-emails-bundle-email-bold-tal-revivo.png" 
-                                alt="Emails" class="w-4 h-4 mr-2 object-contain">
-                            <span>{{ __('Emails') }}</span>
-                        </x-nav-link>
-                    @endcan
-                    @can('view documents')
-                        <x-nav-link :href="route('documents.index')" :active="request()->routeIs('documents.index')" 
-                            class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('documents.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
-                            transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/ios-filled/50/FFFFFF/documents.png" 
-                                alt="Documents" class="w-4 h-4 mr-2 object-contain">
-                            <span>{{ __('Documents') }}</span>
-                        </x-nav-link>
-                    @endcan
-                </div>
-            </div>
-            @endcanany
-
             @canany(['view activity log', 'view login log'])
             <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
                 @php

@@ -15,7 +15,19 @@
             padding: 0;
             font-family: 'FS Elliot Pro', sans-serif;
         }
-        
+
+        @font-face {
+            font-family: 'Ananda-Personal-Use';
+            src: url('/fonts/Ananda-Personal-Use.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* Optional class */
+        .font-ananda {
+            font-family: 'Ananda-Personal-Use', sans-serif;
+        }
+                
         .certificate-container {
             display: flex;
             justify-content: center;
@@ -56,7 +68,6 @@
             font-size: 2.5rem;
             font-weight: 800;
             color: #041c5c;
-            text-transform: uppercase;
             letter-spacing: 1px;
             line-height: 1;
             margin-bottom: 0;
@@ -91,7 +102,6 @@
             font-size: 2.5rem !important;
             font-weight: 800 !important;
             color: #041c5c !important;
-            text-transform: uppercase !important;
             letter-spacing: 1px !important;
             line-height: 1 !important;
             margin-bottom: 0 !important;
@@ -411,8 +421,8 @@
                     <p class="certifies-text">This certifies that</p>
                     @if($member)
                         <div class="name-container">
-                            <div class="recipient-name">{{ $member->first_name }} {{ $member->last_name }}</div>
-                            <div class="name-line"></div>
+                            <div class="recipient-name font-ananda">{{ $member->first_name }} {{ $member->last_name }}</div>
+                            <!-- <div class="name-line"></div> -->
                         </div>
                     @endif
                     <div class="membership-text">
@@ -423,7 +433,7 @@
                 @foreach($certificate->signatories as $signatory)
                     <div class="signature">
                         <div class="signature-name">{{ $signatory->name }}</div>
-                        <div class="signature-line"></div>
+                        <!-- <div class="signature-line"></div> -->
                         @if($signatory->position)
                             <div class="signature-title">{{ $signatory->position }}</div>
                         @endif

@@ -296,7 +296,7 @@
                                                     </a>
 
                                                     <!-- Download Dropdown Button -->
-                                                    <div class="relative dropdown-container" id="dropdown-container-{{ $certificate->id }}-{{ $member->id }}">
+                                                    <!-- <div class="relative dropdown-container" id="dropdown-container-{{ $certificate->id }}-{{ $member->id }}">
                                                         <button onclick="toggleDownloadMenu('{{ $certificate->id }}-{{ $member->id }}')" 
                                                                 class="group inline-flex items-center justify-center w-10 h-10 text-yellow-600 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md" 
                                                                 title="Download Certificate">
@@ -305,7 +305,7 @@
                                                                     d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
                                                             </svg>
                                                         </button>
-                                                    </div>
+                                                    </div> -->
 
                                                     <!-- Delete Button -->
                                                     <button onclick="confirmDelete({{ $certificate->id }}, {{ $member->id }}, '{{ $member->first_name }} {{ $member->last_name }}')"

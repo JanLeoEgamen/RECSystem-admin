@@ -4,7 +4,7 @@
 <aside 
     x-show="rightSidebarOpen"
     @click.away="rightSidebarOpen = false"
-    class="fixed inset-y-0 right-0 z-40 w-64 md:w-80 flex flex-col bg-[#101966] dark:bg-gray-900 right-sidebar-shadow"
+    class="fixed inset-y-0 right-0 z-40 w-64 md:w-72 xl:w-80 flex flex-col bg-[#101966] dark:bg-gray-900 right-sidebar-shadow"
     style="margin-top: 4rem; height: calc(100vh - 4rem); display: none;"
     x-transition:enter="transform transition-all duration-300 ease-out"
     x-transition:enter-start="translate-x-full opacity-0"
