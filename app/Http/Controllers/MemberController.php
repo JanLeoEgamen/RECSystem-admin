@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MemberWelcomeEmail;
 use App\Models\Member;
 use App\Models\Applicant;
 use App\Models\MembershipType;
@@ -17,6 +18,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class MemberController extends Controller implements HasMiddleware
 {
@@ -264,17 +266,22 @@ class MemberController extends Controller implements HasMiddleware
             $member->user_id = $user->id; // Link the member to the user
             $this->saveMemberData($member, $request);
 
+            // Send welcome email with verification
+            $plainPassword = $request->password; // Store the plain password before hashing
+            Mail::to($user->email)->send(new MemberWelcomeEmail($member, $user, $plainPassword));
+
             // Log the member registration
             logMemberRegistration($member, 'New member registered', [
                 'membership_type' => $member->membershipType->type_name ?? 'N/A',
                 'membership_start' => $member->membership_start,
                 'membership_end' => $member->membership_end,
-                'user_account_created' => true
+                'user_account_created' => true,
+                'welcome_email_sent' => true
             ]);
 
             DB::commit();
 
-            return redirect()->route('members.index')->with('success', 'Member and user account created successfully');
+            return redirect()->route('members.index')->with('success', 'Member and user account created successfully. Welcome email sent.');
 
         } catch (\Exception $e) {
             DB::rollBack();
