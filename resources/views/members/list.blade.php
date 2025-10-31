@@ -41,10 +41,10 @@
                         d="M16 11l2 2 4-4" />
                     </svg>
                     Active Members
-                    </a>
-
-                    <a href="{{ route('members.inactive') }}" dusk="go-to-inactive"
-                        class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                </a>
+                
+                <a href="{{ route('members.inactive') }}" dusk="go-to-inactive"
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
                             bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
                             focus:ring-[#101966] border border-white font-medium 
                             rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
@@ -61,6 +61,24 @@
                         d="M18 12l4 4m0-4l-4 4" />
                     </svg>
                     Inactive Members
+                </a>
+
+                <a href="{{ route('members.expired') }}" dusk="go-to-expired"
+                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            focus:ring-[#101966] border border-white font-medium 
+                            rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                            w-full sm:w-auto text-center
+
+                            dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    Expired Members
                 </a>
             </div>
         </div>
@@ -321,9 +339,11 @@
                         const rowNumber = startIndex + index;
                         const fullName = `${member.first_name} ${member.last_name}`;
                         const statusBadge = member.is_lifetime_member 
-                            ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-100">Lifetime</span>'
-                            : member.status === 'Active'
-                                ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-100">Active</span>'
+                        ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-100">Lifetime</span>'
+                        : member.status === 'Active'
+                            ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-100">Active</span>'
+                            : member.status === 'Expired'
+                                ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:bg-orange-900 dark:text-orange-100">Expired</span>'
                                 : '<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-100">Inactive</span>';
 
                         let row = `

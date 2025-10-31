@@ -60,7 +60,7 @@ class MemberController extends Controller implements HasMiddleware
                     
                     $query->whereIn('section_id', $allSectionIds);
                 });
-
+    
             if ($request->has('search') && $request->search != '') {
                 $search = $request->search;
                 $query->where(function($q) use ($search) {
@@ -74,7 +74,7 @@ class MemberController extends Controller implements HasMiddleware
                     });
                 });
             }
-
+    
             if ($request->has('sort') && $request->has('direction')) {
                 $sort = $request->sort;
                 $direction = $request->direction;
@@ -109,11 +109,24 @@ class MemberController extends Controller implements HasMiddleware
             } else {
                 $query->orderBy('created_at', 'desc');
             }
-
+    
             $perPage = $request->input('perPage', 10);
             $members = $query->paginate($perPage);
-
+    
             $transformedMembers = $members->getCollection()->map(function ($member) {
+                // Calculate actual status based on both status field AND membership expiration
+                $actualStatus = $member->is_lifetime_member 
+                    ? 'Active' 
+                    : ($member->status === 'Active' && 
+                       $member->membership_end && 
+                       Carbon::parse($member->membership_end)->isFuture()
+                        ? 'Active'
+                        : ($member->status === 'Active' && 
+                           $member->membership_end && 
+                           Carbon::parse($member->membership_end)->isPast()
+                            ? 'Expired'
+                            : 'Inactive'));
+            
                 return [
                     'id' => $member->id,
                     'first_name' => $member->first_name,
@@ -124,7 +137,7 @@ class MemberController extends Controller implements HasMiddleware
                     'membership_type' => $member->membershipType->type_name ?? 'N/A',
                     'membership_start' => $member->membership_start ? Carbon::parse($member->membership_start)->format('d M, Y') : '',
                     'membership_end' => $member->membership_end ? Carbon::parse($member->membership_end)->format('d M, Y') : '',
-                    'status' => $member->status,
+                    'status' => $actualStatus, // Use calculated status
                     'is_lifetime_member' => $member->is_lifetime_member,
                     'street_address' => $member->street_address,
                     'can_view' => request()->user()->can('view members'),
@@ -133,7 +146,7 @@ class MemberController extends Controller implements HasMiddleware
                     'can_delete' => request()->user()->can('delete members'),
                 ];
             });
-
+    
             return response()->json([
                 'data' => $transformedMembers,
                 'current_page' => $members->currentPage(),
@@ -672,7 +685,13 @@ class MemberController extends Controller implements HasMiddleware
         if ($request->ajax()) {
             $user = $request->user(); 
             
-            $query = Member::where('status', 'Active')
+            $query = Member::where(function ($query) {
+                $query->where('status', 'Active')
+                    ->where(function($q) {
+                        $q->where('is_lifetime_member', true)
+                            ->orWhere('membership_end', '>=', now());
+                    });
+                })
                 ->when(!$user->can('view all members'), function($query) use ($user) {
                     $sectionIds = DB::table('user_bureau_section')
                         ->where('user_id', $user->id)
@@ -690,6 +709,7 @@ class MemberController extends Controller implements HasMiddleware
                     
                     $query->whereIn('section_id', $allSectionIds);
                 });
+
 
             // Add search functionality
             if ($request->has('search') && $request->search != '') {
@@ -853,6 +873,102 @@ class MemberController extends Controller implements HasMiddleware
         }
 
         return view('members.inactive');
+    }
+    
+    public function expired(Request $request)
+    {
+        if ($request->ajax()) {
+            $user = $request->user(); 
+            
+            $query = Member::where('status', 'Active')
+                ->where('is_lifetime_member', false)
+                ->where('membership_end', '<', now())
+                ->when(!$user->can('view all members'), function($query) use ($user) {
+                    $sectionIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNotNull('section_id')
+                        ->pluck('section_id');
+                    
+                    $bureauIds = DB::table('user_bureau_section')
+                        ->where('user_id', $user->id)
+                        ->whereNull('section_id')
+                        ->pluck('bureau_id');
+                    
+                    $bureauSectionIds = Section::whereIn('bureau_id', $bureauIds)->pluck('id');
+                    
+                    $allSectionIds = $sectionIds->merge($bureauSectionIds)->unique();
+                    
+                    $query->whereIn('section_id', $allSectionIds);
+                });
+
+            // Add search functionality
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('rec_number', 'like', "%$search%")
+                    ->orWhere('email_address', 'like', "%$search%")
+                    ->orWhere('cellphone_no', 'like', "%$search%");
+                });
+            }
+
+            // Add sorting
+            if ($request->has('sort') && $request->has('direction')) {
+                $sort = $request->sort;
+                $direction = $request->direction;
+                
+                switch ($sort) {
+                    case 'first_name':
+                        $query->orderBy('first_name', $direction)
+                            ->orderBy('last_name', $direction);
+                        break;
+                        
+                    case 'email_address':
+                        $query->orderBy('email_address', $direction);
+                        break;
+                        
+                    case 'membership_start':
+                        $query->orderBy('membership_start', $direction);
+                        break;
+                        
+                    case 'membership_end':
+                        $query->orderBy('membership_end', $direction);
+                        break;
+                        
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $request->input('perPage', 10);
+            $members = $query->paginate($perPage);
+
+            $transformedMembers = $members->getCollection()->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'full_name' => $member->first_name . ' ' . $member->last_name,
+                    'email_address' => $member->email_address,
+                    'cellphone_no' => $member->cellphone_no,
+                    'membership_start' => $member->membership_start ? Carbon::parse($member->membership_start)->format('M d, Y') : '',
+                    'membership_end' => $member->membership_end ? Carbon::parse($member->membership_end)->format('M d, Y') : '',
+                ];
+            });
+
+            return response()->json([
+                'data' => $transformedMembers,
+                'current_page' => $members->currentPage(),
+                'last_page' => $members->lastPage(),
+                'from' => $members->firstItem(),
+                'to' => $members->lastItem(),
+                'total' => $members->total(),
+            ]);
+        }
+
+        return view('members.expired');
     }
     
     public function deactivate(\App\Models\Member $member)

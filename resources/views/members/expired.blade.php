@@ -1,31 +1,25 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
-                {{ __('Renewal Requests') }}
+        <div class="flex justify-between"> 
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+                {{ __('Expired Members') }}
             </h2>
+            <div class="flex space-x-4">
+                <a href="{{ route('members.index') }}" 
+                   class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                        focus:ring-[#101966] border border-white font-medium dark:border-[#3E3E3A] 
+                        dark:hover:bg-black dark:hover:border-[#3F53E8] rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
+                        w-full md:w-auto mt-4 md:mt-0 text-center
 
-            <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-center justify-center sm:justify-end w-full sm:w-auto">
-                <a href="{{ route('renew.history') }}" 
-                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                            focus:ring-[#101966] border border-white font-medium 
-                            rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                            w-full sm:w-auto text-center
+                        dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
 
-                            dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
-                            class="w-5 h-5 mr-2">
-                        <path stroke-linecap="round" stroke-linejoin="round" 
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-
-                    View History
-                </a>
+                    Back to Members
+                </a>        
             </div>
         </div>
     </x-slot>
@@ -51,10 +45,15 @@
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
                                 <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
-                                    <option value="created_desc">Newest First</option>
-                                    <option value="created_asc">Oldest First</option>
+                                    <option value="created_desc">Default</option>
                                     <option value="name_asc">Name (A-Z)</option>
                                     <option value="name_desc">Name (Z-A)</option>
+                                    <option value="email_asc">Email (A-Z)</option>
+                                    <option value="email_desc">Email (Z-A)</option>
+                                    <option value="start_asc">Start Date (Oldest First)</option>
+                                    <option value="start_desc">Start Date (Newest First)</option>
+                                    <option value="end_asc">End Date (Oldest First)</option>
+                                    <option value="end_desc">End Date (Newest First)</option>
                                 </select>
                             </div>
                         </div>
@@ -71,7 +70,7 @@
                                 </svg>
 
                                 <input type="text" id="searchInput" 
-                                    placeholder="Search Member" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
+                                    placeholder="Search Name" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
                                     dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
                             </div>
                         </div>
@@ -85,7 +84,7 @@
                                     d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
                             </svg>
 
-                            <input type="text" id="mobileSearchInput" placeholder="Search Member" 
+                            <input type="text" id="mobileSearchInput" placeholder="Search Name" 
                                 class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
                                 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
                         </div>
@@ -103,10 +102,15 @@
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
                             <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="created_desc">Newest First</option>
-                                <option value="created_asc">Oldest First</option>
+                                <option value="created_desc">Default</option>
                                 <option value="name_asc">Name (A-Z)</option>
                                 <option value="name_desc">Name (Z-A)</option>
+                                <option value="email_asc">Email (A-Z)</option>
+                                <option value="email_desc">Email (Z-A)</option>
+                                <option value="start_asc">Start Date (Oldest First)</option>
+                                <option value="start_desc">Start Date (Newest First)</option>
+                                <option value="end_asc">End Date (Oldest First)</option>
+                                <option value="end_desc">End Date (Newest First)</option>
                             </select>
                         </div>
 
@@ -117,14 +121,15 @@
 
                     <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                         <div class="min-w-[1000px]">
-                            <table id="renewalsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
+                            <table id="expiredMembersTable" class="w-full bg-white dark:bg-gray-900 text-sm">
                                 <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
                                         <th class="px-6 py-3 text-center font-medium">#</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-member">Member</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-reference">Reference #</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-receipt">Receipt</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-submitted">Submitted At</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-fullname">Full Name</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-email">Email</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-cellphone">Cellphone</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-start">Start</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-end">End</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
                                     </tr>
                                 </thead>
@@ -140,21 +145,9 @@
     </div>
 
     <x-slot name="script">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         <style>
-            .swal2-icon {
-                border: 4px solid #ff0000 !important;
-                background-color: transparent !important;
-                color: #ff0000 !important;
-            }
-
-            .swal2-icon.swal2-warning .swal2-icon-content,
-            .swal2-icon.swal2-error .swal2-icon-content,
-            .swal2-icon.swal2-success .swal2-icon-content,
-            .swal2-icon.swal2-info .swal2-icon-content,
-            .swal2-icon.swal2-question .swal2-icon-content {
-                color: #ff0000 !important;
-            }
-
             @keyframes slideInLeft {
                 from {
                     opacity: 0;
@@ -188,49 +181,71 @@
             }
             
             .table-row-hover:hover {
-                background-color: rgba(59, 130, 246, 0.08);
+                background-color: rgba(245, 158, 11, 0.08);
                 transform: translateX(5px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                border-left: 4px solid #3b82f6;
+                border-left: 4px solid #f59e0b;
             }
 
             .table-row-hover:hover td:first-child {
-                border-left: 4px solid #3b82f6;
+                border-left: 4px solid #f59e0b;
                 padding-left: calc(1.5rem - 4px);
             }
         </style>
-
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         <script>
             $(document).ready(function () {
-                fetchRenewals();
+                fetchExpiredMembers();
+
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
-                    fetchRenewals(1, $(this).val());
+                    const searchValue = $(this).val();
+                    if ($(this).attr('id') === 'searchInput') {
+                        $('#mobileSearchInput').val(searchValue);
+                    } else {
+                        $('#searchInput').val(searchValue);
+                    }
+                    fetchExpiredMembers(1, searchValue);
                 });
 
                 $('#perPage, #mobilePerPage').on('change', function () {
-                    fetchRenewals(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
+                    const perPageValue = $(this).val();
+                    if ($(this).attr('id') === 'perPage') {
+                        $('#mobilePerPage').val(perPageValue);
+                    } else {
+                        $('#perPage').val(perPageValue);
+                    }
+                    fetchExpiredMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), perPageValue);
                 });
 
                 $('#sortBy, #mobileSortBy').on('change', function() {
-                    fetchRenewals(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
+                    const sortValue = $(this).val();
+                    if ($(this).attr('id') === 'sortBy') {
+                        $('#mobileSortBy').val(sortValue);
+                    } else {
+                        $('#sortBy').val(sortValue);
+                    }
+                    fetchExpiredMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
-                function fetchRenewals(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
+                function fetchExpiredMembers(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
                     const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'created_desc';
-                    const [column, direction] = sortValue.split('_');
-
+                    
                     const sortMap = {
                         'name_asc': { sort: 'first_name', direction: 'asc' },
                         'name_desc': { sort: 'first_name', direction: 'desc' },
-                        'created_asc': { sort: 'created_at', direction: 'asc' },
+                        'email_asc': { sort: 'email_address', direction: 'asc' },
+                        'email_desc': { sort: 'email_address', direction: 'desc' },
+                        'start_asc': { sort: 'membership_start', direction: 'asc' },
+                        'start_desc': { sort: 'membership_start', direction: 'desc' },
+                        'end_asc': { sort: 'membership_end', direction: 'asc' },
+                        'end_desc': { sort: 'membership_end', direction: 'desc' },
                         'created_desc': { sort: 'created_at', direction: 'desc' }
                     };
 
                     const sortParams = sortMap[sortValue] || { sort: 'created_at', direction: 'desc' };
 
                     $.ajax({
-                        url: `{{ route('renew.index') }}`,
+                        url: `{{ route('members.expired') }}`,
                         type: 'GET',
                         data: {
                             page: page,
@@ -239,78 +254,140 @@
                             sort: sortParams.sort,
                             direction: sortParams.direction
                         },
+                        beforeSend: function() {
+                            console.log('Loading expired members...');
+                        },
                         success: function (response) {
-                            renderRenewals(response.data, response.from);
-                            renderPagination(response);
+                            let data, from;
                             
+                            if (response.data && Array.isArray(response.data)) {
+                                data = response.data;
+                                from = response.from || 1;
+                            } else if (Array.isArray(response)) {
+                                data = response;
+                                from = ((page - 1) * perPage) + 1;
+                                
+                                response = {
+                                    data: data,
+                                    current_page: page,
+                                    last_page: Math.ceil(data.length / perPage),
+                                    from: from,
+                                    to: Math.min(from + data.length - 1, from + perPage - 1),
+                                    total: data.length
+                                };
+                            } else {
+                                console.error('Unexpected response format:', response);
+                                data = [];
+                                from = 1;
+                                response = {
+                                    data: [],
+                                    current_page: 1,
+                                    last_page: 1,
+                                    from: 0,
+                                    to: 0,
+                                    total: 0
+                                };
+                            }
+                            
+                            renderExpiredMembers(data, from);
+                            renderPagination(response);
+
                             $('#startRecord, #mobileStartRecord').text(response.from ?? 0);
                             $('#endRecord, #mobileEndRecord').text(response.to ?? 0);
                             $('#totalRecords, #mobileTotalRecords').text(response.total ?? 0);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching expired members:', error);
+                            console.error('Response:', xhr.responseText);
+                            
+                            let tbody = $('#expiredMembersTable tbody');
+                            tbody.html(`
+                                <tr class="table-row-animate">
+                                    <td colspan="7" class="px-6 py-4 text-center text-red-500 dark:text-red-400">
+                                        Error loading data. Please try again. 
+                                        <button onclick="fetchExpiredMembers()" class="ml-2 text-blue-500 hover:text-blue-700">Retry</button>
+                                    </td>
+                                </tr>
+                            `);
+                            
+                            $('#paginationLinks').html('');
+                            $('#startRecord, #mobileStartRecord').text('0');
+                            $('#endRecord, #mobileEndRecord').text('0');
+                            $('#totalRecords, #mobileTotalRecords').text('0');
                         }
                     });
                 }
 
-                function renderRenewals(renewals, startIndex) {
-                    let tbody = $('#renewalsTable tbody');
+                function renderExpiredMembers(members, startIndex) {
+                    let tbody = $('#expiredMembersTable tbody');
                     tbody.empty();
                     
-                    renewals.forEach((renewal, index) => {
-                        const rowNumber = startIndex + index;
-                        const memberName = renewal.member?.user 
-                            ? `${renewal.member.user.first_name} ${renewal.member.user.last_name}`
-                            : 'Unknown Member';
-                        const receiptUrl = renewal.receipt_path 
-                            ? `/images/renewals/${renewal.receipt_path.split('/').pop()}`
-                            : '#';
-                        
+                    if (!members || members.length === 0) {
                         tbody.append(`
-                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
-                                <td class="px-6 py-4 text-center">${rowNumber}</td>
-                                <td class="px-6 py-4 text-left column-member">${memberName}</td>
-                                <td class="px-6 py-4 text-left column-reference">${renewal.reference_number}</td>
-                                <td class="px-6 py-4 text-left column-receipt">
-                                    <a href="${receiptUrl}" target="_blank" 
-                                        class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" 
-                                            class="h-4 w-4 text-blue-600 group-hover:text-white transition" 
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                        <span class="text-blue-600 group-hover:text-white text-sm">View Receipt</span>
-                                    </a>
-                                </td>
-                                <td class="px-6 py-4 text-left column-submitted">${new Date(renewal.created_at).toLocaleString()}</td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex justify-center items-center space-x-2">
-                                        <a href="/renew/${renewal.id}/assess" 
-                                           class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-3 py-2 rounded-full transition space-x-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                                class="h-4 w-4 text-indigo-600 group-hover:text-white transition" 
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                            <span class="text-indigo-600 group-hover:text-white text-sm">Assess</span>
-                                        </a>
-                                    </div>
+                            <tr class="table-row-animate">
+                                <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                    No expired members found
                                 </td>
                             </tr>
                         `);
+                        return;
+                    }
+                    
+                    members.forEach((member, index) => {
+                        const rowNumber = (startIndex || 1) + index;
+
+                        let row = `
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
+                                <td class="px-6 py-4 text-center">${rowNumber}</td>
+                                <td class="px-6 py-4 text-left column-fullname">${member.full_name || ''}</td>
+                                <td class="px-6 py-4 text-left column-email">${member.email_address || ''}</td>
+                                <td class="px-6 py-4 text-left column-cellphone">${member.cellphone_no || ''}</td>
+                                <td class="px-6 py-4 text-left column-start">${member.membership_start || ''}</td>
+                                <td class="px-6 py-4 text-left column-end">${member.membership_end || ''}</td>
+                                <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
+                                    <a href="/members/${member.id}/edit" 
+                                        class="group flex items-center bg-indigo-100 hover:bg-indigo-500 px-2 py-1 sm:px-3 sm:py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        <span class="text-indigo-600 group-hover:text-white text-xs sm:text-sm">Edit</span>
+                                    </a>
+                                    <a href="/members/${member.id}/renew" 
+                                        class="group flex items-center bg-green-100 hover:bg-green-500 px-2 py-1 sm:px-3 sm:py-2 rounded-full transition space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-3 w-3 sm:h-4 sm:w-4 text-green-600 group-hover:text-white transition"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        <span class="text-green-600 group-hover:text-white text-xs sm:text-sm">Renew</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(row);
                     });
+
+                    tbody[0].offsetHeight;
                 }
 
                 function renderPagination(data) {
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
 
+                    if (!data || !data.last_page || data.last_page <= 1) {
+                        $('#paginationLinks').html('');
+                        return;
+                    }
+
                     if (data.current_page > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRenewals(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchExpiredMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 &laquo; First
                             </button>
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRenewals(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchExpiredMembers(${data.current_page - 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Previous
                             </button>`;
                     }
@@ -328,7 +405,7 @@
                     if (startPage > 1) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${1 === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchRenewals(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchExpiredMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 1
                             </button>`;
                         if (startPage > 2) {
@@ -338,7 +415,7 @@
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${i === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchRenewals(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchExpiredMembers(${i}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${i}
                             </button>`;
                     }
@@ -348,18 +425,18 @@
                         }
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border ${totalPages === currentPage ? 'bg-[#101966] text-white' : 'bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}"
-                                onclick="fetchRenewals(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchExpiredMembers(${totalPages}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 ${totalPages}
                             </button>`;
                     }
                     if (data.current_page < data.last_page) {
                         paginationHtml += `
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRenewals(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchExpiredMembers(${data.current_page + 1}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Next
                             </button>
                             <button class="px-3 py-1 rounded border bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-                                onclick="fetchRenewals(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
+                                onclick="fetchExpiredMembers(${data.last_page}, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val())">
                                 Last &raquo;
                             </button>`;
                     }
@@ -367,7 +444,29 @@
                     $('#paginationLinks').html(paginationHtml);
                 }
 
-                window.fetchRenewals = fetchRenewals;
+                window.fetchExpiredMembers = fetchExpiredMembers;
+
+                @if(session('success'))
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "{{ session('success') }}",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
+
+                @if(session('error'))
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "{{ session('error') }}",
+                        confirmButtonColor: "#101966",
+                        background: '#101966',
+                        color: '#fff'
+                    });
+                @endif
             });
         </script>
     </x-slot>

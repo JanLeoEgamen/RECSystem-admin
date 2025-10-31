@@ -113,29 +113,23 @@
                             <label for="is_published" class="ml-2">Published</label>
                         </div>
 
-                    <div>
-                        <label for="amount" class="text-sm font-medium">Amount</label>
-                        <div class="my-3">    
-                            <input value="{{ old('amount') }}" name="amount" id="amount" 
-                                placeholder="0.00" type="number" step="0.01" min="0"
-                                class="border-gray-300 shadow-sm w-full rounded-lg">
-                            @error('amount')
-                            <p class="text-red-400 font-medium"> {{ $message }} </p>
-                            @enderror
+                        <div>
+                            <label for="amount" class="text-sm font-medium text-gray-900 dark:text-gray-100">Amount</label>
+                            <div class="my-3">    
+                                <input value="{{ old('amount') }}" name="amount" id="amount" 
+                                    placeholder="0.00" type="number" step="0.01" min="0"
+                                    class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
+                                        bg-white dark:bg-gray-700
+                                        text-gray-900 dark:text-gray-100
+                                        placeholder-gray-500 dark:placeholder-gray-400
+                                        focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
+                                        dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
+                                        transition-colors duration-200">
+                                @error('amount')
+                                <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
-
-                    <div>
-                        <label for="amount" class="text-sm font-medium">Amount</label>
-                        <div class="my-3">    
-                            <input value="{{ old('amount') }}" name="amount" id="amount" 
-                                placeholder="0.00" type="number" step="0.01" min="0"
-                                class="border-gray-300 shadow-sm w-full rounded-lg">
-                            @error('amount')
-                            <p class="text-red-400 font-medium"> {{ $message }} </p>
-                            @enderror
-                        </div>
-                    </div>
 
                         <div class="mt-6">
                             <button type="submit" 

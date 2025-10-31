@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="flex-1 min-w-0">
                                     <h3 class="text-sm font-semibold text-white mb-1">Payment Required</h3>
                                     <p class="text-xs text-blue-100 dark:text-blue-200 leading-relaxed">
-                                        Php 50.00 payment via GCash is required after form submission. <br> This is the only accepted     method.
+                                        Php 50.00 payment via GCash is required after form submission. <br> This is the only accepted method.
                                     </p>
                                 </div>
                             </div>

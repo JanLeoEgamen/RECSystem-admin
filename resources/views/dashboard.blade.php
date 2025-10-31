@@ -293,30 +293,26 @@
                     </div>
                 </a>
 
-                <!-- Expiring Soon -->
-                <a href="{{ route('renew.index') }}" 
+                <!-- Expired Members -->
+                <a href="{{ route('members.expired') }}" 
                 class="relative overflow-hidden card animate-fade-in-down bg-gradient-to-r from-[#F66C2E] via-[#F2904D] to-[#FFEAD5] text-white rounded-lg shadow-lg shadow-gray-800/40 p-5 transform transition duration-500 hover:scale-110 hover:shadow-2xl"
                 style="animation-delay: 0.5s;">
-
+                
                     <svg class="absolute bottom-[-30px] right-0 w-44 h-28 opacity-50 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 200 100">
                         <path d="M0 85 L40 65 L80 75 L120 55 L160 70 L200 45" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
                     </svg>
-
+                
                     <div class="flex items-center relative z-10">
                         <div class="flex-shrink-0 bg-white bg-opacity-20 rounded-md p-3">
                             <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 
-                                4h.01m-6.938 4h13.856c1.54 
-                                0 2.502-1.667 1.732-3L13.732 
-                                4c-.77-1.333-2.694-1.333-3.464 
-                                0L3.34 16c-.77 1.333.192 3 1.732 
-                                3z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                             </svg>
                         </div>
                         <div class="ml-5 w-0 flex-1">
-                            <dt class="text-lg font-semibold text-white/90 truncate drop-shadow-md">Expiring Soon</dt>
+                            <dt class="text-lg font-semibold text-white/90 truncate drop-shadow-md">Expired Members</dt>
                             <dd class="flex items-baseline">
-                                <div class="text-2xl font-bold text-white drop-shadow">{{ $expiringSoon }}</div>
+                                <div class="text-2xl font-bold text-white drop-shadow">{{ $expiredMembers ?? 0 }}</div>
                             </dd>
                         </div>
                     </div>
