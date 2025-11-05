@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\CheckMembershipExpirations;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'approved.applicant' => \App\Http\Middleware\EnsureApplicantIsApproved::class,
             'application.incomplete' => \App\Http\Middleware\EnsureApplicationIsComplete::class,
             'active.membership' => App\Http\Middleware\EnsureMembershipIsActive::class,
-        ]);
+        ]); 
         
         // Add as global middleware (runs on every request)
         $middleware->web(append: [
@@ -28,4 +29,13 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->withCommands([
+        CheckMembershipExpirations::class,
+    ])
+    ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('membership:check-expirations')
+                 ->dailyAt('08:00')
+                 ->timezone('Asia/Manila');
+    })
+    ->create();

@@ -25,7 +25,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <form id="createPaymentMethodForm" action="{{ route('payment-methods.store') }}" method="post" enctype="multipart/form-data">
                         @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 gap-6">
                             <div>
                                 <label for="mode_of_payment_name" class="text-sm font-medium text-gray-900 dark:text-gray-100">Payment Method Name</label>
                                 <div class="my-3">    
@@ -45,10 +45,31 @@
                             </div>
 
                             <div>
-                                <label for="account_name" class="text-sm font-medium text-gray-900 dark:text-gray-100">Account Name</label>
+                                <label class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3 block">Category</label>
+                                <div class="flex space-x-6">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="category" value="renewal" 
+                                            {{ old('category', 'renewal') == 'renewal' ? 'checked' : '' }}
+                                            class="rounded border-gray-300 text-[#5e6ffb] focus:ring-[#5e6ffb]">
+                                        <span class="ml-2 text-gray-900 dark:text-gray-100">Renewal</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="category" value="application" 
+                                            {{ old('category') == 'application' ? 'checked' : '' }}
+                                            class="rounded border-gray-300 text-[#5e6ffb] focus:ring-[#5e6ffb]">
+                                        <span class="ml-2 text-gray-900 dark:text-gray-100">Application</span>
+                                    </label>
+                                </div>
+                                @error('category')
+                                <p class="text-red-400 dark:text-red-300 font-medium mt-2"> {{ $message }} </p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="amount" class="text-sm font-medium text-gray-900 dark:text-gray-100">Amount</label>
                                 <div class="my-3">    
-                                    <input value="{{ old('account_name') }}" name="account_name" id="account_name" 
-                                        placeholder="Account holder name" type="text" 
+                                    <input value="{{ old('amount') }}" name="amount" id="amount" 
+                                        placeholder="0.00" type="number" step="0.01" min="0"
                                         class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
                                             bg-white dark:bg-gray-700
                                             text-gray-900 dark:text-gray-100
@@ -56,30 +77,12 @@
                                             focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
                                             dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
                                             transition-colors duration-200">
-                                    @error('account_name')
+                                    @error('amount')
                                     <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
                                     @enderror
                                 </div>
                             </div>
 
-                            <div>
-                                <label for="account_number" class="text-sm font-medium text-gray-900 dark:text-gray-100">Account Number</label>
-                                <div class="my-3">    
-                                    <input value="{{ old('account_number') }}" name="account_number" id="account_number" 
-                                        placeholder="Account number or details" type="text" 
-                                        class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
-                                            bg-white dark:bg-gray-700
-                                            text-gray-900 dark:text-gray-100
-                                            placeholder-gray-500 dark:placeholder-gray-400
-                                            focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
-                                            dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
-                                            transition-colors duration-200">
-                                    @error('account_number')
-                                    <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
-                                    @enderror
-                                </div>
-                            </div>
-                            
                             <div>
                                 <label for="mode_of_payment_qr_image" class="text-sm font-medium text-gray-900 dark:text-gray-100">QR Code Image</label>
                                 <div class="my-3">    
@@ -104,30 +107,12 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload QR code image for this payment method (optional)</p>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="my-3 flex items-center">
-                            <input type="hidden" name="is_published" value="0">
-                            <input type="checkbox" name="is_published" id="is_published" class="rounded" value="1" 
-                                {{ old('is_published', isset($paymentMethod) ? $paymentMethod->is_published : true) ? 'checked' : '' }}>
-                            <label for="is_published" class="ml-2">Published</label>
-                        </div>
-
-                        <div>
-                            <label for="amount" class="text-sm font-medium text-gray-900 dark:text-gray-100">Amount</label>
-                            <div class="my-3">    
-                                <input value="{{ old('amount') }}" name="amount" id="amount" 
-                                    placeholder="0.00" type="number" step="0.01" min="0"
-                                    class="border-gray-300 dark:border-gray-600 shadow-sm w-full rounded-lg
-                                        bg-white dark:bg-gray-700
-                                        text-gray-900 dark:text-gray-100
-                                        placeholder-gray-500 dark:placeholder-gray-400
-                                        focus:ring-2 focus:ring-[#5e6ffb] focus:border-[#5e6ffb]
-                                        dark:focus:ring-[#5e6ffb] dark:focus:border-[#5e6ffb]
-                                        transition-colors duration-200">
-                                @error('amount')
-                                <p class="text-red-400 dark:text-red-300 font-medium"> {{ $message }} </p>
-                                @enderror
+                            <div class="my-3 flex items-center">
+                                <input type="hidden" name="is_published" value="0">
+                                <input type="checkbox" name="is_published" id="is_published" class="rounded" value="1" 
+                                    {{ old('is_published', true) ? 'checked' : '' }}>
+                                <label for="is_published" class="ml-2">Published</label>
                             </div>
                         </div>
 

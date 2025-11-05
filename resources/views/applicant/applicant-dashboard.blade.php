@@ -975,6 +975,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
                             Please scan the QR code or send payment to:
                         </p>
+
+                        <!-- Total Amount Due -->
+                        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 sm:p-4 rounded-lg mb-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 sm:gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                    </svg>
+                                    <span class="text-sm sm:text-base font-semibold text-green-800 dark:text-green-200">Total Amount Due:</span>
+                                </div>
+                                <span id="totalAmountDue" class="text-lg sm:text-xl font-bold text-green-800 dark:text-green-200">₱0.00</span>
+                            </div>
+                        </div>
                         
                         <!-- Payment Details -->
                         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3 sm:p-4 rounded-lg mb-4">
@@ -1024,7 +1037,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <select id="paymentMethodSelect" 
                                 class="w-full px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
                             <option value="">Choose a payment method...</option>
-                            @foreach($paymentMethods as $paymentMethod)
+                            @foreach($paymentMethods->where('category', 'application') as $paymentMethod)
                                 <option value="{{ $paymentMethod->id }}" 
                                         data-account-name="{{ $paymentMethod->account_name }}"
                                         data-account-number="{{ $paymentMethod->account_number }}"
@@ -1071,33 +1084,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <img id="imagePreview" class="max-w-full h-32 sm:h-40 lg:h-48 rounded-lg border border-gray-200 dark:border-gray-700 mx-auto" title="Click to reupload">
                                     </div>
                                 </label>
-                            </div>
-                            
-                            <!-- Refund Note and Account Details -->
-                            <div class="mt-4 sm:mt-6">
-                                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-4">
-                                    <div class="flex items-start gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                                        </svg>
-                                        <p class="text-xs sm:text-sm text-yellow-800 dark:text-yellow-200">
-                                            Please provide correct information below. In case of refunding, we will send the refunded payment to the details provided.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="mb-3 sm:mb-4">
-                                    <label for="gcashAccountName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Your Account Name <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="gcashAccountName" name="gcashAccountName" value="{{ $applicant->gcash_name ?? old('gcashAccountName') }}" required placeholder="e.g. Juan Dela Cruz" class="w-full px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
-                                </div>
-                                <div>
-                                    <label for="gcashAccountNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Your Account Number <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="gcashAccountNumber" name="gcashAccountNumber" value="{{ $applicant->gcash_number ?? old('gcashAccountNumber') }}" required placeholder="e.g. 09171234567" maxlength="11" oninput="validateGcashNumber(this)" class="w-full px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
-                                    <p id="gcashAccountNumberError" class="mt-1 text-xs sm:text-sm text-red-500 hidden">Please enter a valid 11-digit number starting with 09.</p>
-                                </div>
                             </div>
                         </div>
                         
@@ -1173,160 +1159,143 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    // Payment Method Selection Functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const paymentMethodSelect = document.getElementById('paymentMethodSelect');
-        const paymentMethodDetails = document.getElementById('paymentMethodDetails');
-        const noPaymentSelected = document.getElementById('noPaymentSelected');
-        const selectedMethodName = document.getElementById('selectedMethodName');
-        const qrCodeImage = document.getElementById('qrCodeImage');
-        const noQrCode = document.getElementById('noQrCode');
-        const displayAccountName = document.getElementById('displayAccountName');
-        const displayAccountNumber = document.getElementById('displayAccountNumber');
-        const displayAmount = document.getElementById('displayAmount');
-        const selectedPaymentMethodId = document.getElementById('selectedPaymentMethodId');
-        const submitButton = document.getElementById('submitButton');
+    <script>
+        // Payment Method Selection Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethodSelect = document.getElementById('paymentMethodSelect');
+            const paymentMethodDetails = document.getElementById('paymentMethodDetails');
+            const noPaymentSelected = document.getElementById('noPaymentSelected');
+            const selectedMethodName = document.getElementById('selectedMethodName');
+            const qrCodeImage = document.getElementById('qrCodeImage');
+            const noQrCode = document.getElementById('noQrCode');
+            const displayAccountName = document.getElementById('displayAccountName');
+            const displayAccountNumber = document.getElementById('displayAccountNumber');
+            const displayAmount = document.getElementById('displayAmount');
+            const selectedPaymentMethodId = document.getElementById('selectedPaymentMethodId');
+            const submitButton = document.getElementById('submitButton');
 
-        // Handle payment method selection
-        if (paymentMethodSelect) {
-            paymentMethodSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-                
-                if (selectedOption.value) {
-                    // Show payment method details and hide no selection message
-                    paymentMethodDetails.classList.remove('hidden');
-                    noPaymentSelected.classList.add('hidden');
+            // Handle payment method selection
+            if (paymentMethodSelect) {
+                paymentMethodSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
                     
-                    // Update displayed information
-                    selectedMethodName.textContent = selectedOption.getAttribute('data-method-name');
-                    displayAccountName.textContent = selectedOption.getAttribute('data-account-name') || '-';
-                    displayAccountNumber.textContent = selectedOption.getAttribute('data-account-number') || '-';
-                    
-                    const amount = selectedOption.getAttribute('data-amount');
-                    displayAmount.textContent = amount ? '₱' + parseFloat(amount).toFixed(2) : '-';
-                    
-                    // Update hidden field
-                    selectedPaymentMethodId.value = selectedOption.value;
-                    
-                    // Enable submit button
-                    submitButton.disabled = false;
-                    
-                    // Handle QR code image
-                    const qrImageUrl = selectedOption.getAttribute('data-qr-image');
-                    if (qrImageUrl && qrImageUrl !== '') {
-                        qrCodeImage.src = qrImageUrl;
-                        qrCodeImage.classList.remove('hidden');
-                        noQrCode.classList.add('hidden');
+                    if (selectedOption.value) {
+                        // Show payment method details and hide no selection message
+                        paymentMethodDetails.classList.remove('hidden');
+                        noPaymentSelected.classList.add('hidden');
+                        
+                        // Update displayed information
+                        selectedMethodName.textContent = selectedOption.getAttribute('data-method-name');
+                        displayAccountName.textContent = selectedOption.getAttribute('data-account-name') || '-';
+                        displayAccountNumber.textContent = selectedOption.getAttribute('data-account-number') || '-';
+                        
+                        const amount = selectedOption.getAttribute('data-amount');
+                        displayAmount.textContent = amount ? '₱' + parseFloat(amount).toFixed(2) : '-';
+
+                        // Inside the paymentMethodSelect change event, after setting displayAmount
+                        document.getElementById('totalAmountDue').textContent = amount ? '₱' + parseFloat(amount).toFixed(2) : '₱0.00';
+                        
+                        // Update hidden field
+                        selectedPaymentMethodId.value = selectedOption.value;
+                        
+                        // Enable submit button
+                        submitButton.disabled = false;
+                        
+                        // Handle QR code image
+                        const qrImageUrl = selectedOption.getAttribute('data-qr-image');
+                        if (qrImageUrl && qrImageUrl !== '') {
+                            qrCodeImage.src = qrImageUrl;
+                            qrCodeImage.classList.remove('hidden');
+                            noQrCode.classList.add('hidden');
+                        } else {
+                            qrCodeImage.classList.add('hidden');
+                            noQrCode.classList.remove('hidden');
+                        }
                     } else {
-                        qrCodeImage.classList.add('hidden');
-                        noQrCode.classList.remove('hidden');
+                        // Hide payment method details and show no selection message
+                        paymentMethodDetails.classList.add('hidden');
+                        noPaymentSelected.classList.remove('hidden');
+                        
+                        // Disable submit button
+                        submitButton.disabled = true;
+                        
+                        // Clear hidden field
+                        selectedPaymentMethodId.value = '';
                     }
-                } else {
-                    // Hide payment method details and show no selection message
-                    paymentMethodDetails.classList.add('hidden');
-                    noPaymentSelected.classList.remove('hidden');
-                    
-                    // Disable submit button
-                    submitButton.disabled = true;
-                    
-                    // Clear hidden field
-                    selectedPaymentMethodId.value = '';
-                }
-            });
-        }
+                });
+            }
 
-        // Form validation for payment method selection
-        const form = document.getElementById('paymentForm');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                if (!paymentMethodSelect.value) {
-                    e.preventDefault();
-                    alert('Please select a payment method before submitting your application.');
-                    paymentMethodSelect.focus();
-                    return false;
-                }
-                
-                // Additional validation can be added here
-                const refNumber = document.getElementById('gcashRefNumber').value;
-                const accountNumber = document.getElementById('gcashAccountNumber').value;
-                
-                if (!refNumber || refNumber.replace(/\s/g, '').length !== 13) {
-                    e.preventDefault();
-                    alert('Please enter a valid 13-digit reference number.');
-                    document.getElementById('gcashRefNumber').focus();
-                    return false;
-                }
-                
-                if (!accountNumber || !/^09[0-9]{9}$/.test(accountNumber)) {
-                    e.preventDefault();
-                    alert('Please enter a valid 11-digit account number starting with 09.');
-                    document.getElementById('gcashAccountNumber').focus();
-                    return false;
-                }
-            });
-        }
+            // Form validation for payment method selection
+            const form = document.getElementById('paymentForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!paymentMethodSelect.value) {
+                        e.preventDefault();
+                        alert('Please select a payment method before submitting your application.');
+                        paymentMethodSelect.focus();
+                        return false;
+                    }
+                    
+                    // Additional validation can be added here
+                    const refNumber = document.getElementById('gcashRefNumber').value;
+                    const accountNumber = document.getElementById('gcashAccountNumber').value;
+                    
+                    if (!refNumber || refNumber.replace(/\s/g, '').length !== 13) {
+                        e.preventDefault();
+                        alert('Please enter a valid 13-digit reference number.');
+                        document.getElementById('gcashRefNumber').focus();
+                        return false;
+                    }
+                    
+                    if (!accountNumber || !/^09[0-9]{9}$/.test(accountNumber)) {
+                        e.preventDefault();
+                        alert('Please enter a valid 11-digit account number starting with 09.');
+                        document.getElementById('gcashAccountNumber').focus();
+                        return false;
+                    }
+                });
+            }
 
-        // Close overlay functionality
-        const closePaymentOverlay = document.getElementById('closePaymentOverlay');
-        const paymentOverlay = document.getElementById('paymentOverlay');
-        
-        if (closePaymentOverlay && paymentOverlay) {
-            closePaymentOverlay.addEventListener('click', function() {
-                paymentOverlay.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            });
+            // Close overlay functionality
+            const closePaymentOverlay = document.getElementById('closePaymentOverlay');
+            const paymentOverlay = document.getElementById('paymentOverlay');
             
-            // Close when clicking outside the content
-            paymentOverlay.addEventListener('click', function(e) {
-                if (e.target === paymentOverlay) {
+            if (closePaymentOverlay && paymentOverlay) {
+                closePaymentOverlay.addEventListener('click', function() {
                     paymentOverlay.classList.add('hidden');
                     document.body.style.overflow = 'auto';
-                }
-            });
-        }
-    });
+                });
+                
+                // Close when clicking outside the content
+                paymentOverlay.addEventListener('click', function(e) {
+                    if (e.target === paymentOverlay) {
+                        paymentOverlay.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
 
-    $('#applicationForm').on('submit', function(e) {
-    // Handle hasLicense checkbox value
-    const hasLicenseCheckbox = document.getElementById('hasLicense');
-    if (hasLicenseCheckbox.checked) {
-        // Create a hidden input with value "on"
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'hasLicense';
-        hiddenInput.value = 'on';
-        this.appendChild(hiddenInput);
-    } else {
-        // Create a hidden input with value "0"
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'hasLicense';
-        hiddenInput.value = '0';
-        this.appendChild(hiddenInput);
-    }
-    
-    // Your existing code for relationship handling
-    var relSelect = document.getElementById('emergencyRelationship');
-    if (relSelect.value === 'Others') {
-        var otherInput = document.getElementById('otherRelationship');
-        if (otherInput && otherInput.value.trim() !== '') {
-            relSelect.value = otherInput.value.trim();
+        $('#applicationForm').on('submit', function(e) {
+        // Handle hasLicense checkbox value
+        const hasLicenseCheckbox = document.getElementById('hasLicense');
+        if (hasLicenseCheckbox.checked) {
+            // Create a hidden input with value "on"
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'hasLicense';
+            hiddenInput.value = 'on';
+            this.appendChild(hiddenInput);
+        } else {
+            // Create a hidden input with value "0"
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'hasLicense';
+            hiddenInput.value = '0';
+            this.appendChild(hiddenInput);
         }
-    }
-    
-    // Zip Code validation
-    const zipInput = document.getElementById('zipCode');
-    if (!validateZipCode(zipInput)) {
-        zipInput.scrollIntoView({behavior: 'smooth', block: 'center'});
-        zipInput.focus();
-        e.preventDefault();
-    }
-});
-
-$(document).ready(function() {
-    // On form submit, if relationship is 'Others', set select value to custom input
-    $('#applicationForm').on('submit', function(e) {
+        
+        // Your existing code for relationship handling
         var relSelect = document.getElementById('emergencyRelationship');
         if (relSelect.value === 'Others') {
             var otherInput = document.getElementById('otherRelationship');
@@ -1334,9 +1303,8 @@ $(document).ready(function() {
                 relSelect.value = otherInput.value.trim();
             }
         }
-    });
-    // Zip Code validation on form submit
-    $('#applicationForm').on('submit', function(e) {
+        
+        // Zip Code validation
         const zipInput = document.getElementById('zipCode');
         if (!validateZipCode(zipInput)) {
             zipInput.scrollIntoView({behavior: 'smooth', block: 'center'});
@@ -1345,675 +1313,701 @@ $(document).ready(function() {
         }
     });
 
-    $('#region').on('change', function() {
-        let regionCode = $(this).val();
+    $(document).ready(function() {
+        // On form submit, if relationship is 'Others', set select value to custom input
+        $('#applicationForm').on('submit', function(e) {
+            var relSelect = document.getElementById('emergencyRelationship');
+            if (relSelect.value === 'Others') {
+                var otherInput = document.getElementById('otherRelationship');
+                if (otherInput && otherInput.value.trim() !== '') {
+                    relSelect.value = otherInput.value.trim();
+                }
+            }
+        });
+        // Zip Code validation on form submit
+        $('#applicationForm').on('submit', function(e) {
+            const zipInput = document.getElementById('zipCode');
+            if (!validateZipCode(zipInput)) {
+                zipInput.scrollIntoView({behavior: 'smooth', block: 'center'});
+                zipInput.focus();
+                e.preventDefault();
+            }
+        });
 
-        $('#province').html('<option value="">Select</option>');
-        $('#municipality').html('<option value="">Select</option>');
-        $('#barangay').html('<option value="">Select</option>');
+        $('#region').on('change', function() {
+            let regionCode = $(this).val();
 
-        if(regionCode) {
-            $.ajax({
-                url: '/get-provinces/' + regionCode,
-                type: 'GET',
-                success: function(provinces) {
-                    provinces.forEach(function(prov) {
-                        $('#province').append('<option value="'+prov.psgc_prov_code+'">'+prov.psgc_prov_desc+'</option>');
-                    });
+            $('#province').html('<option value="">Select</option>');
+            $('#municipality').html('<option value="">Select</option>');
+            $('#barangay').html('<option value="">Select</option>');
+
+            if(regionCode) {
+                $.ajax({
+                    url: '/get-provinces/' + regionCode,
+                    type: 'GET',
+                    success: function(provinces) {
+                        provinces.forEach(function(prov) {
+                            $('#province').append('<option value="'+prov.psgc_prov_code+'">'+prov.psgc_prov_desc+'</option>');
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#province').on('change', function() {
+            let regionCode = $('#region').val();
+            let provinceCode = $(this).val();
+
+            $('#municipality').html('<option value="">Select</option>');
+            $('#barangay').html('<option value="">Select</option>');
+
+            if(regionCode && provinceCode) {
+                $.ajax({
+                    url: '/get-municipalities/' + regionCode + '/' + provinceCode,
+                    type: 'GET',
+                    success: function(municipalities) {
+                        municipalities.forEach(function(muni) {
+                            $('#municipality').append('<option value="'+muni.psgc_munc_code+'">'+muni.psgc_munc_desc+'</option>');
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#municipality').on('change', function() {
+            let regionCode = $('#region').val();
+            let provinceCode = $('#province').val();
+            let municipalityCode = $(this).val();
+
+            $('#barangay').html('<option value="">Select</option>');
+
+            if(regionCode && provinceCode && municipalityCode) {
+                $.ajax({
+                    url: '/get-barangays/' + regionCode + '/' + provinceCode + '/' + municipalityCode,
+                    type: 'GET',
+                    success: function(barangays) {
+                        barangays.forEach(function(brgy) {
+                            $('#barangay').append('<option value="'+brgy.psgc_brgy_code+'">'+brgy.psgc_brgy_desc+'</option>');
+                        });
+                    }
+                });
+            }
+        });
+
+        // Payment overlay functionality
+        const proceedToPaymentBtn = document.getElementById('proceedToPaymentBtn');
+        const paymentOverlay = document.getElementById('paymentOverlay');
+        const closePaymentOverlay = document.getElementById('closePaymentOverlay');
+        const applicationForm = document.getElementById('applicationForm');
+        const paymentForm = document.getElementById('paymentForm');
+
+        proceedToPaymentBtn.addEventListener('click', function() {
+            // Validate all visible required fields in the form
+            let firstInvalidField = null;
+            let isValid = true;
+
+            // Validate custom fields first
+            const emailValid = validateEmail(document.getElementById('email'));
+            const cellphoneValid = validatePhoneNumber(document.getElementById('cellphone'), 'cellphoneError');
+            const nameValid = validateFullName(document.getElementById('emergencyName'));
+            const emergencyContactValid = validatePhoneNumber(document.getElementById('emergencyContact'), 'emergencyContactError');
+            const zipValid = validateZipCode(document.getElementById('zipCode'));
+
+            if (!emailValid && !firstInvalidField) firstInvalidField = document.getElementById('email');
+            if (!cellphoneValid && !firstInvalidField) firstInvalidField = document.getElementById('cellphone');
+            if (!nameValid && !firstInvalidField) firstInvalidField = document.getElementById('emergencyName');
+            if (!emergencyContactValid && !firstInvalidField) firstInvalidField = document.getElementById('emergencyContact');
+            if (!zipValid && !firstInvalidField) firstInvalidField = document.getElementById('zipCode');
+
+            isValid = emailValid && cellphoneValid && nameValid && emergencyContactValid && zipValid;
+
+            // FIXED: Only validate license fields if license section is visible
+            const licenseSection = document.getElementById('license-info');
+            if (licenseSection.style.display !== 'none') {
+                const licenseClass = document.getElementById('licenseClass');
+                const licenseNumber = document.getElementById('licenseNumber');
+                const expirationDate = document.getElementById('expirationDate');
+                
+                if (!licenseClass.value) {
+                    licenseClass.classList.add('border-red-500');
+                    isValid = false;
+                    if (!firstInvalidField) firstInvalidField = licenseClass;
+                }
+                
+                if (!licenseNumber.value) {
+                    licenseNumber.classList.add('border-red-500');
+                    isValid = false;
+                    if (!firstInvalidField) firstInvalidField = licenseNumber;
+                }
+                
+                if (!expirationDate.value) {
+                    expirationDate.classList.add('border-red-500');
+                    isValid = false;
+                    if (!firstInvalidField) firstInvalidField = expirationDate;
+                }
+            }
+
+            // Validate all other required fields (text, select, date, etc.)
+            $(applicationForm).find('input[required]:visible, select[required]:visible, textarea[required]:visible').each(function() {
+                // Skip fields already validated above
+                if (["email","cellphone","emergencyName","emergencyContact","zipCode"].includes(this.id)) return;
+                // For license fields, skip if license section is hidden
+                if ((this.id === 'licenseClass' || this.id === 'licenseNumber' || this.id === 'expirationDate') && licenseSection.style.display === 'none') return;
+                // For otherRelationship, skip if not visible
+                if (this.id === 'otherRelationship' && $('#otherRelationshipContainer').hasClass('hidden')) return;
+                // If empty or invalid
+                if (!this.value || (this.type === 'checkbox' && !this.checked)) {
+                    $(this).addClass('border-red-500');
+                    isValid = false;
+                    if (!firstInvalidField) firstInvalidField = this;
+                } else {
+                    $(this).removeClass('border-red-500');
                 }
             });
-        }
-    });
 
-    $('#province').on('change', function() {
-        let regionCode = $('#region').val();
-        let provinceCode = $(this).val();
-
-        $('#municipality').html('<option value="">Select</option>');
-        $('#barangay').html('<option value="">Select</option>');
-
-        if(regionCode && provinceCode) {
-            $.ajax({
-                url: '/get-municipalities/' + regionCode + '/' + provinceCode,
-                type: 'GET',
-                success: function(municipalities) {
-                    municipalities.forEach(function(muni) {
-                        $('#municipality').append('<option value="'+muni.psgc_munc_code+'">'+muni.psgc_munc_desc+'</option>');
-                    });
+            if (!isValid) {
+                if (firstInvalidField) {
+                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalidField.focus();
                 }
-            });
-        }
-    });
-
-    $('#municipality').on('change', function() {
-        let regionCode = $('#region').val();
-        let provinceCode = $('#province').val();
-        let municipalityCode = $(this).val();
-
-        $('#barangay').html('<option value="">Select</option>');
-
-        if(regionCode && provinceCode && municipalityCode) {
-            $.ajax({
-                url: '/get-barangays/' + regionCode + '/' + provinceCode + '/' + municipalityCode,
-                type: 'GET',
-                success: function(barangays) {
-                    barangays.forEach(function(brgy) {
-                        $('#barangay').append('<option value="'+brgy.psgc_brgy_code+'">'+brgy.psgc_brgy_desc+'</option>');
-                    });
-                }
-            });
-        }
-    });
-
-    // Payment overlay functionality
-    const proceedToPaymentBtn = document.getElementById('proceedToPaymentBtn');
-    const paymentOverlay = document.getElementById('paymentOverlay');
-    const closePaymentOverlay = document.getElementById('closePaymentOverlay');
-    const applicationForm = document.getElementById('applicationForm');
-    const paymentForm = document.getElementById('paymentForm');
-
-    proceedToPaymentBtn.addEventListener('click', function() {
-        // Validate all visible required fields in the form
-        let firstInvalidField = null;
-        let isValid = true;
-
-        // Validate custom fields first
-        const emailValid = validateEmail(document.getElementById('email'));
-        const cellphoneValid = validatePhoneNumber(document.getElementById('cellphone'), 'cellphoneError');
-        const nameValid = validateFullName(document.getElementById('emergencyName'));
-        const emergencyContactValid = validatePhoneNumber(document.getElementById('emergencyContact'), 'emergencyContactError');
-        const zipValid = validateZipCode(document.getElementById('zipCode'));
-
-        if (!emailValid && !firstInvalidField) firstInvalidField = document.getElementById('email');
-        if (!cellphoneValid && !firstInvalidField) firstInvalidField = document.getElementById('cellphone');
-        if (!nameValid && !firstInvalidField) firstInvalidField = document.getElementById('emergencyName');
-        if (!emergencyContactValid && !firstInvalidField) firstInvalidField = document.getElementById('emergencyContact');
-        if (!zipValid && !firstInvalidField) firstInvalidField = document.getElementById('zipCode');
-
-        isValid = emailValid && cellphoneValid && nameValid && emergencyContactValid && zipValid;
-
-        // FIXED: Only validate license fields if license section is visible
-        const licenseSection = document.getElementById('license-info');
-        if (licenseSection.style.display !== 'none') {
-            const licenseClass = document.getElementById('licenseClass');
-            const licenseNumber = document.getElementById('licenseNumber');
-            const expirationDate = document.getElementById('expirationDate');
-            
-            if (!licenseClass.value) {
-                licenseClass.classList.add('border-red-500');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = licenseClass;
+                return;
             }
-            
-            if (!licenseNumber.value) {
-                licenseNumber.classList.add('border-red-500');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = licenseNumber;
-            }
-            
-            if (!expirationDate.value) {
-                expirationDate.classList.add('border-red-500');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = expirationDate;
-            }
-        }
 
-        // Validate all other required fields (text, select, date, etc.)
-        $(applicationForm).find('input[required]:visible, select[required]:visible, textarea[required]:visible').each(function() {
-            // Skip fields already validated above
-            if (["email","cellphone","emergencyName","emergencyContact","zipCode"].includes(this.id)) return;
-            // For license fields, skip if license section is hidden
-            if ((this.id === 'licenseClass' || this.id === 'licenseNumber' || this.id === 'expirationDate') && licenseSection.style.display === 'none') return;
-            // For otherRelationship, skip if not visible
-            if (this.id === 'otherRelationship' && $('#otherRelationshipContainer').hasClass('hidden')) return;
-            // If empty or invalid
-            if (!this.value || (this.type === 'checkbox' && !this.checked)) {
-                $(this).addClass('border-red-500');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = this;
+            // Check if user is a student
+            const isStudent = document.getElementById('isStudent').checked;
+            
+            if (isStudent) {
+                // If student, skip payment and go directly to data privacy modal
+                paymentFormData = new FormData();
+                consentModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             } else {
-                $(this).removeClass('border-red-500');
+                // If not student, show payment overlay as normal
+                paymentOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             }
         });
 
-        if (!isValid) {
-            if (firstInvalidField) {
-                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstInvalidField.focus();
-            }
-            return;
-        }
-
-        // Check if user is a student
-        const isStudent = document.getElementById('isStudent').checked;
-        
-        if (isStudent) {
-            // If student, skip payment and go directly to data privacy modal
-            paymentFormData = new FormData();
-            consentModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        } else {
-            // If not student, show payment overlay as normal
-            paymentOverlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-    });
-
-    closePaymentOverlay.addEventListener('click', function() {
-        paymentOverlay.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    // Consent Modal Functionality
-    const consentModal = document.getElementById('consentModal');
-    const closeConsentModal = document.getElementById('closeConsentModal');
-    const cancelConsent = document.getElementById('cancelConsent');
-    const confirmConsent = document.getElementById('confirmConsent');
-    const dataPrivacyConsent = document.getElementById('dataPrivacyConsent');
-    const consentError = document.getElementById('consentError');
-
-    let paymentFormData = null;
-
-    // Modify the payment form submission to show consent modal first
-    document.getElementById('paymentForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Store the form data
-        paymentFormData = new FormData(this);
-        
-        // Close payment overlay first
-        paymentOverlay.classList.add('hidden');
-        
-        // Then show consent modal
-        setTimeout(() => {
-            consentModal.classList.remove('hidden');
-        }, 300);
-    });
-
-    // Close modal handlers
-    [closeConsentModal, cancelConsent].forEach(button => {
-        button.addEventListener('click', function() {
-            consentModal.classList.add('hidden');
+        closePaymentOverlay.addEventListener('click', function() {
+            paymentOverlay.classList.add('hidden');
             document.body.style.overflow = 'auto';
-            paymentFormData = null;
-            
-            // Only reopen payment overlay if user is NOT a student
-            const isStudent = document.getElementById('isStudent').checked;
-            if (!isStudent) {
-                setTimeout(() => {
-                    paymentOverlay.classList.remove('hidden');
-                }, 100);
-            }
         });
-    });
 
+        // Consent Modal Functionality
+        const consentModal = document.getElementById('consentModal');
+        const closeConsentModal = document.getElementById('closeConsentModal');
+        const cancelConsent = document.getElementById('cancelConsent');
+        const confirmConsent = document.getElementById('confirmConsent');
+        const dataPrivacyConsent = document.getElementById('dataPrivacyConsent');
+        const consentError = document.getElementById('consentError');
 
-    // Close consent modal when clicking outside
-    consentModal.addEventListener('click', function(e) {
-        if (e.target === consentModal) {
-            consentModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            paymentFormData = null;
+        let paymentFormData = null;
+
+        // Modify the payment form submission to show consent modal first
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Only reopen payment overlay if user is NOT a student
-            const isStudent = document.getElementById('isStudent').checked;
-            if (!isStudent) {
-                setTimeout(() => {
-                    paymentOverlay.classList.remove('hidden');
-                }, 100);
-            }
-        }
-    });
-
-
-
-
-    // Confirm consent and submit
-    confirmConsent.addEventListener('click', function() {
-        if (!dataPrivacyConsent.checked) {
-            consentError.classList.remove('hidden');
-            dataPrivacyConsent.focus();
-            return;
-        }
-        
-        consentError.classList.add('hidden');
-        
-        // Close modal
-        consentModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-        
-        // Show loading state
-        Swal.fire({
-            title: 'Submitting Application',
-            text: 'Please wait while we process your application...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+            // Store the form data
+            paymentFormData = new FormData(this);
+            
+            // Close payment overlay first
+            paymentOverlay.classList.add('hidden');
+            
+            // Then show consent modal
+            setTimeout(() => {
+                consentModal.classList.remove('hidden');
+            }, 300);
         });
-        
-        // Combine application form data with payment form data and consent
-        const applicationFormData = new FormData(document.getElementById('applicationForm'));
-        
-        // Check if user is a student
-        const isStudent = document.getElementById('isStudent').checked;
-        
-        if (isStudent) {
-            // For students, add empty payment data or student-specific payment status
-            applicationFormData.append('isStudent', 'on');
-            applicationFormData.append('payment_status', 'waived'); // Or 'student'
-            applicationFormData.append('reference_number', 'STUDENT_WAIVED');
-        } else {
-            // For non-students, append payment data normally
-            if (paymentFormData) {
-                for (let [key, value] of paymentFormData.entries()) {
-                    applicationFormData.append(key, value);
+
+        // Close modal handlers
+        [closeConsentModal, cancelConsent].forEach(button => {
+            button.addEventListener('click', function() {
+                consentModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                paymentFormData = null;
+                
+                // Only reopen payment overlay if user is NOT a student
+                const isStudent = document.getElementById('isStudent').checked;
+                if (!isStudent) {
+                    setTimeout(() => {
+                        paymentOverlay.classList.remove('hidden');
+                    }, 100);
+                }
+            });
+        });
+
+
+        // Close consent modal when clicking outside
+        consentModal.addEventListener('click', function(e) {
+            if (e.target === consentModal) {
+                consentModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                paymentFormData = null;
+                
+                // Only reopen payment overlay if user is NOT a student
+                const isStudent = document.getElementById('isStudent').checked;
+                if (!isStudent) {
+                    setTimeout(() => {
+                        paymentOverlay.classList.remove('hidden');
+                    }, 100);
                 }
             }
-        }
-        
-        // Append the consent
-        applicationFormData.append('dataPrivacyConsent', dataPrivacyConsent.checked ? '1' : '0');
-        
-        // Submit the combined form data
-        fetch(document.getElementById('applicationForm').action, {
-            method: 'POST',
-            body: applicationFormData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            
-            if (response.redirected) {
-                window.location.href = response.url;
+        });
+
+
+
+
+        // Confirm consent and submit
+        confirmConsent.addEventListener('click', function() {
+            if (!dataPrivacyConsent.checked) {
+                consentError.classList.remove('hidden');
+                dataPrivacyConsent.focus();
                 return;
             }
             
-            // Clone the response to read it multiple times
-            return response.clone().json().then(data => {
-                console.log('Response data:', data);
-                return { status: response.status, data };
-            }).catch(error => {
-                console.error('Error parsing JSON:', error);
-                return response.text().then(text => {
-                    console.log('Response text:', text);
-                    return { status: response.status, text };
-                });
-            });
-        })
-        .then(result => {
-            let firstErrorField = null;
+            consentError.classList.add('hidden');
             
-            if (result.status === 422) {
-                console.log('Validation errors:', result.data);
-        
-                let errorMessage = 'Please fix the following errors:';
-                if (result.data && result.data.errors) {
-                    for (const field in result.data.errors) {
-                        errorMessage += `\n• ${result.data.errors[field][0]}`;
-                        
-                        // Highlight the problematic field
-                        const fieldElement = document.querySelector(`[name="${field}"]`);
-                        if (fieldElement) {
-                            fieldElement.classList.add('border-red-500');
-                            // Scroll to the first error field
-                            if (!firstErrorField) {
-                                firstErrorField = fieldElement;
-                                fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                fieldElement.focus();
-                            }
-                        }
-                    }
-                } else {
-                    errorMessage += '\n• Unknown validation error';
-                }
-                
-                Swal.fire('Validation Error', errorMessage, 'error');
-            } else if (result.data && result.data.redirect) {
-                window.location.href = result.data.redirect;
-            } else if (result.data && result.data.error) {
-                Swal.fire('Error', result.data.error, 'error');
-            } else {
-                Swal.fire('Error', 'An unexpected error occurred. Please try again.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'An error occurred while submitting your application. Please try again.', 'error');
-        })
-        .finally(() => {
-            Swal.close();
-            paymentFormData = null;
-        });
-    });
-
-    // Close modal when clicking outside
-    consentModal.addEventListener('click', function(e) {
-        if (e.target === consentModal) {
+            // Close modal
             consentModal.classList.add('hidden');
             document.body.style.overflow = 'auto';
-            paymentFormData = null;
+            
+            // Show loading state
+            Swal.fire({
+                title: 'Submitting Application',
+                text: 'Please wait while we process your application...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Combine application form data with payment form data and consent
+            const applicationFormData = new FormData(document.getElementById('applicationForm'));
+            
+            // Check if user is a student
+            const isStudent = document.getElementById('isStudent').checked;
+            
+            if (isStudent) {
+                // For students, add empty payment data or student-specific payment status
+                applicationFormData.append('isStudent', 'on');
+                applicationFormData.append('payment_status', 'waived'); // Or 'student'
+                applicationFormData.append('reference_number', 'STUDENT_WAIVED');
+            } else {
+                // For non-students, append payment data normally
+                if (paymentFormData) {
+                    for (let [key, value] of paymentFormData.entries()) {
+                        applicationFormData.append(key, value);
+                    }
+                }
+            }
+            
+            // Append the consent
+            applicationFormData.append('dataPrivacyConsent', dataPrivacyConsent.checked ? '1' : '0');
+            
+            // Submit the combined form data
+            fetch(document.getElementById('applicationForm').action, {
+                method: 'POST',
+                body: applicationFormData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+                
+                // Clone the response to read it multiple times
+                return response.clone().json().then(data => {
+                    console.log('Response data:', data);
+                    return { status: response.status, data };
+                }).catch(error => {
+                    console.error('Error parsing JSON:', error);
+                    return response.text().then(text => {
+                        console.log('Response text:', text);
+                        return { status: response.status, text };
+                    });
+                });
+            })
+            .then(result => {
+                let firstErrorField = null;
+                
+                if (result.status === 422) {
+                    console.log('Validation errors:', result.data);
+            
+                    let errorMessage = 'Please fix the following errors:';
+                    if (result.data && result.data.errors) {
+                        for (const field in result.data.errors) {
+                            errorMessage += `\n• ${result.data.errors[field][0]}`;
+                            
+                            // Highlight the problematic field
+                            const fieldElement = document.querySelector(`[name="${field}"]`);
+                            if (fieldElement) {
+                                fieldElement.classList.add('border-red-500');
+                                // Scroll to the first error field
+                                if (!firstErrorField) {
+                                    firstErrorField = fieldElement;
+                                    fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    fieldElement.focus();
+                                }
+                            }
+                        }
+                    } else {
+                        errorMessage += '\n• Unknown validation error';
+                    }
+                    
+                    Swal.fire('Validation Error', errorMessage, 'error');
+                } else if (result.data && result.data.redirect) {
+                    window.location.href = result.data.redirect;
+                } else if (result.data && result.data.error) {
+                    Swal.fire('Error', result.data.error, 'error');
+                } else {
+                    Swal.fire('Error', 'An unexpected error occurred. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'An error occurred while submitting your application. Please try again.', 'error');
+            })
+            .finally(() => {
+                Swal.close();
+                paymentFormData = null;
+            });
+        });
+
+        // Close modal when clicking outside
+        consentModal.addEventListener('click', function(e) {
+            if (e.target === consentModal) {
+                consentModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                paymentFormData = null;
+            }
+        });
+
+        document.getElementById('paymentProof').onchange = function() {
+            previewImage(this);
+            validatePaymentProof(this);
+        };
+
+        // Image preview functionality
+        window.previewImage = function(input) {
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImage = document.getElementById('imagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
         }
     });
 
-    document.getElementById('paymentProof').onchange = function() {
-        previewImage(this);
-        validatePaymentProof(this);
-    };
+    // Show/hide license section based on checkbox
+    document.getElementById('hasLicense').addEventListener('change', function() {
+        const licenseSection = document.getElementById('license-info');
+        if (this.checked) {
+            licenseSection.style.display = 'block';
+            // Make license fields required
+            document.getElementById('licenseClass').required = true;
+            document.getElementById('licenseNumber').required = true;
+            document.getElementById('callsign').required = true;
+            document.getElementById('expirationDate').required = true;
+        } else {
+            licenseSection.style.display = 'none';
+            // Remove required attributes
+            document.getElementById('licenseClass').required = false;
+            document.getElementById('licenseNumber').required = false;
+            document.getElementById('callsign').required = false;
+            document.getElementById('expirationDate').required = false;
+            // Clear license fields when hidden
+            document.getElementById('licenseClass').value = '';
+            document.getElementById('licenseNumber').value = '';
+            document.getElementById('callsign').value = '';
+            document.getElementById('expirationDate').value = '';
 
-    // Image preview functionality
-    window.previewImage = function(input) {
-        const previewContainer = document.getElementById('imagePreviewContainer');
-        const previewImage = document.getElementById('imagePreview');
+        }
+    });
+
+    // Validate email (must be Gmail)
+    function validateEmail(input) {
+        const errorElement = document.getElementById('emailError');
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
         
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                previewContainer.classList.remove('hidden');
-            }
-            
-            reader.readAsDataURL(input.files[0]);
+        if (!emailRegex.test(input.value)) {
+            input.classList.add('border-red-500');
+            errorElement.classList.remove('hidden');
+            return false;
+        } else {
+            input.classList.remove('border-red-500');
+            errorElement.classList.add('hidden');
+            return true;
         }
     }
-});
 
-// Show/hide license section based on checkbox
-document.getElementById('hasLicense').addEventListener('change', function() {
-    const licenseSection = document.getElementById('license-info');
-    if (this.checked) {
-        licenseSection.style.display = 'block';
-        // Make license fields required
-        document.getElementById('licenseClass').required = true;
-        document.getElementById('licenseNumber').required = true;
-        document.getElementById('callsign').required = true;
-        document.getElementById('expirationDate').required = true;
-    } else {
-        licenseSection.style.display = 'none';
-        // Remove required attributes
-        document.getElementById('licenseClass').required = false;
-        document.getElementById('licenseNumber').required = false;
-        document.getElementById('callsign').required = false;
-        document.getElementById('expirationDate').required = false;
-        // Clear license fields when hidden
-        document.getElementById('licenseClass').value = '';
-        document.getElementById('licenseNumber').value = '';
-        document.getElementById('callsign').value = '';
-        document.getElementById('expirationDate').value = '';
-
+    // Validate full name (at least first name and last name)
+    function validateFullName(input) {
+        const errorElement = document.getElementById('emergencyNameError');
+        const nameParts = input.value.trim().split(/\s+/);
+        
+        if (nameParts.length < 2) {
+            input.classList.add('border-red-500');
+            errorElement.classList.remove('hidden');
+            return false;
+        } else {
+            input.classList.remove('border-red-500');
+            errorElement.classList.add('hidden');
+            return true;
+        }
     }
-});
 
-// Validate email (must be Gmail)
-function validateEmail(input) {
-    const errorElement = document.getElementById('emailError');
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    
-    if (!emailRegex.test(input.value)) {
-        input.classList.add('border-red-500');
-        errorElement.classList.remove('hidden');
-        return false;
-    } else {
-        input.classList.remove('border-red-500');
-        errorElement.classList.add('hidden');
+    // Validate phone number (only digits, 11 characters)
+    function validatePhoneNumber(input, errorId) {
+        const errorElement = document.getElementById(errorId);
+        // Remove all non-digit characters
+        input.value = input.value.replace(/\D/g, '');
+        
+        if (input.value.length !== 11 || !input.value.startsWith('09')) {
+            input.classList.add('border-red-500');
+            errorElement.classList.remove('hidden');
+            return false;
+        } else {
+            input.classList.remove('border-red-500');
+            errorElement.classList.add('hidden');
+            return true;
+        }
+    }
+
+    // Validate GCash Account Number (11 digits, starts with 09)
+    function validateGcashNumber(input) {
+        const errorElement = document.getElementById('gcashAccountNumberError');
+        input.value = input.value.replace(/\D/g, '');
+        if (input.value.length !== 11 || !input.value.startsWith('09')) {
+            input.classList.add('border-red-500');
+            errorElement.classList.remove('hidden');
+            return false;
+        } else {
+            input.classList.remove('border-red-500');
+            errorElement.classList.add('hidden');
+            return true;
+        }
+    }
+
+    // Validate Zip Code (exactly 4 digits)
+    function validateZipCode(input) {
+        const errorElement = document.getElementById('zipCodeError');
+        // Remove all non-digit characters
+        input.value = input.value.replace(/\D/g, '');
+        if (input.value.length !== 4) {
+            input.classList.add('border-red-500');
+            errorElement.classList.remove('hidden');
+            return false;
+        } else {
+            input.classList.remove('border-red-500');
+            errorElement.classList.add('hidden');
+            return true;
+        }
+    }
+
+    // Other relationship field handling
+    document.getElementById('emergencyRelationship').addEventListener('change', function() {
+        const otherContainer = document.getElementById('otherRelationshipContainer');
+        if (this.value === 'Others') {
+            otherContainer.classList.remove('hidden');
+            document.getElementById('otherRelationship').setAttribute('required', 'required');
+        } else {
+            otherContainer.classList.add('hidden');
+            document.getElementById('otherRelationship').removeAttribute('required');
+        }
+    });
+
+    // Format GCash reference number with spaces (1234 567 123456)
+    function formatGcashRefNumber(input) {
+        // Remove all non-digit characters
+        let value = input.value.replace(/\D/g, '');
+        
+        // Limit to 13 digits only
+        value = value.substring(0, 13);
+        
+        // Format with spaces after 4 digits and then after 3 more digits
+        if (value.length > 4) {
+            value = value.substring(0, 4) + ' ' + value.substring(4);
+        }
+        if (value.length > 8) {
+            value = value.substring(0, 8) + ' ' + value.substring(8);
+        }
+        
+        input.value = value;
+        
+        // Validate the reference number
+        validateGcashRefNumber(input);
+    }
+
+    // Validate GCash reference number (exactly 13 digits)
+    function validateGcashRefNumber(input) {
+        const errorElement = document.getElementById('gcashRefError');
+        // Remove spaces to count only digits
+        const digitsOnly = input.value.replace(/\s/g, '');
+        
+        if (digitsOnly.length === 0) {
+            errorElement.classList.add('hidden');
+            input.classList.remove('border-red-500');
+            return false;
+        }
+        
+        const isValid = digitsOnly.length === 13;
+        
+        if (!isValid) {
+            errorElement.classList.remove('hidden');
+            input.classList.add('border-red-500');
+            return false;
+        } else {
+            errorElement.classList.add('hidden');
+            input.classList.remove('border-red-500');
+            return true;
+        }
+    }
+
+    // Allow only numbers to be entered
+    function isNumberKey(evt) {
+        const charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            evt.preventDefault();
+            return false;
+        }
         return true;
     }
-}
 
-// Validate full name (at least first name and last name)
-function validateFullName(input) {
-    const errorElement = document.getElementById('emergencyNameError');
-    const nameParts = input.value.trim().split(/\s+/);
-    
-    if (nameParts.length < 2) {
-        input.classList.add('border-red-500');
-        errorElement.classList.remove('hidden');
-        return false;
-    } else {
-        input.classList.remove('border-red-500');
-        errorElement.classList.add('hidden');
+    // Add validation to payment form submission
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        const gcashRefInput = document.getElementById('gcashRefNumber');
+        const isValid = validateGcashRefNumber(gcashRefInput);
+        
+        if (!isValid) {
+            e.preventDefault();
+            gcashRefInput.focus();
+        }
+    });
+
+    // Also add validation when the overlay is opened
+    document.getElementById('proceedToPaymentBtn').addEventListener('click', function() {
+        // Your existing validation code...
+        
+        // After showing overlay, focus on GCash reference input
+        setTimeout(() => {
+            document.getElementById('gcashRefNumber').focus();
+        }, 100);
+    });
+
+    function validatePaymentProof(input) {
+        // Remove any existing error
+        const existingError = input.parentNode.parentNode.querySelector('.payment-proof-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        if (!input.files || !input.files[0]) {
+            // Show error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
+            errorDiv.textContent = 'Please upload payment proof.';
+            input.parentNode.parentNode.appendChild(errorDiv);
+            
+            // Make the border red to indicate error
+            input.parentNode.parentNode.classList.add('border-red-500');
+            
+            return false;
+        }
+        
+        // Check file type
+        const file = input.files[0];
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!validTypes.includes(file.type)) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
+            errorDiv.textContent = 'Please upload a valid image (JPEG, PNG, JPG).';
+            input.parentNode.parentNode.appendChild(errorDiv);
+            
+            // Make the border red to indicate error
+            input.parentNode.parentNode.classList.add('border-red-500');
+            
+            return false;
+        }
+        
+        // Check file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
+            errorDiv.textContent = 'File size must be less than 5MB.';
+            input.parentNode.parentNode.appendChild(errorDiv);
+            
+            // Make the border red to indicate error
+            input.parentNode.parentNode.classList.add('border-red-500');
+            
+            return false;
+        }
+        
+        // Remove error styling if valid
+        input.parentNode.parentNode.classList.remove('border-red-500');
+        
         return true;
     }
-}
 
-// Validate phone number (only digits, 11 characters)
-function validatePhoneNumber(input, errorId) {
-    const errorElement = document.getElementById(errorId);
-    // Remove all non-digit characters
-    input.value = input.value.replace(/\D/g, '');
-    
-    if (input.value.length !== 11 || !input.value.startsWith('09')) {
-        input.classList.add('border-red-500');
-        errorElement.classList.remove('hidden');
-        return false;
-    } else {
-        input.classList.remove('border-red-500');
-        errorElement.classList.add('hidden');
-        return true;
-    }
-}
+    // Show/hide student section based on checkbox
+    document.getElementById('isStudent').addEventListener('change', function() {
+        const studentSection = document.getElementById('student-info');
+        if (this.checked) {
+            studentSection.style.display = 'block';
+        } else {
+            studentSection.style.display = 'none';
+            // Clear student fields when hidden
+            document.getElementById('studentNumber').value = '';
+            document.getElementById('school').value = '';
+            document.getElementById('program').value = '';
+            document.getElementById('yearLevel').value = '';
+        }
 
-// Validate GCash Account Number (11 digits, starts with 09)
-function validateGcashNumber(input) {
-    const errorElement = document.getElementById('gcashAccountNumberError');
-    input.value = input.value.replace(/\D/g, '');
-    if (input.value.length !== 11 || !input.value.startsWith('09')) {
-        input.classList.add('border-red-500');
-        errorElement.classList.remove('hidden');
-        return false;
-    } else {
-        input.classList.remove('border-red-500');
-        errorElement.classList.add('hidden');
-        return true;
-    }
-}
+        const proceedButton = document.getElementById('proceedToPaymentBtn');
+        if (this.checked) {
+            proceedButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+                Proceed to Submit
+            `;
+        } else {
+            proceedButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+                Proceed to Payment
+            `;
+        }
 
-// Validate Zip Code (exactly 4 digits)
-function validateZipCode(input) {
-    const errorElement = document.getElementById('zipCodeError');
-    // Remove all non-digit characters
-    input.value = input.value.replace(/\D/g, '');
-    if (input.value.length !== 4) {
-        input.classList.add('border-red-500');
-        errorElement.classList.remove('hidden');
-        return false;
-    } else {
-        input.classList.remove('border-red-500');
-        errorElement.classList.add('hidden');
-        return true;
-    }
-}
+    });
 
-// Other relationship field handling
-document.getElementById('emergencyRelationship').addEventListener('change', function() {
-    const otherContainer = document.getElementById('otherRelationshipContainer');
-    if (this.value === 'Others') {
-        otherContainer.classList.remove('hidden');
-        document.getElementById('otherRelationship').setAttribute('required', 'required');
-    } else {
-        otherContainer.classList.add('hidden');
-        document.getElementById('otherRelationship').removeAttribute('required');
-    }
-});
-
-// Format GCash reference number with spaces (1234 567 123456)
-function formatGcashRefNumber(input) {
-    // Remove all non-digit characters
-    let value = input.value.replace(/\D/g, '');
-    
-    // Limit to 13 digits only
-    value = value.substring(0, 13);
-    
-    // Format with spaces after 4 digits and then after 3 more digits
-    if (value.length > 4) {
-        value = value.substring(0, 4) + ' ' + value.substring(4);
-    }
-    if (value.length > 8) {
-        value = value.substring(0, 8) + ' ' + value.substring(8);
-    }
-    
-    input.value = value;
-    
-    // Validate the reference number
-    validateGcashRefNumber(input);
-}
-
-// Validate GCash reference number (exactly 13 digits)
-function validateGcashRefNumber(input) {
-    const errorElement = document.getElementById('gcashRefError');
-    // Remove spaces to count only digits
-    const digitsOnly = input.value.replace(/\s/g, '');
-    
-    if (digitsOnly.length === 0) {
-        errorElement.classList.add('hidden');
-        input.classList.remove('border-red-500');
-        return false;
-    }
-    
-    const isValid = digitsOnly.length === 13;
-    
-    if (!isValid) {
-        errorElement.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    } else {
-        errorElement.classList.add('hidden');
-        input.classList.remove('border-red-500');
-        return true;
-    }
-}
-
-// Allow only numbers to be entered
-function isNumberKey(evt) {
-    const charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-        evt.preventDefault();
-        return false;
-    }
-    return true;
-}
-
-// Add validation to payment form submission
-document.getElementById('paymentForm').addEventListener('submit', function(e) {
-    const gcashRefInput = document.getElementById('gcashRefNumber');
-    const isValid = validateGcashRefNumber(gcashRefInput);
-    
-    if (!isValid) {
-        e.preventDefault();
-        gcashRefInput.focus();
-    }
-});
-
-// Also add validation when the overlay is opened
-document.getElementById('proceedToPaymentBtn').addEventListener('click', function() {
-    // Your existing validation code...
-    
-    // After showing overlay, focus on GCash reference input
-    setTimeout(() => {
-        document.getElementById('gcashRefNumber').focus();
-    }, 100);
-});
-
-function validatePaymentProof(input) {
-    // Remove any existing error
-    const existingError = input.parentNode.parentNode.querySelector('.payment-proof-error');
-    if (existingError) {
-        existingError.remove();
-    }
-    
-    if (!input.files || !input.files[0]) {
-        // Show error message
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
-        errorDiv.textContent = 'Please upload payment proof.';
-        input.parentNode.parentNode.appendChild(errorDiv);
+    // Also handle on page load for existing applicants
+    document.addEventListener('DOMContentLoaded', function() {
+        const isStudentCheckbox = document.getElementById('isStudent');
+        const studentSection = document.getElementById('student-info');
         
-        // Make the border red to indicate error
-        input.parentNode.parentNode.classList.add('border-red-500');
-        
-        return false;
-    }
-    
-    // Check file type
-    const file = input.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    if (!validTypes.includes(file.type)) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
-        errorDiv.textContent = 'Please upload a valid image (JPEG, PNG, JPG).';
-        input.parentNode.parentNode.appendChild(errorDiv);
-        
-        // Make the border red to indicate error
-        input.parentNode.parentNode.classList.add('border-red-500');
-        
-        return false;
-    }
-    
-    // Check file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'mt-2 p-2 bg-red-100 text-red-700 rounded payment-proof-error';
-        errorDiv.textContent = 'File size must be less than 5MB.';
-        input.parentNode.parentNode.appendChild(errorDiv);
-        
-        // Make the border red to indicate error
-        input.parentNode.parentNode.classList.add('border-red-500');
-        
-        return false;
-    }
-    
-    // Remove error styling if valid
-    input.parentNode.parentNode.classList.remove('border-red-500');
-    
-    return true;
-}
+        // Show student section if applicant is a student or checkbox is checked
+        if ({{ $applicant->is_student ?? 'false' }} || isStudentCheckbox.checked) {
+            studentSection.style.display = 'block';
+        }
+    });
 
-// Show/hide student section based on checkbox
-document.getElementById('isStudent').addEventListener('change', function() {
-    const studentSection = document.getElementById('student-info');
-    if (this.checked) {
-        studentSection.style.display = 'block';
-    } else {
-        studentSection.style.display = 'none';
-        // Clear student fields when hidden
-        document.getElementById('studentNumber').value = '';
-        document.getElementById('school').value = '';
-        document.getElementById('program').value = '';
-        document.getElementById('yearLevel').value = '';
-    }
-
-    const proceedButton = document.getElementById('proceedToPaymentBtn');
-    if (this.checked) {
-        proceedButton.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-            Proceed to Submit
-        `;
-    } else {
-        proceedButton.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-            Proceed to Payment
-        `;
-    }
-
-});
-
-// Also handle on page load for existing applicants
-document.addEventListener('DOMContentLoaded', function() {
-    const isStudentCheckbox = document.getElementById('isStudent');
-    const studentSection = document.getElementById('student-info');
-    
-    // Show student section if applicant is a student or checkbox is checked
-    if ({{ $applicant->is_student ?? 'false' }} || isStudentCheckbox.checked) {
-        studentSection.style.display = 'block';
-    }
-});
-</script>
+    // Initialize total amount display
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('totalAmountDue').textContent = '₱0.00';
+    });
+    </script>
 </x-app-layout>

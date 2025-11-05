@@ -42,7 +42,9 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             ->get();
 
         // Load payment methods
-        $paymentMethods = PaymentMethod::where('is_published', true)->get(); 
+        $paymentMethods = PaymentMethod::where('category', 'application')
+            ->where('is_published', true)
+            ->get();
 
 
         // For rejected/refunded payments, allow access to form with pre-populated data

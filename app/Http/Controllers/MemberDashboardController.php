@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-
-use App\Models\MemberFile;
+use App\Models\PaymentMethod;
 use App\Models\MemberFileUpload; 
 
 class MemberDashboardController extends Controller implements HasMiddleware
@@ -107,18 +106,26 @@ class MemberDashboardController extends Controller implements HasMiddleware
                                 ->first();
         }
 
+        $paymentMethods = PaymentMethod::where('category', 'renewal')
+            ->where('is_published', true)
+            ->get();
+
         return view('member.renew', [
             'hasPendingRenewal' => $hasPendingRenewal,
             'pendingRenewal' => $pendingRenewal,
-            'member' => $member
+            'member' => $member,
+            'paymentMethods' => $paymentMethods 
         ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'selected_payment_method_id' => 'required|exists:payment_methods,id',
             'reference_number' => 'required|string|max:255|unique:renewals',
             'receipt' => 'required|image|max:2048',
+            'gcash_account_name' => 'required|string|max:255',
+            'gcash_account_number' => 'required|string|max:11|min:11',
         ]);
 
         $member = Auth::user()->member;
@@ -143,10 +150,21 @@ class MemberDashboardController extends Controller implements HasMiddleware
 
             $renewal = Renewal::create([
                 'member_id' => $member->id,
+                'payment_method_id' => $request->selected_payment_method_id,
                 'reference_number' => $request->reference_number,
                 'receipt_path' => $receiptPath,
+                'gcash_account_name' => $request->gcash_account_name,
+                'gcash_account_number' => $request->gcash_account_number,
                 'status' => 'pending',
             ]);
+
+            // Update user's GCash information (optional)
+            if ($request->gcash_account_name && $request->gcash_account_number) {
+                Auth::user()->update([
+                    'gcash_name' => $request->gcash_account_name,
+                    'gcash_number' => $request->gcash_account_number,
+                ]);
+            }
 
             // Detailed activity log
             logMembershipRenewal(
@@ -155,6 +173,7 @@ class MemberDashboardController extends Controller implements HasMiddleware
                 'Membership renewal submitted',
                 [
                     'reference_number' => $request->reference_number,
+                    'payment_method_id' => $request->selected_payment_method_id,
                     'receipt_path' => $receiptPath,
                     'renewal_id' => $renewal->id,
                     'ip' => $request->ip()
@@ -182,17 +201,17 @@ class MemberDashboardController extends Controller implements HasMiddleware
     }
 
     public function thankYou()
-{
-    // Check if user came from a successful submission
-    if (!session()->has('reference_number')) {
-        return redirect()->route('member.renew');
+    {
+        // Check if user came from a successful submission
+        if (!session()->has('reference_number')) {
+            return redirect()->route('member.renew');
+        }
+
+        // Logout the user immediately
+        Auth::logout();
+
+        return view('member.renew-thank-you');
     }
-
-    // Logout the user immediately
-    Auth::logout();
-
-    return view('member.renew-thank-you');
-}
 
 
     public function announcements()

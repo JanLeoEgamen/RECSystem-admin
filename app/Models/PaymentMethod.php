@@ -14,11 +14,14 @@ class PaymentMethod extends Model
 
     protected $fillable = [
         'mode_of_payment_name',
-        'account_name',
-        'account_number',
+        'category',
         'mode_of_payment_qr_image',
         'is_published',
         'amount',
+    ];
+
+    protected $casts = [
+        'category' => 'string',
     ];
 
     // Activity logs

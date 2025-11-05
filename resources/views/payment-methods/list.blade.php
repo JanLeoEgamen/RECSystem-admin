@@ -33,8 +33,8 @@
                                     <option value="created_desc">Default</option>
                                     <option value="mode_of_payment_name_asc">Payment Method (A-Z)</option>
                                     <option value="mode_of_payment_name_desc">Payment Method (Z-A)</option>
-                                    <option value="account_name_asc">Account Name (A-Z)</option>
-                                    <option value="account_name_desc">Account Name (Z-A)</option>
+                                    <option value="category_asc">Category (A-Z)</option>
+                                    <option value="category_desc">Category (Z-A)</option>
                                     <option value="amount_asc">Amount (Low to High)</option>
                                     <option value="amount_desc">Amount (High to Low)</option>
                                     <option value="created_asc">Created (Oldest First)</option>
@@ -89,10 +89,10 @@
                                 <option value="created_desc">Default</option>
                                 <option value="mode_of_payment_name_asc">Payment Method (A-Z)</option>
                                 <option value="mode_of_payment_name_desc">Payment Method (Z-A)</option>
-                                <option value="account_name_asc">Account Name (A-Z)</option>
-                                <option value="account_name_desc">Account Name (Z-A)</option>
-                                <option value="amount_asc">Amount (Low to High)</option> <!-- Add this line -->
-                                <option value="amount_desc">Amount (High to Low)</option> <!-- Add this line -->
+                                <option value="category_asc">Category (A-Z)</option>
+                                <option value="category_desc">Category (Z-A)</option>
+                                <option value="amount_asc">Amount (Low to High)</option>
+                                <option value="amount_desc">Amount (High to Low)</option>
                                 <option value="created_asc">Created (Oldest First)</option>
                             </select>
                         </div>
@@ -103,15 +103,14 @@
                     </div>
 
                     <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div class="min-w-[1000px]">
+                        <div class="min-w-[800px]">
                             <table id="paymentMethodsTable" class="w-full bg-white dark:bg-gray-900 text-sm">
                                 <thead class="bg-[#101966] dark:bg-gray-700 text-gray-200 dark:text-gray-200">
                                     <tr class="border-b dark:border-gray-700">
                                         <th class="px-6 py-3 text-center font-medium">#</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-mode_of_payment_name">Payment Method</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-account_name">Account Name</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-account_number">Account Number</th>
-                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-amount">Amount</th> 
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-category">Category</th>
+                                        <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-amount">Amount</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-is_published">Status</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-created">Created</th>
                                         <th class="px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white">Action</th>
@@ -214,10 +213,10 @@
                     const sortMap = {
                         'mode_of_payment_name_asc': { sort: 'mode_of_payment_name', direction: 'asc' },
                         'mode_of_payment_name_desc': { sort: 'mode_of_payment_name', direction: 'desc' },
-                        'account_name_asc': { sort: 'account_name', direction: 'asc' },
-                        'account_name_desc': { sort: 'account_name', direction: 'desc' },
+                        'category_asc': { sort: 'category', direction: 'asc' },
+                        'category_desc': { sort: 'category', direction: 'desc' },
                         'amount_asc': { sort: 'amount', direction: 'asc' },
-                        'amount_desc': { sort: 'amount', direction: 'desc' }, 
+                        'amount_desc': { sort: 'amount', direction: 'desc' },
                         'created_asc': { sort: 'created_at', direction: 'asc' },
                         'created_desc': { sort: 'created_at', direction: 'desc' }
                     };
@@ -245,75 +244,79 @@
                     });
                 }
 
-function renderPaymentMethods(paymentMethods, startIndex) {
-    let tbody = $('#paymentMethodsTable tbody');
-    tbody.empty();
-    
-    paymentMethods.forEach((paymentMethod, index) => {
-        const rowNumber = startIndex + index;
-        
-        let qrCodeHtml = 'N/A';
-        
-        let row = `
-            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
-                <td class="px-6 py-4 text-center">${rowNumber}</td>
-                <td class="px-6 py-4 text-center column-mode_of_payment_name">${paymentMethod.mode_of_payment_name}</td>
-                <td class="px-6 py-4 text-center column-account_name">${paymentMethod.account_name}</td>
-                <td class="px-6 py-4 text-center column-account_number">${paymentMethod.account_number}</td>
-                <td class="px-6 py-4 text-center column-amount">${paymentMethod.amount ? '₱' + parseFloat(paymentMethod.amount).toFixed(2) : 'N/A'}</td> <!-- Add this line -->
-                <td class="px-6 py-4 text-center column-is_published">
-                    ${paymentMethod.is_published 
-                        ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-200">Published</span>'
-                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-200">Draft</span>'}
-                </td>
-
-                <td class="px-6 py-4 text-center column-created">${paymentMethod.created_at}</td>
-                <td class="px-6 py-4 text-center">
-                    <div class="flex justify-center items-center space-x-2">
-                        <!-- View Button -->
-                        <a href="/payment-methods/${paymentMethod.id}/view" 
-                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            <span class="text-green-600 group-hover:text-white text-sm">View</span>
-                        </a>
+                function renderPaymentMethods(paymentMethods, startIndex) {
+                    let tbody = $('#paymentMethodsTable tbody');
+                    tbody.empty();
+                    
+                    paymentMethods.forEach((paymentMethod, index) => {
+                        const rowNumber = startIndex + index;
                         
-                        <!-- Edit Button -->
-                        <a href="/payment-methods/${paymentMethod.id}/edit" 
-                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                            </svg>
-                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
-                        </a>
-                        
-                        <!-- Delete Button -->
-                        <button onclick="deletePaymentMethod(${paymentMethod.id})" 
-                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-        tbody.append(row);
-    });
-}
+                        let row = `
+                            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
+                                <td class="px-6 py-4 text-center">${rowNumber}</td>
+                                <td class="px-6 py-4 text-center column-mode_of_payment_name">${paymentMethod.mode_of_payment_name}</td>
+                                <td class="px-6 py-4 text-center column-category">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                        paymentMethod.category === 'renewal' 
+                                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
+                                            : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                    }">
+                                        ${paymentMethod.category === 'renewal' ? 'Renewal' : 'Application'}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center column-amount">${paymentMethod.amount ? '₱' + parseFloat(paymentMethod.amount).toFixed(2) : 'N/A'}</td>
+                                <td class="px-6 py-4 text-center column-is_published">
+                                    ${paymentMethod.is_published 
+                                        ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-200">Published</span>'
+                                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-200">Draft</span>'}
+                                </td>
+                                <td class="px-6 py-4 text-center column-created">${paymentMethod.created_at}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        <!-- View Button -->
+                                        <a href="/payment-methods/${paymentMethod.id}/view" 
+                                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span class="text-green-600 group-hover:text-white text-sm">View</span>
+                                        </a>
+                                        
+                                        <!-- Edit Button -->
+                                        <a href="/payment-methods/${paymentMethod.id}/edit" 
+                                            class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                            </svg>
+                                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
+                                        </a>
+                                        
+                                        <!-- Delete Button -->
+                                        <button onclick="deletePaymentMethod(${paymentMethod.id})" 
+                                            class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(row);
+                    });
+                }
 
                 function renderPagination(data) {
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';

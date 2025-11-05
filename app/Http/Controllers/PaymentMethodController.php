@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
@@ -35,10 +34,8 @@ class PaymentMethodController extends Controller implements HasMiddleware
                 if ($request->has('search') && !empty($request->search)) {
                     $query->where(function ($q) use ($request) {
                         $q->where('mode_of_payment_name', 'like', '%' . $request->search . '%')
-                          ->orWhere('account_name', 'like', '%' . $request->search . '%')
-                          ->orWhere('account_number', 'like', '%' . $request->search . '%')
-                          ->orWhere('amount', 'like', '%' . $request->search . '%'); 
-
+                          ->orWhere('amount', 'like', '%' . $request->search . '%')
+                          ->orWhere('category', 'like', '%' . $request->search . '%');
                     });
                 }
 
@@ -53,8 +50,7 @@ class PaymentMethodController extends Controller implements HasMiddleware
                     return [
                         'id' => $paymentMethod->id,
                         'mode_of_payment_name' => $paymentMethod->mode_of_payment_name,
-                        'account_name' => $paymentMethod->account_name,
-                        'account_number' => $paymentMethod->account_number,
+                        'category' => $paymentMethod->category,
                         'amount' => $paymentMethod->amount,
                         'is_published' => $paymentMethod->is_published,
                         'mode_of_payment_qr_image' => $paymentMethod->mode_of_payment_qr_image 
@@ -103,11 +99,9 @@ class PaymentMethodController extends Controller implements HasMiddleware
 
             $paymentMethod = new PaymentMethod();
             $paymentMethod->mode_of_payment_name = $validated['mode_of_payment_name'];
-            $paymentMethod->account_name = $validated['account_name'];
-            $paymentMethod->account_number = $validated['account_number'];
-            $paymentMethod->is_published = $validated['is_published'] ?? true;
+            $paymentMethod->category = $validated['category'];
             $paymentMethod->amount = $validated['amount'] ?? null;
-
+            $paymentMethod->is_published = $validated['is_published'] ?? true;
 
             if ($request->hasFile('mode_of_payment_qr_image')) {
                 $this->storeQRImage($paymentMethod, $request->file('mode_of_payment_qr_image'));
@@ -155,11 +149,9 @@ class PaymentMethodController extends Controller implements HasMiddleware
             $validated = $this->validatePaymentMethodRequest($request);
 
             $paymentMethod->mode_of_payment_name = $validated['mode_of_payment_name'];
-            $paymentMethod->account_name = $validated['account_name'];
-            $paymentMethod->account_number = $validated['account_number'];
+            $paymentMethod->category = $validated['category'];
             $paymentMethod->amount = $validated['amount'] ?? $paymentMethod->amount;
             $paymentMethod->is_published = $validated['is_published'] ?? $paymentMethod->is_published;
-
 
             if ($request->hasFile('mode_of_payment_qr_image')) {
                 $this->deleteQRImage($paymentMethod);
@@ -215,24 +207,24 @@ class PaymentMethodController extends Controller implements HasMiddleware
         }
     }
 
-public function view($id)
-{
-    try {
-        $paymentMethod = PaymentMethod::findOrFail($id);
-        
-        return view('payment-methods.view', compact('paymentMethod'));
+    public function view($id)
+    {
+        try {
+            $paymentMethod = PaymentMethod::findOrFail($id);
+            
+            return view('payment-methods.view', compact('paymentMethod'));
 
-    } catch (ModelNotFoundException $e) {
-        Log::warning("Payment method not found for viewing: {$id}");
-        return redirect()->route('payment-methods.index')
-            ->with('error', 'Payment method not found.');
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Payment method not found for viewing: {$id}");
+            return redirect()->route('payment-methods.index')
+                ->with('error', 'Payment method not found.');
 
-    } catch (\Exception $e) {
-        Log::error("Payment method view error for ID {$id}: " . $e->getMessage());
-        return redirect()->route('payment-methods.index')
-            ->with('error', 'Failed to load payment method. Please try again.');
+        } catch (\Exception $e) {
+            Log::error("Payment method view error for ID {$id}: " . $e->getMessage());
+            return redirect()->route('payment-methods.index')
+                ->with('error', 'Failed to load payment method. Please try again.');
+        }
     }
-}
 
     /**
      * Validate payment method request data
@@ -241,10 +233,9 @@ public function view($id)
     {
         $rules = [
             'mode_of_payment_name' => 'required|string|min:2|max:255',
-            'account_name' => 'required|string|min:2|max:100',
-            'account_number' => 'required|string|min:2|max:100',
+            'category' => 'required|in:renewal,application',
+            'amount' => 'nullable|numeric|min:0',
             'is_published' => 'sometimes|boolean',
-            'amount' => 'nullable|numeric|min:0', 
             'mode_of_payment_qr_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
@@ -266,15 +257,11 @@ public function view($id)
                 $query->orderBy('mode_of_payment_name', $direction);
                 break;
                 
-            case 'account_name':
-                $query->orderBy('account_name', $direction);
+            case 'category':
+                $query->orderBy('category', $direction);
                 break;
                 
-            case 'account_number':
-                $query->orderBy('account_number', $direction);
-                break; 
-                        
-            case 'amount': // Add this case
+            case 'amount':
                 $query->orderBy('amount', $direction);
                 break;
 
