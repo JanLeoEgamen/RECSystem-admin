@@ -33,21 +33,123 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
-                                <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
-                                    <option value="10" selected>10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
+                    <!-- Desktop Filter Layout -->
+                    <div class="hidden sm:block mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-md border-2 border-blue-100 dark:border-gray-600 p-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <!-- Entries per page -->
+                                <div class="space-y-2">
+                                    <label class="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                        </svg>
+                                        Entries per page
+                                    </label>
+                                    <select id="perPage" class="w-full border-2 border-blue-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                                        <option value="10">10 per page</option>
+                                        <option value="20">20 per page</option>
+                                        <option value="50">50 per page</option>
+                                        <option value="100">100 per page</option>
+                                    </select>
+                                </div>
+
+                                <!-- Sort Order -->
+                                <div class="space-y-2">
+                                    <label class="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                                        </svg>
+                                        Sort Order
+                                    </label>
+                                    <select id="sortBy" class="w-full border-2 border-blue-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                                        <option value="refunded_desc">Newest First</option>
+                                        <option value="refunded_asc">Oldest First</option>
+                                        <option value="name_asc">Name (A-Z)</option>
+                                        <option value="name_desc">Name (Z-A)</option>
+                                        <option value="amount_desc">Amount (High to Low)</option>
+                                        <option value="amount_asc">Amount (Low to High)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Search -->
+                                <div class="space-y-2">
+                                    <label class="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        <svg class="w-5 h-5 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                        Search
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" placeholder="Search Name" 
+                                            class="w-full border-2 border-blue-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Results Info -->
+                            <div class="mt-4 pt-4 border-t border-blue-200 dark:border-gray-500">
+                                <div class="flex items-center justify-between text-xs">
+                                    <div id="resultInfo" class="flex items-center text-gray-600 dark:text-gray-300 font-medium">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Showing <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="startRecord">0</span> to 
+                                        <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="endRecord">0</span> of 
+                                        <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="totalRecords">0</span> items
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Filter Layout -->
+                    <div class="sm:hidden mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-md border-2 border-blue-100 dark:border-gray-600 p-4 space-y-4">
+                            <!-- Search -->
+                            <div class="space-y-2">
+                                <label class="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                    <svg class="w-5 h-5 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                    Search
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="mobileSearchInput" placeholder="Search Name" 
+                                        class="w-full border-2 border-blue-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Entries per page -->
+                            <div class="space-y-2">
+                                <label class="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                    </svg>
+                                    Entries per page
+                                </label>
+                                <select id="mobilePerPage" class="w-full border-2 border-blue-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                    <option value="10">10 per page</option>
+                                    <option value="20">20 per page</option>
+                                    <option value="50">50 per page</option>
+                                    <option value="100">100 per page</option>
                                 </select>
                             </div>
 
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
-                                <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
+                            <!-- Sort Order -->
+                            <div class="space-y-2">
+                                <label class="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                    <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                                    </svg>
+                                    Sort Order
+                                </label>
+                                <select id="mobileSortBy" class="w-full border-2 border-blue-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                                     <option value="refunded_desc">Newest First</option>
                                     <option value="refunded_asc">Oldest First</option>
                                     <option value="name_asc">Name (A-Z)</option>
@@ -56,63 +158,18 @@
                                     <option value="amount_asc">Amount (Low to High)</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div class="flex items-center space-x-4">
-                            <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
+                            <!-- Results Info -->
+                            <div class="pt-3 border-t border-blue-200 dark:border-gray-500">
+                                <div id="mobileResultInfo" class="flex items-center justify-center text-xs text-gray-600 dark:text-gray-300 font-medium">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Showing <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="mobileStartRecord">0</span> to 
+                                    <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="mobileEndRecord">0</span> of 
+                                    <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="mobileTotalRecords">0</span> items
+                                </div>
                             </div>
-                            <div class="relative w-48">
-                                <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                                </svg>
-
-                                <input type="text" id="searchInput" 
-                                    placeholder="Search Name" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
-                                    dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="sm:hidden space-y-3 mb-4">
-                        <div class="relative w-full">
-                            <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                            </svg>
-
-                            <input type="text" id="mobileSearchInput" placeholder="Search Name" 
-                                class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
-                                dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
-                            <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="10" selected>10</option>
-                                <option value="20">20</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
-                            <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="refunded_desc">Newest First</option>
-                                <option value="refunded_asc">Oldest First</option>
-                                <option value="name_asc">Name (A-Z)</option>
-                                <option value="name_desc">Name (Z-A)</option>
-                                <option value="amount_desc">Amount (High to Low)</option>
-                                <option value="amount_asc">Amount (Low to High)</option>
-                            </select>
-                        </div>
-
-                        <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
-                            Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
                         </div>
                     </div>
 
@@ -245,6 +302,23 @@
                     let tbody = $('#refundLogsTable tbody');
                     tbody.empty();
                     
+                    if (logs.length === 0) {
+                        tbody.append(`
+                            <tr class="border-b dark:border-gray-700">
+                                <td colspan="9" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    <div class="flex flex-col items-center space-y-3">
+                                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                        </svg>
+                                        <div class="text-lg font-medium text-gray-400 dark:text-gray-500">No refund logs found</div>
+                                        <div class="text-sm text-gray-400 dark:text-gray-500">There are currently no refund records available to display</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                        return;
+                    }
+                    
                     logs.forEach((log, index) => {
                         const rowNumber = startIndex + index;
                         const fullName = log.first_name + ' ' + log.last_name;
@@ -273,6 +347,12 @@
                 }
 
                 function renderPagination(data) {
+                    if (data.total === 0) {
+                        $('#paginationLinks').hide();
+                        return;
+                    }
+                    
+                    $('#paginationLinks').show();
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
 
                     if (data.current_page > 1) {

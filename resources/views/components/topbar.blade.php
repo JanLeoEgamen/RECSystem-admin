@@ -21,6 +21,22 @@
 .max-h-80::-webkit-scrollbar-thumb:hover {
     background-color: #4c5bdb;
 }
+
+/* Tooltip animation */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+}
 </style>
 <!-- Alpine.js Root for Mobile Menu -->
 <div x-data="{ memberMenuOpen: false }" class="flex flex-col flex-1 overflow-hidden">
@@ -33,35 +49,143 @@
             <div class="flex items-center space-x-3">
                 <!-- Sidebar Toggle (Admin Only) -->
                 @can('view admin dashboard')
-                <button 
-                    @click="
-                        sidebarOpen = !sidebarOpen;
+                <div class="relative group" x-data="{ 
+                    leftSidebarNotificationCount: 0,
+                    init() {
+                        this.updateLeftSidebarNotificationCount();
+                        window.addEventListener('storage', () => {
+                            this.updateLeftSidebarNotificationCount();
+                        });
+                        setInterval(() => {
+                            this.updateLeftSidebarNotificationCount();
+                        }, 1000);
+                    },
+                    updateLeftSidebarNotificationCount() {
+                        let count = 0;
+                        
+                        // New Users (last 7 days)
+                        const lastViewedUsers = '{{ session('viewed_users') }}';
+                        @php
+                            $newUserCount = \App\Models\User::where('created_at', '>=', now()->subDays(7))
+                                ->when(session('viewed_users'), function($query) {
+                                    return $query->where('created_at', '>', session('viewed_users'));
+                                })
+                                ->count();
+                        @endphp
+                        const newUserCount = {{ $newUserCount }};
+                        if (newUserCount > 0) count++;
+                        
+                        // Student Applicants
+                        @php
+                            $studentApplicantCount = \App\Models\Applicant::where('is_student', true)
+                                ->where('status', 'pending')
+                                ->when(session('viewed_student_applicants'), function($query) {
+                                    return $query->where('created_at', '>', session('viewed_student_applicants'));
+                                })
+                                ->count();
+                        @endphp
+                        const studentApplicantCount = {{ $studentApplicantCount }};
+                        if (studentApplicantCount > 0) count++;
+                        
+                        // Regular Applicants
+                        @php
+                            $applicantCount = \App\Models\Applicant::where('status', 'pending')
+                                ->when(session('viewed_applicants'), function($query) {
+                                    return $query->where('created_at', '>', session('viewed_applicants'));
+                                })
+                                ->count();
+                        @endphp
+                        const applicantCount = {{ $applicantCount }};
+                        if (applicantCount > 0) count++;
+                        
+                        // Unlicensed Members
+                        @php
+                            $unlicensedCount = \App\Models\Member::whereNull('license_number')
+                                ->when(session('viewed_licenses'), function($query) {
+                                    return $query->where('created_at', '>', session('viewed_licenses'));
+                                })
+                                ->count();
+                        @endphp
+                        const unlicensedCount = {{ $unlicensedCount }};
+                        if (unlicensedCount > 0) count++;
+                        
+                        // Pending Renewals
+                        @php
+                            $renewalCount = \App\Models\Renewal::where('status', 'pending')
+                                ->when(session('viewed_renewals'), function($query) {
+                                    return $query->where('created_at', '>', session('viewed_renewals'));
+                                })
+                                ->count();
+                        @endphp
+                        const renewalCount = {{ $renewalCount }};
+                        if (renewalCount > 0) count++;
+                        
+                        // Pending Payments
+                        @php
+                            $pendingPaymentCount = \App\Models\Applicant::where('payment_status', 'pending')
+                                ->when(session('viewed_payments'), function($query) {
+                                    return $query->where('updated_at', '>', session('viewed_payments'));
+                                })
+                                ->count();
+                        @endphp
+                        const pendingPaymentCount = {{ $pendingPaymentCount }};
+                        if (pendingPaymentCount > 0) count++;
+                        
+                        this.leftSidebarNotificationCount = count;
+                    }
+                }">
+                    <button 
+                        @click="
+                            sidebarOpen = !sidebarOpen;
 
-                        if (sidebarOpen) {
-                            rightSidebarOpen = false;
+                            if (sidebarOpen) {
+                                rightSidebarOpen = false;
 
-                            const url = new URL(window.location);
-                            url.searchParams.set('from_menu', 'true');
-                            window.history.replaceState({}, '', url);
+                                const url = new URL(window.location);
+                                url.searchParams.set('from_menu', 'true');
+                                window.history.replaceState({}, '', url);
 
-                            setTimeout(() => {
-                                document.querySelectorAll('.sidebar-item').forEach((el, index) => {
-                                    el.classList.remove('animate'); 
-                                    void el.offsetWidth;
-                                    el.classList.add('animate'); 
-                                });
-                            }, 10);
-                        }
-                    " 
-                    class="p-2 rounded-md text-white dark:text-gray-200 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#5e6ffb]"
-                >
-                    <svg x-show="!sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    <svg x-show="sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                                setTimeout(() => {
+                                    document.querySelectorAll('.sidebar-item').forEach((el, index) => {
+                                        el.classList.remove('animate'); 
+                                        void el.offsetWidth;
+                                        el.classList.add('animate'); 
+                                    });
+                                }, 10);
+                            }
+                        " 
+                        class="p-2 rounded-md text-white dark:text-gray-200 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#5e6ffb] relative"
+                        title="Navigation Tool"
+                    >
+                        <svg x-show="!sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg x-show="sidebarOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        
+                        <!-- Notification Badge for Left Sidebar -->
+                        <span x-show="leftSidebarNotificationCount > 0" class="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5" style="display: none;">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-4 w-4 md:h-5 md:w-5 bg-red-500 text-white text-[9px] md:text-[10px] items-center justify-center font-bold" x-text="leftSidebarNotificationCount">
+                            </span>
+                        </span>
+                    </button>
+                    
+                    <!-- Tooltip for Navigation Tool -->
+                    <div class="absolute top-full left-0 mt-2 hidden group-hover:block z-50 animate-fade-in">
+                        <div class="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                            <!-- Arrow -->
+                            <div class="absolute bottom-full left-4 -mb-1">
+                                <div class="w-2 h-2 bg-gray-900 transform rotate-45"></div>
+                            </div>
+                            <div class="font-semibold">Navigation Tool</div>
+                            <div x-show="leftSidebarNotificationCount > 0" class="text-red-300 text-[10px] mt-0.5" style="display: none;">
+                                <span x-text="leftSidebarNotificationCount"></span> pending notification<span x-show="leftSidebarNotificationCount > 1">s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 @endcan
 
                 <!-- Logo and DZ1REC Badge -->
@@ -297,8 +421,21 @@
                         </div>
                     </div>
 
-                    <img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/FFFFFF/user-shield.png" alt="admin" class="mr-2">
-                    <span class="font-medium text-white dark:text-gray-200 mr-2">Super Admin</span>
+                    <div class="relative group flex items-center">
+                        <img width="24" height="24" src="https://img.icons8.com/ios-glyphs/30/FFFFFF/user-shield.png" alt="admin" class="mr-2">
+                        <span class="font-medium text-white dark:text-gray-200 mr-2">Super Admin</span>
+                        
+                        <!-- Tooltip for Super Admin -->
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:block z-50 pointer-events-none animate-fade-in">
+                            <div class="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg relative">
+                                <!-- Arrow -->
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2">
+                                    <div class="w-2 h-2 bg-gray-900 transform rotate-45 -mb-1"></div>
+                                </div>
+                                <div class="font-semibold">Currently accessing Super Admin account</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @endcan
                 @endrole
@@ -310,25 +447,84 @@
                 <!-- Right Sidebar Toggle (Admin only) -->
                 @role('superadmin')
                 @can('view admin dashboard')
-                <button 
-                    @click="
-                        if (window.innerWidth < 768) {
-                            rightSidebarOpen = !rightSidebarOpen;
-                            if (rightSidebarOpen) sidebarOpen = false;
-                        } else {
-                            rightSidebarOpen = !rightSidebarOpen;
-                        }
-                    " 
-                    class="p-1 rounded-md hover:bg-white/10 focus:outline-none transition-colors duration-150"
-                    :class="{ 'bg-white/10': rightSidebarOpen }"
-                >
-                    <svg x-show="!rightSidebarOpen" class="w-4 h-4 md:w-5 md:h-5 text-white transform transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    <svg x-show="rightSidebarOpen" class="w-4 h-4 md:w-5 md:h-5 text-[#5E6FFB] transform transition-transform duration-200 rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                </button>
+                <div class="relative group" x-data="{ 
+                    notificationCount: 0,
+                    init() {
+                        this.updateNotificationCount();
+                        window.addEventListener('storage', () => {
+                            this.updateNotificationCount();
+                        });
+                        setInterval(() => {
+                            this.updateNotificationCount();
+                        }, 1000);
+                    },
+                    updateNotificationCount() {
+                        const reviewedNotifications = JSON.parse(localStorage.getItem('reviewedNotifications') || '[]');
+                        let count = 0;
+                        @if(\App\Models\Applicant::where('status', 'pending')->where('is_student', true)->count() > 0)
+                        if (!reviewedNotifications.includes('student_applicants')) count++;
+                        @endif
+                        @if(\App\Models\Applicant::where('status', 'pending')->where('is_student', false)->count() > 0)
+                        if (!reviewedNotifications.includes('regular_applicants')) count++;
+                        @endif
+                        @if(\App\Models\Applicant::where('status', 'pending')->where('has_license', true)->count() > 0)
+                        if (!reviewedNotifications.includes('licensed_applicants')) count++;
+                        @endif
+                        @if(\App\Models\Applicant::where('status', 'pending')->where('has_license', false)->count() > 0)
+                        if (!reviewedNotifications.includes('unlicensed_applicants')) count++;
+                        @endif
+                        this.notificationCount = count;
+                    }
+                }">
+                    <button 
+                        @click="
+                            if (window.innerWidth < 768) {
+                                rightSidebarOpen = !rightSidebarOpen;
+                                if (rightSidebarOpen) {
+                                    sidebarOpen = false;
+                                    window.dispatchEvent(new CustomEvent('toggle-right-sidebar'));
+                                }
+                            } else {
+                                rightSidebarOpen = !rightSidebarOpen;
+                                if (rightSidebarOpen) {
+                                    window.dispatchEvent(new CustomEvent('toggle-right-sidebar'));
+                                }
+                            }
+                        "
+                        @toggle-right-sidebar.window="rightSidebarOpen = true; if (window.innerWidth < 768) sidebarOpen = false;"
+                        class="relative p-1 rounded-md hover:bg-white/10 focus:outline-none transition-colors duration-150"
+                        :class="{ 'bg-white/10': rightSidebarOpen }"
+                        title="Quick Actions"
+                    >
+                        <svg x-show="!rightSidebarOpen" class="w-4 h-4 md:w-5 md:h-5 text-white transform transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <svg x-show="rightSidebarOpen" class="w-4 h-4 md:w-5 md:h-5 text-[#5E6FFB] transform transition-transform duration-200 rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        
+                        <!-- Notification Badge -->
+                        <span x-show="notificationCount > 0" class="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5" style="display: none;">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-4 w-4 md:h-5 md:w-5 bg-red-500 text-white text-[9px] md:text-[10px] items-center justify-center font-bold" x-text="notificationCount">
+                            </span>
+                        </span>
+                    </button>
+                    
+                    <!-- Tooltip -->
+                    <div class="absolute top-full right-0 mt-2 hidden group-hover:block z-50 animate-fade-in">
+                        <div class="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                            <!-- Arrow -->
+                            <div class="absolute bottom-full right-4 -mb-1">
+                                <div class="w-2 h-2 bg-gray-900 transform rotate-45"></div>
+                            </div>
+                            <div class="font-semibold">Quick Actions</div>
+                            <div x-show="notificationCount > 0" class="text-red-300 text-[10px] mt-0.5" style="display: none;">
+                                <span x-text="notificationCount"></span> pending notification<span x-show="notificationCount > 1">s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 @endcan
                 @endrole
             </div>

@@ -126,8 +126,6 @@ class GlobalSearchController extends Controller
         'members' => [
             'index' => ['label' => 'View Members', 'route' => 'members.index'],
             'create' => ['label' => 'Create Member', 'route' => 'members.showMemberCreateForm'],
-            'active' => ['label' => 'View Active Members', 'route' => 'members.active'],
-            'inactive' => ['label' => 'View Inactive Members', 'route' => 'members.inactive'],
         ],
 
         // Membership Types

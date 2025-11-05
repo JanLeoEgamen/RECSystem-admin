@@ -52,6 +52,45 @@
     .sidebar-item.animate:nth-child(14) { animation-delay: 0.75s; }
     .sidebar-item.animate:nth-child(15) { animation-delay: 0.8s; }
     .sidebar-item.animate:nth-child(n+16) { animation-delay: 0.85s; }
+
+    /* Pulsing animation for NEW badge */
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+    }
+
+    /* Shining effect for NEW badge */
+    @keyframes shine {
+        0% {
+            background-position: -100% 0;
+        }
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    .new-badge {
+        position: relative;
+        overflow: hidden;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        background: linear-gradient(
+            90deg,
+            #ef4444 0%,
+            #ef4444 40%,
+            #fff 50%,
+            #ef4444 60%,
+            #ef4444 100%
+        );
+        background-size: 200% 100%;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite, 
+                   shine 3s linear infinite;
+    }
 </style>
 
 @canany(['view admin dashboard', 'view applicant dashboard'])
@@ -192,6 +231,12 @@
 
             @php
                 $userManagementActive = request()->routeIs('users.index', 'roles.index', 'permissions.index');
+                $lastViewedUsers = session('viewed_users');
+                $newUserCount = \App\Models\User::where('created_at', '>=', now()->subDays(7))
+                    ->when($lastViewedUsers, function($query) use ($lastViewedUsers) {
+                        return $query->where('created_at', '>', $lastViewedUsers);
+                    })
+                    ->count();
             @endphp
             @canany(['view users', 'view roles', 'view permissions'])
             <div class="sidebar-item {{ $shouldAnimate ? 'animate' : '' }}">
@@ -212,6 +257,11 @@
                     <span class="flex-1 text-left">
                         {{ __('User Management') }}
                     </span>
+                    @if($newUserCount > 0)
+                        <span class="new-badge ml-1 px-1.5 py-0.5 text-[9px] font-bold bg-red-500 text-white rounded-full uppercase">
+                            NEW
+                        </span>
+                    @endif
                     <svg 
                         class="ml-1 h-4 w-4" 
                         :class="{'rotate-180': isDropdownOpen('userManagement')}" 
@@ -228,10 +278,25 @@
                     <x-nav-link 
                         :href="route('users.index')" 
                         :active="request()->routeIs('users.index')"  
-                        class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('users.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                        class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('users.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
                         transition-transform duration-300 hover:scale-105 active:scale-95">
-                        <img src="https://img.icons8.com/sf-black-filled/64/FFFFFF/conference-call.png" class="w-4 h-4 mr-2 object-contain" alt="Users">
-                        <span>{{ __('Users') }}</span>
+                        <div class="flex items-center">
+                            <img src="https://img.icons8.com/sf-black-filled/64/FFFFFF/conference-call.png" class="w-4 h-4 mr-2 object-contain" alt="Users">
+                            <span>{{ __('Users') }}</span>
+                        </div>
+                        @php
+                            $lastViewedUsers = session('viewed_users');
+                            $newUserCount = \App\Models\User::where('created_at', '>=', now()->subDays(7))
+                                ->when($lastViewedUsers, function($query) use ($lastViewedUsers) {
+                                    return $query->where('created_at', '>', $lastViewedUsers);
+                                })
+                                ->count();
+                        @endphp
+                        @if($newUserCount > 0)
+                            <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-red-400 text-white rounded-full">
+                                {{ $newUserCount > 99 ? '99+' : $newUserCount }}
+                            </span>
+                        @endif
                     </x-nav-link>
                 @endcan
                 @can('view roles')
@@ -362,6 +427,45 @@
                         'members.index', 'licenses.index','renew.index', 'cashier.index',
                         'payment-methods.index'
                     );
+                    $lastViewedStudentApplicants = session('viewed_student_applicants');
+                    $lastViewedApplicants = session('viewed_applicants');
+                    $lastViewedLicenses = session('viewed_licenses');
+                    $lastViewedRenewals = session('viewed_renewals');
+                    $lastViewedPayments = session('viewed_payments');
+                    
+                    $studentApplicantCount = \App\Models\Applicant::where('is_student', true)
+                        ->where('status', 'pending')
+                        ->when($lastViewedStudentApplicants, function($query) use ($lastViewedStudentApplicants) {
+                            return $query->where('created_at', '>', $lastViewedStudentApplicants);
+                        })
+                        ->count();
+                    
+                    $applicantCount = \App\Models\Applicant::where('status', 'pending')
+                        ->when($lastViewedApplicants, function($query) use ($lastViewedApplicants) {
+                            return $query->where('created_at', '>', $lastViewedApplicants);
+                        })
+                        ->count();
+                    
+                    $unlicensedCount = \App\Models\Member::whereNull('license_number')
+                        ->orWhere('license_number', '')
+                        ->when($lastViewedLicenses, function($query) use ($lastViewedLicenses) {
+                            return $query->where('updated_at', '>', $lastViewedLicenses);
+                        })
+                        ->count();
+                    
+                    $renewalCount = \App\Models\Renewal::where('status', 'pending')
+                        ->when($lastViewedRenewals, function($query) use ($lastViewedRenewals) {
+                            return $query->where('created_at', '>', $lastViewedRenewals);
+                        })
+                        ->count();
+                    
+                    $pendingPaymentCount = \App\Models\Applicant::where('payment_status', 'pending')
+                        ->when($lastViewedPayments, function($query) use ($lastViewedPayments) {
+                            return $query->where('updated_at', '>', $lastViewedPayments);
+                        })
+                        ->count();
+                    
+                    $memberManagementTotal = $studentApplicantCount + $applicantCount + $unlicensedCount + $renewalCount + $pendingPaymentCount;
                 @endphp
                 <button 
                     @click.stop="toggleDropdown('memberManagement')" 
@@ -377,6 +481,11 @@
                     <span class="flex-1 text-left">
                         {{ __('Member Management') }}
                     </span>
+                    @if($memberManagementTotal > 0)
+                        <span class="new-badge ml-1 px-1.5 py-0.5 text-[9px] font-bold bg-red-500 text-white rounded-full uppercase">
+                            NEW
+                        </span>
+                    @endif
                     <svg 
                         class="ml-1 h-4 w-4" 
                         :class="{'rotate-180': isDropdownOpen('memberManagement')}" 
@@ -421,44 +530,56 @@
                             <span>{{ __('Sections') }}</span>
                         </x-nav-link>
                     @endcan
-                    @can('view applicants')
-                        <div class="relative">
-                            <button 
-                                @click.stop="toggleDropdown('applicants')" 
-                                class="w-full flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 
-                                {{ request()->routeIs('applicants.index', 'student-applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
-                                transition-transform duration-300 hover:scale-105 active:scale-95">
-                                <img src="https://img.icons8.com/material-rounded/24/FFFFFF/parse-resume.png" class="w-4 h-4 mr-2 object-contain" alt="Applicants">
-                                <span class="flex-1 text-left">{{ __('Applicants') }}</span>
-                                <svg 
-                                    class="ml-1 h-3 w-3" 
-                                    :class="{'rotate-180': isDropdownOpen('applicants')}" 
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" 
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" 
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <div :class="{'dropdown-content open': isDropdownOpen('applicants'), 'dropdown-content': !isDropdownOpen('applicants')}"
-                                class="ml-6 mt-1 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-1">
-                                <x-nav-link :href="route('applicants.index')" :active="request()->routeIs('applicants.index')" 
-                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
-                                transition-transform duration-300 hover:scale-105 active:scale-95">
-                                    <img src="https://img.icons8.com/material-rounded/24/FFFFFF/parse-resume.png" class="w-4 h-4 mr-2 object-contain" alt="General Applicants">
-                                    <span>{{ __('Total Applicants') }}</span>
-                                </x-nav-link>
 
-                                @can('view student applicants')
-                                <x-nav-link :href="route('student-applicants.index')" :active="request()->routeIs('student-applicants.index')" 
-                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('student-applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
-                                transition-transform duration-300 hover:scale-105 active:scale-95">
-                                    <img src="https://img.icons8.com/material-rounded/24/FFFFFF/student-male.png" class="w-4 h-4 mr-2 object-contain" alt="Student Applicants">
-                                    <span>{{ __('Student Applicants') }}</span>
-                                </x-nav-link>
-                                @endcan
+                    @can('view student applicants')
+                        <x-nav-link :href="route('student-applicants.index')" :active="request()->routeIs('student-applicants.index')" 
+                        class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('student-applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                        transition-transform duration-300 hover:scale-105 active:scale-95">
+                            <div class="flex items-center">
+                                <img src="https://img.icons8.com/material-rounded/24/FFFFFF/student-male.png" class="w-4 h-4 mr-2 object-contain" alt="Student Applicants">
+                                <span>{{ __('Student Applicants') }}</span>
                             </div>
-                        </div>
+                            @php
+                                $lastViewedStudentApplicants = session('viewed_student_applicants');
+                                $studentApplicantCount = \App\Models\Applicant::where('is_student', true)
+                                    ->where('status', 'pending')
+                                    ->when($lastViewedStudentApplicants, function($query) use ($lastViewedStudentApplicants) {
+                                        return $query->where('created_at', '>', $lastViewedStudentApplicants);
+                                    })
+                                    ->count();
+                            @endphp
+                            @if($studentApplicantCount > 0)
+                                <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-red-400 text-white rounded-full">
+                                    {{ $studentApplicantCount > 99 ? '99+' : $studentApplicantCount }}
+                                </span>
+                            @endif
+                        </x-nav-link>
+                     @endcan
+
+                    @can('view applicants')
+                        <x-nav-link :href="route('applicants.index')" :active="request()->routeIs('applicants.index')" 
+                        class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('applicants.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                        transition-transform duration-300 hover:scale-105 active:scale-95">
+                            <div class="flex items-center">
+                                <img src="https://img.icons8.com/material-rounded/24/FFFFFF/parse-resume.png" class="w-4 h-4 mr-2 object-contain" alt="General Applicants">
+                                <span>{{ __('Applicants') }}</span>
+                            </div>
+                            @php
+                                $lastViewedApplicants = session('viewed_applicants');
+                                $applicantCount = \App\Models\Applicant::where('status', 'pending')
+                                    ->when($lastViewedApplicants, function($query) use ($lastViewedApplicants) {
+                                        return $query->where('created_at', '>', $lastViewedApplicants);
+                                    })
+                                    ->count();
+                            @endphp
+                            @if($applicantCount > 0)
+                                <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-red-400 text-white rounded-full">
+                                    {{ $applicantCount > 99 ? '99+' : $applicantCount }}
+                                </span>
+                            @endif
+                        </x-nav-link>
                     @endcan
+
                     @can('view members')
                         <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.index')" 
                         class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('members.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
@@ -469,18 +590,49 @@
                     @endcan
                     @can('view licenses')
                         <x-nav-link :href="route('licenses.index')" :active="request()->routeIs('licenses.index')" 
-                        class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('licenses.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                        class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('licenses.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
                         transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/material-rounded/24/FFFFFF/security-checked.png"  class="w-4 h-4 mr-2 object-contain, alt="Supporters">
-                            <span>{{ __('Licenses') }}</span>
+                            <div class="flex items-center">
+                                <img src="https://img.icons8.com/material-rounded/24/FFFFFF/security-checked.png"  class="w-4 h-4 mr-2 object-contain, alt="Supporters">
+                                <span>{{ __('Licenses') }}</span>
+                            </div>
+                            @php
+                                $lastViewedLicenses = session('viewed_licenses');
+                                $unlicensedCount = \App\Models\Member::whereNull('license_number')
+                                    ->orWhere('license_number', '')
+                                    ->when($lastViewedLicenses, function($query) use ($lastViewedLicenses) {
+                                        return $query->where('updated_at', '>', $lastViewedLicenses);
+                                    })
+                                    ->count();
+                            @endphp
+                            @if($unlicensedCount > 0)
+                                <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-red-400 text-white rounded-full">
+                                    {{ $unlicensedCount > 99 ? '99+' : $unlicensedCount }}
+                                </span>
+                            @endif
                         </x-nav-link>
                     @endcan
                     @can('view renewals')
                         <x-nav-link :href="route('renew.index')" :active="request()->routeIs('renew.index')" 
-                        class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('renew.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                        class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('renew.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
                         transition-transform duration-300 hover:scale-105 active:scale-95">
-                            <img src="https://img.icons8.com/glyph-neue/50/FFFFFF/restart.png" class="w-4 h-4 mr-2 object-contain, alt="FAQs">
-                            <span>{{ __('Renewal Request') }}</span>
+                            <div class="flex items-center">
+                                <img src="https://img.icons8.com/glyph-neue/50/FFFFFF/restart.png" class="w-4 h-4 mr-2 object-contain, alt="FAQs">
+                                <span>{{ __('Renewal Request') }}</span>
+                            </div>
+                            @php
+                                $lastViewedRenewals = session('viewed_renewals');
+                                $renewalCount = \App\Models\Renewal::where('status', 'pending')
+                                    ->when($lastViewedRenewals, function($query) use ($lastViewedRenewals) {
+                                        return $query->where('created_at', '>', $lastViewedRenewals);
+                                    })
+                                    ->count();
+                            @endphp
+                            @if($renewalCount > 0)
+                                <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-red-400 text-white rounded-full">
+                                    {{ $renewalCount > 99 ? '99+' : $renewalCount }}
+                                </span>
+                            @endif
                         </x-nav-link>
                     @endcan
 
@@ -490,11 +642,26 @@
                         <div class="relative">
                             <button 
                                 @click.stop="toggleDropdown('billings')" 
-                                class="w-full flex items-center px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 
+                                class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-300 dark:text-gray-100 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 
                                 {{ request()->routeIs('cashier.index', 'payment-methods.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
                                 transition-transform duration-300 hover:scale-105 active:scale-95">
-                                <img src="https://img.icons8.com/sf-black-filled/64/FFFFFF/checkout.png" class="w-4 h-4 mr-2 object-contain" alt="Billings">
-                                <span class="flex-1 text-left">{{ __('Billings') }}</span>
+                                <div class="flex items-center">
+                                    <img src="https://img.icons8.com/sf-black-filled/64/FFFFFF/checkout.png" class="w-4 h-4 mr-2 object-contain" alt="Billings">
+                                    <span class="flex-1 text-left">{{ __('Billings') }}</span>
+                                </div>
+                                @php
+                                    $lastViewedPayments = session('viewed_payments');
+                                    $pendingPaymentCount = \App\Models\Applicant::where('payment_status', 'pending')
+                                        ->when($lastViewedPayments, function($query) use ($lastViewedPayments) {
+                                            return $query->where('updated_at', '>', $lastViewedPayments);
+                                        })
+                                        ->count();
+                                @endphp
+                                @if($pendingPaymentCount > 0)
+                                    <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-red-400 text-white rounded-full">
+                                        {{ $pendingPaymentCount > 99 ? '99+' : $pendingPaymentCount }}
+                                    </span>
+                                @endif
                                 <svg 
                                     class="ml-1 h-3 w-3" 
                                     :class="{'rotate-180': isDropdownOpen('billings')}" 
@@ -508,10 +675,25 @@
                                 class="ml-6 mt-1 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-1">
                                 @can('view payments')
                                 <x-nav-link :href="route('cashier.index')" :active="request()->routeIs('cashier.index')" 
-                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('cashier.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
+                                class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-400 dark:text-gray-200 hover:text-white dark:hover:text-gray-100 hover:bg-[#5E6FFB] dark:hover:bg-gray-700 {{ request()->routeIs('cashier.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100' : '' }}
                                 transition-transform duration-300 hover:scale-105 active:scale-95">
-                                    <img src="https://img.icons8.com/?size=100&id=WxLJjqwqRFj2&format=png&color=FFFFFF" class="w-4 h-4 mr-2 object-contain" alt="Cashier">
-                                    <span>{{ __('Cashier') }}</span>
+                                    <div class="flex items-center">
+                                        <img src="https://img.icons8.com/?size=100&id=WxLJjqwqRFj2&format=png&color=FFFFFF" class="w-4 h-4 mr-2 object-contain" alt="Cashier">
+                                        <span>{{ __('Cashier') }}</span>
+                                    </div>
+                                    @php
+                                        $lastViewedPayments = session('viewed_payments');
+                                        $pendingPaymentCount = \App\Models\Applicant::where('payment_status', 'pending')
+                                            ->when($lastViewedPayments, function($query) use ($lastViewedPayments) {
+                                                return $query->where('updated_at', '>', $lastViewedPayments);
+                                            })
+                                            ->count();
+                                    @endphp
+                                    @if($pendingPaymentCount > 0)
+                                        <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-red-400 text-white rounded-full">
+                                            {{ $pendingPaymentCount > 99 ? '99+' : $pendingPaymentCount }}
+                                        </span>
+                                    @endif
                                 </x-nav-link>
                                 @endcan
 
@@ -681,21 +863,25 @@
                           class="ml-6 mt-2 pl-4 border-l-2 border-[#5E6FFB] dark:border-gray-400 space-y-2" >
                         @can('view activity log')
                             <x-nav-link :href="route('activity-logs.index')" :active="request()->routeIs('activity-logs.index')" 
-                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('activity-logs.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('activity-logs.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
                                 transition-transform duration-300 hover:scale-105 active:scale-95">
-                                <img src="https://img.icons8.com/ios-filled/50/FFFFFF/goodnotes.png" 
-                                alt="Documents" class="w-4 h-4 mr-2 object-contain">
-                                <span>{{ __('Activity Logs') }}</span>
+                                <div class="flex items-center">
+                                    <img src="https://img.icons8.com/ios-filled/50/FFFFFF/goodnotes.png" 
+                                    alt="Documents" class="w-4 h-4 mr-2 object-contain">
+                                    <span>{{ __('Activity Logs') }}</span>
+                                </div>
                             </x-nav-link>
                         @endcan
 
                         @can('view login log')
                             <x-nav-link :href="route('login-logs.index')" :active="request()->routeIs('login-logs.index')" 
-                                class="flex items-center px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('login-logs.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
+                                class="flex items-center justify-between px-3 py-2 text-sm rounded-md text-gray-100 hover:text-white hover:bg-[#5E6FFB] {{ request()->routeIs('login-logs.index') ? 'bg-[#4C5091] dark:bg-gray-700 text-gray-100 text-white' : '' }}
                                 transition-transform duration-300 hover:scale-105 active:scale-95">
-                                <img src="https://img.icons8.com/external-tanah-basah-glyph-tanah-basah/48/FFFFFF/external-note-customer-reviews-tanah-basah-glyph-tanah-basah.png" 
-                                alt="Documents" class="w-4 h-4 mr-2 object-contain">
-                                <span>{{ __('User Login Logs') }}</span>
+                                <div class="flex items-center">
+                                    <img src="https://img.icons8.com/external-tanah-basah-glyph-tanah-basah/48/FFFFFF/external-note-customer-reviews-tanah-basah-glyph-tanah-basah.png" 
+                                    alt="Documents" class="w-4 h-4 mr-2 object-contain">
+                                    <span>{{ __('User Login Logs') }}</span>
+                                </div>
                             </x-nav-link>
                         @endcan
                     </div>
@@ -868,6 +1054,36 @@
                     }
                 });
             });
+
+            // Mark notifications as viewed when navigating to specific pages
+            function markAsViewed(type) {
+                fetch(`/notifications/mark-viewed/${type}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+            }
+
+            // Check current route and mark as viewed
+            @if(request()->routeIs('users.index'))
+                markAsViewed('users');
+            @elseif(request()->routeIs('student-applicants.index'))
+                markAsViewed('student_applicants');
+            @elseif(request()->routeIs('applicants.index'))
+                markAsViewed('applicants');
+            @elseif(request()->routeIs('licenses.index'))
+                markAsViewed('licenses');
+            @elseif(request()->routeIs('renew.index'))
+                markAsViewed('renewals');
+            @elseif(request()->routeIs('cashier.index'))
+                markAsViewed('payments');
+            @elseif(request()->routeIs('activity-logs.index'))
+                markAsViewed('activity_logs');
+            @elseif(request()->routeIs('login-logs.index'))
+                markAsViewed('login_logs');
+            @endif
         </script>
     </div>
 </aside>

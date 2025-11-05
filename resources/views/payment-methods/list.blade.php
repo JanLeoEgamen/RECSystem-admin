@@ -15,11 +15,111 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
-                                <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
+                    <!-- Desktop Filter Section -->
+                    <div class="hidden sm:block mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 shadow-sm border border-blue-100 dark:border-gray-600">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                <!-- Entries Per Page -->
+                                <div>
+                                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        Entries
+                                    </label>
+                                    <select id="perPage" class="w-full form-select bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                        <option value="10" selected>10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+
+                                <!-- Sort Order -->
+                                <div>
+                                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+                                        </svg>
+                                        Sort Order
+                                    </label>
+                                    <select id="sortBy" class="w-full form-select bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                                        <option value="created_desc">Default</option>
+                                        <option value="mode_of_payment_name_asc">Payment Method (A-Z)</option>
+                                        <option value="mode_of_payment_name_desc">Payment Method (Z-A)</option>
+                                        <option value="account_name_asc">Account Name (A-Z)</option>
+                                        <option value="account_name_desc">Account Name (Z-A)</option>
+                                        <option value="amount_asc">Amount (Low to High)</option>
+                                        <option value="amount_desc">Amount (High to Low)</option>
+                                        <option value="created_asc">Created (Oldest First)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Search -->
+                                <div>
+                                    <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                        Search
+                                    </label>
+                                    <div class="relative">
+                                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" 
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+                                        </svg>
+                                        <input type="text" id="searchInput" 
+                                            placeholder="Search payment methods..." 
+                                            class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Results Info -->
+                            <div class="mt-4 pt-3 border-t border-blue-200 dark:border-gray-600">
+                                <div id="resultInfo" class="flex items-center justify-center text-sm text-gray-600 dark:text-gray-300">
+                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Showing <span id="startRecord" class="font-semibold mx-1">0</span> to <span id="endRecord" class="font-semibold mx-1">0</span> of <span id="totalRecords" class="font-semibold mx-1">0</span> items
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Filter Section -->
+                    <div class="sm:hidden mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 shadow-sm border border-blue-100 dark:border-gray-600 space-y-4">
+                            <!-- Search -->
+                            <div>
+                                <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                    Search
+                                </label>
+                                <div class="relative">
+                                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" 
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+                                    </svg>
+                                    <input type="text" id="mobileSearchInput" 
+                                        placeholder="Search payment methods..." 
+                                        class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                </div>
+                            </div>
+
+                            <!-- Entries Per Page -->
+                            <div>
+                                <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    Entries
+                                </label>
+                                <select id="mobilePerPage" class="w-full form-select bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                     <option value="10" selected>10</option>
                                     <option value="20">20</option>
                                     <option value="50">50</option>
@@ -27,9 +127,15 @@
                                 </select>
                             </div>
 
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
-                                <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
+                            <!-- Sort Order -->
+                            <div>
+                                <label class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+                                    </svg>
+                                    Sort Order
+                                </label>
+                                <select id="mobileSortBy" class="w-full form-select bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                     <option value="created_desc">Default</option>
                                     <option value="mode_of_payment_name_asc">Payment Method (A-Z)</option>
                                     <option value="mode_of_payment_name_desc">Payment Method (Z-A)</option>
@@ -40,12 +146,17 @@
                                     <option value="created_asc">Created (Oldest First)</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div class="flex items-center space-x-4">
-                            <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> payment methods
+                            <!-- Results Info -->
+                            <div class="pt-3 border-t border-blue-200 dark:border-gray-600">
+                                <div id="mobileResultInfo" class="flex items-center justify-center text-sm text-gray-600 dark:text-gray-300">
+                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Showing <span id="mobileStartRecord" class="font-semibold mx-1">0</span> to <span id="mobileEndRecord" class="font-semibold mx-1">0</span> of <span id="mobileTotalRecords" class="font-semibold mx-1">0</span> items
+                                </div>
                             </div>
+<<<<<<< Updated upstream
                             <div class="relative w-48">
                                 <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
@@ -99,6 +210,8 @@
 
                         <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
                             Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
+=======
+>>>>>>> Stashed changes
                         </div>
                     </div>
 
@@ -244,12 +357,70 @@
                     });
                 }
 
+<<<<<<< Updated upstream
                 function renderPaymentMethods(paymentMethods, startIndex) {
                     let tbody = $('#paymentMethodsTable tbody');
                     tbody.empty();
                     
                     paymentMethods.forEach((paymentMethod, index) => {
                         const rowNumber = startIndex + index;
+=======
+function renderPaymentMethods(paymentMethods, startIndex) {
+    let tbody = $('#paymentMethodsTable tbody');
+    tbody.empty();
+    
+    if (paymentMethods.length === 0) {
+        tbody.append(`
+            <tr>
+                <td colspan="8" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    <div class="flex flex-col items-center justify-center space-y-4">
+                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="text-lg font-medium">No payment methods found</div>
+                        <div class="text-sm">There are currently no payment methods to display.</div>
+                    </div>
+                </td>
+            </tr>
+        `);
+        return;
+    }
+    
+    paymentMethods.forEach((paymentMethod, index) => {
+        const rowNumber = startIndex + index;
+        
+        let qrCodeHtml = 'N/A';
+        
+        let row = `
+            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
+                <td class="px-6 py-4 text-center">${rowNumber}</td>
+                <td class="px-6 py-4 text-center column-mode_of_payment_name">${paymentMethod.mode_of_payment_name}</td>
+                <td class="px-6 py-4 text-center column-account_name">${paymentMethod.account_name}</td>
+                <td class="px-6 py-4 text-center column-account_number">${paymentMethod.account_number}</td>
+                <td class="px-6 py-4 text-center column-amount">${paymentMethod.amount ? '₱' + parseFloat(paymentMethod.amount).toFixed(2) : 'N/A'}</td> <!-- Add this line -->
+                <td class="px-6 py-4 text-center column-is_published">
+                    ${paymentMethod.is_published 
+                        ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-200">Published</span>'
+                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-200">Draft</span>'}
+                </td>
+
+                <td class="px-6 py-4 text-center column-created">${paymentMethod.created_at}</td>
+                <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center items-center space-x-2">
+                        <!-- View Button -->
+                        <a href="/payment-methods/${paymentMethod.id}/view" 
+                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <span class="text-green-600 group-hover:text-white text-sm">View</span>
+                        </a>
+>>>>>>> Stashed changes
                         
                         let row = `
                             <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
@@ -319,6 +490,12 @@
                 }
 
                 function renderPagination(data) {
+                    if (data.total === 0) {
+                        $('#paginationLinks').hide();
+                        return;
+                    }
+                    
+                    $('#paginationLinks').show();
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
 
                     if (data.current_page > 1) {

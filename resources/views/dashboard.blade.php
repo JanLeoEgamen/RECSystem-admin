@@ -73,6 +73,230 @@
         </div>
     </x-slot>
 
+    @role('superadmin')
+    <!-- Notification Toast Container - Only for Superadmin on Dashboard -->
+    @if(count($notifications) > 0)
+    <div x-data="{ 
+        notifications: {{ json_encode($notifications) }},
+        activeIndex: 0,
+        show: !localStorage.getItem('dashboardNotificationsViewed'),
+        hasCompletedCycle: false,
+        init() {
+            // Auto-rotate notifications every 5 seconds
+            setInterval(() => {
+                if (this.notifications.length > 1 && this.show && !this.hasCompletedCycle) {
+                    this.activeIndex++;
+                    // Check if we've completed a full cycle
+                    if (this.activeIndex >= this.notifications.length) {
+                        this.hasCompletedCycle = true;
+                        // Hide notification bar after completing the cycle
+                        setTimeout(() => {
+                            this.hideNotifications();
+                        }, 3000); // Wait 3 seconds before hiding
+                    }
+                }
+            }, 5000);
+        },
+        hideNotifications() {
+            this.show = false;
+            localStorage.setItem('dashboardNotificationsViewed', 'true');
+        },
+        viewInQuickActions() {
+            this.hideNotifications();
+            // Open right sidebar
+            window.dispatchEvent(new CustomEvent('toggle-right-sidebar'));
+        }
+    }" 
+    x-show="show"
+    @toggle-right-sidebar.window="hideNotifications()"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 transform translate-y-[-100%]"
+    x-transition:enter-end="opacity-100 transform translate-y-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 transform translate-y-0"
+    x-transition:leave-end="opacity-0 transform translate-y-[-100%]"
+    class="fixed top-16 left-0 right-0 z-40 px-2 sm:px-4 lg:px-8"
+    style="display: none;">
+        <div class="max-w-3xl mx-auto mt-2 sm:mt-4">
+            <template x-for="(notification, index) in notifications" :key="index">
+                <div x-show="activeIndex === index"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     class="relative overflow-hidden rounded-lg sm:rounded-xl shadow-lg sm:shadow-2xl"
+                     :class="{
+                         'bg-gradient-to-r from-blue-500 to-blue-600': notification.color === 'blue',
+                         'bg-gradient-to-r from-purple-500 to-purple-600': notification.color === 'purple',
+                         'bg-gradient-to-r from-green-500 to-green-600': notification.color === 'green',
+                         'bg-gradient-to-r from-orange-500 to-orange-600': notification.color === 'orange'
+                     }">
+                    
+                    <!-- Animated background pattern -->
+                    <div class="absolute inset-0 opacity-10 hidden sm:block">
+                        <svg class="w-full h-full" viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="350" cy="20" r="30" fill="white" opacity="0.3"/>
+                            <circle cx="380" cy="60" r="20" fill="white" opacity="0.2"/>
+                            <circle cx="30" cy="30" r="25" fill="white" opacity="0.3"/>
+                            <circle cx="50" cy="70" r="15" fill="white" opacity="0.2"/>
+                        </svg>
+                    </div>
+
+                    <div class="relative z-10 p-1.5 sm:p-3 md:p-4 flex items-center justify-between gap-2 sm:gap-4">
+                        <!-- Left side: Icon and Message -->
+                        <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                            <!-- Animated Icon Container -->
+                            <div class="flex-shrink-0">
+                                <div class="relative">
+                                    <!-- Pulsing background -->
+                                    <div class="absolute inset-0 bg-white rounded-full animate-ping opacity-20 hidden sm:block"></div>
+                                    <div class="relative bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-1.5 sm:p-2 ring-1 sm:ring-2 ring-white ring-opacity-50">
+                                        <!-- Student Icon -->
+                                        <template x-if="notification.icon === 'student'">
+                                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
+                                            </svg>
+                                        </template>
+                                        <!-- User Icon -->
+                                        <template x-if="notification.icon === 'user'">
+                                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </template>
+                                        <!-- License Icon -->
+                                        <template x-if="notification.icon === 'license'">
+                                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"></path>
+                                                <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
+                                            </svg>
+                                        </template>
+                                        <!-- Unlicense Icon -->
+                                        <template x-if="notification.icon === 'unlicense'">
+                                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Message Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-1 sm:space-x-2 mb-0.5">
+                                    <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-red-500 text-white uppercase tracking-wide new-badge-dashboard">
+                                        New
+                                    </span>
+                                    <span class="text-white text-opacity-90 text-[10px] sm:text-xs font-medium hidden sm:inline" x-text="notification.type + ' applicants'"></span>
+                                </div>
+                                <p class="text-white font-semibold text-xs sm:text-sm md:text-base truncate sm:whitespace-normal" x-text="notification.message"></p>
+                                <div class="mt-1 sm:mt-1.5 flex flex-wrap items-center gap-1 sm:gap-2">
+                                    <a href="{{ route('applicants.index') }}" 
+                                       class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-md sm:rounded-lg text-white text-[10px] sm:text-sm font-medium transition-all duration-200 transform hover:scale-105">
+                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <span class="hidden sm:inline">Review Now</span>
+                                        <span class="sm:hidden">Review</span>
+                                    </a>
+                                    <button @click="viewInQuickActions()"
+                                       class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 bg-white bg-opacity-10 hover:bg-opacity-20 backdrop-blur-sm rounded-md sm:rounded-lg text-white text-[10px] sm:text-sm font-medium transition-all duration-200 transform hover:scale-105 border border-white border-opacity-30">
+                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        <span class="hidden sm:inline">View in Quick Actions</span>
+                                        <span class="sm:hidden">Quick Actions</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right side: Close button & Navigation -->
+                        <div class="flex items-center space-x-2 sm:space-x-3">
+                            <!-- Navigation dots (if multiple notifications) -->
+                            <template x-if="notifications.length > 1">
+                                <div class="hidden md:flex items-center space-x-1.5">
+                                    <template x-for="(n, i) in notifications" :key="i">
+                                        <button @click="activeIndex = i"
+                                                class="w-2 h-2 rounded-full transition-all duration-200"
+                                                :class="activeIndex === i ? 'bg-white w-6' : 'bg-white bg-opacity-40 hover:bg-opacity-60'">
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Close Button -->
+                            <button @click="hideNotifications()" 
+                                    class="flex-shrink-0 p-1 sm:p-1.5 rounded-lg bg-white bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 group">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress bar for auto-rotation -->
+                    <template x-if="notifications.length > 1 && !hasCompletedCycle">
+                        <div class="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-white bg-opacity-20">
+                            <div class="h-full bg-white animate-progress" style="animation: progress 5s linear infinite;"></div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <style>
+        @keyframes progress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        .animate-progress {
+            animation: progress 5s linear infinite;
+        }
+
+        /* Pulsing animation for NEW badge */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Shining effect for NEW badge */
+        @keyframes shine {
+            0% {
+                background-position: -100% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .new-badge-dashboard {
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            background: linear-gradient(
+                90deg,
+                #ef4444 0%,
+                #ef4444 40%,
+                #fff 50%,
+                #ef4444 60%,
+                #ef4444 100%
+            );
+            background-size: 200% 100%;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite, 
+                       shine 3s linear infinite;
+        }
+    </style>
+
+    @endif
+    @endrole
+
     <!-- Welcome Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in-down" style="animation-delay: 0.1s;">
         <div class="bg-gray-300 dark:bg-gray-900 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-400 dark:border-gray-700">
@@ -241,7 +465,7 @@
                 </a>
 
                 <!-- Active Members -->
-                <a href="{{ route('members.active') }}" 
+                <a href="{{ route('members.index', ['status_filter' => 'active']) }}" 
                 class="relative overflow-hidden card animate-fade-in-down bg-gradient-to-r from-[#16A34A] to-[#D1FAE5] text-white rounded-lg shadow-lg shadow-gray-800/40 p-5 transform transition duration-500 hover:scale-110 hover:shadow-2xl"
                 style="animation-delay: 0.4s;">
 
@@ -267,7 +491,7 @@
                 </a>
 
                 <!-- Inactive Members -->
-                <a href="{{ route('members.inactive') }}" 
+                <a href="{{ route('members.index', ['status_filter' => 'inactive']) }}" 
                 class="relative overflow-hidden card animate-fade-in-down bg-gradient-to-r from-[#F94261] via-[#F75E77] to-[#FECACA] text-white rounded-lg shadow-lg shadow-gray-800/40 p-5 transform transition duration-500 hover:scale-110 hover:shadow-2xl"
                 style="animation-delay: 0.45s;">
 
@@ -294,7 +518,7 @@
                 </a>
 
                 <!-- Expired Members -->
-                <a href="{{ route('members.expired') }}" 
+                <a href="{{ route('members.index', ['status_filter' => 'expired']) }}" 
                 class="relative overflow-hidden card animate-fade-in-down bg-gradient-to-r from-[#F66C2E] via-[#F2904D] to-[#FFEAD5] text-white rounded-lg shadow-lg shadow-gray-800/40 p-5 transform transition duration-500 hover:scale-110 hover:shadow-2xl"
                 style="animation-delay: 0.5s;">
                 

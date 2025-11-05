@@ -31,22 +31,132 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
-                                <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
-                                    <option value="10" selected>10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
+                    <!-- Desktop Filter Section -->
+                    <div class="hidden sm:block mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 shadow-sm border border-blue-100 dark:border-gray-600">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                <!-- Entries Per Page -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                        </svg>
+                                        Entries
+                                    </label>
+                                    <select id="perPage" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-blue-300 cursor-pointer">
+                                        <option value="10" selected>10 per page</option>
+                                        <option value="20">20 per page</option>
+                                        <option value="50">50 per page</option>
+                                        <option value="100">100 per page</option>
+                                    </select>
+                                </div>
+
+                                <!-- Sort By -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                        </svg>
+                                        Sort Order
+                                    </label>
+                                    <select id="sortBy" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 hover:border-green-300 cursor-pointer">
+                                        <option value="updated_desc">Latest First (Approved Date)</option>
+                                        <option value="full_name_asc">Name (A-Z)</option>
+                                        <option value="full_name_desc">Name (Z-A)</option>
+                                        <option value="sex_asc">Sex (A-Z)</option>
+                                        <option value="sex_desc">Sex (Z-A)</option>
+                                        <option value="birthdate_asc">Birthdate (Oldest)</option>
+                                        <option value="birthdate_desc">Birthdate (Youngest)</option>
+                                        <option value="school_asc">School (A-Z)</option>
+                                        <option value="school_desc">School (Z-A)</option>
+                                        <option value="created_asc">Created (Oldest First)</option>
+                                        <option value="created_desc">Created (Newest First)</option>
+                                        <option value="updated_asc">Approved (Oldest First)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Search -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                        Search
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" 
+                                            placeholder="Search Name or School..." 
+                                            class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 hover:border-orange-300">
+                                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" 
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Results Info -->
+                            <div class="mt-4 pt-3 border-t border-blue-200 dark:border-gray-500">
+                                <div class="flex items-center justify-between text-xs">
+                                    <div id="resultInfo" class="flex items-center text-gray-600 dark:text-gray-300 font-medium">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <span>Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Filter Section -->
+                    <div class="sm:hidden mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 shadow-sm border border-blue-100 dark:border-gray-600 space-y-4">
+                            <!-- Search -->
+                            <div class="flex flex-col space-y-2">
+                                <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    Search
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="mobileSearchInput" 
+                                        placeholder="Search Name or School..." 
+                                        class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200">
+                                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" 
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Entries Per Page -->
+                            <div class="flex flex-col space-y-2">
+                                <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                    Entries Per Page
+                                </label>
+                                <select id="mobilePerPage" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                                    <option value="10" selected>10 per page</option>
+                                    <option value="20">20 per page</option>
+                                    <option value="50">50 per page</option>
+                                    <option value="100">100 per page</option>
                                 </select>
                             </div>
 
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
-                                <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
-                                    <option value="updated_desc">Default (Approved Date)</option>
+                            <!-- Sort By -->
+                            <div class="flex flex-col space-y-2">
+                                <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                    </svg>
+                                    Sort Order
+                                </label>
+                                <select id="mobileSortBy" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                    <option value="updated_desc">Latest First (Approved Date)</option>
                                     <option value="full_name_asc">Name (A-Z)</option>
                                     <option value="full_name_desc">Name (Z-A)</option>
                                     <option value="sex_asc">Sex (A-Z)</option>
@@ -60,70 +170,16 @@
                                     <option value="updated_asc">Approved (Oldest First)</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div class="flex items-center space-x-4">
-                            <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
+                            <!-- Results Info -->
+                            <div class="pt-3 border-t border-blue-200 dark:border-gray-500">
+                                <div id="mobileResultInfo" class="flex items-center justify-center text-xs text-gray-600 dark:text-gray-300 font-medium">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span>Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items</span>
+                                </div>
                             </div>
-                            <div class="relative w-48">
-                                <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                                </svg>
-
-                                <input type="text" id="searchInput" 
-                                    placeholder="Search Name or School" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
-                                    dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="sm:hidden space-y-3 mb-4">
-                        <div class="relative w-full">
-                            <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                            </svg>
-
-                            <input type="text" id="mobileSearchInput" placeholder="Search Name or School" 
-                                class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
-                                dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
-                            <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="10" selected>10</option>
-                                <option value="20">20</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
-                            <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="updated_desc">Default (Approved Date)</option>
-                                <option value="full_name_asc">Name (A-Z)</option>
-                                <option value="full_name_desc">Name (Z-A)</option>
-                                <option value="sex_asc">Sex (A-Z)</option>
-                                <option value="sex_desc">Sex (Z-A)</option>
-                                <option value="birthdate_asc">Birthdate (Oldest)</option>
-                                <option value="birthdate_desc">Birthdate (Youngest)</option>
-                                <option value="school_asc">School (A-Z)</option>
-                                <option value="school_desc">School (Z-A)</option>
-                                <option value="created_asc">Created (Oldest First)</option>
-                                <option value="created_desc">Created (Newest First)</option>
-                                <option value="updated_asc">Approved (Oldest First)</option>
-                            </select>
-                        </div>
-
-                        <!-- Result Info -->
-                        <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
-                            Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
                         </div>
                     </div>
 
@@ -260,6 +316,23 @@
                     let tbody = $('#approvedStudentApplicantsTable tbody');
                     tbody.empty();
                     
+                    if (applicants.length === 0) {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="8" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <div class="flex flex-col items-center justify-center space-y-4">
+                                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <div class="text-lg font-medium">No approved student applicants found</div>
+                                        <div class="text-sm">There are currently no approved student applicants to display.</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                        return;
+                    }
+                    
                     applicants.forEach((applicant, index) => {
                         const rowNumber = startIndex + index;
 
@@ -297,6 +370,12 @@
                 }
 
                 function renderPagination(data) {
+                    if (data.total === 0) {
+                        $('#paginationLinks').hide();
+                        return;
+                    }
+                    
+                    $('#paginationLinks').show();
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
 
                     if (data.current_page > 1) {

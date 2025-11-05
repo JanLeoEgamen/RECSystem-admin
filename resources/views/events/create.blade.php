@@ -1,16 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
-                Events / Create</span>
-            </h2>
+            <div class="flex items-center gap-4">
+                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h2 class="font-bold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
+                    Create Event
+                </h2>
+            </div>
 
             <a href="{{ route('events.index') }}" 
-            class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+            class="inline-flex items-center justify-center px-6 py-3 text-white hover:text-[#101966] hover:border-[#101966] 
                     bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
                     focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                    dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
-                    w-full md:w-auto mt-4 md:mt-0">
+                    dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg md:text-xl leading-normal transition-all duration-200 
+                    w-full md:w-auto mt-4 md:mt-0 shadow-lg hover:shadow-xl">
 
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -21,179 +28,302 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+    <div class="py-8 md:py-12">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl rounded-2xl border border-gray-100 dark:border-gray-700">
+                <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
                     <form id="eventForm" action="{{ route('events.store') }}" method="post">
                         @csrf
-                        <div class="space-y-6">
-                            <div>
-                                <label for="title" class="block text-sm font-medium">Title</label>
-                                <div class="mt-1">
-                                    <input type="text" name="title" id="title" value="{{ old('title') }}" 
-                                           class="block w-full rounded-md border-gray-300 shadow-sm" required>
-                                    @error('title')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                        
+                        <!-- Event Details Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 p-3 rounded-lg shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                 </div>
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Event Details</h3>
                             </div>
 
-                            <div>
-                                <label for="description" class="block text-sm font-medium">Description</label>
-                                <div class="mt-1">
-                                    <textarea name="description" id="description" rows="3" 
-                                              class="block w-full rounded-md border-gray-300 shadow-sm">{{ old('description') }}</textarea>
-                                    @error('description')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-6">
+                                <!-- Title -->
                                 <div>
-                                    <label for="start_date" class="block text-sm font-medium">Start Date & Time</label>
-                                    <div class="mt-1">
+                                    <label for="title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                        <span class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                            </svg>
+                                            Title <span class="text-red-500">*</span>
+                                        </span>
+                                    </label>
+                                    <input type="text" name="title" id="title" value="{{ old('title') }}" 
+                                           placeholder="Enter event title"
+                                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
+                                    @error('title')
+                                        <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <!-- Description -->
+                                <div>
+                                    <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                        <span class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Description
+                                        </span>
+                                    </label>
+                                    <textarea name="description" id="description" rows="4" 
+                                              placeholder="Enter event description"
+                                              class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4">{{ old('description') }}</textarea>
+                                    @error('description')
+                                        <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <!-- Date & Time Grid -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="start_date" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                            <span class="flex items-center gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Start Date & Time <span class="text-red-500">*</span>
+                                            </span>
+                                        </label>
                                         <input type="datetime-local" name="start_date" id="start_date" 
                                                value="{{ old('start_date') }}" 
-                                               class="block w-full rounded-md border-gray-300 shadow-sm" required>
+                                               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
                                         @error('start_date')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label for="end_date" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                            <span class="flex items-center gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                End Date & Time <span class="text-red-500">*</span>
+                                            </span>
+                                        </label>
+                                        <input type="datetime-local" name="end_date" id="end_date" 
+                                               value="{{ old('end_date') }}" 
+                                               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
+                                        @error('end_date')
+                                            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                {{ $message }}
+                                            </p>
                                         @enderror
                                     </div>
                                 </div>
-                                <div>
-                                    <label for="end_date" class="block text-sm font-medium">End Date & Time</label>
-                                    <div class="mt-1">
-                                        <input type="datetime-local" name="end_date" id="end_date" 
-                                               value="{{ old('end_date') }}" 
-                                               class="block w-full rounded-md border-gray-300 shadow-sm" required>
-                                        @error('end_date')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+
+                                <!-- Location & Capacity Grid -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="location" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                            <span class="flex items-center gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                Location <span class="text-red-500">*</span>
+                                            </span>
+                                        </label>
+                                        <input type="text" name="location" id="location" 
+                                               value="{{ old('location') }}" 
+                                               placeholder="Enter event location"
+                                               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
+                                        @error('location')
+                                            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label for="capacity" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                            <span class="flex items-center gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                                Capacity <span class="text-gray-500 text-xs">(optional)</span>
+                                            </span>
+                                        </label>
+                                        <input type="number" name="capacity" id="capacity" 
+                                               value="{{ old('capacity') }}" min="1" 
+                                               placeholder="Max participants"
+                                               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4">
+                                        @error('capacity')
+                                            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                {{ $message }}
+                                            </p>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="location" class="block text-sm font-medium">Location</label>
-                                    <div class="mt-1">
-                                        <input type="text" name="location" id="location" 
-                                               value="{{ old('location') }}" 
-                                               class="block w-full rounded-md border-gray-300 shadow-sm" required>
-                                        @error('location')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
+                        <!-- Assign Members Card -->
+                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-600 p-3 rounded-lg shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
                                 </div>
-                                <div>
-                                    <label for="capacity" class="block text-sm font-medium">Capacity (optional)</label>
-                                    <div class="mt-1">
-                                        <input type="number" name="capacity" id="capacity" 
-                                               value="{{ old('capacity') }}" min="1" 
-                                               class="block w-full rounded-md border-gray-300 shadow-sm">
-                                        @error('capacity')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div>
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Assign to Members</h3>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium mt-6 block">Assign to Members</span>
+                            <!-- Section Filter -->
+                            <div class="mb-4">
+                                <label for="section-filter" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                        </svg>
+                                        Filter by Section
+                                    </span>
+                                </label>
+                                <select id="section-filter" class="block w-full md:w-1/2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4">
+                                    <option value="all">All Sections</option>
+                                    @foreach($sections as $section)
+                                        <option value="section-{{ $section->id }}">
+                                            {{ $section->section_name }} 
+                                            @if($section->bureau)
+                                                ({{ $section->bureau->bureau_name }})
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                                <!-- Add Section Filter Dropdown -->
-                                <div class="my-3">
-                                    <label for="section-filter" class="block text-sm font-medium mb-2">Filter by Section:</label>
-                                    <select id="section-filter" class="border-gray-300 shadow-sm rounded-lg w-full md:w-1/3">
-                                        <option value="all">All Sections</option>
-                                        @foreach($sections as $section)
-                                            <option value="section-{{ $section->id }}">
-                                                {{ $section->section_name }} 
-                                                @if($section->bureau)
-                                                    ({{ $section->bureau->bureau_name }})
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="my-3">
+                            <!-- Members Selection -->
+                            <div class="relative">
+                                <select name="members[]" id="members-select" multiple class="hidden">
+                                    @foreach($members as $member)
+                                        <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}
+                                            data-section="section-{{ $member->section_id }}">
+                                            {{ $member->first_name }} {{ $member->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div id="members-dropdown" class="w-full mt-1">
                                     <div class="relative">
-                                        <select name="members[]" id="members-select" multiple class="hidden">
-                                            @foreach($members as $member)
-                                                <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}
-                                                    data-section="section-{{ $member->section_id }}">
-                                                    {{ $member->first_name }} {{ $member->last_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div id="members-dropdown" class="w-full mt-1">
-                                            <div class="relative">
-                                                <input type="text" id="members-search" placeholder="Search members..." 
-                                                    class="w-full border-gray-300 shadow-sm rounded-lg pl-10 pr-4 py-2">
-                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <div id="members-options" class="mt-1 max-h-60 overflow-y-auto border border-gray-300 rounded-lg hidden">
-                                                <div class="p-2">
-                                                    <div class="flex items-center mb-2">
-                                                        <input type="checkbox" id="select-all-members" class="rounded mr-2">
-                                                        <label for="select-all-members" class="text-sm">Select All Visible Members</label>
-                                                    </div>
-                                                    <div class="space-y-1" id="members-options-container">
-                                                        @foreach($members as $member)
-                                                            <div class="flex items-center member-option" 
-                                                                data-value="{{ $member->id }}" 
-                                                                data-section="section-{{ $member->section_id }}">
-                                                                <input type="checkbox" id="member-{{ $member->id }}" 
-                                                                    value="{{ $member->id }}" class="rounded mr-2 member-checkbox"
-                                                                    {{ in_array($member->id, old('members', [])) ? 'checked' : '' }}>
-                                                                <label for="member-{{ $member->id }}" class="text-sm">
-                                                                    {{ $member->first_name }} {{ $member->last_name }}
-                                                                    @if($member->section)
-                                                                        <span class="text-xs text-gray-500 ml-2">
-                                                                            ({{ $member->section->section_name }})
-                                                                        </span>
-                                                                    @endif
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="selected-members" class="mt-2 flex flex-wrap gap-2"></div>
+                                        <input type="text" id="members-search" placeholder="Search members..." 
+                                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 pl-10 pr-4 py-3">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
                                         </div>
                                     </div>
-                                    @error('members')
-                                    <p class="text-red-400 font-medium"> {{ $message }} </p>
-                                    @enderror
+                                    <div id="members-options" class="mt-2 max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg hidden bg-white dark:bg-gray-700">
+                                        <div class="p-3">
+                                            <div class="flex items-center mb-3 pb-3 border-b border-gray-200 dark:border-gray-600">
+                                                <input type="checkbox" id="select-all-members" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                                                <label for="select-all-members" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">Select All Visible Members</label>
+                                            </div>
+                                            <div class="space-y-2" id="members-options-container">
+                                                @foreach($members as $member)
+                                                    <div class="flex items-center member-option hover:bg-gray-50 dark:hover:bg-gray-600 p-2 rounded transition-colors" 
+                                                        data-value="{{ $member->id }}" 
+                                                        data-section="section-{{ $member->section_id }}">
+                                                        <input type="checkbox" id="member-{{ $member->id }}" 
+                                                            value="{{ $member->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer member-checkbox"
+                                                            {{ in_array($member->id, old('members', [])) ? 'checked' : '' }}>
+                                                        <label for="member-{{ $member->id }}" class="ml-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer flex-1">
+                                                            {{ $member->first_name }} {{ $member->last_name }}
+                                                            @if($member->section)
+                                                                <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                                                    ({{ $member->section->section_name }})
+                                                                </span>
+                                                            @endif
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="selected-members" class="mt-3 flex flex-wrap gap-2"></div>
                                 </div>
                             </div>
-
-                            <div class="my-3 flex items-center">
-                                <input type="hidden" name="is_published" value="0">
-                                <input type="checkbox" name="is_published" id="is_published" class="rounded" value="1" {{ old('is_published', false) ? 'checked' : '' }}>
-                                <label for="is_published" class="ml-2">Publish Immediately</label>
-                            </div>
-
-                            <div class="mt-6">
-                                <button type="submit" 
-                                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                        focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
-                                        
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            @error('members')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Create Event
-                                </button>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Publishing Settings Card -->
+                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-lg shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Publishing Settings</h3>
                             </div>
+
+                            <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                <input type="hidden" name="is_published" value="0">
+                                <input type="checkbox" name="is_published" id="is_published" class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 cursor-pointer" value="1" {{ old('is_published', false) ? 'checked' : '' }}>
+                                <label for="is_published" class="ml-3 cursor-pointer">
+                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                        </svg>
+                                        Publish Immediately
+                                    </span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-7">Check to notify selected members right away</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="mt-8 flex justify-end">
+                            <button type="submit" 
+                                class="inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
+                                border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
+                                dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
+                                dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
+                                    
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Create Event
+                            </button>
                         </div>
                     </form>
                 </div>

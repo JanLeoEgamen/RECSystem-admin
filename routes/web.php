@@ -289,9 +289,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');
     Route::get('/members/create', [AddressController::class, 'showMemberCreateForm'])->name('members.showMemberCreateForm');
     Route::post('/members', [MemberController::class, 'store'])->name('members.store');
-    Route::get('/members/expired', [MemberController::class, 'expired'])->name('members.expired');
-    Route::get('/members/active', [MemberController::class, 'active'])->name('members.active');
-    Route::get('/members/inactive', [MemberController::class, 'inactive'])->name('members.inactive');
     Route::get('/members/{id}/edit', [AddressController::class, 'showMemberEditForm'])->name('members.edit');
     Route::post('/members/{id}', [MemberController::class, 'update'])->name('members.update');  
     Route::delete('/members', [MemberController::class, 'destroy'])->name('members.destroy');
@@ -453,6 +450,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs.index');
     Route::get('/login-logs-table', [LoginLogController::class, 'indexTable'])->name('login-logs.indexTable');
     Route::get('/login-logs/export', [LoginLogController::class, 'export'])->name('login-logs.export');
+
+    // Mark notifications as viewed
+    Route::post('/notifications/mark-viewed/{type}', function ($type) {
+        session()->put("viewed_{$type}", now());
+        return response()->json(['success' => true]);
+    })->name('notifications.mark-viewed');
     
     // Backup routes
     Route::resource('backups', BackupController::class)->except(['show', 'edit', 'update']);

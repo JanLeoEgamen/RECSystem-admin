@@ -25,130 +25,196 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8 text-gray-900 dark:text-gray-100">
-                    <form id="updateForm" action="{{ route('users.update', $user->id) }}" method="post">
-                        @csrf
-                        <div class="space-y-6">
-                            <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
-                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Personal Information</h3>
-                                <div class="mt-4 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                                    <div class="sm:col-span-3">
-                                        <label for="first_name" class="block text-sm font-medium">First Name</label>
-                                        <div class="mt-1">
-                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
-                                                {{ $user->first_name }}
-                                            </div>
-                                            <input type="hidden" name="first_name" value="{{ $user->first_name }}">
-                                        </div>
-                                    </div>
+            <!-- Page Header with Icon -->
+            <div class="mb-8 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6">
+                <div class="flex items-center gap-4">
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-xl shadow-lg">
+                        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Edit User</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Update user roles and bureau/section assignments</p>
+                    </div>
+                </div>
+            </div>
 
-                                    <div class="sm:col-span-3">
-                                        <label for="last_name" class="block text-sm font-medium">Last Name</label>
-                                        <div class="mt-1">
-                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
-                                                {{ $user->last_name }}
-                                            </div>
-                                            <input type="hidden" name="last_name" value="{{ $user->last_name }}">
-                                        </div>
-                                    </div>
+            <form id="updateForm" action="{{ route('users.update', $user->id) }}" method="post">
+                @csrf
 
-                                    <div class="sm:col-span-3">
-                                        <label for="birthdate" class="block text-sm font-medium">Birthdate</label>
-                                        <div class="mt-1">
-                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
-                                                {{ $user->birthdate ? \Carbon\Carbon::parse($user->birthdate)->format('Y-m-d') : 'N/A' }}
-                                            </div>
-                                            <input type="hidden" name="birthdate" value="{{ $user->birthdate ? (\Carbon\Carbon::parse($user->birthdate)->format('Y-m-d')) : '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="sm:col-span-3">
-                                        <label for="email" class="block text-sm font-medium">Email</label>
-                                        <div class="mt-1">
-                                            <div class="block w-full rounded-md bg-gray-100 dark:bg-gray-700 px-3 py-2 border border-gray-300 dark:border-gray-600">
-                                                {{ $user->email }}
-                                            </div>
-                                            <input type="hidden" name="email" value="{{ $user->email }}">
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Personal Information Card -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl mb-6">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-gradient-to-r from-violet-500 to-purple-600 p-2 rounded-lg">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
                             </div>
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">Personal Information</h4>
+                        </div>
 
-                            <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
-                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Assign Roles</h3>
-                                <div class="mt-4">
-                                    @if ($roles->isNotEmpty())
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                            @foreach($roles as $role)
-                                                <div class="relative flex items-start">
-                                                    <div class="flex h-5 items-center">
-                                                        <input id="role-{{ $role->id }}" name="role" type="radio" value="{{ $role->name }}" {{ $hasRoles->contains($role->id) ? 'checked' : '' }} class="h-4 w-4 rounded-full border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                                    </div>
-                                                    <div class="ml-3 text-sm">
-                                                        <label for="role-{{ $role->id }}" class="font-medium text-gray-700 dark:text-gray-300">{{ $role->name }}</label>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">No roles available</p>
-                                    @endif
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label for="first_name" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    First Name
+                                </label>
+                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                                    {{ $user->first_name }}
                                 </div>
+                                <input type="hidden" name="first_name" value="{{ $user->first_name }}">
                             </div>
 
                             <div>
-                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Assign to Bureaus & Sections</h3>
-                                <div class="mt-4 space-y-6">
-                                    @foreach($bureaus as $bureau)
-                                        <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                            <div class="flex items-center">
-                                                <input type="checkbox" id="bureau-{{ $bureau->id }}" name="bureaus[]" value="{{ $bureau->id }}" 
-                                                    {{ $user->assignedBureaus->contains($bureau->id) ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 bureau-checkbox">
-                                                <label for="bureau-{{ $bureau->id }}" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                    {{ $bureau->bureau_name }}
-                                                </label>
-                                            </div>
-                                            
-                                            @if($bureau->sections->isNotEmpty())
-                                                <div class="mt-3 ml-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                                                    @foreach($bureau->sections as $section)
-                                                        <div class="flex items-center">
-                                                            <input type="checkbox" id="section-{{ $section->id }}" name="sections[]" value="{{ $section->id }}"
-                                                                {{ $user->assignedSections->contains($section->id) ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 section-checkbox">
-                                                            <label for="section-{{ $section->id }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-400">
-                                                                {{ $section->section_name }}
-                                                            </label>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
+                                <label for="last_name" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Last Name
+                                </label>
+                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                                    {{ $user->last_name }}
                                 </div>
+                                <input type="hidden" name="last_name" value="{{ $user->last_name }}">
                             </div>
 
-                            <div class="flex justify-end">
-                                <button type="button" id="updateButton" 
-                                    class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                        focus:ring-[#101966] border border-white font-medium 
-                                        rounded-lg text-xl leading-normal transition-colors duration-200
-                                        dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            <div>
+                                <label for="birthdate" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    Update User
-                                </button>
+                                    Birthdate
+                                </label>
+                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                                    {{ $user->birthdate ? \Carbon\Carbon::parse($user->birthdate)->format('Y-m-d') : 'N/A' }}
+                                </div>
+                                <input type="hidden" name="birthdate" value="{{ $user->birthdate ? (\Carbon\Carbon::parse($user->birthdate)->format('Y-m-d')) : '' }}">
+                            </div>
+
+                            <div>
+                                <label for="email" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    Email
+                                </label>
+                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                                    {{ $user->email }}
+                                </div>
+                                <input type="hidden" name="email" value="{{ $user->email }}">
                             </div>
                         </div>
-                    </form>
-
+                    </div>
                 </div>
-            </div>
+
+                <!-- Assign Roles Card -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl mb-6">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-2 rounded-lg">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">Assign Roles</h4>
+                        </div>
+
+                        @if ($roles->isNotEmpty())
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                @foreach($roles as $role)
+                                    <div class="relative">
+                                        <input id="role-{{ $role->id }}" name="role" type="radio" value="{{ $role->name }}" {{ $hasRoles->contains($role->id) ? 'checked' : '' }} class="peer sr-only">
+                                        <label for="role-{{ $role->id }}" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-amber-50 dark:hover:bg-gray-600 peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/30 peer-checked:ring-2 peer-checked:ring-amber-500 transition-all duration-200">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 peer-checked:border-amber-500 peer-checked:bg-amber-500 flex items-center justify-center transition-all">
+                                                    <svg class="w-3 h-3 text-white hidden peer-checked:block" fill="currentColor" viewBox="0 0 12 12">
+                                                        <path d="M10 3L4.5 8.5 2 6"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <span class="font-medium text-gray-700 dark:text-gray-300 peer-checked:text-amber-700 dark:peer-checked:text-amber-300">{{ $role->name }}</span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                No roles available
+                            </p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Bureaus & Sections Card -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl mb-6">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-2 rounded-lg">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">Assign to Bureaus & Sections</h4>
+                        </div>
+
+                        <div class="space-y-4">
+                            @foreach($bureaus as $bureau)
+                                <div class="bg-gradient-to-br from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+                                    <div class="p-5">
+                                        <div class="flex items-center gap-3 mb-4">
+                                            <input type="checkbox" id="bureau-{{ $bureau->id }}" name="bureaus[]" value="{{ $bureau->id }}" 
+                                                {{ $user->assignedBureaus->contains($bureau->id) ? 'checked' : '' }} class="h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-2 focus:ring-emerald-500 bureau-checkbox">
+                                            <label for="bureau-{{ $bureau->id }}" class="flex items-center gap-2 text-base font-semibold text-gray-800 dark:text-gray-200 cursor-pointer">
+                                                <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                </svg>
+                                                {{ $bureau->bureau_name }}
+                                            </label>
+                                        </div>
+                                        
+                                        @if($bureau->sections->isNotEmpty())
+                                            <div class="ml-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                @foreach($bureau->sections as $section)
+                                                    <div class="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150">
+                                                        <input type="checkbox" id="section-{{ $section->id }}" name="sections[]" value="{{ $section->id }}"
+                                                            {{ $user->assignedSections->contains($section->id) ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-2 focus:ring-emerald-500 section-checkbox">
+                                                        <label for="section-{{ $section->id }}" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer flex-1">
+                                                            {{ $section->section_name }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button Card -->
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl">
+                    <div class="p-6">
+                        <div class="flex justify-end">
+                            <button type="button" id="updateButton" 
+                                class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span class="text-lg">Update User</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 

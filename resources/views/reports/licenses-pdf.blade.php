@@ -75,43 +75,6 @@
             font-weight: bold;
         }
         
-        /* Legend styles */
-        .legend-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .legend {
-            display: inline-block;
-            font-size: 9pt;
-            padding: 5px 10px;
-            background-color:rgb(255, 255, 255);
-            border-radius: 5px;
-            text-align: center;
-            line-height: 1.6;
-        }
-        
-        .legend-title {
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        
-        .legend-item {
-            display: inline-block;
-            margin: 0 10px;
-            white-space: nowrap;
-        }
-        
-        .legend-color {
-            width: 10px;
-            height: 10px;
-            border-radius: 3px;
-            margin-right: 5px;
-            display: inline-block;
-            vertical-align: middle;
-        }
         
         /* Table styles */
         table {
@@ -297,25 +260,6 @@
     <h2 class="report-title">LICENSE STATUS REPORT</h2>
     <p class="report-date">Printed on: {{ now()->format('F j, Y h:i A') }}</p>
     
-    <center>
-    <div class="legend-container">
-        <div class="legend">
-            <div class="legend-title">Legends</div>
-            <span class="legend-item">
-                <span class="legend-color" style="background-color: #4CAF50;"></span>
-                <span>Licensed/Active</span>
-            </span>
-            <span class="legend-item">
-                <span class="legend-color" style="background-color: #FFC107;"></span>
-                <span>Expired</span>
-            </span>
-            <span class="legend-item">
-                <span class="legend-color" style="background-color: #F44336;"></span>
-                <span>Unlicensed</span>
-            </span>
-        </div>
-    </div>
-    </center>
     
     <div class="section-title">SUMMARY OVERVIEW</div>
     <table>

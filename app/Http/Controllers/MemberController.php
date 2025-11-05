@@ -115,17 +115,28 @@ class MemberController extends Controller implements HasMiddleware
     
             $transformedMembers = $members->getCollection()->map(function ($member) {
                 // Calculate actual status based on both status field AND membership expiration
-                $actualStatus = $member->is_lifetime_member 
-                    ? 'Active' 
-                    : ($member->status === 'Active' && 
-                       $member->membership_end && 
-                       Carbon::parse($member->membership_end)->isFuture()
-                        ? 'Active'
-                        : ($member->status === 'Active' && 
-                           $member->membership_end && 
-                           Carbon::parse($member->membership_end)->isPast()
-                            ? 'Expired'
-                            : 'Inactive'));
+                $actualStatus = 'Inactive'; // Default status
+                
+                if ($member->is_lifetime_member) {
+                    $actualStatus = 'Active';
+                } elseif ($member->status === 'Inactive') {
+                    $actualStatus = 'Inactive';
+                } elseif ($member->membership_end) {
+                    $membershipEnd = Carbon::parse($member->membership_end);
+                    $today = Carbon::today();
+                    $daysUntilExpiration = $today->diffInDays($membershipEnd, false);
+                    
+                    if ($membershipEnd->isPast()) {
+                        $actualStatus = 'Expired';
+                    } elseif ($daysUntilExpiration <= 30 && $daysUntilExpiration > 0) {
+                        $actualStatus = 'Expiring';
+                    } else {
+                        $actualStatus = 'Active';
+                    }
+                } else {
+                    // No membership_end date set and not lifetime
+                    $actualStatus = $member->status;
+                }
             
                 return [
                     'id' => $member->id,
@@ -146,6 +157,21 @@ class MemberController extends Controller implements HasMiddleware
                     'can_delete' => request()->user()->can('delete members'),
                 ];
             });
+
+            // Apply status filter if provided
+            if ($request->has('status_filter') && $request->status_filter !== 'all') {
+                $statusFilter = strtolower($request->status_filter);
+                
+                $transformedMembers = $transformedMembers->filter(function ($member) use ($statusFilter) {
+                    if ($statusFilter === 'lifetime') {
+                        return $member['is_lifetime_member'] == true;
+                    }
+                    return strtolower($member['status']) === $statusFilter;
+                });
+
+                // Re-index the collection after filtering
+                $transformedMembers = $transformedMembers->values();
+            }
     
             return response()->json([
                 'data' => $transformedMembers,
@@ -153,7 +179,7 @@ class MemberController extends Controller implements HasMiddleware
                 'last_page' => $members->lastPage(),
                 'from' => $members->firstItem(),
                 'to' => $members->lastItem(),
-                'total' => $members->total(),
+                'total' => $transformedMembers->count(),
             ]);
         }
         

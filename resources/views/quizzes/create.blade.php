@@ -1,14 +1,22 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
-                Quizzes / Create
-            </h2>
+            <div class="flex items-center gap-4">
+                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                </div>
+                <h2 class="font-bold text-3xl md:text-4xl text-white dark:text-gray-200 leading-tight text-center md:text-left">
+                    Create Quiz
+                </h2>
+            </div>
             <a href="{{ route('quizzes.index') }}" 
-                class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                class="inline-flex items-center justify-center px-6 py-3 text-white hover:text-[#101966] hover:border-[#101966] 
                     bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
                     focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                    dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200">
+                    dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg md:text-xl leading-normal transition-all duration-200 
+                    w-full md:w-auto mt-4 md:mt-0 shadow-lg hover:shadow-xl">
                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -17,43 +25,85 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+    <div class="py-8 md:py-12">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl rounded-2xl border border-gray-100 dark:border-gray-700">
+                <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
                     <form id="createForm" action="{{ route('quizzes.store') }}" method="post">
                         @csrf
-                        <div>
-                            <label for="title" class="text-sm font-medium">Title</label>
-                            <div class="my-3">    
-                                <input value="{{ old('title') }}" name="title" id="title" placeholder="Enter quiz title" type="text" class="border-gray-300 shadow-sm w-1/2 rounded-lg">
-                                @error('title')
-                                <p class="text-red-400 font-medium"> {{ $message }} </p>
-                                @enderror
+                        
+                        <!-- Quiz Details Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-gradient-to-r from-violet-500 to-purple-600 p-3 rounded-lg shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Quiz Details</h3>
                             </div>
 
-                            <label for="description" class="text-sm font-medium">Description</label>
-                            <div class="my-3">    
-                                <textarea name="description" id="description" placeholder="Enter quiz description" class="border-gray-300 shadow-sm w-full rounded-lg" rows="3">{{ old('description') }}</textarea>
-                                @error('description')
-                                <p class="text-red-400 font-medium"> {{ $message }} </p>
-                                @enderror
-                            </div>
+                            <div class="space-y-6">
+                                <!-- Title -->
+                                <div>
+                                    <label for="title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                        <span class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                            </svg>
+                                            Title <span class="text-red-500">*</span>
+                                        </span>
+                                    </label>
+                                    <input value="{{ old('title') }}" name="title" id="title" placeholder="Enter quiz title" type="text" 
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4">
+                                    @error('title')
+                                        <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
 
-                            <div class="my-3 flex items-center">
-                                <input type="hidden" name="is_published" value="0">
-                                <input type="checkbox" name="is_published" id="is_published" class="rounded" value="1" {{ old('is_published', false) ? 'checked' : '' }}>
-                                <label for="is_published" class="ml-2">Publish Immediately</label>
+                                <!-- Description -->
+                                <div>
+                                    <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                        <span class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                                            </svg>
+                                            Description
+                                        </span>
+                                    </label>
+                                    <textarea name="description" id="description" placeholder="Enter quiz description" 
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" rows="3">{{ old('description') }}</textarea>
+                                    @error('description')
+                                        <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="mt-8">
-                                <h3 class="text-lg font-medium mb-4">Questions</h3>
-                                <div id="questions-container"></div>
+                        <!-- Questions Card -->
+                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-gradient-to-r from-orange-500 to-red-600 p-3 rounded-lg shadow-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Questions</h3>
+                                </div>
                                 <button type="button" id="add-question" 
-                                    class="mt-4 flex items-center px-4 py-2 text-sm text-green-600 
-                                    hover:text-white hover:bg-green-600 rounded-md transition-colors 
-                                    duration-200 border border-green-100 hover:border-green-600 font-medium
-                                    dark:bg-gray-900 dark:text-white dark:border-gray-100 dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
+                                    class="inline-flex items-center px-4 py-2 text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 
+                                    border border-transparent rounded-lg font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -61,12 +111,31 @@
                                 </button>
                             </div>
 
-                            <span class="text-sm font-medium mt-6 block">Assign to Members</span>
+                            <div id="questions-container" class="space-y-4"></div>
+                        </div>
 
-                            <!-- Add Section Filter Dropdown -->
-                            <div class="my-3">
-                                <label for="section-filter" class="block text-sm font-medium mb-2">Filter by Section:</label>
-                                <select id="section-filter" class="border-gray-300 shadow-sm rounded-lg w-full md:w-1/3">
+                        <!-- Assign Members Card -->
+                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-gradient-to-r from-blue-500 to-cyan-600 p-3 rounded-lg shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Assign to Members</h3>
+                            </div>
+
+                            <!-- Section Filter -->
+                            <div class="mb-4">
+                                <label for="section-filter" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                        </svg>
+                                        Filter by Section
+                                    </span>
+                                </label>
+                                <select id="section-filter" class="block w-full md:w-1/2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4">
                                     <option value="all">All Sections</option>
                                     @foreach($sections as $section)
                                         <option value="section-{{ $section->id }}">
@@ -79,9 +148,9 @@
                                 </select>
                             </div>
 
-                            <div class="my-3">
-                                <div class="relative">
-                                    <select name="members[]" id="members-select" multiple class="hidden">
+                            <!-- Members Selection -->
+                            <div class="relative">
+                                                                        <select name="members[]" id="members-select" multiple class="hidden">
                                         @foreach($members as $member)
                                             <option value="{{ $member->id }}" {{ in_array($member->id, old('members', [])) ? 'selected' : '' }}
                                                 data-section="section-{{ $member->section_id }}">
@@ -92,31 +161,31 @@
                                     <div id="members-dropdown" class="w-full mt-1">
                                         <div class="relative">
                                             <input type="text" id="members-search" placeholder="Search members..." 
-                                                class="w-full border-gray-300 shadow-sm rounded-lg pl-10 pr-4 py-2">
+                                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 pl-10 pr-4 py-3">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div id="members-options" class="mt-1 max-h-60 overflow-y-auto border border-gray-300 rounded-lg hidden">
-                                            <div class="p-2">
-                                                <div class="flex items-center mb-2">
-                                                    <input type="checkbox" id="select-all-members" class="rounded mr-2">
-                                                    <label for="select-all-members" class="text-sm">Select All Visible Members</label>
+                                        <div id="members-options" class="mt-2 max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg hidden bg-white dark:bg-gray-700">
+                                            <div class="p-3">
+                                                <div class="flex items-center mb-3 pb-3 border-b border-gray-200 dark:border-gray-600">
+                                                    <input type="checkbox" id="select-all-members" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                                                    <label for="select-all-members" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">Select All Visible Members</label>
                                                 </div>
-                                                <div class="space-y-1" id="members-options-container">
+                                                <div class="space-y-2" id="members-options-container">
                                                     @foreach($members as $member)
-                                                        <div class="flex items-center member-option" 
+                                                        <div class="flex items-center member-option hover:bg-gray-50 dark:hover:bg-gray-600 p-2 rounded transition-colors" 
                                                             data-value="{{ $member->id }}" 
                                                             data-section="section-{{ $member->section_id }}">
                                                             <input type="checkbox" id="member-{{ $member->id }}" 
-                                                                value="{{ $member->id }}" class="rounded mr-2 member-checkbox"
+                                                                value="{{ $member->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer member-checkbox"
                                                                 {{ in_array($member->id, old('members', [])) ? 'checked' : '' }}>
-                                                            <label for="member-{{ $member->id }}" class="text-sm">
+                                                            <label for="member-{{ $member->id }}" class="ml-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer flex-1">
                                                                 {{ $member->first_name }} {{ $member->last_name }}
                                                                 @if($member->section)
-                                                                    <span class="text-xs text-gray-500 ml-2">
+                                                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">
                                                                         ({{ $member->section->section_name }})
                                                                     </span>
                                                                 @endif
@@ -126,8 +195,58 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="selected-members" class="mt-2 flex flex-wrap gap-2"></div>
+                                        <div id="selected-members" class="mt-3 flex flex-wrap gap-2"></div>
                                     </div>
+                                </div>
+                                @error('members')
+                                    <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                        <!-- Publishing Settings Card -->
+                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-lg shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Publishing Settings</h3>
+                            </div>
+
+                            <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                <input type="hidden" name="is_published" value="0">
+                                <input type="checkbox" name="is_published" id="is_published" class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 cursor-pointer" value="1" {{ old('is_published', false) ? 'checked' : '' }}>
+                                <label for="is_published" class="ml-3 cursor-pointer">
+                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                        </svg>
+                                        Publish Immediately
+                                    </span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-7">Check to send notifications to selected members right away</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="mt-8 flex justify-end">
+                            <button type="submit" 
+                                class="inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
+                                border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
+                                dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
+                                dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Create Quiz
+                            </button>
+                        </div>
                                 </div>
                                 @error('members')
                                 <p class="text-red-400 font-medium"> {{ $message }} </p>
@@ -164,7 +283,7 @@
                 function addQuestion() {
                     questionCount++;
                     const div = document.createElement('div');
-                    div.className = 'question-item mb-6 p-4 border rounded-lg';
+                    div.className = 'question-item bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 border-2 border-gray-200 dark:border-gray-600 hover:border-orange-400 dark:hover:border-orange-500 transition-all duration-200';
                     div.dataset.index = questionCount;
 
                     const questionId = `question-${questionCount}`;
@@ -173,43 +292,90 @@
                     const optionsId = `options-${questionCount}`;
 
                     div.innerHTML = `
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-medium">Question #${questionCount}</h4>
-                            <button type="button" class="remove-question text-red-500 hover:text-red-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                <span class="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">${questionCount}</span>
+                                Question #${questionCount}
+                            </h4>
+                            <button type="button" class="remove-question text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="${questionId}" class="text-sm font-medium">Question Text</label>
-                            <input type="text" id="${questionId}" name="questions[${questionCount}][question]" placeholder="Enter question" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" required>
-                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="${questionId}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Question Text <span class="text-red-500">*</span>
+                                    </span>
+                                </label>
+                                <input type="text" id="${questionId}" name="questions[${questionCount}][question]" placeholder="Enter your question" 
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="${typeId}" class="text-sm font-medium">Question Type</label>
-                            <select id="${typeId}" name="questions[${questionCount}][type]" class="question-type border-gray-300 shadow-sm w-full rounded-lg mt-1" required>
-                                <option value="identification">Identification</option>
-                                <option value="true-false">True or False</option>
-                                <option value="checkbox">Checkbox</option>
-                                <option value="multiple-choice">Multiple Choice</option>
-                            </select>
-                        </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="${typeId}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                        <span class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                            </svg>
+                                            Question Type <span class="text-red-500">*</span>
+                                        </span>
+                                    </label>
+                                    <select id="${typeId}" name="questions[${questionCount}][type]" 
+                                        class="question-type block w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
+                                        <option value="identification">Identification</option>
+                                        <option value="true-false">True or False</option>
+                                        <option value="checkbox">Checkbox</option>
+                                        <option value="multiple-choice">Multiple Choice</option>
+                                    </select>
+                                </div>
 
-                        <div class="mb-3">
-                            <label for="${pointsId}" class="text-sm font-medium">Points</label>
-                            <input type="number" id="${pointsId}" name="questions[${questionCount}][points]" min="0" step="0.01" value="1.00" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" required>
-                        </div>
+                                <div>
+                                    <label for="${pointsId}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                        <span class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                            </svg>
+                                            Points <span class="text-red-500">*</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="${pointsId}" name="questions[${questionCount}][points]" min="0" step="0.01" value="1.00" 
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
+                                </div>
+                            </div>
 
-                        <div class="options-container hidden mb-3">
-                            <label for="${optionsId}" class="text-sm font-medium">Options (one per line)</label>
-                            <textarea id="${optionsId}" name="questions[${questionCount}][options]" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" rows="3"></textarea>
-                        </div>
+                            <div class="options-container hidden">
+                                <label for="${optionsId}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                        </svg>
+                                        Options <span class="text-gray-500 text-xs">(one per line)</span>
+                                    </span>
+                                </label>
+                                <textarea id="${optionsId}" name="questions[${questionCount}][options]" 
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" rows="3" 
+                                    placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+                            </div>
 
-                        <div class="correct-answers-container hidden mb-3">
-                            <span class="text-sm font-medium">Correct Answer(s)</span>
-                            <div class="correct-answers-inputs"></div>
+                            <div class="correct-answers-container hidden">
+                                <span class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Correct Answer(s) <span class="text-red-500">*</span>
+                                    </span>
+                                </span>
+                                <div class="correct-answers-inputs"></div>
+                            </div>
                         </div>
                     `;
 
@@ -229,11 +395,11 @@
                             div.querySelector('.options-container').classList.add('hidden');
                             correctContainer.classList.remove('hidden');
                             correctInputs.innerHTML = type === 'true-false' 
-                                ? `<select name="questions[${questionCount}][correct_answers]" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" required>
+                                ? `<select name="questions[${questionCount}][correct_answers]" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
                                     <option value="true">True</option>
                                     <option value="false">False</option>
                                 </select>`
-                                : `<input type="text" name="questions[${questionCount}][correct_answers]" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" required>`;
+                                : `<input type="text" name="questions[${questionCount}][correct_answers]" placeholder="Enter the correct answer" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>`;
                         }
                     });
 
@@ -242,7 +408,7 @@
                     optionsTextarea.addEventListener('input', function() {
                         const options = this.value.split('\n').filter(o => o.trim() !== '');
                         if(typeSelect.value === 'multiple-choice') {
-                            correctInputs.innerHTML = `<select name="questions[${questionCount}][correct_answers]" class="border-gray-300 shadow-sm w-full rounded-lg mt-1" required>
+                            correctInputs.innerHTML = `<select name="questions[${questionCount}][correct_answers]" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4" required>
                                 <option value="">Select correct answer</option>
                             </select>`;
                             const select = correctInputs.querySelector('select');
@@ -258,8 +424,8 @@
                                 const optionId = `q${questionCount}-correct-${idx}`;
                                 correctInputs.innerHTML += `
                                     <div class="flex items-center mt-2">
-                                        <input type="checkbox" name="questions[${questionCount}][correct_answers][]" id="${optionId}" value="${opt}" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                        <label for="${optionId}" class="ml-2 text-sm">${opt}</label>
+                                        <input type="checkbox" name="questions[${questionCount}][correct_answers][]" id="${optionId}" value="${opt}" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer">
+                                        <label for="${optionId}" class="ml-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">${opt}</label>
                                     </div>`;
                             });
                         }
@@ -270,7 +436,12 @@
                         const remaining = questionsContainer.querySelectorAll('.question-item');
                         remaining.forEach((q, idx) => {
                             q.dataset.index = idx + 1;
-                            q.querySelector('h4').textContent = `Question #${idx + 1}`;
+                            const numberBadge = q.querySelector('.bg-orange-500');
+                            if (numberBadge) numberBadge.textContent = idx + 1;
+                            q.querySelector('h4').innerHTML = `
+                                <span class="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">${idx + 1}</span>
+                                Question #${idx + 1}
+                            `;
                             const inputs = q.querySelectorAll('input, select, textarea');
                             inputs.forEach(input => input.name = input.name.replace(/questions\[\d+\]/, `questions[${idx + 1}]`));
                         });

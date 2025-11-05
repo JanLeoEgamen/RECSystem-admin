@@ -1,9 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"> 
-            <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
-                {{ __('Members') }}
-            </h2>
+            <div>
+                <h2 class="font-semibold text-2xl sm:text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
+                    {{ __('Members') }}
+                </h2>
+                <p id="filterStatusText" class="text-sm text-gray-300 dark:text-gray-400 mt-1 text-center sm:text-left hidden">
+                    Showing: <span id="filterStatusLabel" class="font-semibold"></span>
+                </p>
+            </div>
 
             <div class="flex flex-col sm:flex-row flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
                 @can('create members')
@@ -23,63 +28,6 @@
                     Create
                 </a>
                 @endcan
-
-                <a href="{{ route('members.active') }}" dusk="go-to-active"
-                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                            focus:ring-[#101966] border border-white font-medium 
-                            rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                            w-full sm:w-auto text-center
-
-                            dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                        fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
-                        class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" 
-                        d="M15 19a6 6 0 00-12 0m12 0h0M9 11a4 4 0 100-8 4 4 0 000 8z" /><path stroke-linecap="round" stroke-linejoin="round" 
-                        d="M16 11l2 2 4-4" />
-                    </svg>
-                    Active Members
-                </a>
-                
-                <a href="{{ route('members.inactive') }}" dusk="go-to-inactive"
-                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                            focus:ring-[#101966] border border-white font-medium 
-                            rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                            w-full sm:w-auto text-center
-
-                            dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                        fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 mr-2">
-                        <path stroke-linecap="round" stroke-linejoin="round" 
-                        d="M15 19a6 6 0 00-12 0m12 0h0m-6-6a4 4 0 100-8 4 4 0 000 8z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" 
-                        d="M18 12l4 4m0-4l-4 4" />
-                    </svg>
-                    Inactive Members
-                </a>
-
-                <a href="{{ route('members.expired') }}" dusk="go-to-expired"
-                    class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                            focus:ring-[#101966] border border-white font-medium 
-                            rounded-lg text-lg md:text-xl leading-normal transition-colors duration-200 
-                            w-full sm:w-auto text-center
-
-                            dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                        fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 mr-2">
-                        <path stroke-linecap="round" stroke-linejoin="round" 
-                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                    </svg>
-                    Expired Members
-                </a>
             </div>
         </div>
     </x-slot>
@@ -90,96 +38,194 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-4 sm:p-6 text-gray-900 dark:text-gray-100">
-                    <div class="hidden sm:flex justify-between items-center mb-4 gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">No. of entries</span>
-                                <select id="perPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-24">
-                                    <option value="10" selected>10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
+                    <!-- Desktop Filter Section -->
+                    <div class="hidden sm:block mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 shadow-sm border border-blue-100 dark:border-gray-600">
+                            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                <!-- Entries Per Page -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                        </svg>
+                                        Entries
+                                    </label>
+                                    <select id="perPage" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-blue-300 cursor-pointer">
+                                        <option value="10" selected>10 per page</option>
+                                        <option value="20">20 per page</option>
+                                        <option value="50">50 per page</option>
+                                        <option value="100">100 per page</option>
+                                    </select>
+                                </div>
+
+                                <!-- Status Filter -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                        </svg>
+                                        Status Filter
+                                    </label>
+                                    <select id="statusFilter" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:border-purple-300 cursor-pointer">
+                                        <option value="all" selected>All Members</option>
+                                        <option value="active">✓ Active</option>
+                                        <option value="expiring">⏰ Expiring Soon</option>
+                                        <option value="expired">✕ Expired</option>
+                                        <option value="inactive">⊘ Inactive</option>
+                                        <option value="lifetime">★ Lifetime</option>
+                                    </select>
+                                </div>
+
+                                <!-- Sort By -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                        </svg>
+                                        Sort Order
+                                    </label>
+                                    <select id="sortBy" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 hover:border-green-300 cursor-pointer">
+                                        <option value="created_desc">Latest First</option>
+                                        <option value="last_name_asc">Name (A-Z)</option>
+                                        <option value="last_name_desc">Name (Z-A)</option>
+                                        <option value="rec_number_asc">REC No. ↑</option>
+                                        <option value="rec_number_desc">REC No. ↓</option>
+                                        <option value="membership_start_asc">Start Date (Old)</option>
+                                        <option value="membership_start_desc">Start Date (New)</option>
+                                        <option value="membership_end_asc">End Date (Soon)</option>
+                                        <option value="membership_end_desc">End Date (Late)</option>
+                                        <option value="status_asc">Status (Active First)</option>
+                                        <option value="status_desc">Status (Inactive First)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Search -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                        Search
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" 
+                                            placeholder="Search member name..." 
+                                            class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 hover:border-orange-300">
+                                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" 
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by</span>
-                                <select id="sortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-48">
-                                    <option value="created_desc">Default</option>
-                                    <option value="last_name_asc">Last Name (A-Z)</option>
-                                    <option value="last_name_desc">Last Name (Z-A)</option>
-                                    <option value="rec_number_asc">Record No. (Asc)</option>
-                                    <option value="rec_number_desc">Record No. (Desc)</option>
-                                    <option value="membership_start_asc">Start Date (Oldest)</option>
-                                    <option value="membership_start_desc">Start Date (Newest)</option>
-                                    <option value="membership_end_asc">End Date (Soonest)</option>
-                                    <option value="membership_end_desc">End Date (Latest)</option>
-                                    <option value="status_asc">Status (Active First)</option>
-                                    <option value="status_desc">Status (Inactive First)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center space-x-4">
-                            <div id="resultInfo" class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> items
-                            </div>
-                            <div class="relative w-48">
-                                <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                                </svg>
-
-                                <input type="text" id="searchInput" 
-                                    placeholder="Search Name" class="pl-8 pr-2 py-2 border border-gray-300 dark:border-gray-600 
-                                    dark:bg-gray-700 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
+                            <!-- Results Info -->
+                            <div class="mt-4 pt-3 border-t border-blue-200 dark:border-gray-500">
+                                <div class="flex items-center justify-between text-xs">
+                                    <div id="resultInfo" class="flex items-center text-gray-600 dark:text-gray-300 font-medium">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Showing <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="startRecord">0</span> to 
+                                        <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="endRecord">0</span> of 
+                                        <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="totalRecords">0</span> members
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
     
-                    <div class="sm:hidden space-y-3 mb-4">
-                        <div class="relative w-full">
-                            <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                            </svg>
+    
+                    <!-- Mobile Filter Section -->
+                    <div class="sm:hidden mb-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 shadow-sm border border-blue-100 dark:border-gray-600 space-y-4">
+                            <!-- Search -->
+                            <div class="flex flex-col space-y-2">
+                                <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    Search
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="mobileSearchInput" 
+                                        placeholder="Search member name..." 
+                                        class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 dark:placeholder-gray-400 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200">
+                                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" 
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
 
-                            <input type="text" id="mobileSearchInput" placeholder="Search Name" 
-                                class="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300
-                                dark:placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300 w-full">
-                        </div>
+                            <!-- Entries Per Page -->
+                            <div class="flex flex-col space-y-2">
+                                <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                    Entries Per Page
+                                </label>
+                                <select id="mobilePerPage" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                                    <option value="10" selected>10 per page</option>
+                                    <option value="20">20 per page</option>
+                                    <option value="50">50 per page</option>
+                                    <option value="100">100 per page</option>
+                                </select>
+                            </div>
 
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">No. of entries</span>
-                            <select id="mobilePerPage" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="10" selected>10</option>
-                                <option value="20">20</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
+                            <!-- Status Filter -->
+                            <div class="flex flex-col space-y-2">
+                                <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                    </svg>
+                                    Filter by Status
+                                </label>
+                                <select id="mobileStatusFilter" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
+                                    <option value="all" selected>All Members</option>
+                                    <option value="active">✓ Active</option>
+                                    <option value="expiring">⏰ Expiring Soon</option>
+                                    <option value="expired">✕ Expired</option>
+                                    <option value="inactive">⊘ Inactive</option>
+                                    <option value="lifetime">★ Lifetime</option>
+                                </select>
+                            </div>
 
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap w-1/3">Sort by</span>
-                            <select id="mobileSortBy" class="form-select border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded px-4 py-1 pr-10 text-sm focus:outline-none focus:ring focus:border-blue-300 w-2/3">
-                                <option value="created_desc">Default</option>
-                                <option value="last_name_asc">Last Name (A-Z)</option>
-                                <option value="last_name_desc">Last Name (Z-A)</option>
-                                <option value="rec_number_asc">Record No. (Asc)</option>
-                                <option value="rec_number_desc">Record No. (Desc)</option>
-                                <option value="membership_start_asc">Start Date (Oldest)</option>
-                                <option value="membership_start_desc">Start Date (Newest)</option>
-                                <option value="membership_end_asc">End Date (Soonest)</option>
-                                <option value="membership_end_desc">End Date (Latest)</option>
-                                <option value="status_asc">Status (Active First)</option>
-                                <option value="status_desc">Status (Inactive First)</option>
-                            </select>
-                        </div>
+                            <!-- Sort By -->
+                            <div class="flex flex-col space-y-2">
+                                <label class="flex items-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                    </svg>
+                                    Sort Order
+                                </label>
+                                <select id="mobileSortBy" class="form-select bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 dark:text-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                    <option value="created_desc">Latest First</option>
+                                    <option value="last_name_asc">Name (A-Z)</option>
+                                    <option value="last_name_desc">Name (Z-A)</option>
+                                    <option value="rec_number_asc">REC No. ↑</option>
+                                    <option value="rec_number_desc">REC No. ↓</option>
+                                    <option value="membership_start_asc">Start Date (Old)</option>
+                                    <option value="membership_start_desc">Start Date (New)</option>
+                                    <option value="membership_end_asc">End Date (Soon)</option>
+                                    <option value="membership_end_desc">End Date (Late)</option>
+                                    <option value="status_asc">Status (Active First)</option>
+                                    <option value="status_desc">Status (Inactive First)</option>
+                                </select>
+                            </div>
 
-                        <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
-                            Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
+                            <!-- Results Info -->
+                            <div class="pt-3 border-t border-blue-200 dark:border-gray-500">
+                                <div id="mobileResultInfo" class="flex items-center justify-center text-xs text-gray-600 dark:text-gray-300 font-medium">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Showing <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="mobileStartRecord">0</span> to 
+                                    <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="mobileEndRecord">0</span> of 
+                                    <span class="mx-1 font-bold text-blue-600 dark:text-blue-400" id="mobileTotalRecords">0</span> members
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -192,7 +238,7 @@
                                         <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-personal whitespace-nowrap">Full Name</th>
                                         <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-contact whitespace-nowrap">Email</th>
                                         <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-contact whitespace-nowrap">Cellphone</th>
-                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-membership whitespace-nowrap">Record No.</th>
+                                        <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-membership whitespace-nowrap">REC No.</th>
                                         <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-membership whitespace-nowrap">Membership Type</th>
                                         <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-membership whitespace-nowrap">Start Date</th>
                                         <th class="px-3 sm:px-6 py-3 text-center font-medium border-l dark:border-gray-700 border-white column-membership whitespace-nowrap">End Date</th>
@@ -226,6 +272,42 @@
             .swal2-icon.swal2-info .swal2-icon-content,
             .swal2-icon.swal2-question .swal2-icon-content {
                 color: #ff0000 !important;
+            }
+
+            /* Filter Card Animations */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .bg-gradient-to-r {
+                animation: fadeInUp 0.5s ease-out;
+            }
+
+            /* Select Hover Effects */
+            select.form-select:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+
+            select.form-select {
+                transition: all 0.2s ease-in-out;
+            }
+
+            /* Input Focus Effects */
+            input[type="text"]:focus {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+
+            input[type="text"] {
+                transition: all 0.2s ease-in-out;
             }
 
             @keyframes slideInLeft {
@@ -276,21 +358,81 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
+                // Check for URL parameters and set initial filter
+                const urlParams = new URLSearchParams(window.location.search);
+                const statusParam = urlParams.get('status_filter');
+                
+                if (statusParam) {
+                    $('#statusFilter').val(statusParam);
+                    $('#mobileStatusFilter').val(statusParam);
+                    updateFilterLabel(statusParam);
+                }
+                
                 fetchMembers();
+                
                 $('#searchInput, #mobileSearchInput').on('keyup', function () {
-                    fetchMembers(1, $(this).val());
+                    const searchValue = $(this).val();
+                    if ($(this).attr('id') === 'searchInput') {
+                        $('#mobileSearchInput').val(searchValue);
+                    } else {
+                        $('#searchInput').val(searchValue);
+                    }
+                    fetchMembers(1, searchValue);
                 });
 
                 $('#perPage, #mobilePerPage').on('change', function () {
-                    fetchMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $(this).val());
+                    const perPageValue = $(this).val();
+                    if ($(this).attr('id') === 'perPage') {
+                        $('#mobilePerPage').val(perPageValue);
+                    } else {
+                        $('#perPage').val(perPageValue);
+                    }
+                    fetchMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), perPageValue);
                 });
 
                 $('#sortBy, #mobileSortBy').on('change', function() {
+                    const sortValue = $(this).val();
+                    if ($(this).attr('id') === 'sortBy') {
+                        $('#mobileSortBy').val(sortValue);
+                    } else {
+                        $('#sortBy').val(sortValue);
+                    }
                     fetchMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
                 });
 
+                $('#statusFilter, #mobileStatusFilter').on('change', function() {
+                    const statusValue = $(this).val();
+                    if ($(this).attr('id') === 'statusFilter') {
+                        $('#mobileStatusFilter').val(statusValue);
+                    } else {
+                        $('#statusFilter').val(statusValue);
+                    }
+                    updateFilterLabel(statusValue);
+                    fetchMembers(1, $('#searchInput').val() || $('#mobileSearchInput').val(), $('#perPage').val() || $('#mobilePerPage').val());
+                });
+
+                function updateFilterLabel(status) {
+                    const filterText = $('#filterStatusText');
+                    const filterLabel = $('#filterStatusLabel');
+                    
+                    if (status === 'all') {
+                        filterText.addClass('hidden');
+                    } else {
+                        const statusLabels = {
+                            'active': 'Active Members Only',
+                            'expiring': 'Expiring Members Only',
+                            'expired': 'Expired Members Only',
+                            'inactive': 'Inactive Members Only',
+                            'lifetime': 'Lifetime Members Only'
+                        };
+                        filterLabel.text(statusLabels[status] || status);
+                        filterText.removeClass('hidden');
+                    }
+                }
+
                 function fetchMembers(page = 1, search = '', perPage = $('#perPage').val() || $('#mobilePerPage').val()) {
                     const sortValue = $('#sortBy').val() || $('#mobileSortBy').val() || 'created_desc';
+                    const statusFilter = $('#statusFilter').val() || $('#mobileStatusFilter').val() || 'all';
                     const [column, direction] = sortValue.split('_');
 
                     const sortMap = {
@@ -318,7 +460,8 @@
                             search: search,
                             perPage: perPage,
                             sort: sortParams.sort,
-                            direction: sortParams.direction
+                            direction: sortParams.direction,
+                            status_filter: statusFilter
                         },
                         success: function (response) {
                             renderMembers(response.data, response.from);
@@ -335,16 +478,40 @@
                     let tbody = $('#membersTable tbody');
                     tbody.empty();
                     
+                    if (members.length === 0) {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="11" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        <p class="text-lg font-medium mb-2">No members found</p>
+                                        <p class="text-sm">There are no members matching your search criteria.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                        return;
+                    }
+                    
                     members.forEach((member, index) => {
                         const rowNumber = startIndex + index;
                         const fullName = `${member.first_name} ${member.last_name}`;
-                        const statusBadge = member.is_lifetime_member 
-                        ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-100">Lifetime</span>'
-                        : member.status === 'Active'
-                            ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-100">Active</span>'
-                            : member.status === 'Expired'
-                                ? '<span class="px-2 py-1 text-xs font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:bg-orange-900 dark:text-orange-100">Expired</span>'
-                                : '<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-100">Inactive</span>';
+                        
+                        // Create status badge based on actual status
+                        let statusBadge = '';
+                        if (member.is_lifetime_member) {
+                            statusBadge = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900 dark:text-purple-100">Lifetime</span>';
+                        } else if (member.status === 'Active') {
+                            statusBadge = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-100">Active</span>';
+                        } else if (member.status === 'Expiring') {
+                            statusBadge = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-full dark:bg-yellow-900 dark:text-yellow-100">Expiring</span>';
+                        } else if (member.status === 'Expired') {
+                            statusBadge = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:bg-orange-900 dark:text-orange-100">Expired</span>';
+                        } else {
+                            statusBadge = '<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-100">Inactive</span>';
+                        }
 
                         let row = `
                             <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
@@ -414,6 +581,12 @@
                 }
 
                 function renderPagination(data) {
+                    // Hide pagination if no data
+                    if (!data.data || data.data.length === 0 || data.total === 0) {
+                        $('#paginationLinks').html('');
+                        return;
+                    }
+
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-1 sm:space-x-2">';
 
                     if (data.current_page > 1) {

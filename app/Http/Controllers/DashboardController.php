@@ -87,6 +87,69 @@ class DashboardController extends Controller implements HasMiddleware
         // Get recent applicants for the table
         $recentApplicants = Applicant::latest()->take(6)->get();
 
+        // Fetch notifications for superadmin
+        $notifications = [];
+        if ($user->hasRole('superadmin')) {
+            // Pending applicants (students and non-students)
+            $pendingStudentApplicants = Applicant::where('status', 'pending')
+                ->where('is_student', true)
+                ->count();
+            
+            $pendingNonStudentApplicants = Applicant::where('status', 'pending')
+                ->where('is_student', false)
+                ->count();
+
+            // Licensed vs Unlicensed pending applicants
+            $pendingLicensedApplicants = Applicant::where('status', 'pending')
+                ->where('has_license', true)
+                ->count();
+            
+            $pendingUnlicensedApplicants = Applicant::where('status', 'pending')
+                ->where('has_license', false)
+                ->count();
+
+            // Build notification messages
+            if ($pendingStudentApplicants > 0) {
+                $notifications[] = [
+                    'type' => 'student',
+                    'message' => $pendingStudentApplicants . ' student ' . ($pendingStudentApplicants === 1 ? 'applicant' : 'applicants') . ' awaiting approval',
+                    'count' => $pendingStudentApplicants,
+                    'icon' => 'student',
+                    'color' => 'blue'
+                ];
+            }
+
+            if ($pendingNonStudentApplicants > 0) {
+                $notifications[] = [
+                    'type' => 'regular',
+                    'message' => $pendingNonStudentApplicants . ' regular ' . ($pendingNonStudentApplicants === 1 ? 'applicant' : 'applicants') . ' awaiting approval',
+                    'count' => $pendingNonStudentApplicants,
+                    'icon' => 'user',
+                    'color' => 'purple'
+                ];
+            }
+
+            if ($pendingLicensedApplicants > 0) {
+                $notifications[] = [
+                    'type' => 'licensed',
+                    'message' => $pendingLicensedApplicants . ' licensed ' . ($pendingLicensedApplicants === 1 ? 'applicant' : 'applicants') . ' pending review',
+                    'count' => $pendingLicensedApplicants,
+                    'icon' => 'license',
+                    'color' => 'green'
+                ];
+            }
+
+            if ($pendingUnlicensedApplicants > 0) {
+                $notifications[] = [
+                    'type' => 'unlicensed',
+                    'message' => $pendingUnlicensedApplicants . ' unlicensed ' . ($pendingUnlicensedApplicants === 1 ? 'applicant' : 'applicants') . ' pending review',
+                    'count' => $pendingUnlicensedApplicants,
+                    'icon' => 'unlicense',
+                    'color' => 'orange'
+                ];
+            }
+        }
+
         $monthlyData = (clone $memberQuery)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
             ->groupBy('month')
@@ -178,6 +241,7 @@ class DashboardController extends Controller implements HasMiddleware
             'monthlyExpiringData' => $allMonthsExpiringData,
             'membershipTypeCounts' => $membershipTypeCounts,
             'sectionCounts' => $sectionCounts,
+            'notifications' => $notifications,
         ]);
     }
 }

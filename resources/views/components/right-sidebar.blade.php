@@ -1,3 +1,71 @@
+@php
+    // Get notifications if not passed as prop
+    if (!isset($notifications)) {
+        $notifications = [];
+        if (auth()->check() && auth()->user()->hasRole('superadmin')) {
+            $pendingStudentApplicants = \App\Models\Applicant::where('status', 'pending')
+                ->where('is_student', true)
+                ->count();
+            
+            $pendingNonStudentApplicants = \App\Models\Applicant::where('status', 'pending')
+                ->where('is_student', false)
+                ->count();
+
+            $pendingLicensedApplicants = \App\Models\Applicant::where('status', 'pending')
+                ->where('has_license', true)
+                ->count();
+            
+            $pendingUnlicensedApplicants = \App\Models\Applicant::where('status', 'pending')
+                ->where('has_license', false)
+                ->count();
+
+            if ($pendingStudentApplicants > 0) {
+                $notifications[] = [
+                    'id' => 'student_applicants',
+                    'type' => 'student',
+                    'message' => $pendingStudentApplicants . ' student ' . ($pendingStudentApplicants === 1 ? 'applicant' : 'applicants') . ' awaiting approval',
+                    'count' => $pendingStudentApplicants,
+                    'icon' => 'student',
+                    'color' => 'blue'
+                ];
+            }
+
+            if ($pendingNonStudentApplicants > 0) {
+                $notifications[] = [
+                    'id' => 'regular_applicants',
+                    'type' => 'regular',
+                    'message' => $pendingNonStudentApplicants . ' regular ' . ($pendingNonStudentApplicants === 1 ? 'applicant' : 'applicants') . ' awaiting approval',
+                    'count' => $pendingNonStudentApplicants,
+                    'icon' => 'user',
+                    'color' => 'purple'
+                ];
+            }
+
+            if ($pendingLicensedApplicants > 0) {
+                $notifications[] = [
+                    'id' => 'licensed_applicants',
+                    'type' => 'licensed',
+                    'message' => $pendingLicensedApplicants . ' licensed ' . ($pendingLicensedApplicants === 1 ? 'applicant' : 'applicants') . ' pending review',
+                    'count' => $pendingLicensedApplicants,
+                    'icon' => 'license',
+                    'color' => 'green'
+                ];
+            }
+
+            if ($pendingUnlicensedApplicants > 0) {
+                $notifications[] = [
+                    'id' => 'unlicensed_applicants',
+                    'type' => 'unlicensed',
+                    'message' => $pendingUnlicensedApplicants . ' unlicensed ' . ($pendingUnlicensedApplicants === 1 ? 'applicant' : 'applicants') . ' pending review',
+                    'count' => $pendingUnlicensedApplicants,
+                    'icon' => 'unlicense',
+                    'color' => 'orange'
+                ];
+            }
+        }
+    }
+@endphp
+
 @role('superadmin')
 @can('view admin dashboard')
 <!-- Right Sidebar -->
@@ -29,7 +97,201 @@
     </div>
 
     <!-- Sidebar Content -->
-    <div class="flex-1 overflow-y-auto scrollbar-left p-3 md:p-4 space-y-3 md:space-y-4">
+    <div class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-left p-3 md:p-4 space-y-3 md:space-y-4"
+         x-data="{ 
+             notifications: [],
+             activeNotification: 0,
+             init() {
+                 // Get reviewed notifications from localStorage
+                 let reviewedNotifications = JSON.parse(localStorage.getItem('reviewedNotifications') || '[]');
+                 
+                 // Filter out already reviewed notifications
+                 let allNotifications = @js($notifications);
+                 this.notifications = allNotifications.filter(notification => {
+                     return !reviewedNotifications.includes(notification.id);
+                 });
+             },
+             getApplicantFilterUrl(type) {
+                 const baseUrl = '{{ route('applicants.index') }}';
+                 
+                 // Map notification types to filter parameters
+                 const filterMap = {
+                     'student': 'student_filter=1',
+                     'regular': 'student_filter=0',
+                     'licensed': 'license_filter=licensed',
+                     'unlicensed': 'license_filter=unlicensed'
+                 };
+                 
+                 const filter = filterMap[type] || '';
+                 return filter ? `${baseUrl}?${filter}` : baseUrl;
+             },
+             removeNotification(index) {
+                 let notificationId = this.notifications[index].id;
+                 
+                 // Remove from current array
+                 this.notifications.splice(index, 1);
+                 
+                 // Store reviewed notification ID in localStorage
+                 let reviewedNotifications = JSON.parse(localStorage.getItem('reviewedNotifications') || '[]');
+                 if (!reviewedNotifications.includes(notificationId)) {
+                     reviewedNotifications.push(notificationId);
+                 }
+                 localStorage.setItem('reviewedNotifications', JSON.stringify(reviewedNotifications));
+             },
+             clearReviewedNotifications() {
+                 localStorage.removeItem('reviewedNotifications');
+                 localStorage.removeItem('dashboardNotificationsViewed');
+                 window.location.reload();
+             }
+         }"
+         @toggle-right-sidebar.window="$el.closest('aside').style.display = 'flex'; rightSidebarOpen = true">
+
+        <!-- Notifications Section -->
+        @if(count($notifications) > 0)
+        <div class="bg-gradient-to-br from-[#3b3f7a]/90 via-[#4C5091]/90 to-[#2e3060]/90
+                dark:from-gray-900 dark:via-gray-800 dark:to-gray-900
+                backdrop-blur-sm rounded-lg md:rounded-xl lg:rounded-2xl p-3 sm:p-4 md:p-6 shadow-lg md:shadow-2xl border border-white/10 dark:border-gray-700 sidebar-item animate" 
+            style="animation-delay: 0.05s">
+
+            <div class="flex justify-between items-center mb-3 sm:mb-4 md:mb-6">
+                <h3 class="text-xs sm:text-sm md:text-md font-bold text-white dark:text-gray-100 flex items-center">
+                    <div class="relative mr-1.5 sm:mr-2">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#5E6FFB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <!-- Notification badge -->
+                        <template x-if="notifications.length > 0">
+                            <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-red-500 text-white text-[7px] sm:text-[8px] items-center justify-center font-bold" x-text="notifications.length"></span>
+                            </span>
+                        </template>
+                    </div>
+                    <span class="hidden sm:inline">Notifications</span>
+                    <span class="sm:hidden">Notifs</span>
+                </h3>
+                <button @click="clearReviewedNotifications()"
+                        class="flex items-center gap-1 text-[10px] sm:text-xs text-blue-300 hover:text-blue-200 underline transition-colors duration-200"
+                        title="Reset all notifications">
+                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Reset
+                </button>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="space-y-2 sm:space-y-3">
+                <!-- Empty state when no notifications -->
+                <template x-if="notifications.length === 0">
+                    <div class="text-center py-6 sm:py-8">
+                        <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-white bg-opacity-10 rounded-full mb-3 sm:mb-4">
+                            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white text-opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-white text-opacity-70 text-xs sm:text-sm font-medium mb-1">All caught up!</p>
+                        <p class="text-white text-opacity-50 text-[10px] sm:text-xs">No pending notifications at the moment.</p>
+                    </div>
+                </template>
+
+                <!-- Notification cards -->
+                <template x-for="(notification, index) in notifications" :key="index">
+                    <div class="relative overflow-hidden rounded-md sm:rounded-lg p-2 sm:p-3 transition-all duration-300 hover:scale-[1.02]"
+                         :class="{
+                             'bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-blue-400/30': notification.color === 'blue',
+                             'bg-gradient-to-r from-purple-500/20 to-purple-600/20 border border-purple-400/30': notification.color === 'purple',
+                             'bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-400/30': notification.color === 'green',
+                             'bg-gradient-to-r from-orange-500/20 to-orange-600/20 border border-orange-400/30': notification.color === 'orange'
+                         }">
+
+                        <div class="relative z-10 flex items-start space-x-2 sm:space-x-3">
+                            <!-- Icon -->
+                            <div class="flex-shrink-0">
+                                <div class="relative">
+                                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-md sm:rounded-lg p-1.5 sm:p-2">
+                                        <!-- Student Icon -->
+                                        <template x-if="notification.icon === 'student'">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
+                                            </svg>
+                                        </template>
+                                        <!-- User Icon -->
+                                        <template x-if="notification.icon === 'user'">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </template>
+                                        <!-- License Icon -->
+                                        <template x-if="notification.icon === 'license'">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"></path>
+                                                <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
+                                            </svg>
+                                        </template>
+                                        <!-- Unlicense Icon -->
+                                        <template x-if="notification.icon === 'unlicense'">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-1 sm:space-x-2 mb-1">
+                                    <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-bold bg-red-500 text-white uppercase tracking-wide new-badge">
+                                        New
+                                    </span>
+                                    <span class="text-white text-opacity-80 text-[8px] sm:text-[10px] font-medium uppercase tracking-wide" x-text="notification.type"></span>
+                                </div>
+                                <p class="text-white text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 line-clamp-2" x-text="notification.message"></p>
+                                
+                                <!-- Action Buttons -->
+                                <div class="flex items-center space-x-1.5 sm:space-x-2">
+                                    <a :href="getApplicantFilterUrl(notification.type)" 
+                                       @click="removeNotification(index)"
+                                       class="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded text-white text-[10px] sm:text-xs font-medium transition-all duration-200">
+                                        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <span class="hidden sm:inline">Review</span>
+                                        <span class="sm:hidden">View</span>
+                                    </a>
+                                    <span class="text-white text-opacity-60 text-[8px] sm:text-[10px] hidden sm:inline" x-text="'Priority: ' + (index + 1)"></span>
+                                </div>
+                            </div>
+
+                            <!-- Count Badge -->
+                            <div class="flex-shrink-0">
+                                <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
+                                    <span class="text-white font-bold text-xs sm:text-sm" x-text="notification.count"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Info Footer -->
+            <template x-if="notifications.length > 0">
+                <div class="mt-3 sm:mt-4 p-2 sm:p-3 bg-white bg-opacity-5 rounded-md sm:rounded-lg border border-white border-opacity-10">
+                    <div class="flex items-start space-x-1.5 sm:space-x-2">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <p class="text-white text-opacity-70 text-[10px] sm:text-xs">
+                            These notifications require your immediate attention. Click <span class="hidden sm:inline">"Review"</span><span class="sm:hidden">"View"</span> to process applicants.
+                        </p>
+                    </div>
+                </div>
+            </template>
+        </div>
+        @endif
 
         <!-- Membership Section -->
         @canany(['view applicants', 'view members', 'view event announcements', 'view communities', 'view articles', 'view supporters'])
@@ -406,6 +668,45 @@
     animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
+/* Pulsing animation for NEW badge */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+/* Shining effect for NEW badge */
+@keyframes shine {
+    0% {
+        background-position: -100% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.new-badge {
+    position: relative;
+    overflow: hidden;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background: linear-gradient(
+        90deg,
+        #ef4444 0%,
+        #ef4444 40%,
+        #fff 50%,
+        #ef4444 60%,
+        #ef4444 100%
+    );
+    background-size: 200% 100%;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite, 
+               shine 3s linear infinite;
+}
+
 @media (max-width: 768px) {
     .right-sidebar-shadow {
         box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
@@ -416,6 +717,20 @@
     .scrollbar-left::-webkit-scrollbar {
         width: 4px;
     }
+}
+
+/* Hide horizontal scrollbar on right sidebar */
+aside .overflow-y-auto {
+    overflow-x: hidden !important;
+}
+
+aside .overflow-y-auto::-webkit-scrollbar-x {
+    display: none;
+}
+
+aside .overflow-y-auto {
+    -ms-overflow-style: none;
+    scrollbar-width: thin;
 }
 </style>
 @endcan
