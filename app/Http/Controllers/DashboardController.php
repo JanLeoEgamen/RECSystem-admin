@@ -111,6 +111,7 @@ class DashboardController extends Controller implements HasMiddleware
             // Build notification messages
             if ($pendingStudentApplicants > 0) {
                 $notifications[] = [
+                    'id' => 'student_applicants',
                     'type' => 'student',
                     'message' => $pendingStudentApplicants . ' student ' . ($pendingStudentApplicants === 1 ? 'applicant' : 'applicants') . ' awaiting approval',
                     'count' => $pendingStudentApplicants,
@@ -121,6 +122,7 @@ class DashboardController extends Controller implements HasMiddleware
 
             if ($pendingNonStudentApplicants > 0) {
                 $notifications[] = [
+                    'id' => 'regular_applicants',
                     'type' => 'regular',
                     'message' => $pendingNonStudentApplicants . ' regular ' . ($pendingNonStudentApplicants === 1 ? 'applicant' : 'applicants') . ' awaiting approval',
                     'count' => $pendingNonStudentApplicants,
@@ -131,6 +133,7 @@ class DashboardController extends Controller implements HasMiddleware
 
             if ($pendingLicensedApplicants > 0) {
                 $notifications[] = [
+                    'id' => 'licensed_applicants',
                     'type' => 'licensed',
                     'message' => $pendingLicensedApplicants . ' licensed ' . ($pendingLicensedApplicants === 1 ? 'applicant' : 'applicants') . ' pending review',
                     'count' => $pendingLicensedApplicants,
@@ -141,6 +144,7 @@ class DashboardController extends Controller implements HasMiddleware
 
             if ($pendingUnlicensedApplicants > 0) {
                 $notifications[] = [
+                    'id' => 'unlicensed_applicants',
                     'type' => 'unlicensed',
                     'message' => $pendingUnlicensedApplicants . ' unlicensed ' . ($pendingUnlicensedApplicants === 1 ? 'applicant' : 'applicants') . ' pending review',
                     'count' => $pendingUnlicensedApplicants,

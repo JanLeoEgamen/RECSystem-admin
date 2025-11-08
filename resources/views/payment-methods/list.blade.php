@@ -78,12 +78,12 @@
 
                             <!-- Results Info -->
                             <div class="mt-4 pt-3 border-t border-blue-200 dark:border-gray-600">
-                                <div id="resultInfo" class="flex items-center justify-center text-sm text-gray-600 dark:text-gray-300">
-                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <p class="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    Showing <span id="startRecord" class="font-semibold mx-1">0</span> to <span id="endRecord" class="font-semibold mx-1">0</span> of <span id="totalRecords" class="font-semibold mx-1">0</span> items
-                                </div>
+                                    <span>Showing <span id="startRecord" class="font-semibold text-blue-600 dark:text-blue-400">0</span> to <span id="endRecord" class="font-semibold text-blue-600 dark:text-blue-400">0</span> of <span id="totalRecords" class="font-semibold text-blue-600 dark:text-blue-400">0</span> items</span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -149,14 +149,13 @@
 
                             <!-- Results Info -->
                             <div class="pt-3 border-t border-blue-200 dark:border-gray-600">
-                                <div id="mobileResultInfo" class="flex items-center justify-center text-sm text-gray-600 dark:text-gray-300">
-                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <p class="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    Showing <span id="mobileStartRecord" class="font-semibold mx-1">0</span> to <span id="mobileEndRecord" class="font-semibold mx-1">0</span> of <span id="mobileTotalRecords" class="font-semibold mx-1">0</span> items
-                                </div>
+                                    <span>Showing <span id="mobileStartRecord" class="font-semibold text-blue-600 dark:text-blue-400">0</span> to <span id="mobileEndRecord" class="font-semibold text-blue-600 dark:text-blue-400">0</span> of <span id="mobileTotalRecords" class="font-semibold text-blue-600 dark:text-blue-400">0</span> items</span>
+                                </p>
                             </div>
-<<<<<<< Updated upstream
                             <div class="relative w-48">
                                 <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
@@ -210,8 +209,6 @@
 
                         <div id="mobileResultInfo" class="text-sm text-gray-700 dark:text-gray-300 text-center">
                             Showing <span id="mobileStartRecord">0</span> to <span id="mobileEndRecord">0</span> of <span id="mobileTotalRecords">0</span> items
-=======
->>>>>>> Stashed changes
                         </div>
                     </div>
 
@@ -357,70 +354,12 @@
                     });
                 }
 
-<<<<<<< Updated upstream
                 function renderPaymentMethods(paymentMethods, startIndex) {
                     let tbody = $('#paymentMethodsTable tbody');
                     tbody.empty();
                     
                     paymentMethods.forEach((paymentMethod, index) => {
                         const rowNumber = startIndex + index;
-=======
-function renderPaymentMethods(paymentMethods, startIndex) {
-    let tbody = $('#paymentMethodsTable tbody');
-    tbody.empty();
-    
-    if (paymentMethods.length === 0) {
-        tbody.append(`
-            <tr>
-                <td colspan="8" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                    <div class="flex flex-col items-center justify-center space-y-4">
-                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <div class="text-lg font-medium">No payment methods found</div>
-                        <div class="text-sm">There are currently no payment methods to display.</div>
-                    </div>
-                </td>
-            </tr>
-        `);
-        return;
-    }
-    
-    paymentMethods.forEach((paymentMethod, index) => {
-        const rowNumber = startIndex + index;
-        
-        let qrCodeHtml = 'N/A';
-        
-        let row = `
-            <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
-                <td class="px-6 py-4 text-center">${rowNumber}</td>
-                <td class="px-6 py-4 text-center column-mode_of_payment_name">${paymentMethod.mode_of_payment_name}</td>
-                <td class="px-6 py-4 text-center column-account_name">${paymentMethod.account_name}</td>
-                <td class="px-6 py-4 text-center column-account_number">${paymentMethod.account_number}</td>
-                <td class="px-6 py-4 text-center column-amount">${paymentMethod.amount ? '₱' + parseFloat(paymentMethod.amount).toFixed(2) : 'N/A'}</td> <!-- Add this line -->
-                <td class="px-6 py-4 text-center column-is_published">
-                    ${paymentMethod.is_published 
-                        ? '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-200">Published</span>'
-                        : '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-200">Draft</span>'}
-                </td>
-
-                <td class="px-6 py-4 text-center column-created">${paymentMethod.created_at}</td>
-                <td class="px-6 py-4 text-center">
-                    <div class="flex justify-center items-center space-x-2">
-                        <!-- View Button -->
-                        <a href="/payment-methods/${paymentMethod.id}/view" 
-                            class="group flex items-center bg-green-100 hover:bg-green-500 px-3 py-2 rounded-full transition space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 text-green-600 group-hover:text-white transition"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            <span class="text-green-600 group-hover:text-white text-sm">View</span>
-                        </a>
->>>>>>> Stashed changes
                         
                         let row = `
                             <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">

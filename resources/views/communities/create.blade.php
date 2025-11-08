@@ -29,7 +29,7 @@
 
     <div class="py-8 md:py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700">
+            <div class="dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl sm:rounded-2xl border border-gray-50 dark:border-gray-700">
                 <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
                     <form id="communityForm" action="{{ route('communities.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -74,7 +74,7 @@
                         <!-- Community Image Card -->
                         <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
                             <div class="flex items-center gap-3 mb-6">
-                                <div class="bg-gradient-to-r from-pink-500 to-rose-600 p-3 rounded-lg shadow-md">
+                                <div class="bg-gradient-to-r from-emerald-500 to-green-600 p-3 rounded-lg shadow-md">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
@@ -85,7 +85,7 @@
                             <div>
                                 <label for="image" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     <span class="flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                         </svg>
                                         Upload Image <span class="text-red-500">*</span>
@@ -144,7 +144,7 @@
                         <!-- Status Settings Card -->
                         <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
                             <div class="flex items-center gap-3 mb-6">
-                                <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-lg shadow-md">
+                                <div class="bg-gradient-to-r from-emerald-500 to-green-600 p-3 rounded-lg shadow-md">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -155,7 +155,7 @@
 
                             <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                                 <input type="hidden" name="status" value="0">
-                                <input type="checkbox" name="status" id="status" class="h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-500 cursor-pointer" value="1" {{ old('status', true) ? 'checked' : '' }}>
+                                <input type="checkbox" name="status" id="status" class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 cursor-pointer" value="1" {{ old('status', true) ? 'checked' : '' }}>
                                 <label for="status" class="ml-3 cursor-pointer">
                                     <span class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -168,19 +168,37 @@
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
-                        <div class="mt-8 flex justify-end">
-                            <button type="button" id="createCommunityBtn"
-                                class="inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
-                                border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
-                                dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
-                                dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
-                                    
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
-                                Create Community Content
-                            </button>
+                        <!-- Submit Button with Note -->
+                        <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <!-- Info Box -->
+                                <div class="flex-1 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
+                                    <div class="flex items-start gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-1">Purpose of this page</h4>
+                                            <p class="text-sm text-blue-700 dark:text-blue-400">
+                                                This page allows you to create community content with images to engage and inform your audience on the website.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="button" id="createCommunityBtn"
+                                    class="flex-shrink-0 inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
+                                    border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
+                                    dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
+                                    dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
+                                        
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Create Community Content
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

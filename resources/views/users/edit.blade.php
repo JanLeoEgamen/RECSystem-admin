@@ -25,25 +25,27 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Page Header with Icon -->
-            <div class="mb-8 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6">
-                <div class="flex items-center gap-4">
-                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-xl shadow-lg">
-                        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+            <div class="dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700">
+                <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
+                    <!-- Page Header with Icon -->
+                    <div class="mb-8 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-xl shadow-lg">
+                                <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Edit User</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Update user roles and bureau/section assignments</p>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Edit User</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Update user roles and bureau/section assignments</p>
-                    </div>
-                </div>
-            </div>
 
-            <form id="updateForm" action="{{ route('users.update', $user->id) }}" method="post">
-                @csrf
+                    <form id="updateForm" action="{{ route('users.update', $user->id) }}" method="post">
+                        @csrf
 
-                <!-- Personal Information Card -->
+                        <!-- Personal Information Card -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl mb-6">
                     <div class="p-6">
                         <div class="flex items-center gap-3 mb-6">
@@ -57,7 +59,7 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label for="first_name" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
@@ -70,7 +72,7 @@
                             </div>
 
                             <div>
-                                <label for="last_name" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
@@ -83,7 +85,7 @@
                             </div>
 
                             <div>
-                                <label for="birthdate" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
@@ -96,7 +98,7 @@
                             </div>
 
                             <div>
-                                <label for="email" class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     <svg class="h-4 w-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
@@ -127,16 +129,16 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 @foreach($roles as $role)
                                     <div class="relative">
-                                        <input id="role-{{ $role->id }}" name="role" type="radio" value="{{ $role->name }}" {{ $hasRoles->contains($role->id) ? 'checked' : '' }} class="peer sr-only">
+                                        <input id="role-{{ $role->id }}" name="role" type="radio" value="{{ $role->name }}" {{ $hasRoles->contains($role->id) ? 'checked' : '' }} class="peer sr-only role-radio">
                                         <label for="role-{{ $role->id }}" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-amber-50 dark:hover:bg-gray-600 peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/30 peer-checked:ring-2 peer-checked:ring-amber-500 transition-all duration-200">
                                             <div class="flex-shrink-0">
-                                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 peer-checked:border-amber-500 peer-checked:bg-amber-500 flex items-center justify-center transition-all">
-                                                    <svg class="w-3 h-3 text-white hidden peer-checked:block" fill="currentColor" viewBox="0 0 12 12">
-                                                        <path d="M10 3L4.5 8.5 2 6"/>
+                                                <div class="role-indicator w-5 h-5 rounded-full border-2 transition-all border-gray-300 dark:border-gray-500 flex items-center justify-center">
+                                                    <svg class="role-check w-3 h-3 text-white hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                                                     </svg>
                                                 </div>
                                             </div>
-                                            <span class="font-medium text-gray-700 dark:text-gray-300 peer-checked:text-amber-700 dark:peer-checked:text-amber-300">{{ $role->name }}</span>
+                                            <span class="role-text font-medium text-gray-700 dark:text-gray-300">{{ $role->name }}</span>
                                         </label>
                                     </div>
                                 @endforeach
@@ -161,7 +163,17 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                             </div>
-                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">Assign to Bureaus & Sections</h4>
+                            <div class="flex-1">
+                                <h4 class="text-xl font-semibold text-gray-900 dark:text-white">Assign to Bureaus & Sections</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <span class="inline-flex items-center gap-1">
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Note: Checking a bureau will automatically select all its sections
+                                    </span>
+                                </p>
+                            </div>
                         </div>
 
                         <div class="space-y-4">
@@ -202,9 +214,20 @@
                 <!-- Submit Button Card -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl">
                     <div class="p-6">
-                        <div class="flex justify-end">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div class="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-lg flex-1">
+                                <svg class="h-5 w-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-800 dark:text-blue-300">Purpose of this page</p>
+                                    <p class="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                                        This page allows administrators to modify user roles and assign them to specific bureaus and sections within the organization.
+                                    </p>
+                                </div>
+                            </div>
                             <button type="button" id="updateButton" 
-                                class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]">
+                                class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] whitespace-nowrap">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -215,6 +238,8 @@
                     </div>
                 </div>
             </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -275,16 +300,50 @@
             });
         @endif
 
-                    // Bureau and Section selection logic
+        // Role selection logic - Update UI when role is selected
         document.addEventListener('DOMContentLoaded', function() {
-            // Get all bureau checkboxes
+            const roleRadios = document.querySelectorAll('.role-radio');
+            
+            function updateRoleUI() {
+                roleRadios.forEach(radio => {
+                    const label = radio.nextElementSibling;
+                    const indicator = label.querySelector('.role-indicator');
+                    const check = label.querySelector('.role-check');
+                    const text = label.querySelector('.role-text');
+                    
+                    if (radio.checked) {
+                        indicator.classList.remove('border-gray-300', 'dark:border-gray-500');
+                        indicator.classList.add('border-amber-500', 'bg-amber-500');
+                        check.classList.remove('hidden');
+                        check.classList.add('block');
+                        text.classList.remove('text-gray-700', 'dark:text-gray-300');
+                        text.classList.add('text-amber-700', 'dark:text-amber-300');
+                    } else {
+                        indicator.classList.add('border-gray-300', 'dark:border-gray-500');
+                        indicator.classList.remove('border-amber-500', 'bg-amber-500');
+                        check.classList.add('hidden');
+                        check.classList.remove('block');
+                        text.classList.add('text-gray-700', 'dark:text-gray-300');
+                        text.classList.remove('text-amber-700', 'dark:text-amber-300');
+                    }
+                });
+            }
+            
+            // Initialize on page load
+            updateRoleUI();
+            
+            // Update when role changes
+            roleRadios.forEach(radio => {
+                radio.addEventListener('change', updateRoleUI);
+            });
+            
+            // Bureau and Section selection logic
             const bureauCheckboxes = document.querySelectorAll('.bureau-checkbox');
             
             // Add event listener to each bureau checkbox
             bureauCheckboxes.forEach(bureauCheckbox => {
                 bureauCheckbox.addEventListener('change', function() {
-                    const bureauId = this.value;
-                    const bureauDiv = this.closest('.rounded-lg');
+                    const bureauDiv = this.closest('.rounded-xl');
                     
                     // Get all section checkboxes within this bureau
                     const sectionCheckboxes = bureauDiv.querySelectorAll('.section-checkbox');
@@ -303,11 +362,11 @@
                 });
             });
 
-            // Optional: Add event listener to section checkboxes to handle bureau state
+            // Add event listener to section checkboxes to handle bureau state
             const sectionCheckboxes = document.querySelectorAll('.section-checkbox');
             sectionCheckboxes.forEach(sectionCheckbox => {
                 sectionCheckbox.addEventListener('change', function() {
-                    const bureauDiv = this.closest('.rounded-lg');
+                    const bureauDiv = this.closest('.rounded-xl');
                     const bureauCheckbox = bureauDiv.querySelector('.bureau-checkbox');
                     const allSections = bureauDiv.querySelectorAll('.section-checkbox');
                     
@@ -320,26 +379,30 @@
                     if (allSectionsChecked) {
                         // If all sections are checked, check the bureau
                         bureauCheckbox.checked = true;
+                        bureauCheckbox.indeterminate = false;
                     } else if (!anySectionsChecked) {
                         // If no sections are checked, uncheck the bureau
                         bureauCheckbox.checked = false;
+                        bureauCheckbox.indeterminate = false;
+                    } else {
+                        // If some sections are checked, set indeterminate state
+                        bureauCheckbox.indeterminate = true;
                     }
-                    // If some but not all sections are checked, the bureau remains in indeterminate state
-                    // (visually, this won't show as checked or unchecked)
                 });
             });
 
             // Initialize bureau states based on section selections
             function initializeBureauStates() {
                 bureauCheckboxes.forEach(bureauCheckbox => {
-                    const bureauDiv = bureauCheckbox.closest('.rounded-lg');
+                    const bureauDiv = bureauCheckbox.closest('.rounded-xl');
                     const allSections = bureauDiv.querySelectorAll('.section-checkbox');
                     
                     const allSectionsChecked = Array.from(allSections).every(section => section.checked);
                     const anySectionsChecked = Array.from(allSections).some(section => section.checked);
                     
-                    if (allSectionsChecked) {
+                    if (allSectionsChecked && allSections.length > 0) {
                         bureauCheckbox.checked = true;
+                        bureauCheckbox.indeterminate = false;
                     } else if (anySectionsChecked) {
                         // For partially checked state, we can set indeterminate property
                         bureauCheckbox.indeterminate = true;

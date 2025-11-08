@@ -124,8 +124,6 @@ class MemberDashboardController extends Controller implements HasMiddleware
             'selected_payment_method_id' => 'required|exists:payment_methods,id',
             'reference_number' => 'required|string|max:255|unique:renewals',
             'receipt' => 'required|image|max:2048',
-            'gcash_account_name' => 'required|string|max:255',
-            'gcash_account_number' => 'required|string|max:11|min:11',
         ]);
 
         $member = Auth::user()->member;
@@ -153,18 +151,8 @@ class MemberDashboardController extends Controller implements HasMiddleware
                 'payment_method_id' => $request->selected_payment_method_id,
                 'reference_number' => $request->reference_number,
                 'receipt_path' => $receiptPath,
-                'gcash_account_name' => $request->gcash_account_name,
-                'gcash_account_number' => $request->gcash_account_number,
                 'status' => 'pending',
             ]);
-
-            // Update user's GCash information (optional)
-            if ($request->gcash_account_name && $request->gcash_account_number) {
-                Auth::user()->update([
-                    'gcash_name' => $request->gcash_account_name,
-                    'gcash_number' => $request->gcash_account_number,
-                ]);
-            }
 
             // Detailed activity log
             logMembershipRenewal(

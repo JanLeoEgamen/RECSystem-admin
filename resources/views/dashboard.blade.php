@@ -79,9 +79,17 @@
     <div x-data="{ 
         notifications: {{ json_encode($notifications) }},
         activeIndex: 0,
-        show: !localStorage.getItem('dashboardNotificationsViewed'),
+        show: true,
         hasCompletedCycle: false,
         init() {
+            // Check if notifications should be shown based on localStorage
+            let dashboardViewed = localStorage.getItem('dashboardNotificationsViewed');
+            let reviewedNotifications = JSON.parse(localStorage.getItem('reviewedNotifications') || '[]');
+            
+            // Only hide if dashboard was viewed AND there are no new unreviewed notifications
+            let hasUnreviewed = this.notifications.some(n => !reviewedNotifications.includes(n.id));
+            this.show = hasUnreviewed || !dashboardViewed;
+            
             // Auto-rotate notifications every 5 seconds
             setInterval(() => {
                 if (this.notifications.length > 1 && this.show && !this.hasCompletedCycle) {
@@ -105,6 +113,17 @@
             this.hideNotifications();
             // Open right sidebar
             window.dispatchEvent(new CustomEvent('toggle-right-sidebar'));
+        },
+        getNotificationUrl(type) {
+            // Map notification types to their respective routes
+            const routeMap = {
+                'student': '{{ route('student-applicants.index') }}',
+                'regular': '{{ route('applicants.index') }}?student_filter=0',
+                'licensed': '{{ route('applicants.index') }}?license_filter=licensed',
+                'unlicensed': '{{ route('applicants.index') }}?license_filter=unlicensed'
+            };
+            
+            return routeMap[type] || '{{ route('applicants.index') }}';
         }
     }" 
     x-show="show"
@@ -189,7 +208,7 @@
                                 </div>
                                 <p class="text-white font-semibold text-xs sm:text-sm md:text-base truncate sm:whitespace-normal" x-text="notification.message"></p>
                                 <div class="mt-1 sm:mt-1.5 flex flex-wrap items-center gap-1 sm:gap-2">
-                                    <a href="{{ route('applicants.index') }}" 
+                                    <a :href="getNotificationUrl(notification.type)" 
                                        class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-md sm:rounded-lg text-white text-[10px] sm:text-sm font-medium transition-all duration-200 transform hover:scale-105">
                                         <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>

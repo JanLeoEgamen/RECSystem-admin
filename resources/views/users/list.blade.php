@@ -316,20 +316,35 @@
                     users.forEach((user, index) => {
                         const rowNumber = startIndex + index;
                         const isSuperadmin = user.is_superadmin;
-                        const deleteButton = isSuperadmin ? '' : `
-                            @can('delete users')
-                                <button onclick="deleteUser(${user.id})" 
-                                    class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="h-4 w-4 text-red-600 group-hover:text-white transition"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                    <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
-                                </button>
-                            @endcan
-                        `;
+                        
+                        // Determine buttons based on superadmin status
+                        const actionButtons = isSuperadmin ? 
+                            `<span class="flex items-center bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                Protected
+                            </span>` :
+                            `<a href="/users/${user.id}/edit" 
+                                class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 text-blue-600 group-hover:text-white transition"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
+                                </svg>
+                                <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
+                            </a>
+                            <button onclick="deleteUser(${user.id})" 
+                                class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 text-red-600 group-hover:text-white transition"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
+                            </button>`;
 
                         let row = `
                             <tr class="border-b table-row-hover table-row-animate dark:border-gray-700">
@@ -344,37 +359,13 @@
                                 </td>
                                 <td class="px-6 py-4 text-center column-created">${user.created}</td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center space-x-2">
-                                @can('edit users')
-                                    <a href="/users/${user.id}/edit" 
-                                        class="group flex items-center bg-blue-100 hover:bg-blue-500 px-3 py-2 rounded-full transition space-x-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4 text-blue-600 group-hover:text-white transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3z" />
-                                            </svg>
-                                            <span class="text-blue-600 group-hover:text-white text-sm">Edit</span>
-                                        </a>
-                                @endcan
-                                @can('delete users')
-                                    <button onclick="deleteUser(${user.id})" 
-                                        class="group flex items-center bg-red-100 hover:bg-red-600 px-3 py-2 rounded-full transition space-x-1"> 
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="h-4 w-4 text-red-600 group-hover:text-white transition"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        <span class="text-red-600 group-hover:text-white text-sm">Delete</span>
-                                    </button>
-                                @endcan                                    
+                                    ${actionButtons}
                                 </td>
                             </tr>
                         `;
                         tbody.append(row);
                     });
                 }
-
                 function renderPagination(data) {
                     let paginationHtml = '<div class="flex flex-wrap justify-center items-center space-x-2">';
 

@@ -930,167 +930,188 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- Payment Overlay -->
-<div id="paymentOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4 sm:p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl max-h-[90vh] sm:max-h-screen overflow-y-auto relative my-4 sm:my-0">
-        <button id="closePaymentOverlay" class="absolute top-3 right-3 z-10 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 bg-white dark:bg-gray-800 rounded-full p-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<div id="paymentOverlay" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 sm:p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-5xl max-h-[90vh] sm:max-h-screen overflow-y-auto relative my-4 sm:my-0 shadow-2xl border border-gray-200 dark:border-gray-700">
+        <button id="closePaymentOverlay" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
         
-        <div class="p-4 sm:p-6 lg:p-8">
-            <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-[#132080] dark:text-white mb-4 sm:mb-6 pr-8">Payment Information</h2>
-            
+        <div class="p-6 sm:p-8 lg:p-10">
+            <!-- Header -->
+            <div class="flex items-center gap-4 mb-6 sm:mb-8">
+                <div class="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                    <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Payment Information</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Complete your payment to proceed</p>
+                </div>
+            </div>
 
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 <!-- Payment Details Section -->
-                <div class="order-1 lg:order-1">
+                <div class="order-2 lg:order-1">
                     <div id="paymentMethodDetails" class="hidden">
-                        <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4 flex items-center gap-2">
-                            <span id="selectedMethodName"></span>
-                            <div class="relative inline-block group">
-                                <svg class="w-4 h-4 text-blue-500 hover:text-blue-700 cursor-help transition-colors duration-200" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                </svg>
-                                <!-- Tooltip -->
-                                <div class="invisible group-hover:visible absolute z-10 w-48 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700 -top-2 -translate-y-full left-1/2 -translate-x-1/2">
-                                    This transaction is refundable
-                                    <div class="tooltip-arrow absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-                                </div>
-                            </div>
-                        </h3>
-                        
-                        <!-- QR Code Image -->
-                        <div class="mb-3 sm:mb-4" id="qrCodeContainer">
-                            <img id="qrCodeImage" src="" alt="QR Code" class="w-full max-w-xs mx-auto sm:max-w-none sm:mx-0 h-auto rounded-lg border border-gray-200 dark:border-gray-700 hidden">
-                            <div id="noQrCode" class="text-center py-8 text-gray-500 dark:text-gray-400 hidden">
-                                <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <p class="text-sm">No QR code available</p>
-                            </div>
-                        </div>
-                        
-                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
-                            Please scan the QR code or send payment to:
-                        </p>
-
-                        <!-- Total Amount Due -->
-                        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 sm:p-4 rounded-lg mb-4">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2 sm:gap-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-indigo-100 dark:border-gray-600 shadow-md">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+                                    <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
-                                    <span class="text-sm sm:text-base font-semibold text-green-800 dark:text-green-200">Total Amount Due:</span>
                                 </div>
-                                <span id="totalAmountDue" class="text-lg sm:text-xl font-bold text-green-800 dark:text-green-200">₱0.00</span>
+                                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                    <span id="selectedMethodName"></span>
+                                    <div class="relative inline-block group">
+                                        <svg class="w-4 h-4 text-indigo-500 hover:text-indigo-700 cursor-help transition-colors duration-200" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <div class="invisible group-hover:visible absolute z-10 w-48 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700 -top-2 -translate-y-full left-1/2 -translate-x-1/2">
+                                            This transaction is refundable
+                                            <div class="tooltip-arrow absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                        </div>
+                                    </div>
+                                </h3>
                             </div>
-                        </div>
-                        
-                        <!-- Payment Details -->
-                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3 sm:p-4 rounded-lg mb-4">
-                            <div class="flex items-start gap-2 sm:gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <div class="flex-1">
-                                    <p class="text-sm sm:text-base text-blue-800 dark:text-blue-200 mb-1">
-                                        <span class="font-semibold">Account Name:</span> 
-                                        <span id="displayAccountName">-</span>
-                                    </p>
-                                    <p class="text-sm sm:text-base text-blue-800 dark:text-blue-200 mb-1">
-                                        <span class="font-semibold">Account Number:</span> 
-                                        <span id="displayAccountNumber">-</span>
-                                    </p>
-                                    <p class="text-sm sm:text-base text-blue-800 dark:text-blue-200">
-                                        <span class="font-semibold">Amount:</span> 
-                                        <span id="displayAmount">-</span>
-                                    </p>
+                            
+                            <!-- QR Code Image -->
+                            <div class="mb-5" id="qrCodeContainer">
+                                <img id="qrCodeImage" src="" alt="QR Code" class="w-full max-w-sm mx-auto h-auto rounded-xl border-4 border-white dark:border-gray-700 shadow-lg hidden">
+                                <div id="noQrCode" class="text-center py-12 bg-white/50 dark:bg-gray-800/50 rounded-xl hidden">
+                                    <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-full w-20 h-20 mx-auto mb-3">
+                                        <svg class="w-12 h-12 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">No QR code available</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
+                                📱 Scan the QR code to complete your payment
+                            </p>
+
+                            <!-- Total Amount Due -->
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-300 dark:border-green-700 rounded-xl p-4 shadow-md">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow">
+                                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                            </svg>
+                                        </div>
+                                        <span class="text-base font-bold text-green-800 dark:text-green-200">Total Amount Due:</span>
+                                    </div>
+                                    <span id="totalAmountDue" class="text-2xl font-black text-green-700 dark:text-green-300">₱0.00</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- No Payment Method Selected -->
-                    <div id="noPaymentSelected" class="text-center py-8 text-gray-500 dark:text-gray-400">
-                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                        </svg>
-                        <p class="text-lg font-medium mb-2">Select a Payment Method</p>
-                        <p class="text-sm">Please choose a payment method to view payment details</p>
+                    <div id="noPaymentSelected" class="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-xl border border-gray-200 dark:border-gray-600">
+                        <div class="p-5 bg-white dark:bg-gray-800 rounded-full w-24 h-24 mx-auto mb-4 shadow-lg">
+                            <svg class="w-14 h-14 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                            </svg>
+                        </div>
+                        <p class="text-lg font-bold text-gray-700 dark:text-gray-200 mb-2">Select a Payment Method</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Choose a payment method from the right to view details</p>
                     </div>
                 </div>
                 
                 <!-- Payment Form Section -->
-                <div class="order-2 lg:order-2">
-                    <form id="paymentForm">
-                        <!-- Hidden field to store selected payment method -->
+                <div class="order-1 lg:order-2">
+                    <form id="paymentForm" class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600 shadow-md">
                         <input type="hidden" id="selectedPaymentMethodId" name="selected_payment_method_id">
                         
-                        <div class="mb-4 sm:mb-6">
+                        <!-- Payment Method Selection -->
+                        <div class="mb-6">
+                            <label for="paymentMethodSelect" class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                                <svg class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                                Select Payment Method <span class="text-red-500">*</span>
+                            </label>
+                            <select id="paymentMethodSelect" 
+                                    class="w-full px-4 py-3 text-base rounded-xl border-2 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-200 shadow-sm hover:border-indigo-400">
+                                <option value="">Choose a payment method...</option>
+                                @foreach($paymentMethods->where('category', 'application') as $paymentMethod)
+                                    <option value="{{ $paymentMethod->id }}" 
+                                            data-account-name="{{ $paymentMethod->account_name }}"
+                                            data-account-number="{{ $paymentMethod->account_number }}"
+                                            data-amount="{{ $paymentMethod->amount }}"
+                                            data-qr-image="{{ $paymentMethod->mode_of_payment_qr_image ? asset('images/' . $paymentMethod->mode_of_payment_qr_image) : '' }}"
+                                            data-method-name="{{ $paymentMethod->mode_of_payment_name }}">
+                                        {{ $paymentMethod->mode_of_payment_name }} 
+                                        @if($paymentMethod->amount)
+                                            - ₱{{ number_format($paymentMethod->amount, 2) }}
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                        <label for="paymentMethodSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Select Payment Method <span class="text-red-500">*</span>
-                        </label>
-                        <select id="paymentMethodSelect" 
-                                class="w-full px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
-                            <option value="">Choose a payment method...</option>
-                            @foreach($paymentMethods->where('category', 'application') as $paymentMethod)
-                                <option value="{{ $paymentMethod->id }}" 
-                                        data-account-name="{{ $paymentMethod->account_name }}"
-                                        data-account-number="{{ $paymentMethod->account_number }}"
-                                        data-amount="{{ $paymentMethod->amount }}"
-                                        data-qr-image="{{ $paymentMethod->mode_of_payment_qr_image ? asset('images/' . $paymentMethod->mode_of_payment_qr_image) : '' }}"
-                                        data-method-name="{{ $paymentMethod->mode_of_payment_name }}">
-                                    {{ $paymentMethod->mode_of_payment_name }} 
-                                    @if($paymentMethod->amount)
-                                        - ₱{{ number_format($paymentMethod->amount, 2) }}
-                                    @endif
-                                </option>
-                            @endforeach
-                        </select>
-
-                            <label for="gcashRefNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <!-- Reference Number -->
+                        <div class="mb-6">
+                            <label for="gcashRefNumber" class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                                <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                </svg>
                                 Reference Number <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="gcashRefNumber" name="gcashRefNumber" required 
-                                class="w-full px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                                class="w-full px-4 py-3 text-base rounded-xl border-2 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 shadow-sm hover:border-blue-400"
                                 placeholder="e.g. 1234 567 123456"
                                 maxlength="15"
                                 oninput="formatGcashRefNumber(this)"
                                 onkeypress="return isNumberKey(event)">
-                            <p id="gcashRefError" class="mt-1 text-xs sm:text-sm text-red-500 hidden">
-                                Please enter a valid 13-digit reference number (e.g., 1234 567 123456)
+                            <p id="gcashRefError" class="mt-2 text-sm text-red-500 hidden flex items-center gap-1">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Please enter a valid 13-digit reference number
                             </p>
                         </div>
                         
-                        <div class="mb-4 sm:mb-6">
-                            <label for="paymentProof" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <!-- Payment Proof Upload -->
+                        <div class="mb-6">
+                            <label for="paymentProof" class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                                <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
                                 Upload Payment Proof <span class="text-red-500">*</span>
                             </label>
-                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-3 sm:p-4 text-center payment-proof-container relative">
+                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 text-center payment-proof-container relative bg-white/50 dark:bg-gray-800/50 hover:border-green-400 hover:bg-green-50/50 dark:hover:bg-green-900/10 transition-all duration-200">
                                 <input type="file" id="paymentProof" name="paymentProof" accept="image/*" class="hidden">
                                 <label for="paymentProof" class="cursor-pointer block">
                                     <div id="uploadContent">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v14z" />
-                                        </svg>
-                                        <p class="mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">Click to upload payment screenshot</p>
+                                        <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-full w-20 h-20 mx-auto mb-3">
+                                            <svg class="h-12 w-12 text-gray-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Click to upload payment screenshot</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, JPEG up to 5MB</p>
                                     </div>
                                     <div id="imagePreviewContainer" class="hidden">
-                                        <img id="imagePreview" class="max-w-full h-32 sm:h-40 lg:h-48 rounded-lg border border-gray-200 dark:border-gray-700 mx-auto" title="Click to reupload">
+                                        <img id="imagePreview" class="max-w-full h-48 rounded-xl border-2 border-gray-200 dark:border-gray-700 mx-auto shadow-md mb-2">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 italic">💡 Click the image to change</p>
                                     </div>
                                 </label>
                             </div>
                         </div>
                         
-                        <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 sm:px-6 sm:py-3 text-sm font-medium bg-[#101966] text-white border border-[#101966] rounded-lg 
-                            hover:bg-white hover:text-blue-600 hover:border-blue-600 dark:hover:bg-gray-900 dark:hover:text-gray-200 
-                            transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        <!-- Submit Button -->
+                        <button type="submit" 
+                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 text-base font-bold bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             id="submitButton" disabled>
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                             Submit Application
                         </button>
                     </form>
@@ -1168,32 +1189,45 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedMethodName = document.getElementById('selectedMethodName');
             const qrCodeImage = document.getElementById('qrCodeImage');
             const noQrCode = document.getElementById('noQrCode');
-            const displayAccountName = document.getElementById('displayAccountName');
-            const displayAccountNumber = document.getElementById('displayAccountNumber');
-            const displayAmount = document.getElementById('displayAmount');
+            const totalAmountDue = document.getElementById('totalAmountDue');
             const selectedPaymentMethodId = document.getElementById('selectedPaymentMethodId');
             const submitButton = document.getElementById('submitButton');
+
+            console.log('Payment overlay initialized');
+            console.log('Payment method select element:', paymentMethodSelect);
+            console.log('Total amount element:', totalAmountDue);
 
             // Handle payment method selection
             if (paymentMethodSelect) {
                 paymentMethodSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
+                    console.log('Payment method selected:', selectedOption.value);
+                    console.log('Option data:', {
+                        methodName: selectedOption.getAttribute('data-method-name'),
+                        amount: selectedOption.getAttribute('data-amount'),
+                        qrImage: selectedOption.getAttribute('data-qr-image')
+                    });
                     
                     if (selectedOption.value) {
                         // Show payment method details and hide no selection message
                         paymentMethodDetails.classList.remove('hidden');
                         noPaymentSelected.classList.add('hidden');
                         
-                        // Update displayed information
-                        selectedMethodName.textContent = selectedOption.getAttribute('data-method-name');
-                        displayAccountName.textContent = selectedOption.getAttribute('data-account-name') || '-';
-                        displayAccountNumber.textContent = selectedOption.getAttribute('data-account-number') || '-';
+                        // Update payment method name
+                        if (selectedMethodName) {
+                            selectedMethodName.textContent = selectedOption.getAttribute('data-method-name') || 'N/A';
+                        }
                         
+                        // Update total amount due
                         const amount = selectedOption.getAttribute('data-amount');
-                        displayAmount.textContent = amount ? '₱' + parseFloat(amount).toFixed(2) : '-';
-
-                        // Inside the paymentMethodSelect change event, after setting displayAmount
-                        document.getElementById('totalAmountDue').textContent = amount ? '₱' + parseFloat(amount).toFixed(2) : '₱0.00';
+                        console.log('Updating amount to:', amount);
+                        if (totalAmountDue) {
+                            const formattedAmount = amount ? '₱' + parseFloat(amount).toFixed(2) : '₱0.00';
+                            totalAmountDue.textContent = formattedAmount;
+                            console.log('Amount updated to:', formattedAmount);
+                        } else {
+                            console.error('Total amount due element not found!');
+                        }
                         
                         // Update hidden field
                         selectedPaymentMethodId.value = selectedOption.value;
@@ -1203,13 +1237,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Handle QR code image
                         const qrImageUrl = selectedOption.getAttribute('data-qr-image');
-                        if (qrImageUrl && qrImageUrl !== '') {
+                        console.log('QR Image URL:', qrImageUrl);
+                        if (qrImageUrl && qrImageUrl !== '' && qrImageUrl !== 'null') {
                             qrCodeImage.src = qrImageUrl;
                             qrCodeImage.classList.remove('hidden');
                             noQrCode.classList.add('hidden');
+                            console.log('QR code image displayed');
                         } else {
                             qrCodeImage.classList.add('hidden');
                             noQrCode.classList.remove('hidden');
+                            console.log('No QR code available');
                         }
                     } else {
                         // Hide payment method details and show no selection message
@@ -1221,8 +1258,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Clear hidden field
                         selectedPaymentMethodId.value = '';
+                        
+                        // Reset total amount
+                        if (totalAmountDue) {
+                            totalAmountDue.textContent = '₱0.00';
+                        }
                     }
                 });
+            } else {
+                console.error('Payment method select element not found!');
             }
 
             // Form validation for payment method selection
@@ -1238,7 +1282,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Additional validation can be added here
                     const refNumber = document.getElementById('gcashRefNumber').value;
-                    const accountNumber = document.getElementById('gcashAccountNumber').value;
                     
                     if (!refNumber || refNumber.replace(/\s/g, '').length !== 13) {
                         e.preventDefault();
@@ -1247,10 +1290,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         return false;
                     }
                     
-                    if (!accountNumber || !/^09[0-9]{9}$/.test(accountNumber)) {
+                    // Validate payment proof
+                    const paymentProof = document.getElementById('paymentProof').files;
+                    if (!paymentProof || paymentProof.length === 0) {
                         e.preventDefault();
-                        alert('Please enter a valid 11-digit account number starting with 09.');
-                        document.getElementById('gcashAccountNumber').focus();
+                        alert('Please upload payment proof before submitting.');
+                        document.getElementById('paymentProof').focus();
                         return false;
                     }
                 });
@@ -1697,6 +1742,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.previewImage = function(input) {
             const previewContainer = document.getElementById('imagePreviewContainer');
             const previewImage = document.getElementById('imagePreview');
+            const uploadContent = document.getElementById('uploadContent');
             
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -1704,6 +1750,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.onload = function(e) {
                     previewImage.src = e.target.result;
                     previewContainer.classList.remove('hidden');
+                    uploadContent.classList.add('hidden'); // Hide upload text when image is selected
                 }
                 
                 reader.readAsDataURL(input.files[0]);

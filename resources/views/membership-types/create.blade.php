@@ -81,7 +81,7 @@
                                         <p class="font-semibold mb-1">Membership Type Guidelines:</p>
                                         <ul class="list-disc list-inside space-y-1 text-xs">
                                             <li>Use clear, descriptive names for membership categories</li>
-                                            <li>Common types: Regular, Premium, Student, Senior, Honorary</li>
+                                            <li>Common types: Regular, Associate, Student, Neophyte, Pioneer</li>
                                             <li>Each type can have different benefits and pricing</li>
                                         </ul>
                                     </div>

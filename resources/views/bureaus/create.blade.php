@@ -58,7 +58,7 @@
                                     value="{{ old('bureau_name') }}" 
                                     name="bureau_name" 
                                     id="bureau_name"
-                                    placeholder="e.g., Finance Bureau, Operations Bureau, etc." 
+                                    placeholder="e.g., REC Inc., Student Bureau, etc." 
                                     type="text" 
                                     class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4">
                                 @error('bureau_name')
@@ -83,7 +83,7 @@
                                             <li>Bureaus are main organizational divisions</li>
                                             <li>Each bureau can contain multiple sections</li>
                                             <li>Use clear, descriptive names for easy identification</li>
-                                            <li>Examples: Finance, Operations, Marketing, HR, IT</li>
+                                            <li>Examples: REC Inc, Student Bureau</li>
                                         </ul>
                                     </div>
                                 </div>

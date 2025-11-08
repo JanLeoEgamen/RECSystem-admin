@@ -112,18 +112,15 @@
                  });
              },
              getApplicantFilterUrl(type) {
-                 const baseUrl = '{{ route('applicants.index') }}';
-                 
-                 // Map notification types to filter parameters
-                 const filterMap = {
-                     'student': 'student_filter=1',
-                     'regular': 'student_filter=0',
-                     'licensed': 'license_filter=licensed',
-                     'unlicensed': 'license_filter=unlicensed'
+                 // Map notification types to their respective routes
+                 const routeMap = {
+                     'student': '{{ route('student-applicants.index') }}',
+                     'regular': '{{ route('applicants.index') }}?student_filter=0',
+                     'licensed': '{{ route('applicants.index') }}?license_filter=licensed',
+                     'unlicensed': '{{ route('applicants.index') }}?license_filter=unlicensed'
                  };
                  
-                 const filter = filterMap[type] || '';
-                 return filter ? `${baseUrl}?${filter}` : baseUrl;
+                 return routeMap[type] || '{{ route('applicants.index') }}';
              },
              removeNotification(index) {
                  let notificationId = this.notifications[index].id;

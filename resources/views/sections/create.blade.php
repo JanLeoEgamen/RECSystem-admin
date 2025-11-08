@@ -60,7 +60,7 @@
                                         value="{{ old('section_name') }}" 
                                         name="section_name" 
                                         id="section_name"
-                                        placeholder="e.g., Accounting, Customer Service, Development, etc." 
+                                        placeholder="e.g., NATIONAL, MINDANAO, BATANGAS, etc." 
                                         type="text" 
                                         class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200 py-3 px-4">
                                     @error('section_name')
@@ -117,7 +117,7 @@
                                             <li>Sections are subdivisions within a bureau</li>
                                             <li>Each section must belong to a parent bureau</li>
                                             <li>Use descriptive names that clearly indicate the section's function</li>
-                                            <li>Example: "Accounting" section under "Finance" bureau</li>
+                                            <li>Example: "NATIONAL" section under "REC Inc." bureau</li>
                                         </ul>
                                     </div>
                                 </div>

@@ -31,7 +31,7 @@
 
     <div class="py-8 md:py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700">
+            <div class="dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700">
                 <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
                     <form action="{{route('users.store')}}" method="post" id="userForm">
                         @csrf
@@ -145,8 +145,8 @@
                                             </span>
                                         </label>
                                         <div class="mt-1 relative">
-                                            <input value="{{ old('password') }}" name="password" id="password" placeholder="Enter Password" type="password" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white pr-12 transition-all duration-200 py-3 px-4" onkeyup="validatePassword()" required>
-                                            <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" onclick="togglePasswordVisibility('password')">
+                                            <input value="{{ old('password') }}" name="password" id="password" placeholder="Enter Password" type="password" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white pr-12 transition-all duration-200 py-3 px-4" onkeyup="validatePassword(); toggleEyeIconVisibility('password')" required>
+                                            <button type="button" id="password-toggle-btn" class="absolute inset-y-0 right-0 pr-4 items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200 hidden" onclick="togglePasswordVisibility('password')">
                                                 <svg id="password-eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -211,8 +211,8 @@
                                             </span>
                                         </label>
                                         <div class="mt-1 relative">
-                                            <input value="{{ old('confirm_password') }}" name="confirm_password" id="confirm_password" placeholder="Confirm Your Password" type="password" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white pr-12 transition-all duration-200 py-3 px-4" onkeyup="validatePasswordConfirmation()" required>
-                                            <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200" onclick="togglePasswordVisibility('confirm_password')">
+                                            <input value="{{ old('confirm_password') }}" name="confirm_password" id="confirm_password" placeholder="Confirm Your Password" type="password" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white pr-12 transition-all duration-200 py-3 px-4" onkeyup="validatePasswordConfirmation(); toggleEyeIconVisibility('confirm_password')" required>
+                                            <button type="button" id="confirm_password-toggle-btn" class="absolute inset-y-0 right-0 pr-4 items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-200 hidden" onclick="togglePasswordVisibility('confirm_password')">
                                                 <svg id="confirm_password-eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -238,8 +238,8 @@
                             <!-- Assign Roles Section -->
                             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
                                 <div class="flex items-center gap-3 mb-6">
-                                    <div class="bg-gradient-to-r from-purple-500 to-pink-600 p-3 rounded-lg shadow-md">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-2 rounded-lg">
+                                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                         </svg>
                                     </div>
@@ -249,19 +249,18 @@
                                     @if ($roles->isNotEmpty())
                                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                             @foreach($roles as $role)
-                                                <div class="relative flex items-start p-4 rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all duration-200 cursor-pointer bg-gray-50 dark:bg-gray-700/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
-                                                    <div class="flex h-5 items-center">
-                                                        <input id="role-{{ $role->id }}" 
-                                                            name="role" 
-                                                            type="radio" 
-                                                            value="{{ $role->name }}" 
-                                                            class="h-5 w-5 rounded-full border-gray-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
-                                                            @if(old('role') === $role->name) checked @endif
-                                                            required>
-                                                    </div>
-                                                    <div class="ml-3 text-sm flex-1">
-                                                        <label for="role-{{ $role->id }}" class="font-semibold text-gray-800 dark:text-gray-200 cursor-pointer">{{ $role->name }}</label>
-                                                    </div>
+                                                <div class="relative">
+                                                    <input id="role-{{ $role->id }}" name="role" type="radio" value="{{ $role->name }}" @if(old('role') === $role->name) checked @endif class="peer sr-only role-radio" required>
+                                                    <label for="role-{{ $role->id }}" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-amber-50 dark:hover:bg-gray-600 peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/30 peer-checked:ring-2 peer-checked:ring-amber-500 transition-all duration-200">
+                                                        <div class="flex-shrink-0">
+                                                            <div class="role-indicator w-5 h-5 rounded-full border-2 transition-all border-gray-300 dark:border-gray-500 flex items-center justify-center">
+                                                                <svg class="role-check w-3 h-3 text-white hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <span class="role-text font-medium text-gray-700 dark:text-gray-300">{{ $role->name }}</span>
+                                                    </label>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -274,7 +273,12 @@
                                             </p>
                                         @enderror
                                     @else
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">No roles available</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            No roles available
+                                        </p>
                                     @endif
                                 </div>
                             </div> 
@@ -321,17 +325,37 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <div class="flex justify-end pt-4">
-                                <button type="button" id="submitButton"
-                                    class="inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
-                                           border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
-                                           dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
-                                           dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    Create User
-                                </button>
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <!-- Info Box -->
+                                    <div class="flex-1 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
+                                        <div class="flex items-start gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <div>
+                                                <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-1">Purpose of this page</h4>
+                                                <p class="text-sm text-blue-700 dark:text-blue-400">
+                                                    This page allows administrators to create new users and assign them to specific roles, bureaus, and sections within the organization.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="flex-shrink-0">
+                                        <button type="button" id="submitButton"
+                                            class="w-full md:w-auto inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
+                                                   border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
+                                                   dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
+                                                   dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Create User
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -343,6 +367,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
+        function toggleEyeIconVisibility(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleBtn = document.getElementById(`${fieldId}-toggle-btn`);
+            
+            if (passwordInput.value.length > 0) {
+                toggleBtn.classList.remove('hidden');
+                toggleBtn.classList.add('flex');
+            } else {
+                toggleBtn.classList.add('hidden');
+                toggleBtn.classList.remove('flex');
+            }
+        }
+        
         function togglePasswordVisibility(fieldId) {
             const passwordInput = document.getElementById(fieldId);
             const eyeIcon = document.getElementById(`${fieldId}-eye-icon`);
@@ -420,6 +457,42 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Role selection logic - Update UI when role is selected
+            const roleRadios = document.querySelectorAll('.role-radio');
+            
+            function updateRoleUI() {
+                roleRadios.forEach(radio => {
+                    const label = radio.nextElementSibling;
+                    const indicator = label.querySelector('.role-indicator');
+                    const check = label.querySelector('.role-check');
+                    const text = label.querySelector('.role-text');
+                    
+                    if (radio.checked) {
+                        indicator.classList.remove('border-gray-300', 'dark:border-gray-500');
+                        indicator.classList.add('border-amber-500', 'bg-amber-500');
+                        check.classList.remove('hidden');
+                        check.classList.add('block');
+                        text.classList.remove('text-gray-700', 'dark:text-gray-300');
+                        text.classList.add('text-amber-700', 'dark:text-amber-300');
+                    } else {
+                        indicator.classList.add('border-gray-300', 'dark:border-gray-500');
+                        indicator.classList.remove('border-amber-500', 'bg-amber-500');
+                        check.classList.add('hidden');
+                        check.classList.remove('block');
+                        text.classList.add('text-gray-700', 'dark:text-gray-300');
+                        text.classList.remove('text-amber-700', 'dark:text-amber-300');
+                    }
+                });
+            }
+            
+            // Initialize on page load
+            updateRoleUI();
+            
+            // Update when role changes
+            roleRadios.forEach(radio => {
+                radio.addEventListener('change', updateRoleUI);
+            });
+            
             const bureauCheckboxes = document.querySelectorAll('.bureau-checkbox');
             const sectionCheckboxes = document.querySelectorAll('.section-checkbox');
             

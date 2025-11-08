@@ -1,252 +1,557 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between"> 
-            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h2 class="font-semibold text-4xl text-white dark:text-gray-200 leading-tight text-center sm:text-left">
                 Member / View
             </h2>
-                    <a href="{{ route('members.index') }}" class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                        bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                        focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                        dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
-                        
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Back to Members
-                    </a>                
+            <a href="{{ route('members.index') }}" 
+               class="inline-flex items-center justify-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
+                    bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
+                    focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
+                    dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-lg sm:text-xl leading-normal transition-colors duration-200 
+                    w-full sm:w-auto mt-4 sm:mt-0">
+
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Members
+            </a>                
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="py-4 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden shadow-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700">
+                <div class="p-4 sm:p-6 lg:p-8 text-gray-900 dark:text-gray-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                         <!-- Personal Information -->
                         <div class="col-span-2">
-                            <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Personal Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">First Name</p>
-                                    <p class="mt-1">{{ $member->first_name }}</p>
+                            <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 shadow-md">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Middle Name</p>
-                                    <p class="mt-1">{{ $member->middle_name ?? 'N/A' }}</p>
+                                <h3 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Personal Information</h3>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">First Name</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->first_name }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Last Name</p>
-                                    <p class="mt-1">{{ $member->last_name }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Middle Name</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->middle_name ?? 'N/A' }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Suffix</p>
-                                    <p class="mt-1">{{ $member->suffix ?? 'N/A' }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Last Name</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->last_name }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Suffix</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->suffix ?? 'N/A' }}</p>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Sex</p>
-                                    <p class="mt-1">{{ $member->sex }}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-4 sm:mt-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Sex</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->sex }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Birthdate</p>
-                                    <p class="mt-1">{{ $member->birthdate ? \Carbon\Carbon::parse($member->birthdate)->format('M d, Y') : 'N/A' }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Birthdate</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->birthdate ? \Carbon\Carbon::parse($member->birthdate)->format('M d, Y') : 'N/A' }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Civil Status</p>
-                                    <p class="mt-1">{{ $member->civil_status }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Civil Status</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->civil_status }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Citizenship</p>
-                                    <p class="mt-1">{{ $member->citizenship }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Citizenship</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->citizenship }}</p>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Blood Type</p>
-                                    <p class="mt-1">{{ $member->blood_type ?? 'N/A' }}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-4 sm:mt-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Blood Type</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->blood_type ?? 'N/A' }}</p>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="col-span-1 md:col-span-2">
+                            <hr class="border-t-2 border-gray-200 dark:border-gray-700">
                         </div>
 
                         <!-- Contact Information -->
-                        <div>
-                            <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Contact Information</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Cellphone No.</p>
-                                    <p class="mt-1">{{ $member->cellphone_no }}</p>
+                        <!-- Contact Information -->
+                        <div class="col-span-2 md:col-span-1">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Telephone No.</p>
-                                    <p class="mt-1">{{ $member->telephone_no ?? 'N/A' }}</p>
+                                <h3 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Contact Information</h3>
+                            </div>
+                            <div class="space-y-3 sm:space-y-4">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Cellphone No.</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->cellphone_no }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Email Address</p>
-                                    <p class="mt-1">{{ $member->email_address }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-teal-600 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Telephone No.</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->telephone_no ?? 'N/A' }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Email Address</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->email_address }}</p>
+                                </div>
+                            </div>
+                        </div>                        <!-- Emergency Contact -->
+                        <div class="col-span-2 md:col-span-1">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-rose-500 to-pink-600 shadow-md">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Emergency Contact</h3>
+                            </div>
+                            <div class="space-y-3 sm:space-y-4">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Name</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->emergency_contact }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-pink-600 dark:text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Contact No.</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->emergency_contact_number }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Relationship</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->relationship }}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Emergency Contact -->
-                        <div>
-                            <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Emergency Contact</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Name</p>
-                                    <p class="mt-1">{{ $member->emergency_contact }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Contact No.</p>
-                                    <p class="mt-1">{{ $member->emergency_contact_number }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Relationship</p>
-                                    <p class="mt-1">{{ $member->relationship }}</p>
-                                </div>
-                            </div>
+                        <!-- Divider -->
+                        <div class="col-span-1 md:col-span-2">
+                            <hr class="border-t-2 border-gray-200 dark:border-gray-700">
                         </div>
 
                         <!-- Membership Information -->
-                        <div class="col-span-2">
-                            <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Membership Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Record Number</p>
-                                    <p class="mt-1">{{ $member->rec_number }}</p>
+                        <div class="col-span-2 md:col-span-1 lg:col-span-2">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-slate-600 to-blue-900 shadow-md">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Membership Type</p>
-                                    <p class="mt-1">{{ $member->membershipType->type_name ?? 'N/A' }}</p>
+                                <h3 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-slate-700 to-blue-900 bg-clip-text text-transparent">Membership Information</h3>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Record Number</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100 font-mono">{{ $member->rec_number }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Section</p>
-                                    <p class="mt-1">{{ $member->section->section_name ?? 'N/A' }}</p>
+                                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border-2 border-yellow-300 dark:border-yellow-700">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Lifetime Member</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->is_lifetime_member ? 'Yes' : 'No' }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Membership Type</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->membershipType->type_name ?? 'N/A' }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Status</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->status ?? 'N/A' }}</p>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Membership Start</p>
-                                    <p class="mt-1">{{ $member->membership_start ? \Carbon\Carbon::parse($member->membership_start)->format('M d, Y') : 'N/A' }}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-4 sm:mt-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Membership Start</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->membership_start ? \Carbon\Carbon::parse($member->membership_start)->format('M d, Y') : 'N/A' }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Membership End</p>
-                                    <p class="mt-1">{{ $member->membership_end ? \Carbon\Carbon::parse($member->membership_end)->format('M d, Y') : ($member->is_lifetime_member ? 'Lifetime' : 'N/A') }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Membership End</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->membership_end ? \Carbon\Carbon::parse($member->membership_end)->format('M d, Y') : ($member->is_lifetime_member ? 'Lifetime' : 'N/A') }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Lifetime Member</p>
-                                    <p class="mt-1">{{ $member->is_lifetime_member ? 'Yes' : 'No' }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Lifetime Member</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->is_lifetime_member ? 'Yes' : 'No' }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Last Renewal Date</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->last_renewal_date ? \Carbon\Carbon::parse($member->last_renewal_date)->format('M d, Y') : 'N/A' }}</p>
                                 </div>
                             </div>
-                            <div class="mt-4">
-                                <p class="text-sm font-medium text-gray-500">Last Renewal Date</p>
-                                <p class="mt-1">{{ $member->last_renewal_date ? \Carbon\Carbon::parse($member->last_renewal_date)->format('M d, Y') : 'N/A' }}</p>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                            <div>
-                                    <p class="text-sm font-medium text-gray-500">Status</p>
-                                    <p class="mt-1">{{ $member->status ?? 'N/A' }}</p>
-                                </div>
-                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="col-span-1 md:col-span-2">
+                            <hr class="border-t-2 border-gray-200 dark:border-gray-700">
                         </div>
 
                         <!-- License Information -->
-                        <div class="col-span-2">
-                            <h3 class="text-xl font-semibold mb-4 pb-2 border-b">License Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">License Class</p>
-                                    <p class="mt-1">{{ $member->license_class ?? 'N/A' }}</p>
+                        <div class="col-span-2 md:col-span-1 lg:col-span-2">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v10a2 2 0 002 2h5m0 0h5a2 2 0 002-2V8a2 2 0 00-2-2h-5m0 0V5a2 2 0 00-2-2h-.5a2 2 0 00-2 2v7m0 0H5" />
+                                    </svg>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">License Number</p>
-                                    <p class="mt-1">{{ $member->license_number ?? 'N/A' }}</p>
+                                <h3 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">License Information</h3>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">License Class</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->license_class ?? 'N/A' }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Callsign</p>
-                                    <p class="mt-1">{{ $member->callsign ?? 'N/A' }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">License Number</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100 font-mono">{{ $member->license_number ?? 'N/A' }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Expiration Date</p>
-                                    <p class="mt-1">{{ $member->license_expiration_date ? \Carbon\Carbon::parse($member->license_expiration_date)->format('M d, Y') : 'N/A' }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Callsign</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100 font-mono">{{ $member->callsign ?? 'N/A' }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Expiration Date</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->license_expiration_date ? \Carbon\Carbon::parse($member->license_expiration_date)->format('M d, Y') : 'N/A' }}</p>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="col-span-1 md:col-span-2">
+                            <hr class="border-t-2 border-gray-200 dark:border-gray-700">
                         </div>
 
                         <!-- Address Information -->
-                        <div class="col-span-2">
-                            <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Address Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">House/Building No./Name</p>
-                                    <p class="mt-1">{{ $member->house_building_number_name }}</p>
+                        <div class="col-span-2 md:col-span-1 lg:col-span-2">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 shadow-md">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Street Address</p>
-                                    <p class="mt-1">{{ $member->street_address }}</p>
+                                <h3 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Address Information</h3>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                            </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">House/Building No./Name</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->house_building_number_name }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                            </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Street Address</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->street_address }}</p>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Region</p>
-                                    <p class="mt-1">{{ $regionName }}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-4 sm:mt-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                         <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Region</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $regionName }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Province</p>
-                                    <p class="mt-1">{{ $provinceName }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Province</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $provinceName }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Municipality</p>
-                                    <p class="mt-1">{{ $municipalityName }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Municipality</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $municipalityName }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Barangay</p>
-                                    <p class="mt-1">{{ $barangayName }}</p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                            </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Barangay</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $barangayName }}</p>
                                 </div>
                             </div>
-                            <div class="mt-4">
-                                <p class="text-sm font-medium text-gray-500">Zip Code</p>
-                                <p class="mt-1">{{ $member->zip_code }}</p>
+                            <div class="mt-4 sm:mt-5">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                            </svg>
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Zip Code</p>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $member->zip_code }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        @can('edit members')
-                        <a href="{{ route('members.edit', $member->id) }}" class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                            bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                            focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                            dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
 
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            Edit
-                        </a>
-                        @endcan
-                        
-                        @can('delete members')
-                        <form action="{{ route('members.destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this member?');" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <input type="hidden" name="id" value="{{ $member->id }}">
-                            <button type="submit" class="inline-flex items-center px-5 py-2 text-white hover:text-[#101966] hover:border-[#101966] 
-                                bg-[#101966] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                focus:ring-[#101966] border border-white font-medium dark:bg-gray-900 dark:text-white dark:border-gray-100 
-                                dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-100 rounded-lg text-xl leading-normal transition-colors duration-200">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    <!-- Note and Buttons -->
+                    <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                        <!-- Note Section -->
+                        <div class="flex-1 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-3 sm:p-4 rounded-r-lg">
+                            <div class="flex items-start sm:items-center gap-2 sm:gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd" />
                                 </svg>
-                                Delete
-                            </button>
-                        </form>
-                        @endcan
+                                <p class="text-xs sm:text-sm text-blue-800 dark:text-blue-300"><strong>Note:</strong> Review all member information carefully before making changes.</p>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3 sm:flex-nowrap w-full sm:w-auto">
+                            @can('edit members')
+                            <a href="{{ route('members.edit', $member->id) }}" class="inline-flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-2 border-transparent font-bold rounded-xl text-base sm:text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit
+                            </a>
+                            @endcan
+                            
+                            @can('delete members')
+                            <form id="deleteForm" action="{{ route('members.destroy') }}" method="POST" class="inline w-full sm:w-auto">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="id" value="{{ $member->id }}">
+                                <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 border-2 border-transparent font-bold rounded-xl text-base sm:text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+                            @endcan
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("deleteForm")?.addEventListener("submit", function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to delete this member?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#5e6ffb",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel",
+                background: '#101966',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        willClose: () => {
+                            e.target.submit();
+                        },
+                        background: '#101966',
+                        color: '#fff',
+                        allowOutsideClick: false
+                    });
+                }
+            });
+        });
+
+        @if(session('success'))
+            Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "{{ session('success') }}",
+                confirmButtonColor: "#5e6ffb",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "{{ session('error') }}",
+                confirmButtonColor: "#5e6ffb",
+                background: '#101966',
+                color: '#fff'
+            });
+        @endif
+    </script>
 </x-app-layout>

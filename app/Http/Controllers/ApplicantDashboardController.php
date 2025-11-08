@@ -128,10 +128,9 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             'school' => 'nullable|string|max:255', 
             'program' => 'nullable|string|max:255', 
             'yearLevel' => 'nullable|string|max:50', 
-            'gcashRefNumber' => 'required_if:isStudent,null|string|max:100',
-            'gcashAccountName' => 'required_if:isStudent,null|string|max:255',
-            'gcashAccountNumber' => 'required_if:isStudent,null|string|regex:/^09[0-9]{9}$/',
-            'paymentProof' => 'required_if:isStudent,null|image|mimes:jpeg,png,jpg|max:5120',
+            'selected_payment_method_id' => 'required_unless:isStudent,on|nullable|exists:payment_methods,id',
+            'gcashRefNumber' => 'required_unless:isStudent,on|nullable|string|max:100',
+            'paymentProof' => 'required_unless:isStudent,on|nullable|image|mimes:jpeg,png,jpg|max:5120',
             'dataPrivacyConsent' => 'required|accepted', 
         ];
 
@@ -180,7 +179,10 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
             // Handle payment status based on student status
             $isStudent = $request->has('isStudent');
             $paymentStatus = $isStudent ? 'waived' : 'pending';
-            $referenceNumber = $isStudent ? 'STUDENT_WAIVED' : $validatedData['gcashRefNumber'];
+            $referenceNumber = $isStudent ? 'STUDENT_WAIVED' : ($validatedData['gcashRefNumber'] ?? null);
+            
+            // Get payment method details if not a student
+            $paymentMethodId = $isStudent ? null : ($validatedData['selected_payment_method_id'] ?? null);
 
 
             // Prepare data for insertion
@@ -213,9 +215,8 @@ class ApplicantDashboardController extends Controller implements HasMiddleware
                 'callsign' => $validatedData['callsign'] ?? null,
                 'license_expiration_date' => $validatedData['expirationDate'] ?? null,
                 'reference_number' => $referenceNumber,
-                'gcash_name' => $isStudent ? null : $validatedData['gcashAccountName'],
-                'gcash_number' => $isStudent ? null : $validatedData['gcashAccountNumber'],
-                'payment_proof_path' => $isStudent ? null : $paymentProofPath,
+                'payment_method_id' => $paymentMethodId,
+                'payment_proof_path' => $isStudent ? null : ($paymentProofPath ?? null),
                 'status' => 'Pending',
                 'payment_status' => $paymentStatus, // Use 'waived' for students
                 'user_id' => Auth::user()->id,

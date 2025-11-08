@@ -311,19 +311,37 @@
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
-                        <div class="mt-8 flex justify-end">
-                            <button type="submit" 
-                                class="inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
-                                border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
-                                dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
-                                dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
-                                    
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
-                                Create Event
-                            </button>
+                        <!-- Submit Button with Note -->
+                        <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <!-- Info Box -->
+                                <div class="flex-1 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
+                                    <div class="flex items-start gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-1">Purpose of this page</h4>
+                                            <p class="text-sm text-blue-700 dark:text-blue-400">
+                                                This page allows you to create events, assign them to members, and manage event details including dates and locations.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" 
+                                    class="flex-shrink-0 inline-flex items-center px-8 py-4 text-white bg-gradient-to-r from-[#101966] to-indigo-700 hover:from-white hover:to-gray-50 hover:text-[#101966] 
+                                    border-2 border-[#101966] hover:border-[#101966] rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105
+                                    dark:from-gray-900 dark:to-gray-800 dark:text-white dark:border-gray-100 
+                                    dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-white dark:hover:border-gray-100">
+                                        
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Create Event
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

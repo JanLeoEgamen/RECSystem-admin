@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payment_methods', function (Blueprint $table) {
-            $table->decimal('amount', 10, 2)->nullable()->after('account_number');
+            $table->decimal('amount', 10, 2)->nullable()->after('category');
 
         });
     }
