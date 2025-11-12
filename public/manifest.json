@@ -1,0 +1,17 @@
+{
+    "name": "Radio Engineering Circle Membership Management System",
+    "short_name": "REC MIMS",
+    "start_url": "/",
+    "background_color": "#6777ef",
+    "description": "System for managing memberships of the Radio Engineering Circle.",
+    "display": "fullscreen",
+    "theme_color": "#6777ef",
+    "icons": [
+        {
+            "src": "/images/Logo_PWA.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
